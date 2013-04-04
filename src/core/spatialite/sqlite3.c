@@ -9,6 +9,7 @@
 ** code internally embedded in SpatiaLite never defines
 ** any linker symbol potentially conflicting with
 ** an external sqlite3 library
+** This file is in the public domain
 */
 #define sqlite3_version SPLite3_version
 #define sqlite3_libversion SPLite3_libversion
