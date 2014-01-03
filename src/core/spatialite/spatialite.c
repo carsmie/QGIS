@@ -37882,7 +37882,7 @@ fnct_IsClosed (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  line = simpleLinestring (geo);
-	  if (!line < 0)
+	  if (!line)
 	      sqlite3_result_int (context, -1);
 	  else
 	      sqlite3_result_int (context, gaiaIsClosed (line));
@@ -37957,7 +37957,7 @@ fnct_IsRing (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  line = simpleLinestring (geo);
-	  if (!line < 0)
+	  if (!line)
 	      sqlite3_result_int (context, -1);
 	  else
 	    {
