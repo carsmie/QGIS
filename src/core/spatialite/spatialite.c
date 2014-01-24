@@ -53526,8 +53526,8 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 		      strcat (buf, "</gml:LinearRing>");
 		      strcat (buf, "</gml:outerBoundaryIs>");
 		  }
-	    }
 #if 0
+	    }
 	  else
 	    {
 		if (version == 3)
@@ -53566,8 +53566,8 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 			    strcat (buf,
 				    "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">");
 			}
-		  }
 #if 0
+		  }
 		else
 		  {
 		      if (version == 3)
@@ -53675,8 +53675,8 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 			    strcat (buf, "</gml:LinearRing>");
 			    strcat (buf, "</gml:innerBoundaryIs>");
 			}
-		  }
 #if 0
+		  }
 		else
 		  {
 		      if (version == 3)
