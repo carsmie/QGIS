@@ -10984,6 +10984,7 @@ gaiaExifTagGetHumanReadable (const gaiaExifTagPtr tag, char *str, int len,
 		      break;
 		  case 11:
 		      human = "Shade";
+		      break;
 		  case 12:
 		      human = "Daylight fluorescent (D 5700 – 7100K)";
 		      break;
@@ -10992,6 +10993,7 @@ gaiaExifTagGetHumanReadable (const gaiaExifTagPtr tag, char *str, int len,
 		      break;
 		  case 14:
 		      human = "Cool white fluorescent (W 3900 – 4500K)";
+		      break;
 		  case 15:
 		      human = "White fluorescent (WW 3200 – 3700K)";
 		      break;
@@ -11163,8 +11165,8 @@ gaiaExifTagGetHumanReadable (const gaiaExifTagPtr tag, char *str, int len,
 	      strcpy (str, human);
 	  else
 	    {
-		memset (str, '\0', len);
 		memcpy (str, human, len - 1);
+		memset (str + len - 1, 0, 1);
 	    }
 	  *ok = 1;
 	  return;
@@ -37882,7 +37884,7 @@ fnct_IsClosed (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  line = simpleLinestring (geo);
-	  if (!line < 0)
+	  if (!line)
 	      sqlite3_result_int (context, -1);
 	  else
 	      sqlite3_result_int (context, gaiaIsClosed (line));
@@ -37957,7 +37959,7 @@ fnct_IsRing (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  line = simpleLinestring (geo);
-	  if (!line < 0)
+	  if (!line)
 	      sqlite3_result_int (context, -1);
 	  else
 	    {
@@ -53508,8 +53510,10 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 		gaiaAppendToOutBuffer (out_buf, buf);
 	    }
 	  /* closing the Exterior Ring */
+#if 0
 	  if (is_multi)
 	    {
+#endif
 		if (version == 3)
 		  {
 		      strcpy (buf, "</gml:posList>");
@@ -53522,6 +53526,7 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 		      strcat (buf, "</gml:LinearRing>");
 		      strcat (buf, "</gml:outerBoundaryIs>");
 		  }
+#if 0
 	    }
 	  else
 	    {
@@ -53538,13 +53543,16 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 		      strcat (buf, "</gml:outerBoundaryIs>");
 		  }
 	    }
+#endif
 	  gaiaAppendToOutBuffer (out_buf, buf);
 	  for (ib = 0; ib < polyg->NumInteriors; ib++)
 	    {
 		/* interior rings */
 		ring = polyg->Interiors + ib;
+#if 0
 		if (is_multi)
 		  {
+#endif
 		      if (version == 3)
 			{
 			    strcpy (buf, "<gml:interior>");
@@ -53558,6 +53566,7 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 			    strcat (buf,
 				    "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">");
 			}
+#if 0
 		  }
 		else
 		  {
@@ -53575,6 +53584,7 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 				    "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">");
 			}
 		  }
+#endif
 		gaiaAppendToOutBuffer (out_buf, buf);
 		for (iv = 0; iv < ring->Points; iv++)
 		  {
@@ -53649,8 +53659,10 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 		      gaiaAppendToOutBuffer (out_buf, buf);
 		  }
 		/* closing the Interior Ring */
+#if 0
 		if (is_multi)
 		  {
+#endif
 		      if (version == 3)
 			{
 			    strcpy (buf, "</gml:posList>");
@@ -53663,6 +53675,7 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 			    strcat (buf, "</gml:LinearRing>");
 			    strcat (buf, "</gml:innerBoundaryIs>");
 			}
+#if 0
 		  }
 		else
 		  {
@@ -53679,6 +53692,7 @@ gaiaOutGml (gaiaOutBufferPtr out_buf, int version, int precision,
 			    strcat (buf, "</gml:innerBoundaryIs>");
 			}
 		  }
+#endif
 		gaiaAppendToOutBuffer (out_buf, buf);
 	    }
 	  /* closing the Polygon */
