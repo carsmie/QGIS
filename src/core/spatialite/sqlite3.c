@@ -64744,7 +64744,7 @@ case OP_IdxGE: {        /* jump */
       u.bq.res++;
     }
     if( u.bq.res>0 ){
-      pc = pOp->p2 - 1 ;
+      pc = pOp->p2 - 1;
     }
   }
   break;
