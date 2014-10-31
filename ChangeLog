@@ -1,8 +1,6286 @@
+Martin Dobias <wonder.sk@gmail.com>	2014-10-31
+
+    Less verbose debug output in layer tree model
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-31
+
+    invert back toggle editing button in relation editor widget (fixes #11524,
+    followup b1a2bef1)
+
+Werner Macho <werner.macho@gmail.com>	2014-10-31
+
+    [TRANSUP] transifex translation updates
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-31
+
+    fix more graduate renderer crashes (followup d99d2fd97)
+
+Merge: d99d2fd 9024bad
+alexbruy <alexander.bruy@gmail.com>	2014-10-31
+
+    Merge pull request #1669 from gioman/tmp_fix_modeller_saga
+
+    fix modeller with saga tools
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-31
+
+    fix modeller with saga tools
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-31
+
+    fix graduated renderer crash (followup 6de53e51b)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-30
+
+    ftools: field uniqueness fix (fixes #11523)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-30
+
+    also restore style for file based layers (followup dfff717a0) and
+    use file name for GeoJSON layers (fixes #10711)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-30
+
+    when manually loading layers defer loading default style until the layers is
+    added to the registry so that the readCustomSymbology signal can be processed
+    by the edit widget registry (fixes #11516)
+
+Werner Macho <werner.macho@gmail.com>	2014-10-30
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-30
+
+    attribute dialog: really keep cloned feature until destruction (feature action
+    also need it and crash otherwise)
+
+    This reverts revert commit f618cae5e8a9c893038101db54f5ddecb5087cdf.
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-30
+
+    remove "added" notes for 1.x and 2.0 versions
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-29
+
+    GDAL tools: put tif back to top for save file dialog formats (fixes #11507)
+
+Werner Macho <werner.macho@gmail.com>	2014-10-29
+
+    [TRANSUP] transifex update excluding locations
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-10-29
+
+    adjust update_ts_files to exclude location
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Merge: 4cf08c5 a7f889d
+Jürgen Fischer <jef@norbit.de>	2014-10-29
+
+    Merge pull request #1668 from m-kuhn/action-menu-crash
+
+    Alternative approach to f9fcee9
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-29
+
+    Use a copy of the feature for the action menu in the attribute dialog
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-29
+
+    Revert "attribute dialog: keep clone feature until destruction (fixes crash from action"
+
+    This reverts commit f9fcee980ec7fb721187080f853f86dfbf453918.
+
+Sandro Santilli <strk@keybit.net>	2014-10-29
+
+    Avoid unneeded geometry cloning in QgsGeometry::nodeGeometries
+
+    Affects splitGeometry and reshapeGeometry public functions
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-10-29
+
+    Fix missing show/hide selected layers icons
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-29
+
+    attribute dialog: keep clone feature until destruction (fixes crash from action
+    menu)
+
+Sandro Santilli <strk@keybit.net>	2014-10-29
+
+    Drop execute flag from .cpp file
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-29
+
+    german translation update
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-28
+
+    Fix a crash after adding favourites to browser when the item is not yet populated
+
+    The model was getting broken due to list of children being overwritten and
+    it was sometimes crashing in the proxy model implementation.
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-28
+
+    db manager: show error message in bar when adding a layer fails (fixes #8148)
+
+Merge: 4bc4636 6de53e5
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-28
+
+    Merge pull request #1667 from elpaso/bugfix11510
+
+    Fix #11510 graduated renderer causes crash: added check for geometry
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-28
+
+    fix typos
+
+elpaso <apasotti@gmail.com>	2014-10-28
+
+    Fix #11510 graduated renderer causes crash: added check for geometry needed
+
+    Funded by ItOpen - http://www.itopen.it
+
+Merge: c6d37c1 efc7921
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-28
+
+    Merge pull request #1666 from elpaso/bugfix11510
+
+    Fix #11510 graduated renderer causes crash
+
+Werner Macho <werner.macho@gmail.com>	2014-10-28
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-10-28
+
+    more typos in tooltip
+
+elpaso <apasotti@gmail.com>	2014-10-28
+
+    Fix #11510 graduated renderer causes crash
+
+Werner Macho <werner.macho@gmail.com>	2014-10-28
+
+    fixing typo in tooltip
+
+Merge: c7c107e 4781f58
+Werner Macho <werner.macho@gmail.com>	2014-10-28
+
+    Merge pull request #1608 from yjacolin/newTips
+
+    new tips in tipfactory
+
+Merge: 8617143 3ff1985
+Werner Macho <werner.macho@gmail.com>	2014-10-28
+
+    Merge pull request #1657 from DelazJ/MeasureTools
+
+    Update MeasureTools context help
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-28
+
+    Hide borders from status bar items under Windows
+
+    These aren't required and just clutter the interface.
+
+Merge: cad3d2b 4f1e6b9
+Werner Macho <werner.macho@gmail.com>	2014-10-27
+
+    Merge pull request #1664 from Cracert/master
+
+    [TRANSUP] pl: varia
+
+Merge: c21edd0 eef8032
+Werner Macho <werner.macho@gmail.com>	2014-10-27
+
+    Merge pull request #1658 from DelazJ/AttributeTableContextHelp
+
+    Attribute table context help
+
+Robert Szczepanek <robert@szczepanek.pl>	2014-10-27
+
+    [TRANSUP] pl: varia
+
+Merge: 83d070e 531474d
+Tim Sutton <tim@linfiniti.com>	2014-10-27
+
+    Merge pull request #1663 from timlinux/papercuts
+
+    Add missing sip bindings for fill and border colours of rubber band.
+
+Merge: 84c429d 83d070e
+Tim Sutton <tim@linfiniti.com>	2014-10-27
+
+    Merge remote-tracking branch 'origin/master' into papercuts
+
+Tim Sutton <tim@linfiniti.com>	2014-10-27
+
+    Added setFillColor and setBorderColor for rubber band to the python API
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-27
+
+    Fix #11489 (crash with force point inside polygon in centroid fill style)
+
+    This isn't actually a very good fix. The issue in the "maptopixel" simplification
+    is still there, it is just less obvious, while sacrificing a bit of QgsGeometry correctness
+    (like the fact that linear ring should have >= 4 points)
+
+    Along the way I have added some comments that may help others decode why the code does things it does.
+
+Merge: 362d69c 0fa4ce3
+Tim Sutton <tim@linfiniti.com>	2014-10-27
+
+    Merge pull request #1662 from timlinux/papercuts
+
+    Mark old rubber band ctor as deprecated in python API
+
+Merge: 1932390 362d69c
+Tim Sutton <tim@linfiniti.com>	2014-10-27
+
+    Merge remote-tracking branch 'origin/master'
+
+Werner Macho <werner.macho@gmail.com>	2014-10-27
+
+    [TRANSUP] more translations and string fix
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-27
+
+    [composer] Don't shrink scalebar height when updating
+
+    Previously any update of a scalebar would reset it's height to
+    the minimum height allowed. Now, if the user has set a height
+    greater than this minimum than that height is kept. (fix #10466)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-27
+
+    [composer] Fix incorrect calculation of scale for tick scale bars
+
+    QPainter::drawLine(x1,y1,x2,y2) takes int values, so coordinates
+    were being rounded to the nearest mm. Consequently scale was way
+    off. Also fixes horizontal line for tick styles being drawn
+    incorrectly with multiple overlapping segments. (fix #10685)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-27
+
+    Cleanup identify tooltip strings
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-27
+
+    [processing] Ignore geom for non geom tables for ImportIntoPostGIS
+
+    This fixes an error where trying to import non geometry tables
+    using the "Import Into PostGIS" algorithm results in a database
+    error.
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-27
+
+    german translation update
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-10-26
+
+    Fix #9359; set default WCS caching to Prefer Network
+
+    - This is noted in the tool tip, but was not set. Always Cache was the
+    default, which caused the cache to never be updated on upstream changes.
+
+    Caveat: this does not fix projects with existing WCS layers.
+
+Richard Duivenvoorde <richard@duif.net>	2014-10-26
+
+    fix for #11504 RotateFeature tool prerotation
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-26
+
+    delete ring: consider reprojection when search for clicked ring (fixes #11502)
+
+Tim Sutton <tim@linfiniti.com>	2014-10-26
+
+    Properly mark old qgsrubberband ctor as deprecated
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-26
+
+    vector file writer: avoid duplicate destruction of coordinate transform in case of exceptions (fixes #9993)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-26
+
+    Remove unsupported append import/export option from db_manager (refs #10569)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-26
+
+    support relative paths for gpx datasources (fixes #11131)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-26
+
+    support ogc binary operation with more than two operands (fixes #10053)
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-26
+
+    move TODO.txt to root folder to avoid attempts to parse it as
+    algorithm description
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-26
+
+    [processing] fix broken TauDEM support
+
+Werner Macho <werner.macho@gmail.com>	2014-10-26
+
+    [TRANSUP]transifex and lv update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Merge: 6402864 edbf265
+Werner Macho <werner.macho@gmail.com>	2014-10-26
+
+    Merge pull request #1659 from Cracert/master
+
+    [TRANSUP] pl: log, color, composer
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-26
+
+    doxygen: add/replace some occurences of \verbatim with \code
+
+Robert Szczepanek <robert@szczepanek.pl>	2014-10-25
+
+    [TRANSUP] pl: log, color, composer
+
+DelazJ <delazj@gmail.com>	2014-10-25
+
+    Adding text about field calculator bar
+
+    Adds text about field calculator bar and other stuffs
+
+DelazJ <delazj@gmail.com>	2014-10-25
+
+    Update QgsMeasureDialog
+
+DelazJ <delazj@gmail.com>	2014-10-25
+
+    Update Measure Tools description
+
+    Adding text about angle tools and how tools behave.
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-24
+
+    dxf export: export layers only once and in drawing order
+
+DelazJ <delazj@gmail.com>	2014-10-24
+
+    Add text about measuring angle
+
+    Since QGIS 2.0, it is possible to also measure angles but this is not mentioned in the context help.
+
+Merge: 444bea5 d64525c
+rldhont <rldhont@gmail.com>	2014-10-24
+
+    Merge pull request #1655 from rldhont/server_embedded_layers
+
+    [BUGFIX] #11484 QGIS server: embedded layers are not published (GetCapabilities, GetMap, etc)
+
+
+
+    In QgsServerProjectParser::createLayerFromElement, we need to generate a
+    QgsServerProjectParser of the parent project to return the mapLayer for
+    embedded layers. To do it, I use QgsCacheConfig to get the
+    QgsServerProjectParser for the parent project.
+
+    Funded by 3Liz.
+
+Werner Macho <werner.macho@gmail.com>	2014-10-24
+
+    [TRANSUP] fix hu
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-10-24
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-24
+
+    Support for reading composer legend configuration for projects <= 2.4
+
+    The list of layers/groups is now restored (previously the configuration would be omitted).
+
+rldhont <rldhont@gmail.com>	2014-10-24
+
+    [BUGFIX] #11484 QGIS server: embedded layers are not published (GetCapabilities, GetMap, etc)
+
+    Issue #1072 QGIS server: embedded groups do not render in GetMap requests if
+     leave layers are requested has been fixed 40d91457f6f069886c5ba1c28db1efb2ff4ccac7
+
+    But another fix about embedded layers lacks. A fixme annotation is in the
+     QgsServerProjectParser::createLayerFromElement. This one is about return the
+     layer if it is embedded.
+
+    In QgsServerProjectParser::createLayerFromElement, we need to generate a
+     QgsServerProjectParser of the parent project to return the mapLayer for
+     embedded layers. To do it, I use QgsCacheConfig to get the
+     QgsServerProjectParser for the parent project.
+
+    Funded by 3Liz.
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-24
+
+    Do not show in composer legend unused layers if filtering by map is enabled
+
+    This resolves #11457 and partially #11293
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-24
+
+    bump Processing version
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-24
+
+    [pyqgis-console] update prepared API file
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-24
+
+    [pyqgis-console] small fix
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-24
+
+    [processing] fix issues with Create Grid algortihm
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-24
+
+    Fix Andreas' problem with checkboxes in legend + update SIP bindings
+
+    The problem was that rule-based renderer allowed cloned rules to have the same unique rule key.
+    That in turn created the confusion with checkboxes in legend. Now rules always have new rule key
+    when cloned. The only exception is when the whole renderer is cloned - in such case we preserve
+    their rule keys, so that other components (legend / visibility presets) can still keep using
+    the original rule keys.
+
+    Projects where this problem appears need to be fixed - the easiest way is to select all rules,
+    copy&paste them and remove the previous rules.
+
+DelazJ <delazj@gmail.com>	2014-10-24
+
+    Update QgsAttributeTableDialog
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-10-24
+
+    Fix #11208 - Error when saving MSSQL layer when using DSN
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-24
+
+    [composer] Negative position values should be allowed
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-23
+
+    update changelog for brighton release
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-23
+
+    expressions: keep brackets (fix #11475)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-23
+
+    dxf export: fixes for text support (text width, underline/overline/strikeout
+    and line direction symbols)
+
+Merge: 2c19543 5c9fee5
+Werner Macho <werner.macho@gmail.com>	2014-10-23
+
+    Merge pull request #1654 from Cracert/master
+
+    [TRANSUP] pl: processing
+
+Robert Szczepanek <robert@szczepanek.pl>	2014-10-23
+
+    [TRANSUP] pl: processing
+
+Merge: cc30609 a41a9a3
+Martin Dobias <wonder.sk@gmail.com>	2014-10-23
+
+    Merge pull request #1653 from 3nids/fixidentmenurubber
+
+    delete rubber bands when exiting identify menu
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-23
+
+    delete rubber bands when exiting identify menu
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-23
+
+    Fix #11474 (cannot move layers in layer tree anymore)
+
+    I have managed to break that with implementation of #11369.
+    Obviously it is a bad idea to change selection in a slot connected to model's rowsInserted signals
+    because the drag'n'drop does not work properly anymore. Now registry bridge will emit a signal after
+    new layers have been added, so the selection change at that point should be safe.
+
+Merge: aeb9d93 6f30ab9
+alexbruy <alexander.bruy@gmail.com>	2014-10-23
+
+    Merge pull request #1652 from gioman/processing_count_points
+
+    result field in Processing 'count points in polygon' must be integer
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-23
+
+    result field in Processing 'count points in polygon' must be integer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-23
+
+    Fix QgsRasterInterface bindings again (fixes PyQgsRasterFileWriter test)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-23
+
+    Fix #11455 take two (raster crashes)
+
+    Thanks to Nyall for pointing this out
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-22
+
+    fix interpretation of numeric constants in scientic notation (fixes #10939)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-22
+
+    osgeo4w: package pdbs in nightly build
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-22
+
+    Fix #9319 (copy of QgsExpression crashes)
+
+    Disabled the copy constructor for now (later we may introduce implicit sharing)
+
+Werner Macho <werner.macho@gmail.com>	2014-10-22
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-22
+
+    Fix #11369 (New layers are not active with new legend)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-22
+
+    Fix #11455 (Crash when setting transparency for WMS layer)
+
+    Layer transparency instance was not copied when renderers were cloned.
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-22
+
+    Fixed SIP wrapper for conversion to QgsRasterInterface subclasses
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-21
+
+    Self referencing relations: do not repeatedly embed dual view
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-22
+
+    [composer] Avoid hang when adding columns to table on Win (fix ##11462)
+
+Merge: 47f5873 17626b8
+alexbruy <alexander.bruy@gmail.com>	2014-10-22
+
+    Merge pull request #1646 from gioman/saga_shapesmodules_fixes1
+
+    fixes for 2 shapes tools for SAGA 2.1.2
+
+Merge: abf816b 80c1dda
+alexbruy <alexander.bruy@gmail.com>	2014-10-22
+
+    Merge pull request #1649 from gioman/ogr_clip
+
+    add Processing clip using ogr2ogr to compensate for the bad Clip perform...
+
+borys <info@borysjurgiel.pl>	2014-10-22
+
+    [TRANSUP] pl: the layers panel toolbar and color dialogs
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-22
+
+    [composer] Catch CRS exceptions when drawing grid lines
+
+    Prevents bad grid parameters for a transformed grid flooding the user
+    with hundreds of unclosable error message boxes.
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-22
+
+    vector file writer: assume shapefiles contain multitype data (fixes #10584)
+
+Merge: a4f2084 d9b1638
+alexbruy <alexander.bruy@gmail.com>	2014-10-22
+
+    Merge pull request #1650 from gioman/gdal_rasterize_writeover
+
+    fix processing gdal_rasterize to allow write vector values in a existing raster layer
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-22
+
+    Tweak data defined button icons so they align to pixel grid
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-22
+
+    Fix #11074 (raster save as broken)
+
+    Now the rows/cols edit boxes are prepopulated when the dialog is created
+    which solves the problem
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-22
+
+    Fix #10999 (reshape tool throws GEOS exceptions)
+
+    Exceptions fixed earlier by @mkuhn in 37f1a1
+    Numerical problems found by @arnaud-morvan, corrected by @jef-n
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-22
+
+    handle unset setting values in processing (fixes #11340)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-22
+
+    keep add feature action until non-modal attribute form is closed (fixes #11461)
+
+Merge: 3bdb104 f1ce372
+Werner Macho <werner.macho@gmail.com>	2014-10-22
+
+    Merge pull request #1651 from Cracert/master
+
+    [TRANSUP] pl: menu and toolbars
+
+Robert Szczepanek <robert@szczepanek.pl>	2014-10-21
+
+    [TRANSUP] pl: menu and toolbars
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-21
+
+    added detail about the output
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-21
+
+    use QgsCredentials to request wms/ows credentials on demand and wms cleanups (fixes #11184)
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-21
+
+    fix processing gdal_rasterize to allow write vector values in a existing raster layer
+
+Werner Macho <werner.macho@gmail.com>	2014-10-21
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-21
+
+    add Processing clip using ogr2ogr to compensate for the bad Clip performances of the native QGIS Clip tool
+
+Merge: b24572a a7b3fcc
+Werner Macho <werner.macho@gmail.com>	2014-10-21
+
+    Merge pull request #1647 from Cracert/master
+
+    [TRANSUP] pl: GDAL, heatmap
+
+Merge: 338e138 eea6c6b
+alexbruy <alexander.bruy@gmail.com>	2014-10-21
+
+    Merge pull request #1648 from gioman/processing_gdal_output_type
+
+    Add raster data type output option to some Processing/GDAL tools otherwise output is always Float64
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-21
+
+    SIP update: expose QgsAttributeAction icon, iconPath and name
+
+    Fix #11458
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-21
+
+    [composer] Respect reference point when resizing scalebar and legend
+
+    Previously, the reference point (and data defined position/size) were
+    ignored when scalebars or legends resized themselves.
+
+    Fix #11321, #11380
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-21
+
+    Add raster data type output option to some Processing/GDAL tools otherewise output is always Float64
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-21
+
+    Add raster data type output option to some Processing/GDAL tools otherewise output is always Float64
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-21
+
+    Fix #11456 (canvas not refreshed anymore after adding a new feature)
+
+    Resorted to a "minimalist" fix - other solutions would potentially break
+    even more stuff. The handling of non-modal dialogs for add/edit feature
+    attributes + handling of isModified() should be addressed at some point.
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-21
+
+    Fix one memory leak + add note to show() calls as they will delete the dialog
+
+Sandro Santilli <strk@keybit.net>	2014-10-21
+
+    Remove workaround for layergroup bug #6938, now fixed
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-21
+
+    Catch GEOS exceptions when reshape tool is used on non-closed-linestring
+
+    And use qWarning() instead of QgsDebugMsg() to make tracing GEOS errors easier
+    because a stack trace is printed.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-21
+
+    [composer] Default to setting a map for new legend items
+
+    It's friendlier for users, who may not realise they need to set
+    a map before they can filter legends.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-21
+
+    Follow up 0bda714
+
+    Ensure that mLegendFilterByMap is set before setting the map when
+    reading legend xml
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-21
+
+    [composer] Fixed assignment of map to legend + no updates when legend is removed
+
+    Thanks to Nyall for his help!
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-21
+
+    Fix #11330 (Composer legend can be smaller than its content)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-21
+
+    Fix #11382 (keep check state of the moved layer)
+
+    Cloning of the existing node will preserve the check state, in addition
+    it will keep other custom properties that would be lost prevously.
+
+Merge: 42d915e 20b0d12
+Jürgen Fischer <jef@norbit.de>	2014-10-21
+
+    Merge pull request #1616 from ahuarte47/Issue_11243
+
+    Fix #11243: Data corruption with feature simplification
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-21
+
+    skip primary key column when pasting to spatialite layers (fixes #11322)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-20
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-20
+
+    cosmetic cleanups, typo fixes, formatting
+
+Robert Szczepanek <robert@szczepanek.pl>	2014-10-20
+
+    [TRANSUP] pl: GDAL, heatmap
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-21
+
+    Improve wording of string
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    [composer] Fix page orientation and size ignored when printing
+
+    Turns out QPrinter::setPaperSize silently flips the width and height
+    of a page if the printer orientation is set to landscape. So, make sure
+    we manually set the orientation to portrait before setting the page size
+    so that we can be sure the QPrinter is set to the correct page size.
+
+    This also restores the 2.4 behaviour where users could override
+    printed page size in the printer properties dialog (but only if
+    no data defined page size settings are active).
+
+    (fix #11352)
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-20
+
+    fixes for 2 shapes tools for SAGA 2.1.2
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-21
+
+    Fix #10819 (simple/marker line with offset on the wrong side of inner rings)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-20
+
+    Fix #10956 (QgsSnapper crash/freeze/issues)
+
+    QgsMapSettings instance of QgsMapCanvas may have been prematurely deleted by SIP.
+    The KeepReference annotation will force QgsMapCanvas wrapper to keep one more ref
+    to it, so its reference count will not go to zero while map canvas is still alive.
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-20
+
+    Repack() shapefiles on unload whenever they have been modified
+
+    Previous preconditions that would only repack them when features have been
+    deleted seems to not have covered everything.
+
+    Fix #11007
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-20
+
+    SIP update for QgsFilterLineEdit
+
+    events have not been defined in the sip file, therefore QgsFilterLineEdits
+    created in python did not receive the events, leading to visual glitches.
+
+    Fix #11372
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-20
+
+    Fix #11361 (Cannot open menu for vector layer in TOC when its table of attributes is open)
+
+    Dual view's attribute form was triggering canvas refresh which in turn
+    caused the popup menu to be closed again. (at least in KDE)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    [composer] Improved fix for tab order in item widgets
+
+    Setting the focus policy to strong for QgsCollapsibleGroupBoxes
+    in Qt designer allows for the tab order to be correctly set.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    Also show focus rect for QgsCollapsibleGroupBoxes
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-20
+
+    Fix #11426 (Right click cause crash when digitizing polygon inner ring)
+
+    Also fixed the same crash for add part and fill ring map tools.
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-20
+
+    Fix #11420 (Quick calculation bar updates wrong column when using aliases)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    [composer] Follow up da5766c, fix picture rotation calculation
+
+    Previous commit failed to address the issue for non-squareish
+    images.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    Hide color picker tab in color dialog for OSX builds.
+
+    Qt on OSX does not support the required QWidget::grabMouse method.
+    Instead of showing a broken tab, just hide it under this platform.
+    Revisit when we switch to Qt5 builds to see if there's a solution to
+    this.
+
+Werner Macho <werner.macho@gmail.com>	2014-10-20
+
+    [TRANSUP] transifex and string updates
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    [composer] Fix tab order in some item widgets
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    Show focus rect around focused QgsDataDefinedButtons
+
+    Helps with user interaction via the keyboard.
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-20
+
+    Fix #11331 (hidden group still occupies space in composer legend)
+
+Merge: 7876a78 afc60e1
+alexbruy <alexander.bruy@gmail.com>	2014-10-20
+
+    Merge pull request #1642 from timlinux/processing
+
+    Papercut fix for inconsistent spelling of Raster Layer vs Vector layer
+
+Merge: 9f8beb0 34d0796
+Werner Macho <werner.macho@gmail.com>	2014-10-20
+
+    Merge pull request #1638 from Cracert/master
+
+    [TRANSUP] pl: first run
+
+Merge: 1eefed2 a0a546f
+volaya <volayaf@gmail.com>	2014-10-20
+
+    Merge pull request #1640 from gioman/saga_mosaick_fix
+
+    small fix for SAGA module
+
+Merge: f3e7a3e 6a33e27
+volaya <volayaf@gmail.com>	2014-10-20
+
+    Merge pull request #1639 from gioman/saga_transpose_grids
+
+    Add SAGA 2.1.2 Transpose Grids tool
+
+Merge: 9bc7eca 3c24615
+volaya <volayaf@gmail.com>	2014-10-20
+
+    Merge pull request #1643 from gioman/gdal_rasterize_type
+
+    Add option to allow choose raster type output to gdal_rasterize
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-20
+
+    Cleanup action text
+
+    Make sure all actions use standard capitalization and ... suffixes when
+    required. Add missing menu key shortcuts to composer actions.
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-19
+
+    Add option to allow choose raster type output to gdal_rasterize
+
+Tim Sutton <tim@linfiniti.com>	2014-10-20
+
+    Papercut fix for inconsistent spelling of Raster Layer vs Vector layer
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-20
+
+    don't set relevant fields for VRT data sources when filtering for a rectangle.
+    OGR might need attributes otherwise considered irrelevant to construct the
+    geometry to filter against (fixes #11223)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-19
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-19
+
+    indentation update
+
+Merge: a548d1f e1dedee
+volaya <volayaf@gmail.com>	2014-10-19
+
+    Merge pull request #1641 from gioman/gdal_rasterize
+
+    better gdal rasterize defaults
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-19
+
+    better gdal rasterize defaults
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-19
+
+    small fix for SAGA module
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-19
+
+    Add SAGA 2.1.2 Transpose Grids tool
+
+Merge: f35fb5e 7e40811
+volaya <volayaf@gmail.com>	2014-10-19
+
+    Merge pull request #1637 from gioman/saga_grid_cell_index
+
+    fix SAGA 2.1.2 Sort Grid module: name and parameters changed
+
+Merge: db0f423 af1fe9e
+volaya <volayaf@gmail.com>	2014-10-19
+
+    Merge pull request #1636 from gioman/saga_mosaick
+
+    fixes SAGA 2.1.2 merge raster layers module as it changed name (now "mosaick") and parameters
+
+Robert Szczepanek <robert@szczepanek.pl>	2014-10-19
+
+    [TRANSUP] pl: first run
+
+volaya <volayaf@gmail.com>	2014-10-19
+
+    [processing] disabled editing modeler item with double click (was causing crash)
+
+volaya <volayaf@gmail.com>	2014-10-19
+
+    [processing] removed repeated algorithms from simplified mode
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-19
+
+    fix SAGA 2.1.2 Sort Grid module: name and parameters changed
+
+volaya <volayaf@gmail.com>	2014-10-19
+
+    [processing] fixed table export
+
+volaya <volayaf@gmail.com>	2014-10-19
+
+    [processing] removed redundant saga algorithm
+
+volaya <volayaf@gmail.com>	2014-10-19
+
+    [processing] remember min/max value in number params in modeler
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-19
+
+    fixes SAGA 2.1.2 merge raster layers module as it changed name and parameters
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Allow rotation for pictures set to "zoom & resize" mode
+
+    Previously rotation was only allowed for pictures set to "Zoom" mode,
+    which causes pictures to change size when the rotation changes (frame
+    size is constant). This change allows pictures set to "Zoom and resize"
+    mode to have rotation set. Altering the rotation when in this mode
+    keeps the picture size constant and changes the frame size to suit.
+
+    (fix #10640)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Prevent renaming to duplicate name in manager (fix #11051)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Don't rasterise svg arrow heads
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    Fix warning
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Fix placement of coordinates in map corners (fix #8827)
+
+Merge: 7798bd8 359a3d8
+Chris Crook <ccrook@linz.govt.nz>	2014-10-19
+
+    Merge pull request #1630 from ccrook/GraduatedRendererUnitTests2
+
+    Graduated renderer unit tests2
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Fix crash caused by 7773d4e
+
+    Don't set the parent object of a composition to a composer view, as
+    we manage deletion of compositions manually and don't always want
+    the composition deleted when a view a deleted.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    Fix Qt warning caused by destructor of QgsNetworkContentFetcher
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    Minor code cleanups for composer attribute table widget
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Ensure that composers are deleted before compositions
+
+    Fixes some rare crashes when loading projects.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    Expand composer item group test suite
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Move ungrouping logic from composer view to composition
+
+    As per previous commit, this is useful for plugin authors. It also
+    fixes a potential bad crash (itemRemoved emitted for group item after
+    the group item was already deleted) and adds unit tests.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Move code for creating groups to QgsComposition
+
+    Previously this code was located in QgsComposerView. Moving it to
+    QgsComposition simplifies grouping items for plugins. Also start
+    a new unit test for QgsComposerItemGroup.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Fixes to composer item sip bindings
+
+    - Added some missing /TransferThis/ arguments
+    - Ensure that correct item type is returned for all item types
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    Add missing #infndef to qgscomposeritemgroup.h
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Fix a memory leak when destroying compositions
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Allow removing svg markers for arrows (fix #11220)
+
+    Previous behaviour was that if the start or end marker was cleared
+    than the old marker was drawn. This made it impossible to remove
+    an svg marker from the start or end of the line after one had been
+    assigned.
+
+    Also fix a Qt warning caused by trying to draw markers if the marker
+    size is set to 0.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Don't evaluate expression for label display name
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    [composer] Fix area calculation in expressions with OTF (fix #9791)
+
+    Adds an argument to QgsExpression::replaceExpressionText to allow
+    passing an optional QgsDistanceArea to use during calculations.
+    Ensure that html and label composer items correctly specify this
+    argument.
+
+volaya <volayaf@gmail.com>	2014-10-19
+
+    [processing] fixed autofill in batch processing interface
+
+    Fixes #11435
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-19
+
+    Fix some compiler/doxygen warnings
+
+Merge: d77e0f0 28f3f46
+Paolo Cavallini <cavallini@faunalia.it>	2014-10-18
+
+    Merge pull request #1635 from gioman/saga_slope
+
+    Fixes SAGA slope,aspect,curvature for SAGA 2.1.x
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-18
+
+    fixed SAGA Slope,Aspect,Curvature module for SAGA 2.1.x
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-18
+
+    fixed SAGA Slope,Aspect,Curvature module for SAGA 2.1.x
+
+Paolo <cavallini@faunalia.it>	2014-10-18
+
+    Typo fixed in r.series
+
+borys <info@borysjurgiel.pl>	2014-10-18
+
+    [TRANSUP] [pl] Typo fix
+
+volaya <volayaf@gmail.com>	2014-10-18
+
+    [processing] removed border in table in batch processing dialog
+
+volaya <volayaf@gmail.com>	2014-10-18
+
+    [processing] better handling of wrong models
+
+volaya <volayaf@gmail.com>	2014-10-18
+
+    [processing] fixed issue when running models in a batch process
+
+    Fixes #11438
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-18
+
+    [processing] more robust layer sorting in multiple selection widget (fixes #11429)
+
+Werner Macho <werner.macho@gmail.com>	2014-10-17
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Merge: bb95a0f c575fa5
+Paolo Cavallini <cavallini@faunalia.it>	2014-10-17
+
+    Merge pull request #1633 from gioman/saga_split_shapes_new_option
+
+    add new parameter to SAGA split shapes tool, fixes #11427
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-17
+
+    add new parameter to SAGA split shapes tool
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-16
+
+    use layer title instead of name in server getlegendgraphic response (fixes #11406)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-16
+
+    combine layer type and edit icon when editing (fixes #11411)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-16
+
+    avoid creating a histogram without range (fixes #11217)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-16
+
+    restore active window after requesting credentials (fixes #11355)
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-16
+
+    Fix render state not restored from QDomElement
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-09
+
+    Further unit tests
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-06
+
+    Adding python unit tests for graduated renderer - part 1
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-16
+
+    fix geography detection (fixes #11375)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-16
+
+    avoid creating a histogram without range (fixes #10832)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-15
+
+    allow setting visiblity of selected layers (fixes #10835)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-15
+
+    fix where clase when multiple features are filtered by id (fixes #11336, fixes #11408)
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-15
+
+    fix deprecation warnings
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-15
+
+    [editwidgets] text color for r/o line edits matches disabled color
+
+    Line edits are set to readonly to make it possible to copy values from disabled
+    forms. Unfortunately Qt uses a style that makes them look editable even though
+    they are not. This patches the text color to have the appearance that hints an
+    uneditable widget.
+
+    Fix #11413
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-15
+
+    use layer's displayExpression in relation reference widget line edit
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-15
+
+    use default button action instead of adding a new one (relation reference and editor widgets)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-15
+
+    [composer] Avoid crash when using redo on multiframe (fix #11351)
+
+    Since multiframe changes can remove and create new frame items,
+    it's not safe to directly manipulate frame items in
+    QgsComposerItemCommand. Now, commands which apply to a frame always
+    fetch a reference to the correct frame item directly from the
+    parent multiframe. Also added unit tests for this crash.
+
+Sandro Santilli <strk@keybit.net>	2014-10-14
+
+    [TopoViewer] fix layer visibility after QgsLegendInterface API changes
+
+    It was broken with 2.4, whereas QgsLegendInterface::moveLayer started
+    forcing layer visibility on (undocumented behaviour).
+
+    Fixes #11382
+
+Werner Macho <werner.macho@gmail.com>	2014-10-14
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-14
+
+    remove get from QgsProviderRegistry::getProviderCapabilities() (followup 2e943c93)
+
+Merge: 89b0d7a 2e943c9
+Jürgen Fischer <jef@norbit.de>	2014-10-14
+
+    Merge pull request #1621 from manisandro/bad_layer_improvements
+
+    Bad layer dialog improvements
+
+Merge: 1cb22c0 a47764d
+Werner Macho <werner.macho@gmail.com>	2014-10-14
+
+    Merge pull request #1484 from serialc/master
+
+    CSV acronym added for consistency with other file type names
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-14
+
+    [composer] Seperate draw empty rows option from empty table behaviour
+
+    Now "draw empty rows" is a seperate checkbox (fix #11392)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-14
+
+    Edit widget properties dialog: Improve window title
+
+    Includes the field name and layer name in the window title.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-14
+
+    [composer] Fix incorrect calculation of frame thickness for labels
+
+    Previously entire frame width was considered when calculating
+    the margin for the label item. Only half the frame width should be
+    used, since half is drawn outside the item rect.
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-14
+
+    use qIsNaN instead of isnan (fixes windows build)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-14
+
+    Field calculator: Move virtual field to the top.
+
+    Followup 0c4a501
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-14
+
+    Address some GUI issues on the field calculator
+
+     * Info labels for edit mode turn on was not shown
+     * Ok button was active when opening the field calculator even with no input (Fix #11403)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-13
+
+    [composer] Fix possible crash in scale bar update (refs #11394)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-13
+
+    Fix calculation of random colors following 4d72d72
+
+Merge: 4d72d72 3d2747c
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-13
+
+    Merge pull request #1627 from slarosa/categorized_style_crash
+
+    Fix crash when choosing a null field for categorized style
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-13
+
+    dxf export: use half width texts and support transparent colors
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-13
+
+    Fix selection after focus-in by mouse in QgsFilterLineEdit
+
+    After focusing a QgsFilterLineEdit with the mouse, the end of the selection was
+    "attached" to the end of the content.
+    This was caused by overwriting Qt's mousePressEvent, that is responsible for
+    handling the selection without handing back the responsibility after the focus
+    in event was finished.
+
+    Fix #11373
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-13
+
+    Virtual fields definition moved to field calculator
+
+    This place is more appropriate than the add attributes dialog.
+    See also http://osgeo-org.1560.x6.nabble.com/Virtual-Fields-Allow-adding-fields-out-of-edit-mode-td5166223.html for a related discussion.
+
+    Fix #11342
+
+Merge: 62ad5ae 823b57e
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-13
+
+    Merge pull request #1618 from ccrook/GraduatedRendererBugFix11366
+
+    Fix #11366 Customised graduated renderer labels ignored
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-12
+
+    Fix crash when choosing a null field for categorized style
+
+Werner Macho <werner.macho@gmail.com>	2014-10-12
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Merge: 25333c5 0ed701e
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-13
+
+    Merge pull request #1623 from manisandro/initially_unsorted_attributes
+
+    Show attributes dialog with initially unsorted attributes
+
+Merge: d1f84fd e0e6204
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-13
+
+    Merge pull request #1622 from manisandro/spatialite_dialog_border
+
+    Fix scrollarea border style and tab order in new spatialite layer dialog
+
+volaya <volayaf@gmail.com>	2014-10-12
+
+    [processing] fixed wrong import in parameters classç
+
+    Fixes #11393
+
+Sandro Mani <manisandro@gmail.com>	2014-10-09
+
+    Fix scrollarea border style and tab order in new spatialite layer dialog (Funded by Sourcepole)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-12
+
+    Fix a potential crash when closing projects with html composer items
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-12
+
+    Add some padding to identify panel to match browse and layers panel
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-11
+
+    [processing] Fixes #11388 - save vector file dialog does not show file ext
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-10-11
+
+    Escape backslash for mime data. Fix MS SQL drag and drop
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-10-07
+
+    Fix crash with SQL Server driver
+
+Merge: 3d8a034 ac5622a
+Jürgen Fischer <jef@norbit.de>	2014-10-11
+
+    Merge pull request #1617 from ahuarte47/Issue_9777_missing-labels
+
+    Fix #11368: Simplification of a dataset leaves some polygons unlabelled
+
+Merge: 34ccc81 94b2e7c
+Jürgen Fischer <jef@norbit.de>	2014-10-11
+
+    Merge pull request #1625 from giohappy/master
+
+    Fixes error in Multipoints with Z rendering
+
+giohappy <giohappy@gmail.com>	2014-10-10
+
+    Fixes error in Multipoints with Z rendering
+
+Merge: 738e0be f1577f1
+Jürgen Fischer <jef@norbit.de>	2014-10-10
+
+    Merge pull request #1615 from ccrook/PostgresSaveStyleFix
+
+    Fix #11329 Graduated renderer style not saved in postgres
+
+Werner Macho <werner.macho@gmail.com>	2014-10-09
+
+    [TRANSUP] some update for processing and transifex
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Sandro Mani <manisandro@gmail.com>	2014-10-09
+
+    Show attributes dialog with initially unsorted attributes (Funded by Sourcepole)
+
+Sandro Mani <manisandro@gmail.com>	2014-10-09
+
+    Bad layer dialog improvements (Funded by Sourcepole)
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-09
+
+    [processing] fix handling of boolean parameters in modeller
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-09
+
+    [processing] more fixes for i18n support
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-09
+
+    more names for the map tools
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-09
+
+    [composer] Fix calculation of height of HTML content (fix #11353)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-09
+
+    Cancel running requests when loading content in QgsNetworkContentFetcher (fix #11332)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-09
+
+    Followup cc94578
+
+rldhont <rldhont@gmail.com>	2014-10-01
+
+    [Composer] Fix ComposerMapWidget's label is not explicit
+
+    The user can only know the ComposerMap's label with it's tooltip. This commit
+     proposes to update the ComposerMapWidget'label to be more explicit and to be
+     the same as the ComposerMap's tooltip.
+
+rldhont <rldhont@gmail.com>	2014-10-01
+
+    [Composer] Fix The ComposerMap's tooltip is not updated after readXML
+
+    The ComposerMap's tooltip is only set in the private init method. This method is only used in the ComposerMap constructor. The result is that the tooltip is not updated after reading the id from the XML.
+
+    The solution could be to add a private method updateToolTip used when the id is changed :
+    * constructor
+    * assignFreeId
+    * readXML
+
+Merge: 174c2f3 4a639ad
+alexbruy <alexander.bruy@gmail.com>	2014-10-09
+
+    Merge pull request #1619 from anitagraser/patch-4
+
+    [processing] fixed value used before assignment error
+
+Anita Graser <anitagraser@gmx.at>	2014-10-09
+
+    fixed value used before assignment error
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-09
+
+    Use QgsColorButtonV2 for editor widgets
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-09
+
+    [composer] Fix new frames not inheriting outline color, clean up item api a bit
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-09
+
+    [processing] fix i18n support
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-09
+
+    Fix for bug 11366
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-08
+
+    [processing] Fixes #11363 - help file is created but not shown in the Help tab
+
+Alvaro Huarte <ahuarte47@yahoo.es>	2014-10-08
+
+    #9777-ML: Indentation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-08
+
+    german translation update
+
+Alvaro Huarte <ahuarte47@yahoo.es>	2014-10-08
+
+    #9777-ML: Avoid Fill invalid geometries to GEOSGeometry
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-08
+
+    [pyqgis-console] restore previously loaded scripts only when editor is instanced
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-10-08
+
+    Postgres connection: limit user/pw queries to 5 (avoids blocking server instances if a db does not exist anymore)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-08
+
+    Add some tolerance to atlas tests
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-08
+
+    Use color name to compare colors when adding new recent color, prevents
+    duplicate colors in recent color list
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-08
+
+    Fix offset is ignored for simple line symbology
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-08
+
+    [composer] Ensure that QgsComposerMap::mapPolygon returns a closed
+    polygon, fixes rare crash when using map overviews (fix #11305)
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-08
+
+    Fixes #11349 - field calculator broke on qgis master
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-07
+
+    [processing] set autoRaise to True for toolbutton in script and modeler dialog
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-07
+
+    [processing] Fixes #11345 - Python error while using Get script from online scripts collection
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-07
+
+    Allow QWebView for photo widget
+
+    Fix #11306
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-07
+
+    [composer] Ensure that all maps are refreshed when atlas feature changes, in case they rely on atlas dependant symbology
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-07
+
+    Fix crashes when using atlas and expressions which rely on specialcolumns. Bring on context based expressions so we can remove this hack!
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-07
+
+    Followup 8a0e1ef
+
+volaya <volayaf@gmail.com>	2014-10-07
+
+    [processing] minor code cleaning
+
+volaya <volayaf@gmail.com>	2014-10-07
+
+    [processing] fixed wrong call to self.tr from static method
+
+Werner Macho <werner.macho@gmail.com>	2014-10-07
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-07
+
+    Adding comments explaining code changes
+
+ahuarte47 <ahuarte47@yahoo.es>	2014-10-07
+
+    #11243: Disable simplification when OTFR transform fails
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-07
+
+    Fix saving styles in postgres where style definition includes %1 etc strings
+
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-06
+
+    Fix #10858 - Set relative path to QLR save folder. Load relative to QLR file
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-06
+
+    [composer] Remove a bunch of duplicate render calls to map items during atlas previews
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-06
+
+    Indicate current color in color button swatch menus
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-06
+
+    [composer] More shortcuts for composer map tools
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-06
+
+    [composer] Clean up label item widget
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-06
+
+    [composer] Update label items immediately after changing color
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-06
+
+    [composer] Remove duplicate canvas refreshes
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-06
+
+    Use standard test font for QgsComposerHtml test
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-25
+
+    Allow usage of virtual fields also for layer w/o add attribute support
+
+    Fix #11168
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-06
+
+    Convert values to target field format
+
+    For the field calculator and virtual fields.
+
+    Fix #11000
+    Fix #10995
+    Fix #10993
+
+volaya <volayaf@gmail.com>	2014-10-06
+
+    [processing] fixed #11327
+
+volaya <volayaf@gmail.com>	2014-09-28
+
+    [processing] fixed string representation of outputs
+
+volaya <volayaf@gmail.com>	2014-09-28
+
+    [processing] fixed list of algorithms in simplified mode
+
+volaya <volayaf@gmail.com>	2014-09-28
+
+    [processing]removed debug print lines
+
+volaya <volayaf@gmail.com>	2014-09-26
+
+    [processing] enable non-tif outputs in gdaldem algorithms
+
+volaya <volayaf@gmail.com>	2014-09-26
+
+    [processing] enabled more gdal output extensions
+
+Merge: b2e7e6e 6c2c6e2
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-06
+
+    Merge pull request #1612 from ccrook/GraduatedRendererBugFixes1
+
+    Two bug fixes for graduated renderer
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-06
+
+    Two bug fixes for graduated renderer
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-05
+
+    followup 3c95b5b9
+
+Merge: 3c95b5b fa15784
+Jürgen Fischer <jef@norbit.de>	2014-10-05
+
+    Merge pull request #1611 from manisandro/readlink
+
+    Use readlink -f to determine source directory in scripts/prepare-commit.sh
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-05
+
+    only include reasonable complete translations
+
+Sandro Mani <manisandro@gmail.com>	2014-10-05
+
+    Use readlink -f to determine source directory
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-05
+
+    [composer] Add missing degree symbol for 'Decimal with suffix' format when using
+    a geographic crs
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-05
+
+    [composer] Don't use directional suffixes for annotations when in geographic
+    coordinate system and direction is ambiguous (eg 0 degrees latitude) and format
+    is set to 'Decimal with suffix'
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-05
+
+    save geometry for style DB dialogs
+
+Yves Jacolin <yves.jacolin@camptocamp.com>	2014-10-05
+
+    @ccrook text review
+
+Werner Macho <werner.macho@gmail.com>	2014-10-05
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-10-05
+
+    fix typo
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-05
+
+    [processing] show layers sorted only for single selection widget and use
+    legend order for multiple selection
+
+Merge: 6922e45 ec64e1d
+Yves Jacolin <yves.jacolin@camptocamp.com>	2014-10-04
+
+    Merge remote-tracking branch 'upstream/master' into newTips
+
+Yves Jacolin <yves.jacolin@camptocamp.com>	2014-10-04
+
+    A lot of missing letter and typo corrected thanks to @ccrook
+
+Merge: b8c558c c17957f
+mhugent <marco.hugentobler@sourcepole.ch>	2014-10-04
+
+    Merge pull request #1598 from marcel-dancak/getfeatureinfo-raster
+
+    Mapserver: fixed GetFeatureInfo request on raster layers (GML format)
+
+Yves Jacolin <yves.jacolin@camptocamp.com>	2014-10-04
+
+    Removing easter eggs tips
+
+Werner Macho <werner.macho@gmail.com>	2014-10-04
+
+    [TRANSUP] fix for some typos and processing
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-10-04
+
+    another typo fix
+
+Yves Jacolin <yves.jacolin@camptocamp.com>	2014-10-04
+
+    new tips
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-04
+
+    [processing] always pass number of cores as integer (fix #10894)
+
+Werner Macho <werner.macho@gmail.com>	2014-10-04
+
+    typo fix
+
+Merge: 7fce897 76ff1a6
+alexbruy <alexander.bruy@gmail.com>	2014-10-04
+
+    Merge pull request #1607 from gioman/v_kernel
+
+    fix for v.kernel module in GRASS plugin
+
+Werner Macho <werner.macho@gmail.com>	2014-10-04
+
+    [TRANSUP] fix source typos
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-04
+
+    Fix #11308 - Add missing IN operator
+
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-04
+
+    Fix #11302 - Move view selection for identify dock
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-10-04
+
+    Fixes #11061
+    see http://hub.qgis.org/issues/11061
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-04
+
+    fix typos in strings
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-04
+
+    [processing] fix algorithm execution
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-10-04
+
+    fix for v.kernel module in GRASS plugin
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-03
+
+    Attribute dialog: Show layer name in title bar
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-10-03
+
+    sip bindings: QgsAttributeDialog inherits from QDialog - Sponsored by QGIS HF
+    Essen 2014 and everybody who helped to organize and finance this event
+
+    Fixes a strange bug that prevented child widgets to be enabled when they originally have not been enabled.
+
+Werner Macho <werner.macho@gmail.com>	2014-10-04
+
+    [TRANSUP] adding processing for translation, thanks Alex
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    [processing] make bunch of strings translatable (sorry translators)
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    [processing] add full i18n support (still needs some work to mark all
+    strings as translatable)
+
+volaya <volayaf@gmail.com>	2014-10-04
+
+    [processing] better-looking params ui (removed widget border)
+
+volaya <volayaf@gmail.com>	2014-10-04
+
+    [processing] fixed crs checking before running alg
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-04
+
+    german translation update
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-26
+
+    move raster thumbnails from General tab to Style (fix #7946)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-03
+
+    remove useless code
+
+volaya <volayaf@gmail.com>	2014-10-03
+
+     fixed #10986
+
+volaya <volayaf@gmail.com>	2014-10-03
+
+    [processing] fixed minor typos in GeometryConvert algorithm
+
+Merge: 6ec751f 0075bde
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-03
+
+    Merge pull request #1606 from arnaud-morvan/selectioncolor_alphachannel
+
+    Fix #11307. Apply user selection alpha channel to mapsettings on newfile.
+
+arnaud.morvan@camptocamp.com <arnaud.morvan@camptocamp.com>	2014-10-03
+
+    Apply default selection color alpha channel to mapsettings on newfile. Fix #11307
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-03
+
+    [composer] Cache transformed grid lines and intersections to slightly
+    speed up grid drawing
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-03
+
+    [composer] Fix transformed map grids not drawn if set to Tick or Marker style (slow)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-03
+
+    Workaround issue in Qt detection of encoding for html QByteArrays
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    [processing] disable GRASS 7 algorithm provider by default
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    fix file permissions
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    [processing] put all qgis algs in single directory
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-03
+
+    Skip some work if no data-defined properties are applied
+
+    8% speedup with 1m polygons in memory layer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-03
+
+    Optimize simple line drawing when without data-defined properties
+
+    20% speed improvement when drawing 1m linestrings (4points each) from memory layer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-03
+
+    Optimize simple marker: do not construct/destruct "size" all the time
+
+    13% speedup when rendering 1m points from memory provider
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-03
+
+    Optimize QgsVectorLayerFeatureIterator a bit
+
+    11% speedup when rendering 1 million points from memory provider
+
+Juergen E. Fischer <jef@norbit.de>	2014-10-03
+
+    dxf export: (re-)enable linetype generation for pen styles
+
+Merge: f5054a1 c9e0328
+Jürgen Fischer <jef@norbit.de>	2014-10-03
+
+    Merge pull request #1603 from luipir/master
+
+    [GdalTools] fix blocker bug https://hub.qgis.org/issues/11275
+
+Merge: ac54c8e 59ec15b
+volaya <volayaf@gmail.com>	2014-10-03
+
+    Merge pull request #1604 from elpaso/processing
+
+    [processing] Avoid python hangs when run in headless mode from FCGI
+
+volaya <volayaf@gmail.com>	2014-10-03
+
+    [processing] updated freq analysis alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    update Grid alg to avoid some coordinate precision issues
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    remove old code
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    refactor Geometry convert alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    refactor Merge alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    refactor Hub lines alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    refactor Hub distance alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    refactor Gridify alg. fix license headers
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    refactor Grid algorithm
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-03
+
+    refactor Select by attribute alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-02
+
+    refactor Extract by attribute alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-02
+
+    refactor Text to float alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-02
+
+    start refactoring of the Processing mmqgis backend: Delete column and
+    Delete duplicate geometries
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-08-06
+
+    cleanup in vector utils
+
+elpaso <apasotti@gmail.com>	2014-10-03
+
+    [processing] Avoid python hangs when run in headless mode from FCGI
+
+Merge: 10d75c0 ba0f9d4
+Nathan Woodrow <madmanwoo@gmail.com>	2014-10-03
+
+    Merge pull request #1599 from ccrook/CategorizedRendererFixes
+
+    Categorized renderer fixes
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-03
+
+    Reverting to preferred QgsRenderRangeV2LabelFormat
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-03
+
+    [composer] Fix display name for attribute table frames
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-03
+
+    [composer] Fix table background extending beyond table rows (fix #11272).
+    It was necessary to add a new 'table background' color option to prevent
+    regressions when loading old compositions, since users may desire
+    the old behaviour where the entire frame is filled.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-03
+
+    [composer] Copy hide background if empty setting when adding new frame to existing multiframe
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-03
+
+    [composer] Default to no background for new frame items
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-03
+
+    Adding missing elements from SIP
+
+volaya <volayaf@gmail.com>	2014-10-02
+
+    [processing] do not log algorithms when not run from the gui
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-02
+
+    Fix #11285 (improve symbol levels dialog for long symbol labels) - by Salvatore Larosa
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-10-02
+
+    [fix #11300] make edit form non modal on feature creation too
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-10-02
+
+    [processing] remove undefined variable (fix #11118)
+
+Luigi Pirelli <luipir@gmail.com>	2014-10-02
+
+    fix blocker bug https://hub.qgis.org/issues/11275
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-30
+
+    update mac install documentation and fix GSL include
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-10-02
+
+    [Python Console] Don't set custom background for editor toolbar
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-10-02
+
+    [Expression] Don't show folding
+
+Martin Dobias <wonder.sk@gmail.com>	2014-10-02
+
+    Fixed renaming of composer legend nodes for raster layers
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-02
+
+    [composer] Fix placement of grid annotations when map has no frame set
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-01
+
+    Add argument to QgsCoordinateTransform::transformBoundingBox to flag that
+    handling of a bounding box which crosses the 180 degree longitude line
+    is required. Fix composer map reprojected grids which cross 180 degree line.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-01
+
+    [composer] Remove 'new from template' action from composer, following UI list discussions
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-01
+
+    Add some shortcut keys for composer
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-01
+
+    [composer] Item widget layout tweaks for windows
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-10-01
+
+    Fix more warnings for QgsColorButtonV2 with invalid size
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-01
+
+    API fixes to use Legend instead of Label where it makes more sense
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-01
+
+    Changing decimal places to precision, allowing negative precision, improving rounding for locales with , instead of . for decimal point
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-01
+
+    Using QString.replace instead of .arg to ensure that %1 and %2 are unambiguously replaced with lower and upper value.  Also moving legend template to more sensible location, and adding tooltip for legend template
+
+Chris Crook <ccrook@linz.govt.nz>	2014-10-01
+
+    Fix handling of link category boundaries with sorting of rows
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-30
+
+    [composer] Correctly handle encoded HTML source (fix #11287)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-30
+
+    [composer] Use spin boxes for item position and size
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-30
+
+    [composer] Don't snap to hidden items
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-30
+
+    [color picker] Clicking the previous color should reset to that color
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-30
+
+    [composer] Refresh refetches atlas feature from provider, more removal of duplicate map redraws
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-30
+
+    [composer] Prevent multiple calculation of data defined properties
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-30
+
+    Disable radio buttons in color dialog if not using first tab
+
+Marcel Dancak <marcel.dancak@gista.sk>	2014-09-30
+
+    Mapserver: fixed GetFeatureInfo request on raster layers
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Simplify text used for item name for labels
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-29
+
+    use identify icons in the identify menu
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-29
+
+    fix feature title
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Fix pages are added but never removed with multiframe resizing
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Prevent more Qt warnings for html item
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-29
+
+    set icon of feature actions in the action menu
+
+Merge: 1c03067 04becdc
+volaya <volayaf@gmail.com>	2014-09-29
+
+    Merge pull request #1595 from giohappy/master
+
+    [Processing] HTML output for r.sum
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Add a basic test suite for QgsComposerModel
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Default to 30 visible rows for table items, increase maximum number of rows to 99999 (fix #11284)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Don't disable widgets accompanying data defined controls when there's no need to
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Ignore null field values or expressions which result in null
+    when evaluating data defined settings
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Fix ctrl modifier not applying to wheel events when in move item
+    content mode, add missing undo merge command for item zoom (refs #7974)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-29
+
+    [composer] Ignore locked items when using move item content tool. Keeps a
+    consistent behaviour with the move/resize item tool, and allows for
+    moving item content for maps which are stacked below locked items.
+
+Werner Macho <werner.macho@gmail.com>	2014-09-29
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-28
+
+    migrate old renderer ranges (followup fcfafa0a)
+
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-28
+
+    Use a single format string using Qt format for renderer label
+
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-28
+
+    Don't crash with no attribute set in graduated renderer
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-28
+
+    Fix #10747 - Don't force multi type on point features
+
+    Ref #10672 - Commited fix to force multitypes on shapefiles
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-27
+
+    Follow up 27abd208
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-09-26
+
+    Followup to da3516c; find custom prefix QScintilla include directories
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-26
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-26
+
+    indentation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-26
+
+    dxf improvements:
+    * save/restore dxf export dialog geometry
+    * reduce debugging noise
+    * output dxf in windows-1252 encoding
+    * fix label layer assignment
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-26
+
+    change to messagebar some messageboxes in mainapp
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-26
+
+    fix tabstops in graduate symbol renderer widget (followup 25a7be2)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-26
+
+    How did GIS look like in 1990?
+
+    Apologies to fellow developers for being silly
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-26
+
+    remove unused ramp
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-08
+
+    DXF export improvements:
+    * tree view and attribute selection for layer assigment in dialog
+    * support fill polygons/HATCH
+    * represent texts as MTEXT instead of TEXT (including font, slant and weight)
+    * support for RGB colors when there's no exact color match
+    * use AutoCAD 2000 DXF (R15) instead of R12
+    * remove R18 test methods
+
+    Funded-By: City of Uster
+    Funded-By: Ville de Morges
+    Funded-By: SIGE
+
+Merge: eaacb12 7c1efea
+alexbruy <alexander.bruy@gmail.com>	2014-09-26
+
+    Merge pull request #1596 from anitagraser/patch-3
+
+    use "change" instead of "browse" for CRS selection
+
+Anita Graser <anitagraser@gmx.at>	2014-09-26
+
+    use "change" instead of "browse" for CRS selection
+
+    as described in http://hub.qgis.org/issues/11273
+
+giohappy <giohappy@gmail.com>	2014-09-26
+
+    [Processing] HTML output for r.sum
+
+Merge: 6fcfb97 b07660a
+Martin Dobias <wonder.sk@gmail.com>	2014-09-26
+
+    Merge pull request #1509 from ahuarte47/Issue_10767
+
+    Fix bug #10767: Simplified rendering causing boxes to appear instead
+
+Merge: 0c6576c 251a8a4
+mhugent <marco.hugentobler@sourcepole.ch>	2014-09-26
+
+    Merge pull request #1593 from rldhont/qgis-server-print-legend
+
+    [FEATURE][QGIS-Server] Legend filtering based on map in GetPrint Request
+
+Merge: b734e87 b558c08
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-26
+
+    Merge pull request #1587 from ccrook/CategorizedRendererUpdate
+
+    Categorized and graduated renderer enhancements
+
+rldhont <rldhont@gmail.com>	2014-09-06
+
+    [FEATURE][QGIS-Server] Legend filtering based on map in GetPrint Request
+
+    Feature funded by Tecnostudi Ambiente, Faunalia and Andromede-oceanologie.
+
+    The legend in composition was fixed and did not represent the layers in the map.
+    With the work made by @wonder-sk on layer-tree and QgsComposerLegend users will be able
+     to configure composer legend as based on all the project layer tree with auto-update
+     model or filtered by map.
+    This commit reused these two QgsComposerLegend's properties to filter it based on map in
+     GetPrint Request
+
+    The issue #4003 qgis_mapserver getPrint legend options can be closed.
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-26
+
+    remove old message boxes from map tools
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-26
+
+    [composer] Add a checkbox to prevent drawing border and background for empty frame items
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-26
+
+    Fixing null pointer on ramp bug
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-26
+
+    [FEATURE][composer] Add checkbox and data defined button for controlling
+    whether an item is excluded from composer exports/printouts.
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-26
+
+    Modified labelling to include prefix, separator, suffix.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-26
+
+    [FEATURE][composer] Allow data defined control of atlas margin for maps
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-26
+
+    dbManager - remove more 'Sorry' strings
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-25
+
+    [dbmanager] again replacement box->bar stuff....hopefully the last :-)
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-25
+
+    [dbmanager] followp 1646f67: fixes some string and changes more messageboxes
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-17
+
+    [dbmanager] messagebox => messagebar
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-25
+
+    Make QgsExpression parser reentrant. Fixes crashes when expressions are parsed in multiple threads.
+
+    Sponsored by a big dose of caffeine.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-26
+
+    [composer] Switch attribute table column dialog over to QgsDoubleSpinBox
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-26
+
+    [FEATURE][composer] Add checkbox to frame items for preventing export
+    of page containing frame when frame is empty. This change allows
+    users to create multiple pages containing extra frames for multiframe
+    items (currently HTML and Attribute Table items), which are then only
+    printed/exported if required. Sponsored by the City of Uster, Switzerland.
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-25
+
+    fix #11251 (embed form dual view icons)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-25
+
+    [custom widgets] add missing date time widget plugin
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-25
+
+    add Qgs(Double)SpinBox to custom widgets
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-25
+
+    add Qgs(Double)SpinBox to SIP
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-25
+
+    add support for NULL values in range widget (new Qgs(Double)SpinBox classes to show the clear button)
+
+Merge: e37a5ad a4515f1
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-25
+
+    Merge pull request #1548 from manisandro/typo
+
+    Fix typo in QgsVectorFileWriter::fileFilterString
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-25
+
+    [FEATURE] Legend filtering based on map content (in main window, composer, WMS)
+
+    There is new "filter" button in layers panel that toggles this functionality
+    and in composer legend widget.
+
+    Related feature is that layer tree now shows symbols in map units with correct size
+    (even when filtering is not enabled) so as the map view changes the legend node icons
+    are updated too (if they use map units).
+
+    GetLegendGraphics in WMS server
+    -------------------------------
+
+    This is an extension of standard GetLegendGraphics request according to MapServer RFC 101.
+    See the document for more details: http://mapserver.org/development/rfc/ms-rfc-101.html
+
+    In summary, clients need to add BBOX and CRS/SRS parameters to get appropriate legend based on the given map view.
+    Parameters WIDTH and HEIGHT are also taken into account as they specify map view image size for correct calculation
+    of size of legend symbols (if they are based on map units).
+
+    --
+
+    This software has been commissioned by Tuscany Region (Italy),
+    co-funded by the European Commission and developed under the project LIFE12 ENV/IT/001054 LIFE + IMAGINE.
+    The software has been realized by Gis3W s.a.s.
+
+    Questo software è stato commissionato da Regione Toscana (Italia),
+    cofinanziato dalla Commissione Europea e sviluppato nell'ambito del progetto LIFE12 ENV/IT/001054 LIFE + IMAGINE.
+    Il software è stato realizzato da Gis3W s.a.s.
+
+Merge: f1de497 da3516c
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-25
+
+    Merge pull request #1590 from slarosa/query_builder_enhanchements
+
+    [query builder] editor enhancements: QTextEdit => QgsCodeEditorSQL
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-25
+
+    Allow copying selected palette colors in color picker dialog
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-14
+
+    Improved method for selecting random colors for categorised renderer,
+    which should result in more visually distinct color choices
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-25
+
+    Reverting class editor patch
+
+Merge: a5911e7 3f8a860
+Chris Crook <ccrook@linz.govt.nz>	2014-09-25
+
+    Merge remote-tracking branch 'upstream/master' into CategorizedRendererUpdate
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-24
+
+    Editor widgets: Show NULL value on numeric line edit
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-24
+
+    Add tooltips for form/table switcher buttons in attribute dialog
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-24
+
+    Add option for unscaled values for heatmaps rasters, set as default
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-24
+
+    Clean up and modernise heatmap dialog using QgsMapLayerComboBox
+    and QgsFieldComboBox.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-24
+
+    Fix heatmap failing for multipoint tables, fix incorrect calculation
+    of heatmap input layer.
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-12
+
+    [processing] use checkbox for boolean parameters
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-14
+
+    [processing] add "Save as" functionality to History dialog (fix #10086)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-24
+
+    use right-click for extended menu in identify map tool (to be removed when a true contextual menu is implemented)
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-24
+
+    Implementation of graduated renderer breakpoint editor, minus SIP for editor
+
+volaya <volayaf@gmail.com>	2014-09-24
+
+    [processing] moved initialization to initGui() method
+
+volaya <volayaf@gmail.com>	2014-09-23
+
+    [processing] fixed how models read help info
+
+Werner Macho <werner.macho@gmail.com>	2014-09-24
+
+    [TRANSUP] transifex and string update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-24
+
+    setReadOnly will call paintEvent, followup ce486da41ea29f54406934d366c1bf00a205278d
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-24
+
+    line edit: do not display clear icon when read only
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-24
+
+    Refactoring ready for manual update dialog.  Also improves labelling of StdDev classifications and better determination of decimal places to use
+
+Merge: e0b9afb e194423
+Chris Crook <ccrook@linz.govt.nz>	2014-09-24
+
+    Merge branch 'master' into CategorizedRendererUpdate
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-23
+
+    followup 443fa8cc920216bb0ac470babf1709e1242d169c
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-23
+
+    Sip update and const correctness
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-23
+
+    add invalid label inly once
+
+ahuarte47 <ahuarte47@yahoo.es>	2014-07-18
+
+    #10767: No replace the simplified geometry by its BBOX when there are 'long' segments
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-23
+
+    Followup bad94e0
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-23
+
+    [FEATURE][composer] Add checkbox for showing unique records only in composer
+    attribute tables. (Sponsored by my OCD)
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-23
+
+    [query builder] editor enhancements: QTextEdit => QgsCodeEditorSQL
+
+Merge: 72a33ea bad94e0
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-23
+
+    Merge pull request #1589 from slarosa/fix11247
+
+    [expression builder] fixes #11247
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-23
+
+    [expression builder] fixes #11247
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-23
+
+    QgsFilterLineEdit: Hide clear button when read only
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Fix re-initialization of dual view
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    [FEATURE] Add suffix support for range widget
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Update sip bindings
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Better QgsFilterLineEdit support for several edit widgets
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Add better Null support to QgsFilterLineEdit
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Attribute form: do not try to edit non-editable fields
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Make operations on the feature selection more memory friendly
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    [FEATURE][composer] Add a checkbox to filter attribute tables to
+    features which intersect the current atlas feature. Sponsored by City
+    of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    [FEATURE][composer] Add choice of display style for empty tables. Options
+    include hiding the entire table, showing empty cells, or displaying a
+    set message in the table body. Sponsored by City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    [FEATURE][composer] Add option for showing child features from a relation
+    for attribute tables in the composer. If selected, the attribute table
+    will show all related features to the current atlas feature within
+    the table body. Sponsored by City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    [FEATURE][composer] Option for current atlas feature as source for
+    attribute tables. Sponsored by City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    Allow creation of new color palettes in color dialog
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    [composer] Avoid Qt warnings with composer html item
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    [composer] Use a transparent background for HTML items
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    Fix incorrectly failing composer html test
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Followup 96e39f7
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Fix performance issues with moving selection on canvas (Funded by good will)
+
+    Fix #11197
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Re-initialize relation editor on setRelationFeature
+
+    Fix #11236
+
+Merge: 86cbc2e 788575e
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    Merge pull request #1540 from manisandro/composer_html_fixes
+
+    Recompute webpage viewport dimensions when resizing html frames
+
+Merge: bb3ead3 4e3510e
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    Merge pull request #1582 from nyalldawson/db_manager_fixes
+
+    Usability improvements for db manager
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Transfer ownership of drag-and-drop layout elements in sip
+
+    Fix #11207
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    [FEATURE][composer] Allow manual control of column widths for attribute table items.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-22
+
+    Fix doxygen and build warnings
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-09-22
+
+    WFS server: insert/update/delete are only dependent on wfs publish property. Funded by Sourcepole QGIS Enterprise
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Proper handling of NULL values for edit widgets
+
+     * Photo widget preserves NULL value
+     * Web widget preserves NULL value
+     * Attribute table can distinguish between 0 and NULL (Fix #11235)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-22
+
+    Restore buttonbox visibility after attribute form reload
+
+    Followup febe37de
+
+    Fix #11229
+    Fix #11194
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-22
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-22
+
+    fix doxygen warnings
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-21
+
+    Cleanup button box when reinitializing attribute form
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    Some fixes to TestQgsComposerTableV2
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    [composer] Fix failing QgsAtlasComposition python test
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    [composer] Add some missing Transfer/TransferThis methods to sip bindings
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    Fix failing atlas tests
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    Rebuild composer test images at 96 dpi to speed up unit tests
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    Fix warning
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-19
+
+    create a relationsChanged signal for relation manager
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    Split composer map overview tests off into their own test suite
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-21
+
+    [composer] Clean up QgsComposerMap api, add docs and missing sip bindings for composer overviews
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-20
+
+    Don't try to draw icon for hidden color buttons
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-20
+
+    Add a changed signal to QgsRelationManager
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-20
+
+    Removing compiler warnings
+
+Merge: abd9e3c 808464f
+Chris Crook <ccrook@linz.govt.nz>	2014-09-20
+
+    Merge branch 'master' into CategorizedRendererUpdate
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-20
+
+    Numerous enhancements to graduated and categorized symbol renderers
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-20
+
+    [composer] Disable atlas if coverage layer is removed from project
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-18
+
+    Add support for removing user palettes from color picker
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-09-19
+
+    Fix 'geos_c.h not found' build error on Mac for browser app
+
+Merge: 9ae648b c945eec
+alexbruy <alexander.bruy@gmail.com>	2014-09-19
+
+    Merge pull request #1531 from ccrook/DistanceMatrixFix
+
+    [processing] Distance matrix fixes
+
+Merge: a809dcc 8ec82a3
+alexbruy <alexander.bruy@gmail.com>	2014-09-19
+
+    Merge pull request #1585 from cayetanobv/master
+
+    [processing] fix column name in Zonal statistics alg
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-19
+
+    use native GDAL functions
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-19
+
+    [processing] fix script algorithm provider
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-19
+
+    [processing] avoid division by zero in random points alg (fix #11215)
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-19
+
+    Add asImage method for QgsSymbol
+
+Merge: acae80e 11be64d
+Chris Crook <ccrook@linz.govt.nz>	2014-09-19
+
+    Merge branch 'master' into CategorizedRendererUpdate
+
+Chris Crook <ccrook@linz.govt.nz>	2014-09-19
+
+    WIP
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-18
+
+    more public methods, fix delete map tool
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-18
+
+    followup faf4b7f49ba67d0e6e110632bf85145ed570583e
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-18
+
+    fix crash in identify menu when closing a project with map layer actions
+
+Cayetano Benavent <cayetanobv@gmail.com>	2014-09-18
+
+    Zonal statistics: changed variance names (variable and field name; CV > var)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-18
+
+    add missing Q_PROPERTYs to color button V2
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-17
+
+    do not raise canvas but window (fix hiding message bar)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-17
+
+    followup 0181df555378eabbf58a29b76e687c54178ca5f1
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-17
+
+    fix enum in sip
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-17
+
+    disable maptool if editing stopped or dialog closed + fix deactivated map tool
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    [composer] Remove gui controls for adding deprecated table item (sponsored
+    by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    [composer] API docs and python bindings for QgsComposerTableV2 (sponsored
+    by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-16
+
+    [FEATURE][composer] New composer item for multi frame attribute tables.
+    Allows table content to be spread over multiple frames. Note:
+    existing table items are not automatically upgraded to multiframe
+    tables (to avoid API breaks with plugins), so only newly added
+    tables gain these new options.
+
+    QgsComposerTable is effectively deprecated and will be removed at the
+    next API break.
+
+    This work was sponsored by the City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-16
+
+    [composer] Tweak calculation of total height of table (Sponsored by
+    City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-16
+
+    [composer] Fix crash on extend mode for multiframes (Sponsored by
+    City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-15
+
+    [composer] Initial test suite for QgsComposerTableV2 (Sponsored by
+    City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-12
+
+    [composer] Implement total height mechanisms for QgsComposerTableV2
+    (Sponsored by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-11
+
+    [composer] Fix calculation of visible row ranges in QgsComposerTableV2
+    (Sponsored by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-10
+
+    [composer] Implement saving/loading of QgsComposerTableV2 items
+    (Sponsored by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-10
+
+    [composer] Don't consider border width in table if border is disabled
+    (Sponsored by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-16
+
+    [composer] Fix update of gui controls when table and HTML properties
+    change (sponsored by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-09
+
+    [FEATURE][composer] Add option to table item to show headers on first
+    frame, all frames, or no frames (fix #11136) (Sponsored by City of
+    Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-05
+
+    [composer] Implement min size method for frames. Minimum height for
+    first frame in tables is set so that headers are always shown.
+    (Sponsored by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Begin work on calculating rows for QgsComposerTableV2
+    (sponsored by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Option for fixed frame sizes set by multi frame (sponsored
+    by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-31
+
+    [composer] Initial groundwork for multiframe table item (Sponsored
+    by City of Uster, Switzerland)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    Option in color picker dialog to import a gpl palette to a new user scheme
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-18
+
+    Add timing for plugin loading
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    Be a bit more forgiving when reading gpl files which don't exactly follow the specifications
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    Fix height of color icon on color buttons in windows
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    Add flags for controlling behaviour of color schemes
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    Load gpl files from user folder to schemes
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-17
+
+    Save edit widgets also to QML style information.
+
+    Fix #11123
+    Fix #10752
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-17
+
+    Follow up 21c81d6
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-17
+
+    [SIP] add QgsIdentifyMenu
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-17
+
+    [Identify Menu] do not show the layer level if there is a single layer identified
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-17
+
+    fix QgsMapLayerAction SIP + do not copy features in identify menu (followup 21c81d6f512fa59f4bb4545c087a2bf5154008dd)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-16
+
+    [QgsRelationReferenceWidget] correctly enable/disable set null button, do not disable line edit (already read only), make openForm and mapIdentification public, more documentation
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-17
+
+    Fix sip for QgsMapLayerActionRegistry
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-16
+
+    Pass attribute editor context for widgets on the attribute table
+
+    Fixes relation reference widget in attribute table
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-16
+
+    Fix widget registry (SIP), few fixes for relation reference widget
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-11
+
+    [FEATURE] New custom QGIS color picker dialog. Basically
+    it's a Frankenstein's monster of the best bits of lots of other color
+    picker implementations. Features include:
+    - Sliders for hue, saturation, value, red, green, blue color components
+    - Alpha slider
+    - Option to copy/paste html color codes (in a variety of formats)
+    - Before/after color preview, with alpha preview
+    - Interactive 2D color ramp widget
+    - Hue wheel/triangle widget
+    - Editable color swatch lists
+    - Live color sampler with option to sample over a set radius
+    - Supports interaction with other apps via drag and drop of colors (OS support
+    dependant)
+    - Option to disable the dialog and use the native picker dialog instead (TODO:
+    make the dialog so awesome that even @dakcarto switches across...)
+
+    Credit for icons goes to 3nids!
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-16
+
+    [SIP] add missing argument in QgsEditorWidgetRegistry::QgsEditorWidgetWrapper
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-13
+
+    improved identify menu with a dedicated class
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-11
+
+    [QgsActionMenu] fix return feature
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-28
+
+    [QgsActionMenu] use ActionData to trigger actions
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-27
+
+    [QgsActionMenu] use correct level of actions
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-13
+
+    Add user data to identify actions to actionmenu
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-13
+
+    Add icon support to actions
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-11
+
+    Add action menu to attribute dialog
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-16
+
+    Fix loss of hue information with slider widgets
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-16
+
+    Allow setting color button to invalid color resulting in a blank
+    button. Default to invalid color for new buttons.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-16
+
+    Add options for color buttons, allowing them to be used in a swatch
+    type mode.
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-16
+
+    [QgsRelationReferenceWidget] make error label multiline
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-16
+
+    [QgsMapToolIdentifyFeature] allow initializing without any layer
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-16
+
+    followup ui rename (followup 13eb726d)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-16
+
+    Followup #10912 - detect cycles in joins and reject joins that would create cycle
+
+    Cycle would otherwise cause infinite loop when updating fields and it does not make sense
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-15
+
+    Return to previous state of vector joins if the vector props dialog was cancelled
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-15
+
+    add RelationReferenceWidgetWrapper to SIP + complete RelationReferenceWidget
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-15
+
+    [Relation Reference Widget] allow removing open form button (option not available in QGIS)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-15
+
+    Fix doxygen warning
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-15
+
+    Use unique value widget doxymentation to appropriate place
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-15
+
+    Doxymentation for relation manager
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-15
+
+    Even more Doxymentation
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-15
+
+    More Doxymentation
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-15
+
+    Doxymentation for QgsEditorWidgetV2
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-15
+
+    Use copy mode for drag and drop of colors from QgsColorSchemeList,
+    prevent addition of duplicate colors
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-15
+
+    Add a colorSelected signal to QgsColorSchemeList
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-15
+
+    Remove colors from scheme list on delete/backspace press
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-15
+
+    Add an isDirty method to QgsColorSchemeList
+
+Werner Macho <werner.macho@gmail.com>	2014-09-15
+
+    [TRANSUP] transifex string update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-15
+
+    rename relreference...to relationreference
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-15
+
+    [Releation reference widget] use separate button for remove action
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-15
+
+    [Releation reference widget] more coherent method names
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-15
+
+    add relation reference widget to SIP
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-15
+
+    [processing] remove selection before running Select by location algorithm (fix #10873)
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-15
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-15
+
+    remove unused variable
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-15
+
+    Renamed visibility "groups" to "presets" to avoid confusion with ordinary groups
+
+    If you have a project file using this functionality, you may need to run a simple
+    replace of "visibility-group" to "visibility-preset"
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-15
+
+    Revert change of rule-based renderer identifier as it breaks project files
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-15
+
+    Show active visibility group in menu also in map composer map widget
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-15
+
+    Fix build error with SIP (4.15.5)
+
+Nyall <nyall.dawson@gmail.com>	2014-09-15
+
+    [dbmanager] Try to set sensible default column choice for sql window
+
+Nyall <nyall.dawson@gmail.com>	2014-09-15
+
+    [dbmanager] Don't trip up when loading a sql layer if sql ends with a ;
+
+Nyall <nyall.dawson@gmail.com>	2014-09-15
+
+    [dbmanager] Don't set parent for dbmanager window, allows for minimising
+    window. Unminimise window when activating dbmanager.
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-15
+
+    indent multiline messages in log
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-14
+
+    doxymentation fix
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-14
+
+    fix build on PyQt <4.9.5
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-14
+
+    Remove unused variable
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-14
+
+    Set auto raise for identify toolbar icons
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-14
+
+    Keep log button in status bar.
+
+    Removing UI elements under the user isn't good UX
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-14
+
+    Use QPlainTextEdit for message log. Less memory and much much faster then QTableWidget
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-14
+
+    Fix #11200 (Symbology changes of a layer aren't reflected in overview panel)
+
+Merge: fbea7d4 a53bf7e
+Martin Dobias <wonder.sk@gmail.com>	2014-09-14
+
+    Merge remote-tracking branch 'origin/master'
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-14
+
+    Real name of @leyan instead of pseudonym
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-14
+
+    GEOS context accessor for PAL
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-14
+
+    Use _r GEOS API in geometry import test
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-14
+
+    Move identify toolbar to top to match other docks with toolbars
+
+Merge: e4f68b1 c5f2f7e
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-14
+
+    Merge pull request #1304 from manisandro/replace_lineedit_with_combobox_snappingdialog
+
+    Use a spinbox instead of a lineedit for the snapping tolerance
+
+Merge: e52c123 8b98942
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-14
+
+    Merge pull request #1571 from slarosa/context-help
+
+    [context-help] set heading to 3 for heatmap plugin and python console help file
+
+Merge: f214a01 340d417
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-14
+
+    Merge pull request #1576 from leyan/graduatedRenderer
+
+    Automatic update of label and neighboring ranges boundaries in graduated renderer. Fix #9312. Fix #9900, Fix #10203
+
+Merge: e46aa62 7fdaf08
+Nathan Woodrow <madmanwoo@gmail.com>	2014-09-14
+
+    Merge pull request #1570 from slarosa/heatmap-plugin
+
+    [heatmap-plugin] replace messagebar to messagebox
+
+Merge: e46aa62 6354dd3
+Martin Dobias <wonder.sk@gmail.com>	2014-09-13
+
+    Merge remote-tracking branch 'rouault/use_geos_reentrant_api'
+
+    Conflicts:
+src/core/pal/layer.cpp
+src/core/qgsgeometry.cpp
+src/core/qgspallabeling.cpp
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-13
+
+    Added @leyan to contributors
+
+Merge: 2313be9 ced5ae4
+Martin Dobias <wonder.sk@gmail.com>	2014-09-13
+
+    Merge pull request #1556 from leyan/convertToRuleBasedSymbology
+
+    [FEATURE] Keep renderer settings when changing renderer type (where it is possible)
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-09-02
+
+    Fix check of allowed wfst capabilities in project. Funded by Sourcepole QGIS Enterprise
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-13
+
+    fix and sync QgsAttributeEditorContext sip bindings
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-13
+
+    [FEATURE] Joins: optionally use just a subset of fields from the joined layer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-13
+
+    Joins: optionally use just a subset of fields from joined layer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-12
+
+    Support for setSubsetString() in memory provider
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-13
+
+    Default names for colors when adding to schemes
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-12
+
+    Restore canvas colour for overview window
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-12
+
+    Simplify python console init text
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-12
+
+    Use wait cursor when loading forms
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-01
+
+    [relation widgets] General update
+
+     * Improve speed (lazy loading)
+     * Loop detection for circular dependencies (Fix #10850)
+     * Some memory leaks fixed
+     * More const-correctness
+     * Fix the attribute editor context
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-25
+
+    [relation reference widget] minimize feature request, do not fill combobox if not shown, button to remove related feature
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-09-09
+
+    Update to strings in add postgis layer dialog
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-12
+
+    [FEATURE] display rule-based renderer legend in a pseudo-tree (in layer tree model/view)
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-10
+
+    debian packaging update
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-11
+
+    Move triggerRepaint() to QgsMapLayer, use it instead of deprecated clearCacheImage()
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-11
+
+    Make sure to refresh canvas when layer's CRS is changed
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-11
+
+    Fix toolbar order with add and new buttons
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-11
+
+    Reduce margins on bookmarks dialog
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-11
+
+    fix signal in QgsDateTimeEdit
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-11
+
+    Support dragging colors from QgsColorPreviewWidget
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-11
+
+    Accept dropped colors on color widgets
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-11
+
+    Non editable color schemes should not be editable in QgsColorSchemeList
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-11
+
+    Retain alpha if entering colors with no explicit alpha into
+    QgsColorTextWidget
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-11
+
+    [SIP] add missing activated/deactivated signals for map tools
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-11
+
+    Set auto raise for attribute table buttons to match reset of UI
+
+Merge: 890f921 79b3a8f
+Jürgen Fischer <jef@norbit.de>	2014-09-10
+
+    Merge pull request #1577 from RossGammon/master
+
+    Description: Fix qreal VS double issues.
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-10
+
+    fix #11110
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-10
+
+    fix spanish translation error
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-10
+
+    Move remove layer/group to legend dock. Remove from toolbar
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-09-10
+
+    Resize snapping column widths. Reduce dialog margins
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-10
+
+    Support #RRGGBBAA style color codes in QgsSymbolLayerV2Utils color parsing
+
+Leyan <ouyang.leyan@hotmail.com>	2014-09-10
+
+    update
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-10
+
+    Do not use partially checked state of legend nodes when layer is not visible
+
+    This is slightly confusing, moreover in some styles the items are not immediately
+    updated, producing a weird effect when hovering mouse over legend nodes.
+    http://www.youtube.com/watch?v=HNDE1Xp5UZA&feature=youtu.be
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-10
+
+    Fix #11169 (toggling symbol visibility does not trigger refresh)
+
+    This could have happened when the same project was reloaded, then map canvas
+    failed to clear itself and some connections to repaintRequested were broken
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-10
+
+    Make rule-based renderer rule keys persistent
+
+    So they can be used for visibility groups - before they got assigned new keys
+    on every instantiation of Rule
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-10
+
+    Fix #11143 take 3 (cannot remove visibility groups)
+
+    Now we also handle rules that are not valid anymore
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-10
+
+    Fix emitting of currentLayerChanged() signal
+
+    Use layer ID instead of persistent index to remember last layer.
+    Persistent index will get invalid during removal of layers and
+    the signal was not emitted when current index got invalid (none).
+
+    This was causing a crash in GPS information widget
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-09
+
+    mssql provider: fix filter type interpretation (fixes #11076)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-09
+
+    Fix #10912 (joined attributes are not correctly propagated in nested joins)
+
+    This commit makes QgsVectorLayerJoinBuffer listen to changes in fields
+    of joined vector layers in order to update the cache and inform parent layer
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-09
+
+    german translation update
+
+Leyan <ouyang.leyan@hotmail.com>	2014-08-30
+
+    refactor to a more general convertFromRenderer function
+
+Merge: b9fc2b5 e037697
+Jürgen Fischer <jef@norbit.de>	2014-09-09
+
+    Merge pull request #1578 from alexbruy/layer-submenu
+
+    move all "Add Layer" actions to submenu
+
+Leyan <ouyang.leyan@hotmail.com>	2014-08-25
+
+    Add factory annotation and use clone for rule based renderer
+
+Leyan <ouyang.leyan@hotmail.com>	2014-08-24
+
+    use previous renderer if possible, instead of last applied renderer
+
+Leyan <ouyang.leyan@hotmail.com>	2014-08-24
+
+    add sip
+
+Leyan <ouyang.leyan@hotmail.com>	2014-08-24
+
+    creation of a convertToRuleBasedRenderer() function
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-09
+
+    Add a bunch of useful interactive color widgets to GUI, including
+    color wheels, ramps, boxes, and text edits.
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-08
+
+    Fix #11143  (cannot remove visibility group) take two
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-08
+
+    Getting closer to the perfection: a bit of spacing for 'layers' toolbar (like browser)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-08
+
+    [composer] Fix flip of N/S and E/W coordinates when using reprojected grids
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-08
+
+    [composer] Use proper prime and double prime symbols for grid annotations
+    (because good typography and cartography go hand in hand..!)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-08
+
+    Doxygen: do not add "Definition at line N of XYZ.cpp" to each method
+
+    This is another tweak meant to declutter the generated documentation
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-08
+
+    Doxygen: Do not show private members, referenced by/references relations
+
+    This change should help to make the API docs less cluttered.
+    The above mentioned pieces of information are not very useful for people reading docs - and core developers have their IDEs for checking references.
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-07
+
+    Fix #11146 (rule check state not saved)
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-06
+
+    put Oracle GeoRaster plugin button to new submenu
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-09-06
+
+    move "Add Layer..." buttons to submenu
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-06
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-06
+
+    fix metasearch typo (followup 5cb7d357)
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-06
+
+    fix metasearch syntax error
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-06
+
+    Remove some superfluous empty vertical space from browser dock widget
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-06
+
+    Fix yesterday's changes to currentGroupNode() (fixes addition of groups)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-06
+
+    Do not create collaboration diagrams in doxygen docs
+
+    The diagrams do not really add much value and do not highlight the important concepts
+    of classes, confusing the user and making things looks more complicated than they are
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-06
+
+    Start of doxygen page about API breaks
+
+Ross Gammon <rossgammon@mail.dk>	2014-09-05
+
+    Description: Fix qreal VS double issues.
+     This patch tries to fix qreal VS double issues for ARM
+
+     There are two seperate issues, the first is trivial just a typecast on
+     a const.
+
+     The second is however less-trivial and needs to be checked
+     before merging. sip doesn't seem to like the type
+     QVector<double> on platforms where qreal is float but changing
+     the type to qreal may have knock-on impacts on the native code.
+
+     QGIS Issue: http://hub.qgis.org/issues/11148
+     Debian Bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=760535
+
+    Author: Peter Michael Green <plugwash@debian.org>
+
+Merge: 0a7ddfa 3eb6e7c
+Tom Kralidis <tomkralidis@gmail.com>	2014-09-05
+
+    Merge pull request #1575 from geopython/MetaSearch-0.3.1
+
+    Meta search 0.3.1
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    Fix potential crash when adding a group
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    Fix QgsLayerTreeModel naming conventions and update Python bindings
+
+    I was using a mixture of terms 'symbology items' and 'legend nodes' for the same thing which was confusing
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    Fix #11126 (Make up/down buttons work also for layer tree nodes)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    Respect the overridden layer name in composer legend also in rendered legend
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    If layer is in editing mode, show the pencil icon instead of embedded legend icon
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    Keep a bit of spacing in layer tree dock widget
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    Fix #11143 (remove visibility groups after removal of a layer)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    [FEATURE] Toolbar for layer tree specific actions
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-05
+
+    Visibility groups: also record visibility states of renderer categories (legend nodes) into groups
+
+    Visibility of a layer is not stored within the map layer, but visibility
+    of renderer categories (which turn into legend nodes) is stored inside renderer and
+    that one in turn inside map layer. This fact may result in surprising behavior
+    when change of visibility group for a composer map will affect other composer maps (and main canvas).
+    The only way to overcome the problem would be to have the possibility to use multiple renderers with one layer.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-05
+
+    Fix crash when trying to edit color ramp with black start/end colors
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-09-04
+
+    Fix Mac build
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-04
+
+    postgres provider: don't warn, when queries return 'numeric' constants
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-04
+
+    fix warnings
+
+Leyan <ouyang.leyan@hotmail.com>	2014-09-01
+
+    Automatic update of label and neighboring ranges boundaries
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-04
+
+    [FEATURE] Access to visibility groups in map composer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-04
+
+    [FEATURE] Visibility groups of map layers in layer tree
+
+    New toolbar button allows quick changes between the groups of layers that should be visible.
+    Also features a simple way for management of the groups (add/remove)
+
+Sandro Santilli <strk@keybit.net>	2014-09-04
+
+    Allow loading pgraster tables with non-default raster field name
+
+    Before this change you could only load tables where the raster
+    field was named "rast".
+
+Sandro Santilli <strk@keybit.net>	2014-09-04
+
+    Allow loading PostGIS Rasters from partially configured connections
+
+    Partially configured connection are those for which an hostname
+    or username or port etc. are not specified, relying on libpq defaults.
+
+    It was already fixed for geometries but rasters needed more love.
+    See #9037.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-04
+
+    [composer] Add some missing sync groups for group boxes
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-04
+
+    Ensure top of QgsCollapsibleGroupBox is visible after expand. Previous
+    behaviour was to scroll to center of group box for long group boxes,
+    which is confusing for users.
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-04
+
+    fix windows build
+
+Tom Kralidis <tomkralidis@gmail.com>	2014-09-03
+
+    merge back ef0e7d09168d43b0529a1f819108a4741c7e9e75
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-09-03
+
+    Add unit tests for geometry import (wkt,wkb,geos)
+
+Tom Kralidis <tomkralidis@gmail.com>	2014-09-03
+
+    remove code
+
+Tom Kralidis <tomkralidis@gmail.com>	2014-09-03
+
+    update MetaSearch to 0.3.1
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Fix failing grid tests
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Add some python tests for QgsComposerMapGrid
+    (sponsored by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Update sip bindings, add missing sip bindings for
+    QgsComposerMapGrid (sponsored by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Clean up map grid API, fix bug with grids not rearranging
+    correctly (sponsored by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Deprecate a bunch of map grid calls (sponsored
+    by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Improvements to grid annotation string formatting (sponsored
+    by NIWA, New Zealand):
+    - Don't show directional suffix for 0 or 180 latitudes or 180 longitudes
+    - Add padded coordinate modes
+    - Fix precision errors causing minutes/seconds > 60
+    - Wraparound longitudes to restrict them to the -180 to 180 degree range
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Fix N/S and E/W are reversed in grid annotation strings
+    (sponsored by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Add simple line border frame style for composer map
+    grids (sponsored by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Some small tweaks to grid defaults and ui (sponsored
+    by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [FEATURE][composer] Add tick styles for frames. Options include
+    drawing ticks only inside the map frame, drawing ticks outside
+    the frame, or drawing ticks both inside and outside the frame.
+    (fix #6954) (Sponsored by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Add tests for grids on specific sides (sponsored by
+    NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Remove raster layer from composer grid tests (sponsored
+    by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [FEATURE][composer] Add options for controlling which sides of
+    the map a grid frame is drawn (sponsored by NIWA, New Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [FEATURE][composer] New frame/annotations only grid style. Selecting
+    this style causes only the frame and annotations to be drawn, with no
+    grid lines or other markings over the map. (Sponsored by NIWA, New
+    Zealand)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-03
+
+    [composer] Split composer map grid tests from composer map tests
+    (sponsored by NIWA, New Zealand)
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-01
+
+    german translation update
+
+Merge: f97d5e3 dab5ff9
+Jürgen Fischer <jef@norbit.de>	2014-09-02
+
+    Merge pull request #1574 from mhugent/getFeatureExpression
+
+    Get feature expression
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-09-02
+
+    Add function help for getFeature
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-02
+
+    [custom widgets] adds filter line edit
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-09-02
+
+    [FEATURE]: Add getFeature function in Expression
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-02
+
+    More const correctness, fix crash with atlas
+
+Merge: 368755a 6d4dee9
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-02
+
+    Merge pull request #1572 from jef-n/store-blend-mode
+
+    Save blendmode/composition mode in project file
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-02
+
+    Save blendmode/composition mode in project file
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-02
+
+    fix sorting of map layer combo box and more const correctness
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-01
+
+    [context-help] set heading to 3 for heatmap plugin and python console help file
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-09-01
+
+    [heatmap-plugin] replace messagebar to messagebox
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-01
+
+    more const correctness
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-01
+
+    SIP file for new date time edit
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-01
+
+    added new QgsDateTimeEdit to custom widgets
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-28
+
+    new edit widget for date/time capable of setting null dates
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-01
+
+    [composer] Support drag and drop restacking of items via item panel (fix #11058)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-01
+
+    more flag operators declaration in SIP, better use of flags in data defined button
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-09-01
+
+    [SIP] add missing operator for flags
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-01
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-09-01
+
+    indentation update, Q_FOREACH support in astyle, doxygen fix
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-27
+
+    [map layer actions] action for group of features, rename availability to target (flags), only emit signal for defined target"
+
+    Conflicts:
+src/gui/qgsmaplayeractionregistry.cpp
+src/gui/qgsmaplayeractionregistry.h
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-09-01
+
+    [composer] Add zoomToExtent for QgsComposerMap, allows easily fitting a set extent into the map item without altering the item's shape
+
+Martin Dobias <wonder.sk@gmail.com>	2014-09-01
+
+    Fix doxygen warnings, fix missing bindings
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-26
+
+    Followup fix for #11006 (spotted by Nyall - thanks)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-25
+
+    Fix #11006 (wrong size of symbols in print composer legend if map units are used)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-22
+
+    Added header to new files
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-22
+
+    More Python wrapper updates + fixes
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-22
+
+    Revert previous changes to QgsLegendModel and its items
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-22
+
+    API fixes, added missing python wrappers
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-20
+
+    Update Python bindings
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-20
+
+    Improve docs for QgsLegendSymbolItemV2
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-20
+
+    Introduce scale-based filtering of legend nodes (in WMS)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-20
+
+    Fix WMS with custom rule / no labels
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-19
+
+    Legend customization via layer node's custom properties
+
+    This allows for reordering, renaming and removal of legend nodes.
+    Composer either uses default project layer tree (auto-update on)
+    or customized layer tree (auto-update off).
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-12
+
+    Work in progress: Make composer legend widget work with QgsLayerTreeModel
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-12
+
+    Layer tree model support replacement of layer tree + layer node handles removal of layer cleanly
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-12
+
+    New flag to disable checkboxes for legend nodes in layer tree model
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-12
+
+    Support for custom labels in symbol-v2 legend node
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-12
+
+    Moved QgsLayerTreeModelLegendNode (+derived classes) to a new file
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-11
+
+    Use QgsLayerTreeModel as a source of data for legend rendering instead of QgsLegendModel
+
+    This is work in progress, customization of legend is not working yet
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-08
+
+    Fixed bugs with feature count, maintenance of QgsLegendSymbolItemV2
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-07
+
+    Make WMS server use QgsLegendRenderer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-07
+
+    Force vector output for preview icon so it avoids cached pixmaps
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-07
+
+    Fix nested WMS layer data items
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-06
+
+    Fix rendering of WMS Legend Graphics
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-06
+
+    Fix crash in WMS GetLegendGraphics
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-06
+
+    Added support for check states to rule-based renderer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-06
+
+    Identify renderer's categories/rules by key instead of index
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-06
+
+    Scale range supported by symbol in QgsLegendSymbolItemV2
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-06
+
+    Creation of legend items for map layers moved to QgsMapLayerLegend
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-04
+
+    Automatic creation of composer legend symbol item icon
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-21
+
+    Move bits of legend rendering code into item classes + add rendering test
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-31
+
+    debian packaging update
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-31
+
+    german translation update
+
+Merge: acf1f70 793db5f
+Jürgen Fischer <jef@norbit.de>	2014-08-30
+
+    Merge pull request #1569 from nyalldawson/measure_undo
+
+    Allow removing last point while measuring
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-30
+
+    Allow removing last point while measuring via del/backspace keys (fix #10176)
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-30
+
+    Fix #11092:
+    * fix crash when invalid shapefile layer is repacked
+    * error out if vector file writer is invoke with an empty filename
+    * don't allow "Save as..." without a given filename
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-30
+
+    grass provider: catch unavailable mapserver (fixes #11025)
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-30
+
+    Fix GEOS dev detection (fixes #11081)
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-30
+
+    fix doxygen warnings
+
+Werner Macho <werner.macho@gmail.com>	2014-08-29
+
+    [TRANSUP] transifex and string update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Merge: f92fd58 8c7b394
+mhugent <marco.hugentobler@sourcepole.ch>	2014-08-29
+
+    Merge pull request #1547 from marcel-dancak/bbox-bugfix
+
+    Mapserver: fixed bounding box of points features collection returned in GetFeatureInfo request
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-08-29
+
+    fix layout of the New Vector Layer dialog
+
+Martin Dobias <wonder.sk@gmail.com>	2014-08-29
+
+    Added Michael Douchin to contributors
+
+Merge: 99ff44c 092b7fc
+Martin Dobias <wonder.sk@gmail.com>	2014-08-29
+
+    Merge pull request #1566 from mdouchin/debug_project_path_embedded_items
+
+    Fix #11109 (Write relative path in project XML for embedded groups and layers)
+
+Merge: 6130505 75b3464
+alexbruy <alexander.bruy@gmail.com>	2014-08-28
+
+    Merge pull request #1564 from anitagraser/patch-2
+
+    [processing] check if value is None before trying to cast float
+
+Michael Douchin <mdouchin@3liz.com>	2014-08-28
+
+    [BUGFIX] Issue #11109 - Write relative path in project XML for embedded groups and layers when needed
+
+anitagraser <anitagraser@gmx.at>	2014-08-28
+
+    check if value is None before trying to cast float
+
+    the tool used to fail when there were NULL values in the fields
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-08-28
+
+    [processing] fix vector functions definitions
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-29
+
+    Add icon size 48 and 64
+
+    To make life easier on touch devices
+    Fix #9527
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-27
+
+    allow reactivation of measurement after deactivation
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-27
+
+    Followup 1bdef80: Fix crash when layer not in edit mode
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-27
+
+    QgsVectorLayer::uniqueValues() also returns uncommitted values
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-22
+
+    [custom widgets] add relation reference
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-20
+
+    relation editor: use a public constructor, remove UI file
+
+    rename file according to class name
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-26
+
+    openFeatureForm: Update attributes on provided when used modal
+    Fix #11099
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-26
+
+    CollapsibleGroupBox: hide content when collapsed
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-19
+
+    editor widgets: rename to wrapper to distinguish from the real widgets
+
+Sandro Mani <manisandro@gmail.com>	2014-08-24
+
+    Update sip bindings, add method documentation
+
+Sandro Mani <manisandro@gmail.com>	2014-08-24
+
+    Call renderCachedImage after viewport has been computed
+
+Sandro Mani <manisandro@gmail.com>	2014-08-14
+
+    Recompute webpage viewport dimensions when resizing html frames (Funded by Sourcepole QGIS Enterprise)
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-25
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-25
+
+    indentation update
+
+Merge: 7b84ccc 6cd8e4f
+Tim Sutton <tim@linfiniti.com>	2014-08-25
+
+    Merge pull request #1561 from DelazJ/ProjSelector
+
+    Activate the help button in select projection Dialog
+
+DelazJ <delazj@gmail.com>	2014-08-25
+
+    Add slot on ContextHelp button
+
+DelazJ <delazj@gmail.com>	2014-08-25
+
+    Referencing Help button function
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-25
+
+    [composer] Don't draw handles around locked items (fix #11059)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-25
+
+    Fix tab order in add relation dialog
+
+Merge: d70235f 0bfd5fb
+Tim Sutton <tim@linfiniti.com>	2014-08-25
+
+    Merge pull request #1549 from DelazJ/TableManager_GUI
+
+    Set 0 as default value of srid in DB_Manager dialogs (issue #7083)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-25
+
+    [composer] Show selected items in bold in items tree panel (fix #11057)
+
+Merge: f1aafe0 6cfb6e6
+Tim Sutton <tim@linfiniti.com>	2014-08-25
+
+    Merge pull request #1552 from DelazJ/SaveAsDialog
+
+    Put by default to on the "Add layer to map canvas" option when saving new file (issue #6642)
+
+Merge: ae25009 937a97d
+Tim Sutton <tim@linfiniti.com>	2014-08-25
+
+    Merge pull request #1557 from DelazJ/VectorSymbolselector
+
+    fix #10472 : Enlarge btnSaveSymbol so it shows fully its text in all languages
+
+Merge: 4d1595c 23eff1f
+Tim Sutton <tim@linfiniti.com>	2014-08-25
+
+    Merge pull request #1551 from DelazJ/FToolsAddNewLayerToMapCanvas
+
+    Put by default to on the "Add result layer to the map canvas" option when using fTools functions (issue #6642)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-25
+
+    [composer] Remove destructive 'Load from template' action, replace with
+    non-destructive 'Add items from template' action
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-25
+
+    Add an edit button for shapeburst and gradient color ramps
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-25
+
+    Fix unit choice for ellipse symbol layer type
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-25
+
+    Add a platform-specific size hint for QgsColorButtonV2 (refs #11060)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-25
+
+    Fix some alignment and tab issues with symbol dialogs (refs #11060)
+
+DelazJ <delazj@gmail.com>	2014-08-25
+
+    Enlarge btnSaveSymbol so it shows fully its text
+
+    The btnSaveSymbol has his width increased from 50 to 70 when horizontalSpacer has its width decreased from 40 to 20
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-25
+
+    Range Widget: Only enable for supported data types
+    And some doxymentation
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-24
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-24
+
+    osgeo4w: fix plugin install, add more error checking and include latest updates
+    also in package.cmd
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-24
+
+    [composer] Fix regression in locked map layers (fix #11089)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-24
+
+    Standardise to 6 decimal places for controls which can be set to map units in symbology (fix #11064)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-24
+
+    Where possible, maintain properties of symbol layer when changing symbol layer type (fix #8389)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-24
+
+    Fix warning
+
+Salvatore Larosa <lrssvtml@gmail.com>	2014-08-23
+
+    set scrollarea to no frame for settings in plugin manager
+
+rldhont <rldhont@gmail.com>	2014-08-22
+
+    Bug #10974 QGIS WFS Server provides too much precision PR #1520 UI
+
+    Add a cell in the WFS vector layer table to specify the coordinate precision by layer
+
+elpaso <apasotti@gmail.com>	2014-08-11
+
+    Fixed ui conflict and Fixed UI options
+
+rldhont <rldhont@gmail.com>	2014-08-09
+
+    Bug #9797 Add a precision setting for GetFeatureInfo geometry attributes
+
+    Add precision to QgsGeometry method exportToWKT and use it in GetFeatureInfo
+
+rldhont <rldhont@gmail.com>	2014-07-29
+
+    Bug #10974 QGIS WFS Server provides too much precision
+
+    In the GetFeature request QGIS WFS Server uses the static method: QgsDoubleToString. This method returns double with a precision fixed to 17.
+
+    We do not need that much precision for coordinates. Firstly because we are not able to measure a position on earth with a lower micron precision. Secondly because it unnecessarily overload response.
+
+    I propose to add the ability to specify the precision in the QgsDoubleToString method.
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-21
+
+    Fix memory alignment issues on ARM
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-11
+
+    Fix QgsFieldModel on ARM
+
+volaya <volayaf@gmail.com>	2014-08-22
+
+    [processing] fixed bug in ModelerScene when position of output is not defined
+
+volaya <volayaf@gmail.com>	2014-08-22
+
+    [processing] fixed parameter definition parsing for parameters of type integer
+
+volaya <volayaf@gmail.com>	2014-08-22
+
+    [processing] added support for old model file format
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-22
+
+    add missing file from 72e779c3e
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map canvas
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add by default the result file to the map
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Update frmEliminate.ui
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Add saved file to map canvas by default
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Default srid value to use in new geom column : 0
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    Default srid value to 0 in new table geom column
+
+DelazJ <delazj@gmail.com>	2014-08-21
+
+    set default srid value to 0 in new geom column
+
+Sandro Mani <manisandro@gmail.com>	2014-08-21
+
+    Fix typo in QgsVectorFileWriter::fileFilterString
+
+Marcel Dancak <marcel.dancak@gista.sk>	2014-08-21
+
+    Mapserver: fixed bounding box of points features collection returned in GetFeatureInfo request
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-21
+
+    include pyqt uic module for custom widgets in debian package
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-21
+
+    fix windows build
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-20
+
+    osgeo4w: also move pyqt4 uic module for custom widgets (followup 72e779c3e)
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-20
+
+    osgeo4w: move Qt plugins (sql and designer) into qgis directory
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-19
+
+    make some rendering errors translatable
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-20
+
+    custom widget lib: include resources to show icons in designer
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-20
+
+    make custom widget tooltips translatable
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-20
+
+    relation reference: correctly initialize and set properties for widget
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-20
+
+    add new custom widgets to Qt Designer plugin
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-20
+
+    can create relation reference in a widget (for custom UI forms)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-19
+
+    [composer] Holding alt while pressing arrow keys results in moving items 1 pixel
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-19
+
+    [FEATURE][composer] Allow remote urls to be entered as picture path
+    for picture items, and automatically fetch them. Sponsored by the
+    City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-29
+
+    Add a simplified class for fetching HTTP network content
+
+Merge: 1b205be 4cfe24a
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-19
+
+    Merge pull request #1516 from 3nids/vr_geom_relation
+
+    map identification for relations
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-18
+
+    custom widget for relation reference widget
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-18
+
+    select related feature on the canvas from the relation reference widget (in the attribute form)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-05-22
+
+    use a specific class for the widget (to be used as a custom widget), rename old _widget to _wrapper
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-18
+
+    identify shows a non-modal feature form
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-05-22
+
+    new map tool to select single feature
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-18
+
+    Fix python bindings for QgsRelation.fieldPairs()
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-08-18
+
+    Allow + for string concat in QgsExpression
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-18
+
+    [composer] Fix crash when loading project
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-18
+
+    Doxymentation
+
+Merge: 8d822c4 f267791
+mhugent <marco.hugentobler@sourcepole.ch>	2014-08-18
+
+    Merge pull request #1533 from manisandro/multilabeling_datadefined
+
+    Fix multilabeling with datadefined value
+
+Merge: 621edef ff172b2
+mhugent <marco.hugentobler@sourcepole.ch>	2014-08-18
+
+    Merge pull request #1541 from marcel-dancak/master
+
+    Mapserver: enhancements of searching with GetFeatureInfo request
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-18
+
+    make QgsMapLayerRegistry ctor private (it's a singleton)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-18
+
+    QgisInterface::getFeatureForm() returns a QgsAttributeDialog
+    And some API comments
+
+Marcel Dancak <marcel.dancak@gista.sk>	2014-08-18
+
+    wmsprovider: store tileWidth and tileHeight values in properties of wms provider
+
+Merge: 8888c5f 8105545
+Marcel Dancak <marcel.dancak@gista.sk>	2014-08-18
+
+    Merge remote-tracking branch 'upstream/master'
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-18
+
+    custom widget for new color button
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-18
+
+    fix tool tip
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    rename other canbeGeneralizedByMapBoundingBox methods to isGeneralizableByMapBoundingBox
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    fix polygon generalization artifacts, if last ring segment is one of two
+    segments exceeding the tolerance plus some cleanups
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    doxygen fixes
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    indentation update
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-17
+
+    Fix typo
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-17
+
+    Allow importing and exporting to GIMP palette file (gpl) from color list
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-17
+
+    Improvements to color list:
+    - Cleanup code
+    - Support copying and pasting multiple colors to list
+    - Support additional color list mime formats
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-16
+
+    Support dropping multiple colors into a color list widget
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    revert german part of 62200eb55
+
+Werner Macho <werner.macho@gmail.com>	2014-08-17
+
+    [TRANSUP] next update transifex and source
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    indentation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-17
+
+    fix windows build
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-16
+
+    [FEATURE] Project specific color scheme, set through default styles tab in project properties
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-16
+
+    New GUI control for an editable list of colors from a color scheme.
+    Supports drag and drop reordering, drag and drop colors from external
+    apps (on supported OS).
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-16
+
+    Add method for finding matching schemes from a color scheme registry
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-16
+
+    Add method for editing color scheme colors
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-16
+
+    Add set of default colors for custom color palette
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-15
+
+    Fix margins for expressionbuilder on gnome
+
+Marcel Dancak <marcel.dancak@gista.sk>	2014-08-15
+
+    Mapserver: enhancements of searching with GetFeatureInfo request
+
+Sylvain Maillard <contact@ecologeek.org>	2014-08-14
+
+    fix typos: extra spaces
+
+Werner Macho <werner.macho@gmail.com>	2014-08-14
+
+    [TRANSUP] fix compile errors with it and de
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-08-14
+
+    [TRANSUP] transifex update and switch of km to transifex
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-14
+
+    Show checkboard pattern behind semi-transparent colors in swatch grid
+
+volaya <volayaf@gmail.com>	2014-08-14
+
+    [processing] renamed Input and Output classes in modeler, to avoid confusion
+
+volaya <volayaf@gmail.com>	2014-08-12
+
+    [processing] fixed saga supervised classification when using saga 208
+
+volaya <volayaf@gmail.com>	2014-08-03
+
+    [processing] allow definition of vector fields with plain names and types
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-14
+
+    Rename custom colors to standard colors
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-14
+
+    Allow setting alpha channel for custom color palette
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-14
+
+    Hide color schemes from color button menu if they contain no colors
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-14
+
+    Fix typo in docs
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-14
+
+    [composer] Fix docs for composer arrow
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-14
+
+    missing Q_DECLARE_OPERATORS_FOR_FLAGS
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-14
+
+    use flag instead of enum
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-13
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-10
+
+    optionally use layer ids for wms
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-09
+
+    doxygen fixes
+
+Merge: d42c24f 1d736da
+Jürgen Fischer <jef@norbit.de>	2014-08-13
+
+    Merge pull request #1536 from Ecologeek/bugfix
+
+    fix typo in variable name (extra space)
+
+Sylvain Maillard <contact@ecologeek.org>	2014-08-13
+
+    fix typo in variable name (extra space)
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-08-13
+
+    Restore tabs on Python console load
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-13
+
+    availibilty definition for map layer actions
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-13
+
+    [FEATURE] Predefined custom color palette in QGIS options and color scheme
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-13
+
+    [composer] Prevent atlas crash when layer has bad features (refs #11037)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-13
+
+    Flip more colors buttons to QgsColorButtonV2
+
+Werner Macho <werner.macho@gmail.com>	2014-08-12
+
+    [TRANSUP] string and transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Sandro Mani <manisandro@gmail.com>	2014-08-12
+
+    Fix multilabeling with datadefined value
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-12
+
+    [composer] Ensure that data defined page size and orientation is correctly set when printing directly from an atlas. (Note that mixed orientation prints are unsupported on some platforms/print drivers)
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-12
+
+    also handle UI when manually applying filter
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-12
+
+    Port some more color buttons to QgsColorButtonV2
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-12
+
+    Flip all symbology color buttons to QgsColorButtonV2
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-12
+
+    Use rounded rectangles for preview icons in QgsColorButtonV2
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-11
+
+    more const-correctness and avoid ambiguity in overloaded function
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-11
+
+    [composer] Flip all color buttons to QgsColorButtonV2
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-11
+
+    [composer] Prevent data defined size of scalebar from being less than calculated minimum size
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-11
+
+    [composer] Tweak logic for data defined map extents
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-11
+
+    [FEATURE] New version of color button (QgsColorButtonV2) based off
+    QToolButton. Features:
+    - context menu items have been moved to the attached menu button
+    - new gui widget QgsColorSwatchGrid, which displays a grid of colors
+    - new class for QgsColorScheme, which generates colors to show in a
+      color swatch grid
+    - new class QgsColorSchemeRegistry, with a global instance containing
+      default color schemes. QgsColorButtonV2 accepts a color scheme
+      registry, to control which schemes to show in the popup menu as
+      color swatch grids.
+    - color button can have a default color
+    - color button can also be quickly set to a totally transparent color
+    - c++ and python unit tests for all core components
+
+Chris Crook <ccrook@linz.govt.nz>	2014-08-11
+
+    Fixing several errors in generation of NxT distance matrix
+
+Chris Crook <ccrook@linz.govt.nz>	2014-08-11
+
+    Fixing field name used for target field in ftools DistanceMatrix algorithm
+
+Merge: fe4e552 26587af
+Nathan Woodrow <madmanwoo@gmail.com>	2014-08-11
+
+    Merge pull request #1481 from giohappy/alias_remove_when_empty
+
+    Remove alias from vector layer if it's an empty string.  Fix #10437
+
+Werner Macho <werner.macho@gmail.com>	2014-08-08
+
+    [TRANSUP] update sv, some context help fixes
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-08-08
+
+    typo fix in string
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-08-08
+
+    [TRANSUP] common string update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-08
+
+    server: fix absolute path conversion on windows
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-08
+
+    raster layer properties: add data url label
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-07
+
+    Don't set field value to NULL if multiline text edit has not been edited
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-07
+
+    Let user change form layout in fields properties if .ui is not empty
+
+Merge: 2c12a0d aeed122
+Jürgen Fischer <jef@norbit.de>	2014-08-06
+
+    Merge pull request #1458 from rouault/ogr_unknown25d
+
+    OGR provider: deal with wkbUnknown25D (wkbUnknown | wkb25DBit)
+
+Merge: 24e89a4 04bb461
+Jürgen Fischer <jef@norbit.de>	2014-08-06
+
+    Merge pull request #1527 from jarl-dk/build_fix
+
+    Finding python library on Ubuntu 14.04 64bit
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-08-06
+
+    [processing] don't warn about different CRS's if algorithm has only one
+    input (fix #10964)
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-08-06
+
+    follow up 4fb28987ba
+
+Jarl Friis <jarl@softace.dk>	2014-08-06
+
+    Finding python library on Ubuntu 14.04 64bit
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-08-06
+
+    [processing] convert strings to numbers when initializing parameters
+    from description file (fix #11011)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-08-06
+
+    [FEATURE][composer] Allow more control over appearance of composer arrows:
+    - Line can be styled using line symbol style dialog
+    - Arrow head fill and outline colors can be specified
+    - Arrow head outline width can be specified
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-06
+
+    fix zooming to layers when there are empty layers
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-08-05
+
+    respect restrictions when calling identify with layer selection mode
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-03
+
+    Fix memory leak and pass ownership of py editor widgets to C++
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-03
+
+    Attribute table cache size 0 is represented as "All" in the options
+
+Merge: 1b94afe ed52cb2
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-08-03
+
+    Merge pull request #1524 from SrNetoChan/master
+
+    Fixed Legacy date widget default format
+    Fix #10988
+
+Juergen E. Fischer <jef@norbit.de>	2014-08-01
+
+    debian packaging update
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-07-31
+
+    [processing] fix loading of output rasters with wrong CRS
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-07-30
+
+    [processing] replace str() with unicode() to avoid possible issues with
+    non-ASCII characters (work in progress)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-31
+
+    [composer] Some tweaks to label display name, add display name for legends
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-31
+
+    [composer] Don't deselect items when unlocking them from the items panel
+
+SrNetoChan <senhor.neto@gmail.com>	2014-07-25
+
+    Fixed Legacy date widget default format
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-07-30
+
+    fix editing of NULL values (fixes 0 to NULL, and fixes setting of NULL values in postgres)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-30
+
+    [composer] Decrease default snap tolerance to 5 pixels
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-30
+
+    [composer] Deselect items when they are locked from the items panel
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-30
+
+    [composer] Locked items can't be selected by clicking them in the canvas.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-30
+
+    [composer] Remove right-click to lock for composer items (fix #5592), now that locked items can be unlocked from the items panel this is no longer required, and frees up right clicks for a composer context menu
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-30
+
+    Don't double add features
+    Fix #10969
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-28
+
+    [FEATURE][composer] Implement an item tree panel for composer windows
+    (fix #4358). Allows for selection of items, hiding/showing items,
+    toggling lock status of items and double-clicking to edit item id.
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-07-30
+
+    do not transform toString to quote values (NULL integer becomes 0 otherwise)
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-30
+
+    Apply pull request #1502 provided by bstroebl: Add ntv2 entry for Thuringia
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-29
+
+    [composer] More improvements to item dispayName methods
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-29
+
+    Follow up 3f0d0944
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-29
+
+    [composer] Support merged undo/redo commands for multiframe items
+
+pcav <cavallini@faunalia.it>	2014-07-28
+
+    Make table sortable. Fixes #10962
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-28
+
+    [composer] Add api method for toggling visibility of composer items
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-28
+
+    Fix some warnings
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-28
+
+    Request geometry when virtual field requires
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-28
+
+    [composer] Add function for getting a friendly display name for items
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-28
+
+    Fix crash with maximumValue/minimumValue for virtual fields
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-28
+
+    Initialize expression field buffer to NULL
+    Prevents crash, see
+    https://github.com/qgis/QGIS/pull/1494#issuecomment-50303556
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-27
+
+    [FEATURE][composer] Allow specifying user stylesheets to apply to a HTML item's content
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-27
+
+    Disable color picker under OSX, due to limitations with QWidget::grabMouse on that platform
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-27
+
+    Disable preview modes under OSX due to issues with QGraphicsEffects under OSX (refs #10761)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-27
+
+    [composer] Add some missing icons to menu items
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-27
+
+    [composer] Switch to alt key for resize and draw from center mode
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-25
+
+    always also update qgis_en.ts in update_ts_files.sh run
+
+Werner Macho <werner.macho@gmail.com>	2014-07-25
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-07-25
+
+    can re-center when scaling mapCanvas extent
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-25
+
+    add QScintilla2 to INSTALL
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-25
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-24
+
+    clean identifier of layer variable passed to the feature form
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-24
+
+    fix saving of edittype configuration and remove redundant storage of labelontop
+    and editable state.
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-24
+
+    restore naming of generated attribute widgets
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-24
+
+    Some cleanup
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-24
+
+    Request geometry when virtual field expression require so
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-24
+
+    Sanity checks in add attribute dialog
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-24
+
+    Fix uniqueValues for virtual field
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-24
+
+    Automatically switch editor layout when assigning .ui file
+    Fix #7286
+
+Sandro Mani <manisandro@gmail.com>	2014-07-21
+
+    Use field precision for range edit spin
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-24
+
+    Allow expressions with geometry on value relation widget
+    Fix #10900
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-24
+
+    Followup 11f197e
+    Fix #10922
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-23
+
+    Use icons on fields properties, disable "editable" where inappropriate
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-05-26
+
+    [FEATURE] Expression field (Virtual field)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-05-28
+
+    Remove unused method
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-07-23
+
+    Fix finding QScintilla for non-QT_INCLUDE_DIR install directories
+
+Merge: 3988ad0 6014d45
+Tim Sutton <tim@linfiniti.com>	2014-07-23
+
+    Merge pull request #1514 from manisandro/stretch_last_column
+
+    Trivial: Stretch last column in bad layers dialog
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-23
+
+    make sip bindings to qscintilla derived classes optional (replaces 7e815cad & 8f0b8987)
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-23
+
+    Setting attribute table cache size to 0 results in full cache
+
+Sandro Mani <manisandro@gmail.com>	2014-07-23
+
+    Stretch last column in bad layers dialog
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-22
+
+    [FEATURE][composer] Holding shift while drawing new lines constrains lines to horizontal/vertical/diagonals, while drawing rectangles constrains items to squares. Holding control switches to a draw-from-center mode. Sponsored by City of Uster, Switzerland.
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-23
+
+    Set focus to first widget on attribute form
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-11
+
+    Fix attribute dialog crash on close
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-23
+
+    Followup 9f07383
+
+volaya <volayaf@gmail.com>	2014-07-22
+
+    [processing] fixed fileFilter for file outputs
+
+volaya <volayaf@gmail.com>	2014-07-20
+
+    [processing] made xgrids parameter in raster calculator optional
+
+volaya <volayaf@gmail.com>	2014-07-19
+
+    [processin] fixed extent checking in saga algorithm
+
+volaya <volayaf@gmail.com>	2014-07-18
+
+    [processing] fixed issues when loading parameters
+
+volaya <volayaf@gmail.com>	2014-07-18
+
+    [processing] improved SAGA multiple extents detection
+
+volaya <volayaf@gmail.com>	2014-07-18
+
+    [processing] fixed SAGA description
+
+volaya <volayaf@gmail.com>	2014-07-18
+
+    [processing] fixed  some GRASS descriptions
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-22
+
+    Synchronize values of repeating widgets on forms
+    Fix #10877
+
+Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-07-22
+
+    Only add feature once when python init function is set on attribute form
+    Fix #10862
+
+Merge: 080f252 e477633
+alexbruy <alexander.bruy@gmail.com>	2014-07-22
+
+    Merge pull request #1510 from gioman/v_points
+
+    [processing] fix grass64 v.to.points
+
+Merge: 8f0b898 38390bf
+volaya <volayaf@gmail.com>	2014-07-22
+
+    Merge pull request #1512 from radosuav/small_processing_fixes_3
+
+    [Processing] Small fixes
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-07-22
+
+    [Processing] Add *.* file filter to batch processing input panel
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-07-22
+
+    [Processing] Comment debuging statements in OTB which clutter up Processing log
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-07-22
+
+    [Processing] Hide some OTB params under Advanced button and improve handling of advanced parameters
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-07-22
+
+    [Processing] Add GRASS r.univar and update r.fillnulls
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-07-22
+
+    [Processing] Remove print statements which sometimes cause an exception
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-22
+
+    fix qscintilla sip include path (followup 7e815cad)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-22
+
+    Fix build errors
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-10
+
+    [FEATURE][composer] Data defined url for composer html items. Sponsored by City of Uster, Switzerland.
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-07-21
+
+    fix grass64 v.to.points
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-20
+
+    debian packaging update with workaround for debian #755491
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-20
+
+    remove automake residuals
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-20
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-20
+
+    indentation update
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-21
+
+    Fix build error with processing
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-21
+
+    Fix #10909 (SVG markers rendered as images in composer)
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-21
+
+    Comment sip files for code editor to fix build error on ubuntu
+
+Merge: 460cee1 6486594
+alexbruy <alexander.bruy@gmail.com>	2014-07-21
+
+    Merge pull request #1505 from volaya/master
+
+    [Processing] Refactoring of parameters and outputs
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-20
+
+    [composer] Switch to using data defined button for picture source expression
+
+Denis Rouzaud <denis.rouzaud@gmail.com>	2014-07-15
+
+    [edit widgets] set line edit as read-only instead of disabled
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-20
+
+    Add missing HTML editor sip files
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-20
+
+    Switch to QgsCodeEditorHTML for composer html code editor
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-20
+
+    Add HTML code editor
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-20
+
+    [FEATURE][composer] Multiple overview frames per composer map (fix #10299)
+
+Werner Macho <werner.macho@gmail.com>	2014-07-20
+
+    [TRANSUP] common translation update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-20
+
+    Drop QScintilla2 from window title
+
+Merge: 4e2afeb b2ff718
+Nathan Woodrow <madmanwoo@gmail.com>	2014-07-20
+
+    Merge pull request #1507 from NathanW2/code_editor
+
+    Code editor using QScintilla.
+
+    Thanks to Salvatore Larosa for the initial work.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-19
+
+    [composer] Don't auto set maximum number of attributes when resizing item. Instead, keep the maximum number of rows as whatever the user set. This change prevents the attribute table from shrinking and never re-growing (fix #10911)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-19
+
+    [composer] Fix restoration of grid color alpha channel from 2.4 projects
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-19
+
+    [composer] Write a dummy Grid element when saving composer maps, fixes crash when loading project in older QGIS versions (fix #10905)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-19
+
+    [composer] documentation improvements
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-19
+
+    [composer] More cleanups - move font utils from QgsComposerItem to QgsComposerUtils, add tests
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-17
+
+    Legend refactoring: first steps towards legend customization
+
+    - map layers have associated QgsMapLayerLegend instance
+    - QgsMapLayerLegend is interface for generation of legend with some default implementations
+    - QgsLayerTreeModelLegendNode is interface for representation of legend item in layer tree model with some default implementations
+
+Werner Macho <werner.macho@gmail.com>	2014-07-17
+
+    [TRANSUP] string update by request
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-17
+
+    add msvc notes
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-17
+
+    avoid initially loading value map previews from the first layer (might be expensive)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-17
+
+    [FEATURE][composer] Allow setting attribute table header and content font colors. Fix saving alpha channel for grid colors.
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-07-16
+
+    Fix bundle-relative linking for libqscintilla2.dylib (now required lib) on Mac
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-17
+
+    When grouping layer tree nodes, insert new group at the same position
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-16
+
+    Fix #10828 (slow project loading)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-16
+
+    Fix #10744 (crashes with CSV files with parallel rendering)
+
+    I can't replicate the crash, but the static QRegExp instances will not work
+    with multiple threads.
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-16
+
+    Clean up code editor code and API. Add tr() and fix spelling.
+
+    Moved show/hide folding and margin methods to base class.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-07
+
+    [FEATURE][composer] Allow evaluation of QGIS expressions inside html item source. Expressions are evaluated before HTML is rendered, allowing the expression results to modify how the HTML content is rendered. Sponsored by City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-07
+
+    [composer] Switch to using qscintilla for html editor in html item properties. Sponsored by City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-07
+
+    [composer] Fetch html using QgsNetworkAccessManager so that reply can be manipulated prior to rendering. Sponsored by City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-16
+
+    [FEATURE][composer] Option for manual entry of HTML item source. Sponsored by City of Uster, Switzerland.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-16
+
+    [composer] Clean up code, move some methods to QgsComposerUtils, const correctness, tests, doc improvements
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-07-16
+
+    [processing] fix icons for TauDEM algs
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-16
+
+    debian packaging update
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-16
+
+    Use code editor for expression widget
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-16
+
+    Define QSCINTILLA_DLL for windows
+
+Werner Macho <werner.macho@gmail.com>	2014-07-15
+
+    [TRANSUP] transifex update and common string update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-15
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-15
+
+    cmake: report geos version with c-api header only (followup 0529f117)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-15
+
+    [composer] Fix calculation of rotated image size inside picture items when rotation is 90 or 270 degrees.
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-15
+
+    fix moc warning
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-15
+
+    more doxygen fixes
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-15
+
+    fix warnings
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-15
+
+    cmake: report geos version
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-15
+
+    debian packaging update
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-15
+
+    Follow up 2041fc24
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-10
+
+    [composer] Refactor QgsComposerItem:
+    - New class QgsComposerObject, which both QgsComposerItem and QgsComposerMultiFrame
+    derive from. This class contains the framework for data defined composition properties.
+    - New class QgsComposerUtils, containing helpful static functions previously in QgsComposerItem
+    - Test suites for data defined settings in QgsComposerObject and functions in QgsComposerUtils
+
+volaya <volayaf@gmail.com>	2014-07-14
+
+    [Processing] Refactoring of parameters and outputs
+
+    It also adds some changes in the core and tools package, to provide a cleaner structure
+
+Victor Olaya <volayaf@gmail.com>	2014-07-14
+
+    [processing] added 'crop to data' algorithm from SAGA
+
+Victor Olaya <volayaf@gmail.com>	2014-07-14
+
+    [processing] Changed raster calculator to ask main layer separately
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-13
+
+    indentation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-13
+
+    doxygen: add new directories and fix warnings
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-13
+
+    [FEATURE][composer] Add marker style for map grids (fix #9381)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-13
+
+    [composer] More tweaks to grid UI:
+    - show grid name in draw grid checkbox to aid UX
+    - restore 12 decimal places for grid interval/offset
+    - rearrange controls for improved user flow
+    - disabled cross width control when grid type is not set to cross
+    - switch to collapsible group boxes
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-13
+
+    [composer] Reduce height of map grid list (fix #10881)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-13
+
+    Followup c04a5400
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-13
+
+    [composer] Hard code drawing a maximum of 1000 horizontal or vertical grid lines. Prevents hangs if grid settings are poorly chosen, resulting in millions of grid lines
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-13
+
+    [composer] Fix annotation settings only being applied to first grid in list, not selected grid (fix #10880)
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-12
+
+    Code editor
+
+Victor Olaya <volayaf@gmail.com>	2014-07-12
+
+    [processing] fixes in model/script downloader
+
+Victor Olaya <volayaf@gmail.com>	2014-07-12
+
+    [processing] improved import to postgis algorithm
+
+Victor Olaya <volayaf@gmail.com>	2014-07-12
+
+    [processing] added some extra info in modeler calculator
+
+Victor Olaya <volayaf@gmail.com>	2014-07-11
+
+    [processing] fixed frequency algorithm
+
+Victor Olaya <volayaf@gmail.com>	2014-07-11
+
+    [processing] change icon of core algs
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-07-11
+
+    [processing] Fix typo
+
+Larry Shaffer <larrys@dakotacarto.com>	2014-07-11
+
+    Fix QgsComposerMap sip/cpp build error
+
+Werner Macho <werner.macho@gmail.com>	2014-07-11
+
+    [TRANSUP] adding more translators
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-07-11
+
+    [TRANSUP] pt_BR from transifex on request
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Werner Macho <werner.macho@gmail.com>	2014-07-11
+
+    [TRANSUP] transifex update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-10
+
+    Remove unused writeSettings, readSettings, removeSettings methods from QgsComposerItem
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-11
+
+    Follow up grid merge fixes. Repair broken grid tick tests
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-11
+
+    Fix merge conflicts resulting from composer multi grid merge
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-07-11
+
+    [processing] update CMakeLists.txt to handle new directories
+
+Victor Olaya <volayaf@gmail.com>	2014-07-10
+
+    [processing] added some new core algs as scripts
+
+Victor Olaya <volayaf@gmail.com>	2014-07-10
+
+    [processing] allow adding core processing algs using scripts
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-10
+
+    enable feature form on openFeatureForm on editable layer (fixes #10865)
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Revert "Fix reversed lat/long in grid annotations"
+
+    This reverts commit 2d2340e916db09c03772a3f9d4de8cb49a4c9d72.
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Fix #10720
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Fix reversed lat/long in grid annotations
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Fix swapped lat/long
+
+Merge: 6097e58 c33007f
+volaya <volayaf@gmail.com>	2014-07-10
+
+    Merge pull request #1503 from alexbruy/processing-ogr
+
+    Processing ogr
+
+Merge: 9abeeb6 0525c01
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Merge branch 'composer_grid_master'
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Show frame entry independent of translation
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Fix some todos
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Start without composer map without grid
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-10
+
+    Add frame pen width, color, fill color1, fill color2 to composergrid
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-09
+
+    [FEATURE] New $atlasfeature expression function for returning the current atlas feature. Also clean up the expression groups and move some unrelated functions out of the 'Record' group.
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-09
+
+    [FEATURE] New expression functions for $currentfeature (returns current feature) and 'attribute' (returns value stored in specified field within a feature)
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-10
+
+    fix build error (followup ba8f3881)
+
+Victor Olaya <volayaf@gmail.com>	2014-07-09
+
+    deleted EnumerateTableField description (redundant)
+
+Victor Olaya <volayaf@gmail.com>	2014-07-09
+
+    [processing] fixed cmake
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-07-09
+
+    remove unused files, code cleanup
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-07-08
+
+    [processing] refactor OGR algorithms to use commandline tools, not
+    bindings
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-09
+
+    Compatibility methods to simulate old composer map grid
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-09
+
+    Adapt user interface for multiple grids
+
+Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2014-07-08
+
+    Port possibility to have several grids / crs in composer map from QGIS Enterprise to master
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-08
+
+    Begin test suite for data defined composer settings
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-08
+
+    german translation update
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-08
+
+    Remove sqlanywhere plugin and provider (implements #10840)
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-08
+
+    debian packaging update
+    Funded-By: norBIT
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-06
+
+    [FEATURE] Color picker option in color button context menu, which allows for sampling a color from anywhere on the screen. Supports holding the left mouse button to continuously sample. Pressing space also triggers a sample for Windows, where mouse clicks outside the QGIS window are unavoidably propagated onward.
+
+Merge: 32a3030 d68bc59
+alexbruy <alexander.bruy@gmail.com>	2014-07-07
+
+    Merge pull request #1501 from gioman/grass64watershed
+
+    [processing] fix GRASS 6.4 r.watershed
+
+Merge: 136cd5c b16172c
+alexbruy <alexander.bruy@gmail.com>	2014-07-07
+
+    Merge pull request #1500 from gioman/grass7watershed
+
+    [processing] fix GRASS 7 r.watershed
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-07
+
+    feature renderers: don't display not rendered class in catch-all class and fix class counting (followup d4b8c407c and 4867b7fa)
+
+    Funded-By: norBIT
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-07
+
+    canvas: remove keys for switching single/multithreaded and showing rendering times (fixes #10827)
+    Funded-By: norBIT
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-07
+
+    Make QScintilla a required dependency
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-07
+
+    Remove single select tool, merge into Select By Rectangle.  Fix #10824
+
+    - New tool named Select Feature(s) does both actions one tool
+    - select(), selectByRectangle() return SelectFeatures action to maintain
+      API
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-07-07
+
+    [processing] fix GRASS 64 r.watershed
+
+Giovanni Manghi <giovanni.manghi@faunalia.pt>	2014-07-07
+
+    [processing] fix GRASS 7 r.watershed
+
+Victor Olaya <volayaf@gmail.com>	2014-07-06
+
+    [processing] added 'Select by expression' algorithm (by Michaël Douchin - 3Liz)
+
+Victor Olaya <volayaf@gmail.com>	2014-07-06
+
+    [processing] removed scripts
+
+    They should be downloaded now from the scripts/model repo
+
+Victor Olaya <volayaf@gmail.com>	2014-07-06
+
+    fixed issue with MultilineTextPanel in modeler (#10813)
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-06
+
+    [composer] Fix missing descriptions for composition data defined buttons on initial composer load
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-06
+
+    Add render state support for graduated renderer
+
+    Add check state role for graduated renderer
+
+    Sync sip bindings
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-05
+
+    german translation update
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-06
+
+    [FEATURE][composer] Data defined page size, orientation and number of pages for compositions. Funded by Canton of Neuchâtel, Switzerland
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-06
+
+    [composer] Composer items which set their own size must consider data defined width and height
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-06
+
+    [FEATURE][composer] Data defined item size and position. Funded by Canton of Neuchâtel, Switzerland
+
+Werner Macho <werner.macho@gmail.com>	2014-07-05
+
+    transifex and string update
+
+    Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-05
+
+    Followup 6d7c5f88
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-05
+
+    [FEATURE][composer] Data defined map scale, rotation and extents. Funded by Canton of Neuchâtel, Switzerland
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-05
+
+    [FEATURE][composer] Data defined item rotation. Funded by Canton of Neuchâtel, Switzerland
+
+Merge: 47e8bde 228892c
+alexbruy <alexander.bruy@gmail.com>	2014-07-05
+
+    Merge pull request #1498 from minorua/joinattrs
+
+    [processing] JoinAttributes improvement
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-05
+
+    [FEATURE][composer] Data defined transparency and blend modes for composer items. Funded by Canton of Neuchâtel, Switzerland
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-05
+
+    [composer] Initial framework for data defined properties in compositions and composer items. Funded by Canton of Neuchâtel, Switzerland
+
+Minoru Akagi <akaginch@gmail.com>	2014-07-05
+
+    [processing] fix join to layer with join (fix #10244)
+
+Minoru Akagi <akaginch@gmail.com>	2014-07-05
+
+    [processing] JoinAttributes improvement
+
+    - allow join not only with vector attribute table but also with geometryless table
+    - performance and key comparison improvement
+    - str to unicode fix
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-05
+
+    categorized renderer: show category by default (followup 4867b7fa)
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-05
+
+    Use index to render legend symbol items
+
+Victor Olaya <volayaf@gmail.com>	2014-07-04
+
+    [processing] fixed #10792
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-04
+
+    fixup 4867b7fa
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-04
+
+    [FEATURE][API] categorized render: support disabling rendering of some categories
+
+    Funded-By: norBIT
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-05
+
+    [composer] Create base item widget class for composer items, clean up and remove duplicate code
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-04
+
+    [composer] Make sure general atlas properties are imported before importing items from xml, so that items can be aware of atlas context while they are being created
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-04
+
+    Move decodeBlendMode to QgsSymbolLayerV2Utils
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-04
+
+    Data defined must reprepare expression if expression changes
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-04
+
+    Allow preparing expressions in QgsDataDefined without requiring a layer
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-04
+
+    [composer] Use the maximum frame width when setting a html item's content width
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-04
+
+    [composer] Don't snap to items within a group
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-07-04
+
+    [composer] Improved method for setting/checking whether items are in a group
+
+Merge: af17b56 0c0e9ec
+mhugent <marco.hugentobler@sourcepole.ch>	2014-07-04
+
+    Merge pull request #1497 from manisandro/multilabeling_fix
+
+    Fix joinConnectedFeatures not keeping the featureParts list in sync
+
+Sandro Mani <manisandro@gmail.com>	2014-07-03
+
+    Fix joinConnectedFeatures not keeping the featureParts list in sync (Funded by Sourcepole)
+
+borys <info@borysjurgiel.pl>	2014-07-03
+
+    Typo fixes from Rome airport
+
+Merge: 144f7ec 5476d86
+volaya <volayaf@gmail.com>	2014-07-03
+
+    Merge pull request #1496 from Gustry/dev
+
+    [processing] change str to unicode fix #10624
+
+Etienne Trimaille <etienne.trimaille@gmail.com>	2014-07-03
+
+    change str to unicode fix #10624
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-03
+
+    display project filename in project properties (implements #10788)
+
+Victor Olaya <volayaf@gmail.com>	2014-07-02
+
+    [processing] fixed #10780
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-02
+
+    fix windows build
+
+Juergen E. Fischer <jef@norbit.de>	2014-07-02
+
+    indentation update
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-02
+
+    Add border and fill colour options to bands. Different border for select tool
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-02
+
+    Use nicer colours for zoom and select bands.  Match icon colour
+
+Alexander Bruy <alexander.bruy@gmail.com>	2014-07-01
+
+    [processing] fix fusion algs loading
+
+Merge: 978eb2e 6f00101
+alexbruy <alexander.bruy@gmail.com>	2014-07-01
+
+    Merge pull request #1495 from giohappy/new_operators_dospatialjoin
+
+    Add fine grain control over select by location tools
+
+Nathan Woodrow <nathan.woodrow@mapsolutions.com.au>	2014-07-01
+
+    Fix #10589 - Gesture events don't get sent correctly with interactive mode on view
+
+Victor Olaya <volayaf@gmail.com>	2014-07-01
+
+    [processing] more changes to fusion lidar algorithms
+
+giohappy <giohappy@gmail.com>	2014-07-01
+
+    fix to Processing side
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-01
+
+    QgsLegendSettings: new class to keep settings for QgsLegendRenderer
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-01
+
+    Allow legend to have other than the "ideal" minimum size
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-01
+
+    QgsComposerLegend: use QgsLegendRenderer for legend drawing
+
+Martin Dobias <wonder.sk@gmail.com>	2014-07-01
+
+    Moved legend rendering code from QgsComposerLegend to QgsLegendRenderer
+
+giohappy <giohappy@gmail.com>	2014-06-30
+
+    improved processing extract/select by location
+
+giohappy <giohappy@gmail.com>	2014-06-30
+
+    Improved select by location
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-06-30
+
+    [composer] Default to no backgrounds for new labels, pictures, scalebars, and arrows. Fix some items not drawing using antialiasing if background disabled.
+
+Victor Olaya <volayaf@gmail.com>	2014-06-29
+
+    [processing] add 'optional' label to optional parameters in input dialog
+
+Victor Olaya <volayaf@gmail.com>	2014-06-29
+
+    [processing] better handling of values in boolean parameter
+
+Victor Olaya <volayaf@gmail.com>	2014-06-29
+
+    [processing] Update of fusion lidar algorithms (By Agresta S.Coop)
+
+Martin Dobias <wonder.sk@gmail.com>	2014-06-30
+
+    Allow buiding of QgsLegendModel from layer tree
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-29
+
+    remove executable bit from not executable files
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-29
+
+    only consider the crs of layers with geometry for automatically setting of project crs and otfr (fixes #10510)
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-29
+
+    metasearch: fix fsf address
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-29
+
+    oracle provider: fix closing of iterator in case of error
+
+Merge: a2a26c2 05cfd69
+alexbruy <alexander.bruy@gmail.com>	2014-06-29
+
+    Merge pull request #1446 from volaya/new_modeler
+
+    [processing] overhaul of graphical modeler
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-06-29
+
+    [composer] Use pixels for snapping rather than mm, allowing for finer work when zoomed in. Merge grid and guide snapping settings to a single snap tolerance setting.
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-28
+
+    standalone windows installer: fix qgis demo data link
+
+Victor Olaya <volayaf@gmail.com>	2014-06-28
+
+    [processing] better handling of col sizes in batch interface
+
+Victor Olaya <volayaf@gmail.com>	2014-06-28
+
+    [processing] fixed #10445
+
+Victor Olaya <volayaf@gmail.com>	2014-06-28
+
+    [processing] methods in dataobjects.py now return layers ordered by name
+
+    fixes #10446
+
+Victor Olaya <volayaf@gmail.com>	2014-06-08
+
+    [processing] overhaul of graphical modeler
+
+Merge: 09645e4 2982b57
+volaya <volayaf@gmail.com>	2014-06-28
+
+    Merge pull request #1490 from radosuav/small_processing_fixes2
+
+    [processing] Small fixes 2
+
+Nyall Dawson <nyall.dawson@gmail.com>	2014-06-28
+
+    [FEATURE][composer] Allow setting secondary color for scalebars, allow alpha channels in scalebar colors
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-27
+
+    osgeo4w: also exclude the external python libraries in release packages and
+    skip the disabled grass direct library
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-27
+
+    Bump version to 2.5
+
+Juergen E. Fischer <jef@norbit.de>	2014-06-27
+
+    update changelog for release 2.4
+
 Werner Macho <werner.macho@gmail.com>	2014-06-27
 
     [TRANSUP] Final translation update for 2.4 source release
 
     Signed-off-by: Werner Macho <werner.macho@gmail.com>
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-06-27
+
+    [processing] Sort algorithms when updating provider alg list.
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-06-27
+
+    [processing] Give an option for all file types to be used as input layer to processing algorithms.
 
 Martin Dobias <wonder.sk@gmail.com>	2014-06-27
 
@@ -101,6 +6379,18 @@ Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-06-26
 Martin Dobias <wonder.sk@gmail.com>	2014-06-26
 
     Few more doxygen docs for QgsMapLayerRenderer and subclasses
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-06-26
+
+    Do not put GDAL extra parameters in quotes.
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-06-26
+
+    Change the way input dataset CRS in read, to avoid problems with file handles remaining open in QGIS after use.
+
+Rado Guzinski <rmgu@dhi-gras.com>	2014-06-26
+
+    Allow passing of parameters to algorithms in dictionaries.
 
 Alexander Bruy <alexander.bruy@gmail.com>	2014-06-26
 
@@ -265,6 +6555,10 @@ Juergen E. Fischer <jef@norbit.de>	2014-06-23
 
     make merge attributes dialog translation agnostic (fixes #10681)
 
+Cyrille Medard de Chardon <serialc@users.noreply.github.com>	2014-06-23
+
+    CSV acronym added for consistency other file types
+
 Martin Dobias <wonder.sk@gmail.com>	2014-06-23
 
     Fix #9609 (crash with WFS)
@@ -319,6 +6613,10 @@ Matthias Kuhn <matthias.kuhn@gmx.ch>	2014-06-23
 
     Editorwidgets: Save "label on top" and "editable" settings to project
     Fix #10667
+
+giohappy <giohappy@gmail.com>	2014-06-23
+
+    Remove alias from vector layer if it's an empty string
 
 Merge: daefe3e 4c199ff
 Martin Dobias <wonder.sk@gmail.com>	2014-06-23
@@ -1000,6 +7298,33 @@ Juergen E. Fischer <jef@norbit.de>	2014-06-17
 
 Even Rouault <even.rouault@mines-paris.org>	2014-06-17
 
+    Use GEOS reentrant API (_r functions) and update requirement to GEOS >= 3.1.0
+
+    Currently QGIS uses the 'classic' GEOS API that uses a global context.
+    This can conflict with libraries that would also use the global context
+    and potentially finalize it whereas QGIS will still use it later.
+
+    See https://groups.google.com/forum/#!topic/spatialite-users/9YSU6c5AVQ4 for
+    such an example of such a recent issue with Spatialite.
+
+    The _r API is available since GEOS 3.1.0, which is already an ancient GEOS
+    version. For example, old-old-stable Ubuntu (Lucid 10.04) and Debian (squeeze)
+    ship with GEOS 3.1.0 or later.
+
+    Such move has also been done in GDAL 1.11
+    (http://lists.osgeo.org/pipermail/gdal-dev/2013-August/036877.html)
+    and MapServer 7.0 (https://github.com/mapserver/mapserver/issues/4733)
+
+    There's no easy way unfortunately to check at compile time that you don't
+    use the non _r API. I have patched my geos_c.h header to #ifdef that API (quite
+    painfull to do..). A postprocessing check can be done however with :
+
+    objdump -T output/lib/*.so | grep -v Base | grep GEOS | grep -v _r | grep -v "_ZN" | grep -v GEOSversion
+
+    It should return nothing.
+
+Even Rouault <even.rouault@mines-paris.org>	2014-06-17
+
     Fix crash in QgsVectorFileWriter::addFeature()
 
     createFeature() might return a NULL pointer that OGR_L_CreateFeature()
@@ -1133,6 +7458,19 @@ cdavila <cdavilam@orangecorreo.es>	2014-06-17
     Fix wrong reference to geometries in sintax
 
     Geometry a was repeated and geometry was missing
+
+Even Rouault <even.rouault@mines-paris.org>	2014-06-16
+
+    OGR provider: deal with wkbUnknown25D (wkbUnknown | wkb25DBit)
+
+    This geometry type doesn't exist admitedly in the OGRwkbGeometryType
+    enumeration but a few OGR drivers can expose layers of this type.
+    Those layers should be dealt exactly like wkbUnknown layers, i.e.
+    QGIS should analyze the content to see if there are points, lines,
+    polygons and create derived layers.
+
+    Also report the geometry type of wkbGeometryCollection25D layers in
+    the U.I.
 
 Even Rouault <even.rouault@mines-paris.org>	2014-06-16
 
@@ -6246,6 +12584,12 @@ Sandro Mani <manisandro@gmail.com>	2014-04-06
 
     Ask whether to save existing project when creating a new
      project from a template.
+
+Sandro Mani <manisandro@gmail.com>	2014-04-06
+
+    Use a QDoubleSpinBox instead of a QLineEdit for the snapping
+     tolerance, make the treeview columns adjust better to the size of the
+     contents
 
 Merge: 00b1f2c ff18324
 Denis Rouzaud <denis.rouzaud@gmail.com>	2014-04-08
