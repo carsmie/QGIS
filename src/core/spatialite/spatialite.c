@@ -40130,9 +40130,9 @@ fnct_aux_join_segments (gaiaLinestringPtr ln1, gaiaLinestringPtr ln2,
     double m;
     if (ln1->DimensionModel == GAIA_XY_Z)
 	ln = gaiaAllocLinestringXYZ (points);
-    if (ln1->DimensionModel == GAIA_XY_M)
+    else if (ln1->DimensionModel == GAIA_XY_M)
 	ln = gaiaAllocLinestringXYM (points);
-    if (ln1->DimensionModel == GAIA_XY_Z_M)
+    else if (ln1->DimensionModel == GAIA_XY_Z_M)
 	ln = gaiaAllocLinestringXYZM (points);
     else
 	ln = gaiaAllocLinestring (points);
@@ -50595,6 +50595,7 @@ gaiaTextReaderAlloc (const char *path, char field_separator,
     if (reader->toUtf8 == (void *) 0)
       {
 	  fclose (in);
+          free(reader);
 	  return NULL;
       }
     reader->error = 0;
