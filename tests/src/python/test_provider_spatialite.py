@@ -32,19 +32,13 @@ class TestPyQgsPostgresProvider(TestCase, ProviderTestCase):
     def setUpClass(cls):
         """Run before all tests"""
         # Create test layer
-        cls.vl = QgsVectorLayer( u'dbname=\'qgis_test\' host=localhost port=5432 user=\'postgres\' password=\'postgres\' sslmode=disable key=\'pk\' srid=4326 type=POINT table="qgis_test"."someData" (geom) sql=', 'test', 'postgres' )
+        cls.vl = QgsVectorLayer( 'dbname=\'{}/provider/spatialite.db\' table="somedata" (geometry) sql='.format(TEST_DATA_DIR), 'test', 'spatialite' )
         assert(cls.vl.isValid())
         cls.provider = cls.vl.dataProvider()
 
     @classmethod
     def tearDownClass(cls):
         """Run after all tests"""
-
-    def enableCompiler(self):
-        QSettings().setValue(u'/qgis/postgres/compileExpressions', True)
-
-    def disableCompiler(self):
-        QSettings().setValue(u'/qgis/postgres/compileExpressions', False)
 
 if __name__ == '__main__':
     unittest.main()
