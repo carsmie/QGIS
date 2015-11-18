@@ -1,9 +1,9 @@
 /***************************************************************************
-
-               ----------------------------------------------------
-              date                 : 22.4.2015
-              copyright            : (C) 2015 by Matthias Kuhn
-              email                : matthias (at) opengis.ch
+                             qgsogrexpressioncompiler.h
+                             --------------------------
+    begin                : November 2015
+    copyright            : (C) 2015 Nyall Dawson
+    email                : nyall dot dawson at gmail dot com
  ***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -13,23 +13,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef QGSPOSTGRESEXPRESSIONCOMPILER_H
-#define QGSPOSTGRESEXPRESSIONCOMPILER_H
+#ifndef QGSOGREXPRESSIONCOMPILER_H
+#define QGSOGREXPRESSIONCOMPILER_H
 
-#include "qgssqlexpressioncompiler.h"
 #include "qgsexpression.h"
-#include "qgspostgresfeatureiterator.h"
+#include "qgsogrfeatureiterator.h"
+#include "qgssqlexpressioncompiler.h"
 
-class QgsPostgresExpressionCompiler : public QgsSqlExpressionCompiler
+class QgsOgrExpressionCompiler : public QgsSqlExpressionCompiler
 {
   public:
 
-    explicit QgsPostgresExpressionCompiler( QgsPostgresFeatureSource* source );
+    explicit QgsOgrExpressionCompiler( QgsOgrFeatureSource* source );
+
+    virtual Result compile( const QgsExpression* exp ) override;
 
   protected:
 
+    virtual Result compileNode( const QgsExpression::Node* node, QString& str ) override;
     virtual QString quotedIdentifier( const QString& identifier ) override;
     virtual QString quotedValue( const QVariant& value ) override;
+
+  private:
+
+    QgsOgrFeatureSource* mSource;
 };
 
-#endif // QGSPOSTGRESEXPRESSIONCOMPILER_H
+#endif // QGSOGREXPRESSIONCOMPILER_H
