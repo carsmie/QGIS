@@ -3263,7 +3263,7 @@ Lekérdezés:
     <message>
         <location filename="../python/plugins/db_manager/ui/DlgSqlWindow.ui" line="46"/>
         <location filename="../python/plugins/db_manager/python-i18n.cpp" line="280"/>
-        <source>Column(s) with 
+        <source>Column(s) with
 unique values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3318,9 +3318,9 @@ unique values</source>
     <message>
         <location filename="../python/plugins/db_manager/ui/DlgSqlWindow.ui" line="118"/>
         <location filename="../python/plugins/db_manager/python-i18n.cpp" line="282"/>
-        <source>Retrieve 
+        <source>Retrieve
 columns</source>
-        <translation>Oszlopok 
+        <translation>Oszlopok
 letöltése</translation>
     </message>
     <message>
@@ -8060,11 +8060,11 @@ Kérlek konfiguráld, mielőtt Fusion algoritmust futtatsz.</translation>
     </message>
     <message>
         <location filename="../python/plugins/GdalTools/python-i18n.cpp" line="11"/>
-        <source>Unable to load {0} plugin. 
-The required &quot;{1}&quot; module is missing. 
+        <source>Unable to load {0} plugin.
+The required &quot;{1}&quot; module is missing.
 Install it and try again.</source>
-        <translation>Nem tudom betölteni a(z){0} modult. 
-A szükséges {1} modul hiányzik. 
+        <translation>Nem tudom betölteni a(z){0} modult.
+A szükséges {1} modul hiányzik.
 Telepítse és próbálja újra.</translation>
     </message>
     <message>
@@ -8391,7 +8391,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../python/plugins/GdalTools/python-i18n.cpp" line="84"/>
-        <source>The following files were not created: 
+        <source>The following files were not created:
 {0}</source>
         <translation>A következő fájlokat nem hoztam létre:
 {0}</translation>
@@ -8406,7 +8406,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../python/plugins/GdalTools/python-i18n.cpp" line="89"/>
-        <source>The command is still running. 
+        <source>The command is still running.
 Do you want terminate it anyway?</source>
         <translation>A parancs még fut.
 Meg akarod szakítani?</translation>
@@ -8685,7 +8685,7 @@ Meg akarod szakítani?</translation>
     </message>
     <message>
         <location filename="../python/plugins/GdalTools/python-i18n.cpp" line="103"/>
-        <source>GDAL was unable to retrieve the extent from any file. 
+        <source>GDAL was unable to retrieve the extent from any file.
 The &quot;Use intersected extent&quot; option will be unchecked.</source>
         <translation>A GDAL nem tudta kiolvasni egyik fájlból sem a terjedelmet.
 A &quot;Metszet terjedelem használata&quot; opciót kikapcsolom.</translation>
@@ -8697,7 +8697,7 @@ A &quot;Metszet terjedelem használata&quot; opciót kikapcsolom.</translation>
     </message>
     <message>
         <location filename="../python/plugins/GdalTools/python-i18n.cpp" line="105"/>
-        <source>The computed extent is empty. 
+        <source>The computed extent is empty.
 Disable the &quot;Use intersected extent&quot; option to have a nonempty output.</source>
         <translation>A számított terjedelem üres.
 Kapcsold ki a &quot;Metszet terjedelem használata&quot; opciót, hogy ne üres eredményt kapjál.</translation>
@@ -9938,8 +9938,8 @@ amikor a párbeszédablak Súgó gombját megnyomod.</translation>
         <location filename="../python/plugins/GdalTools/tools/widgetTranslate.ui" line="148"/>
         <location filename="../python/plugins/GdalTools/tools/widgetTranslate.ui" line="160"/>
         <location filename="../python/plugins/GdalTools/python-i18n.cpp" line="365"/>
-        <source>To expose a dataset with 1 band with a color table as a dataset with 3 (RGB) or 4 (RGBA) bands. 
-Useful for output drivers such as JPEG, JPEG2000, MrSID, ECW that don&apos;t support color indexed datasets. 
+        <source>To expose a dataset with 1 band with a color table as a dataset with 3 (RGB) or 4 (RGBA) bands.
+Useful for output drivers such as JPEG, JPEG2000, MrSID, ECW that don&apos;t support color indexed datasets.
 The &apos;gray&apos; value (from GDAL 1.7.0) enables to expand a dataset with a color table that only contains gray levels to a gray indexed dataset.</source>
         <translation>Szín táblás, egy csatornás adatok kifejtése mint 3 (RGB) csatornás vagy 4 (RGBA) csatornás adatok.
 Hasznos az olyan output meghajtókhoz mint  JPEG, JPEG2000, MrSID, ECW, melyek nem támogatják a szín táblás adatokat.
@@ -11130,7 +11130,7 @@ Konfigurált mielőtt a GRASS algoritmus futtatod.</translation>
     <message>
         <location filename="../python/plugins/processing/processing-i18n.cpp" line="668"/>
         <source>Transforms raster maps from RGB (Red-Green-Blue) color space to HIS (Hue-Intensity-Saturation) color space.</source>
-        <translation>Raszter térkép transzformálása RGB (vörös-zöld-kék) színtérből 
+        <translation>Raszter térkép transzformálása RGB (vörös-zöld-kék) színtérből
 HIS (árnyalat-intenzitás-telítettség) színtérbe.</translation>
     </message>
     <message>
@@ -15786,7 +15786,7 @@ Az aktuális szerkeszthető rétegen működik</translation>
     <message>
         <location filename="../python/plugins/processing/python-i18n.cpp" line="1553"/>
         <source>Processing models (*.model *.MODEL)</source>
-        <translation>Feldolgozási modellek (*.model, *.MODEL)</translation>
+        <translation>Feldolgozási modellek (*.model *.MODEL)</translation>
     </message>
     <message>
         <location filename="../python/plugins/processing/python-i18n.cpp" line="1554"/>
@@ -19548,7 +19548,7 @@ Ez nem várt eredményhez vezethet.</translation>
     </message>
     <message>
         <location filename="../python/python-i18n.cpp" line="92"/>
-        <source>Unable to restore the file: 
+        <source>Unable to restore the file:
 {0}
 </source>
         <translation>Nem tudom visszatölteni a fájlt:
@@ -19657,9 +19657,9 @@ Ez nem várt eredményhez vezethet.</translation>
     </message>
     <message>
         <location filename="../python/python-i18n.cpp" line="93"/>
-        <source>Python Console 
+        <source>Python Console
 Use iface to access QGIS API interface or Type help(iface) for more info</source>
-        <translation>Python konzol 
+        <translation>Python konzol
 Használd az iface-t aQGIS API interfész eléréséhez vagy írd be további információkét help(iface)</translation>
     </message>
     <message>
@@ -20792,7 +20792,7 @@ Only %1 of %2 features written.</source>
     <message>
         <location filename="../src/core/qgsvectorfilewriter.cpp" line="799"/>
         <source>XML content that will be put between the &lt;channel&gt; element and the first &lt;item&gt; element for a RSS document, or between the xml tag and the first &lt;entry&gt; element for an Atom document. </source>
-        <translation>XML tartalom, melyet a &lt;chanel&gt; és az első &lt;item&gt; elem elemek közé teszünk az RSS dokumentumban vagy az XML tegek és a első &lt;entry&gt; teg 
+        <translation>XML tartalom, melyet a &lt;chanel&gt; és az első &lt;item&gt; elem elemek közé teszünk az RSS dokumentumban vagy az XML tegek és a első &lt;entry&gt; teg
 között az Atom dokumentumban.</translation>
     </message>
     <message>
@@ -21254,9 +21254,9 @@ között az Atom dokumentumban.</translation>
     </message>
     <message>
         <location filename="../src/core/qgsvectorlayerimport.cpp" line="176"/>
-        <source>Creation error for features from #%1 to #%2. Provider errors was: 
+        <source>Creation error for features from #%1 to #%2. Provider errors was:
 %3</source>
-        <translation>Elem létrehozási hiba #%1-ból #%2-ba. Szolgáltató hibaüzenete: 
+        <translation>Elem létrehozási hiba #%1-ból #%2-ba. Szolgáltató hibaüzenete:
 %3</translation>
     </message>
     <message>
@@ -22243,7 +22243,7 @@ Hiba:%2</translation>
     <message>
         <location filename="../src/providers/oracle/qgsoracleprovider.cpp" line="2661"/>
         <location filename="../src/providers/postgres/qgspostgresprovider.cpp" line="3231"/>
-        <source>Creation of data source %1 failed: 
+        <source>Creation of data source %1 failed:
 %2</source>
         <translation>Sikertelen adatforrás létrehozás %1:
 %2</translation>
@@ -22266,21 +22266,21 @@ Hiba:%2</translation>
     </message>
     <message>
         <location filename="../src/providers/oracle/qgsoracleprovider.cpp" line="2973"/>
-        <source>Unable to determine number of geometry columns of layer %1.%2: 
+        <source>Unable to determine number of geometry columns of layer %1.%2:
 %3</source>
-        <translation>Nem tudom meghatározni a réteg geometria oszlopainak számát %1.%2: 
+        <translation>Nem tudom meghatározni a réteg geometria oszlopainak számát %1.%2:
 %3</translation>
     </message>
     <message>
         <location filename="../src/providers/oracle/qgsoracleprovider.cpp" line="3006"/>
-        <source>Unable to delete layer %1.%2: 
+        <source>Unable to delete layer %1.%2:
 %3</source>
         <translation>Nem tudom törölni a réteget %1.%2:
 %3</translation>
     </message>
     <message>
         <location filename="../src/providers/oracle/qgsoracleprovider.cpp" line="3016"/>
-        <source>Unable to clean metadata %1.%2: 
+        <source>Unable to clean metadata %1.%2:
 %3</source>
         <translation>Nem tudom törölni a metaadatokat %1.%2:
 %3</translation>
@@ -22313,14 +22313,14 @@ Database error: %2</source>
     <message>
         <location filename="../src/providers/postgres/qgspostgresprovider.cpp" line="3487"/>
         <location filename="../src/providers/postgres/qgspostgresprovider.cpp" line="3515"/>
-        <source>Unable to delete layer %1: 
+        <source>Unable to delete layer %1:
 %2</source>
-        <translation>Nem tudom törölni a(z) %1 réteget: 
+        <translation>Nem tudom törölni a(z) %1 réteget:
 %2</translation>
     </message>
     <message>
         <location filename="../src/providers/postgres/qgspostgresprovider.cpp" line="3549"/>
-        <source>Unable to delete schema %1: 
+        <source>Unable to delete schema %1:
 %2</source>
         <translation>Nem tudom törölni a sémát %1
 %2</translation>
@@ -26403,26 +26403,26 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/core/qgsapplication.cpp" line="758"/>
         <source>Application state:
-QGIS_PREFIX_PATH env var:		%1
-Prefix:		%2
-Plugin Path:		%3
-Package Data Path:	%4
-Active Theme Name:	%5
-Active Theme Path:	%6
-Default Theme Path:	%7
-SVG Search Paths:	%8
-User DB Path:	%9
-Auth DB Path:	%10
+QGIS_PREFIX_PATH env var:       %1
+Prefix:     %2
+Plugin Path:        %3
+Package Data Path:  %4
+Active Theme Name:  %5
+Active Theme Path:  %6
+Default Theme Path: %7
+SVG Search Paths:   %8
+User DB Path:   %9
+Auth DB Path:   %10
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/core/qgsapplication.cpp" line="776"/>
         <source>
-		</source>
+        </source>
         <comment>match indentation of application state</comment>
         <translation>
-		</translation>
+        </translation>
     </message>
     <message>
         <location filename="../src/core/qgsapplication.cpp" line="1121"/>
@@ -47487,7 +47487,7 @@ OF QGIS&apos;</translation>
     </message>
     <message>
         <location filename="../src/ui/qgsexpressionbuilder.ui" line="559"/>
-        <source>Run the current editor text in QGIS (also saves current script). 
+        <source>Run the current editor text in QGIS (also saves current script).
 
 Use this when testing your functions.
 
@@ -47511,7 +47511,7 @@ Change the name of the script and save to allow QGIS to auto load on startup.</s
         <translation>Új fájl</translation>
     </message>
     <message>
-        <source>Name of the file to save. 
+        <source>Name of the file to save.
 
 Existing files are listed here and loaded when selected.</source>
         <translation type="obsolete">Mentendő fájl neve.
@@ -48208,8 +48208,8 @@ Use this function to add extra logic to your forms.
 An example is (in module MyForms.py):
 
           def open(dialog, layer, feature):
-	geom = feature.geometry()
-	control = dialog.findChild(QWidget,&quot;MyLineEdit&quot;)
+    geom = feature.geometry()
+    control = dialog.findChild(QWidget,&quot;MyLineEdit&quot;)
 
 Reference in Python Init Function like so: MyForms.open
 
@@ -48220,8 +48220,8 @@ Extra műveletek űrlaphoz adására használhatod.
 Egy példa (MyForms.py modulban):
 
           def open(dialog, layer, feature):
-	geom = feature.geometry()
-	control = dialog.findChild(QWidget,&quot;MyLineEdit&quot;)
+    geom = feature.geometry()
+    control = dialog.findChild(QWidget,&quot;MyLineEdit&quot;)
 
 Reference in Python Init Function like so: MyForms.open
 
@@ -52178,7 +52178,7 @@ Negatív érték kerekítés a 10 hatványaihoz</translation>
     </message>
     <message>
         <location filename="../src/ui/qgsgraduatedsymbolrendererv2widget.ui" line="238"/>
-        <source>Template for the legend text associated with each classification.  
+        <source>Template for the legend text associated with each classification.
 Use &quot;%1&quot; for the lower bound of the classification, and &quot;%2&quot; for the upper bound.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -52943,7 +52943,7 @@ Nyomj mégsemet a megszakításhoz vagy OK-t a folytatáshoz.</translation>
 %1
 at line %2 column %3</source>
         <translation>
-%1 
+%1
 a %2 sorban %3 oszlopban</translation>
     </message>
 </context>
@@ -53076,7 +53076,7 @@ a %2 sorban %3 oszlopban</translation>
 %1
 at line %2 column %3</source>
         <translation>
-%1 
+%1
 a %2 sorban %3 oszlopban</translation>
     </message>
     <message>
@@ -53418,7 +53418,7 @@ a %2 sorban %3 oszlopban</translation>
 %1
 at line %2 column %3</source>
         <translation>
-%1 
+%1
 a %2 sorban %3 oszlopban</translation>
     </message>
     <message>
@@ -53553,7 +53553,7 @@ a %2 sorban %3 oszlopban</translation>
 %1
 at line %2 column %3</source>
         <translation>
-%1 
+%1
 a %2 sorban %3 oszlopban</translation>
     </message>
     <message>
@@ -54432,7 +54432,7 @@ a %2 sorban %3 oszlopban</translation>
 %1
 at line %2 column %3</source>
         <translation>
-%1 
+%1
 a %2 sorban %3 oszlopban</translation>
     </message>
     <message>
@@ -54750,7 +54750,7 @@ a %2 sorban %3 oszlopban</translation>
     <name>QgsHeatmapRendererWidget</name>
     <message>
         <location filename="../src/gui/symbology-ng/qgsheatmaprendererwidget.cpp" line="74"/>
-        <source>The heatmap renderer only applies to point and multipoint layers. 
+        <source>The heatmap renderer only applies to point and multipoint layers.
 &apos;%1&apos; is not a point layer and cannot be rendered as a heatmap.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -55484,9 +55484,9 @@ This may be a problem in your network connection or at the WMS server.</source>
     <name>QgsInvertedPolygonRendererWidget</name>
     <message>
         <location filename="../src/gui/symbology-ng/qgsinvertedpolygonrendererwidget.cpp" line="46"/>
-        <source>The inverted polygon renderer only applies to polygon and multipolygon layers. 
+        <source>The inverted polygon renderer only applies to polygon and multipolygon layers.
 &apos;%1&apos; is not a polygon layer and then cannot be displayed</source>
-        <translation>Az invertált felület megjelenítő csak felület vagy multi felület rétegekhez használható. 
+        <translation>Az invertált felület megjelenítő csak felület vagy multi felület rétegekhez használható.
 %1 nem felület típusú réteg és nem lehet megjeleníteni</translation>
     </message>
 </context>
@@ -56185,7 +56185,7 @@ This may be a problem in your network connection or at the WMS server.</source>
     <message>
         <location filename="../src/app/qgslabelinggui.cpp" line="1118"/>
         <source>In edit mode, layer&apos;s relevant labeling map tool is:&lt;br&gt;&amp;nbsp;&amp;nbsp;Defined attribute field -&amp;gt; &lt;i&gt;enabled&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;Defined expression -&amp;gt; &lt;i&gt;disabled&lt;/i&gt;</source>
-        <translation>Szerkesztés módban a réteg címkéző eszköze:&lt;br&gt;&amp;nbsp;&amp;nbsp;Definiált attribútum -&amp;gt; 
+        <translation>Szerkesztés módban a réteg címkéző eszköze:&lt;br&gt;&amp;nbsp;&amp;nbsp;Definiált attribútum -&amp;gt;
 &lt;i&gt;engedélyezve&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp; Definiált kifejezés -&amp;gt; &lt;i&gt;tiltva&lt;/i&gt;</translation>
     </message>
     <message>
@@ -66645,7 +66645,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="386"/>
-        <source>The point displacement renderer only applies to (single) point layers. 
+        <source>The point displacement renderer only applies to (single) point layers.
 &apos;%1&apos; is not a point layer and cannot be displayed by the point displacement renderer</source>
         <translation>A pont eltolás megjelenítő csak pont rétegekhez használható. %1 nem pont réteg és nem jeleníthető meg a pont eltolás megjelenítővel</translation>
     </message>
@@ -68190,10 +68190,10 @@ Folytatod?</translation>
     </message>
     <message>
         <location filename="../src/gui/qgsprojectionselector.cpp" line="964"/>
-        <source>Error reading database file from: 
+        <source>Error reading database file from:
  %1
 Because of this the projection selector will not work...</source>
-        <translation>Hiba az adatbázis fájl olvasása közben innen: 
+        <translation>Hiba az adatbázis fájl olvasása közben innen:
  %1
 Mert ehhez nem működik a vetület kiválasztás...</translation>
     </message>
@@ -86173,14 +86173,14 @@ clustering of points.&lt;/p&gt;
 &lt;h3&gt;Advanced Options&lt;/h3&gt;
 
 &lt;h4&gt;Rows and Columns&lt;/h4&gt;
-&lt;p&gt;Used to change the dimensions of the output raster file. These values are also linked to the &lt;b&gt;Cell size X&lt;/b&gt; and &lt;b&gt;Cell size Y&lt;/b&gt; values. 
+&lt;p&gt;Used to change the dimensions of the output raster file. These values are also linked to the &lt;b&gt;Cell size X&lt;/b&gt; and &lt;b&gt;Cell size Y&lt;/b&gt; values.
 Increasing the number of rows or colums will decrease the cell size and increase the file size of the output file. The values in Rows and Columns
 are also linked, so doubling the number of rows will automatically double the number of columns and the cell sizes will also be halved. The geographical area of the output raster will remain the same!&lt;/p&gt;
 
 &lt;h4&gt;Cell size X and Y&lt;/h4&gt;
 &lt;p&gt;Control the geographic size of each pixel in the output raster. Changing these values will also change the number of Rows and Columns in the output
   raster.&lt;/p&gt;
-  
+
 &lt;h4&gt;Kernel shape&lt;/h4&gt;
 &lt;p&gt;The kernel shape controls the rate at which the influence of a point decreases as the distance from the point increases. Different kernels decay at
 different rates, so a triweight kernel gives features greater weight for distances closer to the point than the Epanechnikov kernel does. Consequently,
@@ -86217,8 +86217,8 @@ Kattints a nyílra a mező mellett és válassz egy réteget.&lt;/p&gt;
 
 &lt;h3&gt;Output formátum&lt;/h3&gt;
 &lt;p&gt;Minden a GDAL által támogatott formátum megtalálható a legördülő listában. Kattins a nyílra a mező mellett és válassz egy output formátumot.&lt;br/&gt;
-&lt;b&gt;Megjegyzés:&lt;/b&gt; a GeoTiff és ERDAS Imagine .img formátum használatát javasoljuk. Néhány formátum az alkalmazás összeomlásával 
-járhat. Kérjük használd az ajánlott formátumokat, ameddig a hibákat kijavítjuk vagy használj olyan formátumot, melyről tudod, hogy a GDAL 
+&lt;b&gt;Megjegyzés:&lt;/b&gt; a GeoTiff és ERDAS Imagine .img formátum használatát javasoljuk. Néhány formátum az alkalmazás összeomlásával
+járhat. Kérjük használd az ajánlott formátumokat, ameddig a hibákat kijavítjuk vagy használj olyan formátumot, melyről tudod, hogy a GDAL
 hibátlanul támogatja.&lt;/p&gt;
 
 &lt;h3&gt;Sugár (sávszélesség)&lt;/h3&gt;
@@ -86232,7 +86232,7 @@ A sorok és oszlopok számának növelése csökkenti a cella méretet és növe
 
 &lt;h4&gt;X és Y cella méret&lt;/h4&gt;
 &lt;p&gt;A képpontok méretét határozza meg az output raszterben. Az értékek módosítása megváltoztatja a sorok és oszlopok számát az eredményben.&lt;/p&gt;
-  
+
 &lt;h4&gt;Mag alakzat&lt;/h4&gt;
 &lt;p&gt;A mag alakzat határozza meg a pont hatásának csökkenését a távolsággal. A külöböző magok eltérő lefutást eredményeznek, így például a három súly nagyobb súlyokat eredményez a közeli pontoknál mint az Epanechnikov mag.
 Következésképpen a három súly élesebb , míg az Epanechnikov simább Hotspot-okat eredményez. Több szabványos mag függvény használható a QGIS-ben, melyek leírását a &lt;a href=&quot;http://en.wikipedia.org/wiki/Kernel_(statistics)#Kernel_functions_in_common_use&quot;&gt;Wikipedia&lt;/a&gt;n megtalálod.&lt;/p&gt;
@@ -86260,19 +86260,19 @@ Következésképpen a három súly élesebb , míg az Epanechnikov simább Hotsp
 &lt;table&gt;
 &lt;tr&gt;
 &lt;td&gt;
-The QGIS Python Console is an interactive shell for the python command executions. 
-It also has a python file editor that allows you to edit and save your python scripts. 
+The QGIS Python Console is an interactive shell for the python command executions.
+It also has a python file editor that allows you to edit and save your python scripts.
 Both console and editor are based on PyQScintilla2 package.&lt;br&gt;
-The console is split in two main panes, top and bottom one 
-resizable by using the horizontal splitter. Output area pane is a widget read-only which 
-shows the commands output. You can drag and drop or copy and paste text into input area and 
-execute code snippets from the output pane by selecting some text and clicking on the 
-&lt;label&gt;Enter selected&lt;/label&gt; command from the context menu. 
-No matter if selected text contains the interpreter prompt (&gt;&gt;&gt;, ...). Input area pane is the interactive 
-python shell for input commands.&lt;br&gt;To access to the python file editor use the 
-&lt;label&gt;Show editor&lt;/label&gt; button 
-from the toolbar. The editor allows editing and saving python files and it offers basic functionality 
-for managing your code (comment and 
+The console is split in two main panes, top and bottom one
+resizable by using the horizontal splitter. Output area pane is a widget read-only which
+shows the commands output. You can drag and drop or copy and paste text into input area and
+execute code snippets from the output pane by selecting some text and clicking on the
+&lt;label&gt;Enter selected&lt;/label&gt; command from the context menu.
+No matter if selected text contains the interpreter prompt (&gt;&gt;&gt;, ...). Input area pane is the interactive
+python shell for input commands.&lt;br&gt;To access to the python file editor use the
+&lt;label&gt;Show editor&lt;/label&gt; button
+from the toolbar. The editor allows editing and saving python files and it offers basic functionality
+for managing your code (comment and
 uncomment code, check syntax, share the code via codepad.org and much more).
 &lt;/p&gt;
 &lt;/td&gt;
@@ -86306,7 +86306,7 @@ uncomment code, check syntax, share the code via codepad.org and much more).
 &lt;br&gt;
 &lt;li&gt;Open PyQGIS Cookbook by typing &lt;label&gt;_pyqgis&lt;/label&gt;.&lt;/li&gt;
 &lt;br&gt;
-&lt;li&gt;Save and clear the command history accessing from context menu of input pane. 
+&lt;li&gt;Save and clear the command history accessing from context menu of input pane.
 The history will be saved into the file ~/.qgis2/console_history.txt&lt;/li&gt;
 &lt;br&gt;
 &lt;/ul&gt;
@@ -86374,7 +86374,7 @@ The history will be saved into the file ~/.qgis2/console_history.txt&lt;/li&gt;
 &lt;br&gt;
 &lt;li&gt;Sharing code snippets via codepad.org.&lt;/li&gt;
 &lt;br&gt;
-&lt;li&gt;&lt;label&gt;Ctrl+4&lt;/label&gt; Syntax check.&lt;/li&gt; 
+&lt;li&gt;&lt;label&gt;Ctrl+4&lt;/label&gt; Syntax check.&lt;/li&gt;
 &lt;br&gt;
 &lt;li&gt;Object inspector: a class and function browser.&lt;/li&gt;
 &lt;br&gt;
@@ -86382,7 +86382,7 @@ The history will be saved into the file ~/.qgis2/console_history.txt&lt;/li&gt;
 &lt;br&gt;
 &lt;li&gt;Execute code snippets with the &lt;label&gt;Enter selected&lt;/label&gt; command.&lt;/li&gt;
 &lt;br&gt;
-&lt;li&gt;Execute the whole script with the &lt;label&gt;Run script&lt;/label&gt; command 
+&lt;li&gt;Execute the whole script with the &lt;label&gt;Run script&lt;/label&gt; command
 (this creates a byte-compiled file with the extension .pyc)&lt;/li&gt;
 &lt;br&gt;
 &lt;/ul&gt;
@@ -86403,7 +86403,7 @@ from current document, from installed APIs and both from APIs and current docume
 &lt;br&gt;
 &lt;li&gt;&lt;label&gt;Auto-save script before running:&lt;/label&gt; Allows you to save automatically the
 script to be executed in order to avoid to save it after any modification.
-This action will store a temporary file into the temporary system directory 
+This action will store a temporary file into the temporary system directory
 that will be automatically deleted after running.&lt;/li&gt;
 &lt;br&gt;
 &lt;li&gt;&lt;label&gt;Using preloaded APIs file:&lt;/label&gt; You can choose whether use the preload APIs file or load some APIs files saved on your system.&lt;/li&gt;
@@ -86411,7 +86411,7 @@ that will be automatically deleted after running.&lt;/li&gt;
 &lt;li&gt;&lt;label&gt;Using prepared APIs file:&lt;/label&gt; If checked the *.pap file will be used for code completion. To generate a prepared APIs file you have to load least an *.api file and then compile it by clicking on &lt;label&gt;Compile Apis...&lt;/label&gt; button.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p style=&apos;border: 1px solid; background:#f6f6f6;&apos; align=&apos;justify&apos;&gt;
-&lt;b&gt;Note:&lt;/b&gt; To save the state of console&apos;s widgets you have to close the Python Console 
+&lt;b&gt;Note:&lt;/b&gt; To save the state of console&apos;s widgets you have to close the Python Console
 from the close button. This allows you to save the geometry to be restored to the next start.
 &lt;/p&gt;
 </source>
@@ -86456,7 +86456,7 @@ Shows all features which are currently visible on the map canvas, taking the cur
 &lt;h5&gt;Show Edited and New Features&lt;/h5&gt;
 Shows only edited and new features. In this mode, features with uncommitted changes are shown and this is therefore a good filter to review changes, before committing them. Please note, that deleted features are not shown in this mode.
 &lt;h5&gt;Column Filter&lt;/h5&gt;
-A simple filter, which lets you filter by an attribute. If the attribute contains text, it looks for sub-strings also. Searching for &lt;b&gt;man&lt;/b&gt; will therefore also show records containing &lt;b&gt;woman&lt;/b&gt;. After changing the filter text, press &lt;label&gt;Enter&lt;/label&gt; or click on &lt;label&gt;Apply&lt;/label&gt;. You can also toggle the check-box &lt;label&gt;Case sensitive&lt;/label&gt;, so your filter will also match &lt;b&gt;Night&lt;/b&gt; when your search text is &lt;b&gt;night&lt;/b&gt;.   
+A simple filter, which lets you filter by an attribute. If the attribute contains text, it looks for sub-strings also. Searching for &lt;b&gt;man&lt;/b&gt; will therefore also show records containing &lt;b&gt;woman&lt;/b&gt;. After changing the filter text, press &lt;label&gt;Enter&lt;/label&gt; or click on &lt;label&gt;Apply&lt;/label&gt;. You can also toggle the check-box &lt;label&gt;Case sensitive&lt;/label&gt;, so your filter will also match &lt;b&gt;Night&lt;/b&gt; when your search text is &lt;b&gt;night&lt;/b&gt;.
 &lt;h5&gt;Advanced Filter&lt;/h5&gt;
 For more complex searches, this mode offers a powerful expression builder, which is similar to a SQL WHERE clause. Please refer to the built-in help of the expression builder for details on the syntax.
 
@@ -86587,7 +86587,7 @@ To define a CRS, select &lt;label&gt;Custom CRS&lt;/label&gt; from the &lt;label
 &lt;h4&gt;Define&lt;/h4&gt;
 To create a new CRS, click the &lt;label&gt;New&lt;/label&gt; button and enter:
 &lt;ul&gt;
-&lt;li&gt;descriptive name 
+&lt;li&gt;descriptive name
 &lt;li&gt;CRS parameters
 &lt;/ul&gt;
 Note that the Parameters must begin with a +proj=-block, to represent the new coordinate reference
@@ -86602,7 +86602,7 @@ To define a CRS, select &lt;label&gt;Custom CRS&lt;/label&gt; from the &lt;label
 &lt;h4&gt;Definiál&lt;/h4&gt;
 Az új vetületi rendszer létrehozásához nyomd meg az &lt;label&gt;Új vetület&lt;/label&gt; gombot és add meg:
 &lt;ul&gt;
-&lt;li&gt;a nevet 
+&lt;li&gt;a nevet
 &lt;li&gt;a paramétereket
 &lt;/ul&gt;
 &lt;p&gt;
@@ -86747,30 +86747,30 @@ Loads and displays delimited text files
 &lt;/p&gt;
 
 &lt;h4&gt;&lt;a name=&quot;re&quot;&gt;Overview&lt;/a&gt;&lt;/h4&gt;
-&lt;p&gt;A &amp;quot;delimited text file&amp;quot; contains data in which each record starts on a new line, and 
-is split into fields by a delimiter such as a comma.  
-This type of file is commonly exported from spreadsheets (for example CSV files) or databases.  
-Typically the first line of a delimited text file contains the names of the fields.  
+&lt;p&gt;A &amp;quot;delimited text file&amp;quot; contains data in which each record starts on a new line, and
+is split into fields by a delimiter such as a comma.
+This type of file is commonly exported from spreadsheets (for example CSV files) or databases.
+Typically the first line of a delimited text file contains the names of the fields.
 &lt;/p&gt;
 &lt;p&gt;
-Delimited text files can be loaded into QGIS as a layer. 
+Delimited text files can be loaded into QGIS as a layer.
 The records can be displayed spatially either as a point
 defined by X and Y coordinates, or using a Well Known Text (WKT) definition of a geometry which may
 describe points, lines, and polygons of arbitrary complexity.  The file can also be loaded as an attribute
 only table, which can then be joined to other tables in QGIS.
 &lt;/p&gt;
 &lt;p&gt;
-In addition to the geometry definition the file can contain text, integer, and real number fields.  By default 
+In addition to the geometry definition the file can contain text, integer, and real number fields.  By default
 QGIS will choose the type of field based on its the non blank values of the field.  If all can be interpreted
 as integer then the type will be integer, if all can be interpreted as real numbers then the type will
 be double, otherwise the type will be text.
 &lt;/p&gt;
 &lt;p&gt;
-QGIS can also read the types from an OGR CSV driver compatible &amp;quot;csvt&amp;quot; file.  
-This is a file alongside the data file, but with a &amp;quot;t&amp;quot; appended to the file name. 
-The file should just contain one line which lists the type of each field. 
-Valid types are &amp;quot;integer&amp;quot;, &amp;quot;long&amp;quot;, &amp;quot;longlong&amp;quot;, &amp;quot;real&amp;quot;, 
-&amp;quot;string&amp;quot;, &amp;quot;date&amp;quot;, &amp;quot;time&amp;quot;, and &amp;quot;datetime&amp;quot;. 
+QGIS can also read the types from an OGR CSV driver compatible &amp;quot;csvt&amp;quot; file.
+This is a file alongside the data file, but with a &amp;quot;t&amp;quot; appended to the file name.
+The file should just contain one line which lists the type of each field.
+Valid types are &amp;quot;integer&amp;quot;, &amp;quot;long&amp;quot;, &amp;quot;longlong&amp;quot;, &amp;quot;real&amp;quot;,
+&amp;quot;string&amp;quot;, &amp;quot;date&amp;quot;, &amp;quot;time&amp;quot;, and &amp;quot;datetime&amp;quot;.
 The date, time, and datetime types are treated as strings by the delimited text provider.
 Each type may be followed by a width and precision, for example &amp;quot;real(10.4)&amp;quot;.
 The list of types are separated by commas, regardless of the delimiter used in the data file.  An
@@ -86783,19 +86783,19 @@ example of a valid format file would be:
 
 &lt;h4&gt;&lt;a name=&quot;creating&quot;&gt;Creating a delimited text layer&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;Creating a delimited text layer involves choosing the data file, defining the format (how each record is to
-be split into fields), and defining the geometry is represented.  
-This is managed with the delimited text dialog as detailed below.  
+be split into fields), and defining the geometry is represented.
+This is managed with the delimited text dialog as detailed below.
 The dialog box displays a sample from the beginning of the file which shows how the format
 options have been applied.
 &lt;/p&gt;
 &lt;h5&gt;Choosing the data file&lt;/h5&gt;
 &lt;p&gt;Use the &amp;quot;Browse...&amp;quot; button to select the data file.  Once the file is selected the
 layer name will automatically be populated based on the file name.  The layer name is used to represent
-the data in the QGIS legend.  
+the data in the QGIS legend.
 &lt;/p&gt;
 &lt;p&gt;
 By default files are assumed to be encoded as UTF-8.  However other file
-encodings can be selected.  For example &amp;quot;System&amp;quot; uses the default encoding for the operating system.  
+encodings can be selected.  For example &amp;quot;System&amp;quot; uses the default encoding for the operating system.
 It is safer to use an explicit coding if the QGIS project needs to be portable.
 &lt;/p&gt;
 &lt;h5&gt;Specifying the file format&lt;/h5&gt;
@@ -86805,8 +86805,8 @@ It is safer to use an explicit coding if the QGIS project needs to be portable.
     by a comma character, and quoted using a &amp;quot;(quote) character.  Within quoted fields, a quote
     mark is entered as &amp;quot;&amp;quot;.&lt;/li&gt;
     &lt;li&gt;Selected delimiters.  Each record is split into fields using one or more  delimiter character.
-    Quote characters are used for fields which may contain delimiters.  Escape characters may be used 
-    to treat the following character as a normal character (ie to include delimiter, quote, and 
+    Quote characters are used for fields which may contain delimiters.  Escape characters may be used
+    to treat the following character as a normal character (ie to include delimiter, quote, and
     new line characters in text fields).  The use of delimiter, quote, and escape characters is detailed &lt;a href=&quot;#csv&quot;&gt;below&lt;/a&gt;.
     &lt;li&gt;Regular expression.  Each line is split into fields using a &amp;quot;regular expression&amp;quot; delimiter.
     The use of regular expressions is details &lt;a href=&quot;#regexp&quot;&gt;below&lt;/a&gt;.
@@ -86817,8 +86817,8 @@ It is safer to use an explicit coding if the QGIS project needs to be portable.
     &lt;li&gt;Number of header lines to discard: used to ignore header lines at the beginning of the text file&lt;/li&gt;
     &lt;li&gt;First record has fields names: if selected then the first record in the file (after the discarded lines) is interpreted as names of fields, rather than as a data record.&lt;/li&gt;
     &lt;li&gt;Trim fields: if selected then leading and trailing whitespace characters will be removed from each field (except quoted fields). &lt;/li&gt;
-    &lt;li&gt;Discard empty fields: if selected then empty fields (after trimming) will be discard.  This 
-    affects the alignment of data into fields and is equivalent to treating consecutive delimiters as a 
+    &lt;li&gt;Discard empty fields: if selected then empty fields (after trimming) will be discard.  This
+    affects the alignment of data into fields and is equivalent to treating consecutive delimiters as a
     single delimiter.  Quoted fields are never discarded.&lt;/li&gt;
     &lt;li&gt;Decimal separator is comma: if selected then commas instead of points are used as the decimal separator in real numbers.  For
     example &lt;tt&gt;-51,354&lt;/tt&gt; is equivalent to -51.354.
@@ -86840,7 +86840,7 @@ It is safer to use an explicit coding if the QGIS project needs to be portable.
     &lt;li&gt;DMS angles: if selected coordinates are represented as degrees/minutes/seconds
     or degrees/minutes.  QGIS is quite permissive in its interpretation of degrees/minutes/seconds.
     A valid DMS coordinate will contain three numeric fields with an optional hemisphere prefix or suffix
-    (N, E, or + are positive, S, W, or - are negative).  Additional non numeric characters are 
+    (N, E, or + are positive, S, W, or - are negative).  Additional non numeric characters are
     generally discarded.  For example &lt;tt&gt;N41d54&apos;01.54&amp;quot;&lt;/tt&gt; is a valid coordinate.
     &lt;/li&gt;
 &lt;/ul&gt;
@@ -86850,7 +86850,7 @@ It is safer to use an explicit coding if the QGIS project needs to be portable.
     &lt;li&gt;Geometry type: one of &amp;quot;Detect&amp;quot; (detect), &amp;quot;Point&amp;quot;, &amp;quot;Line&amp;quot;, or &amp;quot;Polygon&amp;quot;.
     QGIS layers can only display one type of geometry feature (point, line, or polygon). This option selects
     which geometry type is displayed in text files containing multiple geometry types. Records containing
-   other geometry types are discarded.   
+   other geometry types are discarded.
     If &amp;quot;Detect&amp;quot; is selected then the type of the first geometry in the file will be used.
     &amp;quot;Point&amp;quot; includes POINT and MULTIPOINT WKT types, &amp;quot;Line&amp;quot; includes LINESTRING and
     MULTLINESTRING WKT types, and &amp;quot;Polygon&amp;quot; includes POLYGON and MULTIPOLYGON WKT types.
@@ -86860,37 +86860,37 @@ It is safer to use an explicit coding if the QGIS project needs to be portable.
 &lt;ul&gt;
 &lt;li&gt;Use spatial index. Create a spatial index to improve the performance of displaying and selecting spatial objects.
 This option may be useful for files larger than a few megabytes in size.&lt;/li&gt;
-&lt;li&gt;Use subset index. Create an index if a subset of records is being used (either by explicitly setting a subset string 
+&lt;li&gt;Use subset index. Create an index if a subset of records is being used (either by explicitly setting a subset string
 from the layer properties dialog, or an implicit subset of features for which the geometry is valid in files
 for which all not geometries are valid).  The index will only be created when a subset is defined.&lt;/li&gt;
-&lt;li&gt;Watch file.  If this options is selected QGIS will watch the file for changes by other applications, and 
+&lt;li&gt;Watch file.  If this options is selected QGIS will watch the file for changes by other applications, and
 reload the file when it is changed.  The map will not be updated until refreshed by the user, but indexes and
 extents will be reloaded.  This option should be selected if indexes are used and it is likely that another
 application will change the file. &lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4&gt;&lt;a name=&quot;csv&quot;&gt;How the delimiter, quote, and escape characters work&lt;/a&gt;&lt;/h4&gt;
-&lt;p&gt;Records are split into fields using three character sets: 
-delimiter characters, quote characters, and escape characters.  
+&lt;p&gt;Records are split into fields using three character sets:
+delimiter characters, quote characters, and escape characters.
 Other characters in the record are considered as data, split into
-fields by delimiter characters. 
-Quote characters occur in pairs and cause the text between them to be treated as a data.  Escape characters cause the character following them to be treated as data.   
+fields by delimiter characters.
+Quote characters occur in pairs and cause the text between them to be treated as a data.  Escape characters cause the character following them to be treated as data.
 &lt;/p&gt;
 &lt;p&gt;
 Quote and escape characters cannot be the same as delimiter characters - they
 will be ignored if they are. Escape characters can be the same as quote characters, but behave differently
 if they are.&lt;/p&gt;
 &lt;p&gt;The delimiter characters are used to mark the end of each field.  If more than one delimiter character
-is defined then any one of the characters can mark the end of a field.  The quote and escape characters 
+is defined then any one of the characters can mark the end of a field.  The quote and escape characters
 can override the delimiter character, so that it is treated as a normal data character.&lt;/p&gt;
-&lt;p&gt;Quote characters may be used to mark the beginning and end of quoted fields. Quoted fields can 
+&lt;p&gt;Quote characters may be used to mark the beginning and end of quoted fields. Quoted fields can
 contain delimiters and may span multiple lines in the text file.  If a field is quoted then it must
 start and end with the same quote character.  Quote characters cannot occur within a field unless they
 are escaped.&lt;/p&gt;
-&lt;p&gt;Escape characters which are not quote characters force the following character to be treated as data.  
-(that is, to stop it being treated as a new line, delimiter, or quote character).  
+&lt;p&gt;Escape characters which are not quote characters force the following character to be treated as data.
+(that is, to stop it being treated as a new line, delimiter, or quote character).
 &lt;/p&gt;
-&lt;p&gt;Escape characters that are also quote characters have much more limited effect.  They only apply within quotes and only escape themselves.  For example, if 
+&lt;p&gt;Escape characters that are also quote characters have much more limited effect.  They only apply within quotes and only escape themselves.  For example, if
 &lt;tt&gt;&apos;&lt;/tt&gt; is a quote and escape character, then the string
 &lt;tt&gt;&apos;Smith&apos;&apos;s&amp;nbsp;Creek&apos;&lt;/tt&gt; will represent the value Smith&apos;s&amp;nbsp;Creek.
 &lt;/p&gt;
@@ -86899,56 +86899,56 @@ are escaped.&lt;/p&gt;
 &lt;h4&gt;&lt;a name=&quot;regexp&quot;&gt;How regular expression delimiters work&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;Regular expressions are mini-language used to represent character patterns.  There are many variations
 of regular expression syntax - QGIS uses the syntax provided by the &lt;a href=&quot;http://qt-project.org/doc/qt-4.8/qregexp.html&quot;&gt;QRegExp&lt;/a&gt; class of the &lt;a href=&quot;http://qt.digia.com&quot;&gt;Qt&lt;/a&gt; framework.&lt;/p&gt;
-&lt;p&gt;In a regular expression delimited file each line is treated as a record.  Each match of the regular expression in the line is treated as the end of a field.  
+&lt;p&gt;In a regular expression delimited file each line is treated as a record.  Each match of the regular expression in the line is treated as the end of a field.
 If the regular expression contains capture groups (eg &lt;tt&gt;(cat|dog)&lt;/tt&gt;)
- then these are extracted as fields. 
+ then these are extracted as fields.
  If this is not desired then use non-capturing groups (eg &lt;tt&gt;(?:cat|dog)&lt;/tt&gt;).
 &lt;/p&gt;
 &lt;p&gt;The regular expression is treated differently if it is anchored to the start of the line (that is, the pattern starts with &lt;tt&gt;^&lt;/tt&gt;).
 In this case the regular expression is matched against each line.  If the line does not match it is discarded
 as an invalid record.  Each capture group in the expression is treated as a field.  The regular expression
-is invalid if it does not have capture groups.  As an example this can be used as a (somewhat 
-unintuitive) means of loading data with fixed width fields.  For example the 
+is invalid if it does not have capture groups.  As an example this can be used as a (somewhat
+unintuitive) means of loading data with fixed width fields.  For example the
 expression
 &lt;pre&gt;
 ^(.{5})(.{10})(.{20})(.{20})
 &lt;/pre&gt;
-&lt;p&gt;will extract four fields of widths 5, 10, 20, and 20 characters from each line.  
+&lt;p&gt;will extract four fields of widths 5, 10, 20, and 20 characters from each line.
 Lines less than 55 characters long will be discarded.
 &lt;/p&gt;
 
 
 &lt;h4&gt;&lt;a name=&quot;wkt&quot;&gt;How WKT text is interpreted&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;
-The delimited text layer recognizes the following 
-&lt;a href=&quot;http://en.wikipedia.org/wiki/Well-known_text&quot;&gt;well known text&lt;/a&gt; types - 
-&lt;tt&gt;POINT&lt;/tt&gt;, &lt;tt&gt;MULTIPOINT&lt;/tt&gt;, &lt;tt&gt;LINESTRING&lt;/tt&gt;, &lt;tt&gt;MULTILINESTRING&lt;/tt&gt;, &lt;tt&gt;POLYGON&lt;/tt&gt;, and &lt;tt&gt;MULTIPOLYGON&lt;/tt&gt;.  
+The delimited text layer recognizes the following
+&lt;a href=&quot;http://en.wikipedia.org/wiki/Well-known_text&quot;&gt;well known text&lt;/a&gt; types -
+&lt;tt&gt;POINT&lt;/tt&gt;, &lt;tt&gt;MULTIPOINT&lt;/tt&gt;, &lt;tt&gt;LINESTRING&lt;/tt&gt;, &lt;tt&gt;MULTILINESTRING&lt;/tt&gt;, &lt;tt&gt;POLYGON&lt;/tt&gt;, and &lt;tt&gt;MULTIPOLYGON&lt;/tt&gt;.
 It will accept geometries with
 a Z coordinate (eg &lt;tt&gt;POINT&amp;nbsp;Z&lt;/tt&gt;), a measure (&lt;tt&gt;POINT&amp;nbsp;M&lt;/tt&gt;), or both (&lt;tt&gt;POINT&amp;nbsp;ZM&lt;/tt&gt;).
 &lt;/p&gt;
 &lt;p&gt;
-It can also handle the PostGIS EWKT variation, in which the geometry is preceded by an spatial reference 
-system id (eg &lt;tt&gt;SRID=4326;POINT(175.3&amp;nbsp;41.2)&lt;/tt&gt;), and a variant used by Informix in which the WKT is 
+It can also handle the PostGIS EWKT variation, in which the geometry is preceded by an spatial reference
+system id (eg &lt;tt&gt;SRID=4326;POINT(175.3&amp;nbsp;41.2)&lt;/tt&gt;), and a variant used by Informix in which the WKT is
 preceded by an integer spatial reference id (eg &lt;tt&gt;1 POINT(175.3&amp;nbsp;41.2)&lt;/tt&gt;).
 In both cases the SRID is ignored.
 &lt;/p&gt;
 
 
 
-&lt;h4&gt;&lt;a name=&quot;attributes&quot;&gt;Attributes in delimited text files&lt;/a&gt;&lt;/h4&gt; 
+&lt;h4&gt;&lt;a name=&quot;attributes&quot;&gt;Attributes in delimited text files&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;Each record in the delimited text file is split into fields representing
 attributes of the record.  Usually the attribute names are taken from the first
-data record in the file.  However if this does not contain attribute names, then they will be named &lt;tt&gt;field_1&lt;/tt&gt;, &lt;tt&gt;field_2&lt;/tt&gt;, and so on.  
+data record in the file.  However if this does not contain attribute names, then they will be named &lt;tt&gt;field_1&lt;/tt&gt;, &lt;tt&gt;field_2&lt;/tt&gt;, and so on.
 Also if records have more fields than are defined in the header record then these
 will be named &lt;tt&gt;field_#&lt;/tt&gt;, where # is the field number (note that empty fields at the end of a record are ignored).
-QGIS may override 
+QGIS may override
 the names in the text file if they are numbers, or have names like &lt;tt&gt;field_#&lt;/tt&gt;,
 or are duplicated.
 &lt;/p&gt;
 &lt;p&gt;
-In addition to the attributes explicitly in the data file QGIS assigns a unique 
+In addition to the attributes explicitly in the data file QGIS assigns a unique
 feature id to each record which is the line number in the source file on which
-the record starts.  
+the record starts.
 &lt;/p&gt;
 &lt;p&gt;
 Each attribute also has a data type, one of string (text), integer, longlong,
@@ -86962,7 +86962,7 @@ are interpreted.
 &lt;/p&gt;
 
 
-&lt;h4&gt;&lt;a name=&quot;example&quot;&gt;Example of a text file with X,Y point coordinates&lt;/a&gt;&lt;/h4&gt; 
+&lt;h4&gt;&lt;a name=&quot;example&quot;&gt;Example of a text file with X,Y point coordinates&lt;/a&gt;&lt;/h4&gt;
 &lt;pre&gt;
 X;Y;ELEV
 -300120;7689960;13
@@ -87018,9 +87018,9 @@ The following options can be added
 &lt;/p&gt;
 &lt;ul&gt;
     &lt;li&gt;&lt;tt&gt;encoding=..&lt;/tt&gt; defines the file encoding.  The default is &amp;quot;UTF-8&amp;quot;&lt;/li&gt;
-    &lt;li&gt;&lt;tt&gt;type=(csv|regexp|whitespace)&lt;/tt&gt; defines the delimiter type.  Valid values are csv, 
+    &lt;li&gt;&lt;tt&gt;type=(csv|regexp|whitespace)&lt;/tt&gt; defines the delimiter type.  Valid values are csv,
        regexp, and whitespace (which is just a special case of regexp).  The default is csv.&lt;/li&gt;
-       &lt;li&gt;&lt;tt&gt;delimiter=...&lt;/tt&gt; defines the delimiters that will be used for csv formatted files, 
+       &lt;li&gt;&lt;tt&gt;delimiter=...&lt;/tt&gt; defines the delimiters that will be used for csv formatted files,
        or the regular expression for regexp formatted files.  The default is , for CSV files.  There is
        no default for regexp files.&lt;/li&gt;
        &lt;li&gt;&lt;tt&gt;quote=..&lt;/tt&gt; (for csv files) defines the characters used to quote fields. The default is &amp;quot;&lt;/li&gt;
@@ -87028,7 +87028,7 @@ The following options can be added
        &lt;li&gt;&lt;tt&gt;skipLines=#&lt;/tt&gt; defines the number of lines to discard from the beginning of the file. The default is 0.&lt;/li&gt;
        &lt;li&gt;&lt;tt&gt;useHeader=(yes|no)&lt;/tt&gt; defines whether the first data record contains the names of the data fields. The default is yes.&lt;/li&gt;
        &lt;li&gt;&lt;tt&gt;trimFields=(yes|no)&lt;/tt&gt; defines whether leading and trailing whitespace is to be removed from unquoted fields. The default is no.&lt;/li&gt;
-       &lt;li&gt;&lt;tt&gt;maxFields=#&lt;/tt&gt; defines the maximum number of fields that will be loaded from the file.  
+       &lt;li&gt;&lt;tt&gt;maxFields=#&lt;/tt&gt; defines the maximum number of fields that will be loaded from the file.
        Additional fields in each record will be discarded. The default is 0 - include all fields.
        (This option is not available from the delimited text layer dialog box).&lt;/li&gt;
        &lt;li&gt;&lt;tt&gt;skipEmptyFields=(yes|no)&lt;/tt&gt; defines whether empty unquoted fields will be discarded (applied after trimFields). The default is no.&lt;/li&gt;
@@ -87037,9 +87037,9 @@ The following options can be added
        &lt;li&gt;&lt;tt&gt;xField=fieldname&lt;/tt&gt; specifies the name or number (starting at 1) of the field the X coordinate (only applies if wktField is not defined)&lt;/li&gt;
        &lt;li&gt;&lt;tt&gt;yField=fieldname&lt;/tt&gt; specifies the name or number (starting at 1) of the field the Y coordinate (only applies if wktField is not defined)&lt;/li&gt;
        &lt;li&gt;&lt;tt&gt;geomType=(auto|point|line|polygon|none)&lt;/tt&gt; specifies type of geometry for wkt fields, or none to load the file as an attribute-only table.  The default is auto.&lt;/li&gt;
-       &lt;li&gt;&lt;tt&gt;subset=expression&lt;/tt&gt; specifies an expression used to identify a subset of the records that will be 
+       &lt;li&gt;&lt;tt&gt;subset=expression&lt;/tt&gt; specifies an expression used to identify a subset of the records that will be
        used.&lt;/li&gt;
-       &lt;li&gt;&lt;tt&gt;crs=...&lt;/tt&gt; specifies the coordinate system to use for the vector layer, in a format accepted by QgsCoordinateReferenceSystem.createFromString (for example &amp;quot;EPSG:4167&amp;quot;).  If this is not 
+       &lt;li&gt;&lt;tt&gt;crs=...&lt;/tt&gt; specifies the coordinate system to use for the vector layer, in a format accepted by QgsCoordinateReferenceSystem.createFromString (for example &amp;quot;EPSG:4167&amp;quot;).  If this is not
        specified then a dialog box may request this information from the user
        when the layer is loaded (depending on QGIS CRS settings).&lt;/li&gt;
        &lt;li&gt;&lt;tt&gt;subsetIndex=(yes|no)&lt;/tt&gt; specifies whether the provider should build an index to define subset during the initial file scan.  The index will apply both for explicitly defined subsets, and for the implicit subset of features for which the geometry definition is valid.  By default the subset index is built if it is applicable.&lt;/li&gt;
@@ -87263,7 +87263,7 @@ Enter a name for the layer you want to create. The name should be one word. You 
 &lt;h4&gt;Geometry column&lt;/h4&gt;
 Enter a name for the geometry column or accept the default.
 &lt;h4&gt;Type&lt;/h4&gt;
-Choose the type of layer you want to create. 
+Choose the type of layer you want to create.
 &lt;h4&gt;EPSG SRID&lt;/h4&gt;
 Enter the EPSG number for the spatial reference id (SRID). By default the SRID for WGS 84 is filled in for you. Click on &lt;label&gt;Find SRID&lt;/label&gt; button to change the coordinate reference system of the layer if needed. The SRID must exist within the spatial_ref_sys in your SpatiaLite database. You can search for the SRID using partial matches on both name and SRID.
 &lt;h4&gt;Create an auto-incrementing Primary Key&lt;/h4&gt;
@@ -87474,12 +87474,12 @@ Ebben a párbeszédablakban az Oracle adatbázishoz kapcsolódás beállításai
 
 &lt;li&gt; &lt;label&gt;Geometria nélküli táblákat is&lt;/label&gt;  A geometriai adatokat nem tartalmazó táblák listázása is.
 
-&lt;li&gt; &lt;label&gt;Becsült tábla statisztika használat a réteg metaadatokhoz&lt;/label&gt; 
-A réteg beállításánál az Oracle tábláról számos metaadat szükséges. 
-Ebbe tartozik a sorok száma, a geometria típus és térbeli kiterjedése a 
-geometriai található elemeknek. Ha a tábla nagyon sok sort tartalmaz ezen 
-metaadatok meghatározása időigényes lehet. Ennek a beállításnak a hatására a 
-következő gyors metaadat meghatározás történik: a sorok számát az 
+&lt;li&gt; &lt;label&gt;Becsült tábla statisztika használat a réteg metaadatokhoz&lt;/label&gt;
+A réteg beállításánál az Oracle tábláról számos metaadat szükséges.
+Ebbe tartozik a sorok száma, a geometria típus és térbeli kiterjedése a
+geometriai található elemeknek. Ha a tábla nagyon sok sort tartalmaz ezen
+metaadatok meghatározása időigényes lehet. Ennek a beállításnak a hatására a
+következő gyors metaadat meghatározás történik: a sorok számát az
 all_tables.num_rows-ból veszi. A tábla terjedelmet mindig a SDO_TUNE.EXTENTS_OF
 függvénnyel vizsgálja, akkor is ha réteg szűrőt használunk. A tábla geometriát az első 100
 nem NULL geometriát tartalmazó sorból határozza meg.
@@ -87700,7 +87700,7 @@ from the remote repositories.
 &lt;h4&gt;Invalid tab&lt;/h4&gt;
 &lt;/a&gt;
 &lt;p&gt;
-This tab is only available if there is a invalid plugin. Mostly caused by an error 
+This tab is only available if there is a invalid plugin. Mostly caused by an error
 during loading the plugin.
 &lt;/p&gt;
 
@@ -87711,7 +87711,7 @@ during loading the plugin.
 In this tab you can change the Settings for the plugin manager.
 &lt;/p&gt;
 &lt;p&gt;
-It is possible to check how often QGIS will download the list and update information 
+It is possible to check how often QGIS will download the list and update information
 from the available repositories.
 &lt;/p&gt;
 &lt;p&gt;
@@ -87946,7 +87946,7 @@ are sometimes limited (e.g. for shape files) or behave diffently.
   &lt;td&gt;PostgreSQL/PostGIS&lt;/td&gt;
   &lt;td&gt;where clauses using
     &lt;a href=&quot;http://www.postgresql.org/docs/&quot;&gt;PostgreSQL&lt;/a&gt; and
-    &lt;a href=&quot;http://postgis.net/documentation&quot;&gt;PostGIS&lt;/a&gt; 
+    &lt;a href=&quot;http://postgis.net/documentation&quot;&gt;PostGIS&lt;/a&gt;
   &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -88050,7 +88050,7 @@ To buffer the labels means putting a backdrop around them to make them stand out
 &lt;li&gt;Choose a color by clicking on &lt;label&gt;Color&lt;/label&gt; and choosing your favorite from the color selector. You can also set some transparency for the buffer if you prefer.
 &lt;li&gt;Click &lt;label&gt;Apply&lt;/label&gt; to see if you like the changes.
 &lt;/ol&gt;
-Notice you can also specify the buffer size in map 
+Notice you can also specify the buffer size in map
 units if that works out better for you.
 
 &lt;h5&gt;Data defined placement, properties, buffer, position&lt;/h5&gt;
@@ -88098,7 +88098,7 @@ QGIS provides the ability to perform an action based on the attributes of a feat
 Actions are useful when you frequently want to run an external application or view a web page based on one or more values in your vector layer.&lt;p&gt;
 
 The new implementation of actions uses the QGIS expression engine to do evaluations. Each expression is evaluated and replaced by its result at runtime.&lt;p&gt;
-An expression must be enclosed between &lt;code&gt;[%&lt;/code&gt; and &lt;code&gt;%]&lt;/code&gt; - the GUI has some buttons which do that for you automatically. 
+An expression must be enclosed between &lt;code&gt;[%&lt;/code&gt; and &lt;code&gt;%]&lt;/code&gt; - the GUI has some buttons which do that for you automatically.
 The &lt;label&gt;Insert expression...&lt;/label&gt; button launches the &lt;label&gt;Expression builder&lt;/label&gt; which allows writing an expression easily, the &lt;label&gt;Insert field&lt;/label&gt; button inserts into the action a placeholder like &lt;code&gt;[% &quot;fieldname&quot; %]&lt;/code&gt; where fieldname is the name of the field selected in the field dropdown list.&lt;p&gt;
 
 See the User Guide for further information.
