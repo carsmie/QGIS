@@ -20740,8 +20740,8 @@ Nur %1 von %2 Objekten geschrieben.</translation>
     </message>
     <message>
         <location filename="../src/gui/editorwidgets/core/qgssearchwidgetwrapper.cpp" line="73"/>
-        <source>Is not missing (null)</source>
-        <translation>Nicht belegt (NULL)</translation>
+        <source>Is not missing (not null)</source>
+        <translation>Nicht belegt (NOT NULL)</translation>
     </message>
     <message>
         <location filename="../src/gui/editorwidgets/core/qgssearchwidgetwrapper.cpp" line="75"/>
