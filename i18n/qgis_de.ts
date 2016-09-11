@@ -62753,8 +62753,7 @@ Ausführliche Fehlerinformation:
     <message>
         <location filename="../src/ui/qgsnewspatialitelayerdialogbase.ui" line="252"/>
         <source>Create an autoincrementing primary key</source>
-        <translation>automatisch inkrementierenden
-Primärschlüssel erzeugen</translation>
+        <translation>automatisch inkrementierenden Primärschlüssel erzeugen</translation>
     </message>
     <message>
         <location filename="../src/ui/qgsnewspatialitelayerdialogbase.ui" line="262"/>
