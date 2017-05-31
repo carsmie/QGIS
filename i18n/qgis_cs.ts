@@ -58428,27 +58428,27 @@ To může být problém vašeho síťového nastavení nebo WMS serveru.</numeru
 <context>
     <name>QgsLayerTreeEmbeddedConfigWidget</name>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="14"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="14"/>
         <source>Form</source>
         <translation>Formulář</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="20"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="20"/>
         <source>Available widgets</source>
         <translation>Dostupné widgety</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="27"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="27"/>
         <source>Used widgets</source>
         <translation>Použité widgety</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="52"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="52"/>
         <source>-&gt;</source>
         <translation>-&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="63"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="63"/>
         <source>&lt;-</source>
         <translation>&lt;-</translation>
     </message>

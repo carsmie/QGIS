@@ -59091,27 +59091,27 @@ Die könnte auf ein Netzwerkproblem oder ein Problem des WMS-Server hindeuten.</
 <context>
     <name>QgsLayerTreeEmbeddedConfigWidget</name>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="14"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="14"/>
         <source>Form</source>
         <translation>Form</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="20"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="20"/>
         <source>Available widgets</source>
         <translation>Verfügbare Element</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="27"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="27"/>
         <source>Used widgets</source>
         <translation>Verwendete Elemente</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="52"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="52"/>
         <source>-&gt;</source>
         <translation>-&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qgslayertreeembeddedconfigwidget.ui" line="63"/>
+        <location filename="../src/ui/qgslayertreeembeddedconfigwidgetbase.ui" line="63"/>
         <source>&lt;-</source>
         <translation>&lt;-</translation>
     </message>
