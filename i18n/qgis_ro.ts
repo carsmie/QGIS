@@ -1231,7 +1231,7 @@ Procesare algoritm %d/%d...</translation>
 <context>
     <name>CharacterWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/characterwidget.cpp" line="136"/>
+        <location filename="../src/gui/symbology/characterwidget.cpp" line="136"/>
         <source>&lt;p&gt;Character: &lt;span style=&quot;font-size: 24pt; font-family: %1&quot;&gt;%2&lt;/span&gt;&lt;p&gt;Value: 0x%3</source>
         <translation>&lt;p&gt;Caracter: &lt;span style=&quot;font-size: 24pt; font-family: %1&quot;&gt;%2&lt;/span&gt;&lt;p&gt;Valoare: 0x%3</translation>
     </message>
@@ -20245,133 +20245,133 @@ Doar %1 din %2 entități au fost scrise.</translation>
         <translation>Umbra versanților</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="83"/>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="86"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="83"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="86"/>
         <source>All Ramps</source>
         <translation>Toate Gamele</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="33"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="33"/>
         <source>No symbols</source>
         <translation>Fără simboluri</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="37"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="37"/>
         <source>Single symbol</source>
         <translation>Simbol unic</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="42"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="42"/>
         <source>Categorized</source>
         <translation>Categorisire</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="46"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="46"/>
         <source>Graduated</source>
         <translation>Gradual</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="50"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="50"/>
         <source>Rule-based</source>
         <translation>Bazat pe reguli</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="55"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="55"/>
         <source>Point displacement</source>
         <translation>Deplasare puncte</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="62"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="62"/>
         <source>Inverted polygons</source>
         <translation>Poligoane inverse</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="77"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="77"/>
         <source>2.5 D</source>
         <translation>2.5 D</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="29"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="29"/>
         <source>Simple line</source>
         <translation>Linie simplă</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="31"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="31"/>
         <source>Marker line</source>
         <translation>Simbol pentru linie</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="33"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="33"/>
         <source>Arrow</source>
         <translation>Săgeată</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="35"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="35"/>
         <source>Simple marker</source>
         <translation>Simbol simplu</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="37"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="37"/>
         <source>Filled marker</source>
         <translation>Simbol umplut</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="39"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="39"/>
         <source>SVG marker</source>
         <translation>Simbol SVG</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="41"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="41"/>
         <source>Font marker</source>
         <translation>Simbol de tip caracter</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="43"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="43"/>
         <source>Ellipse marker</source>
         <translation>Simbol elipsoidal</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="45"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="45"/>
         <source>Vector field marker</source>
         <translation>Simbolul câmpului vectorial</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="48"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="48"/>
         <source>Simple fill</source>
         <translation>Umplere simplă</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="50"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="50"/>
         <source>Gradient fill</source>
         <translation>Umplere cu gradient</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="52"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="52"/>
         <source>Shapeburst fill</source>
         <translation>Umplere de tip shapeburst</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="56"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="56"/>
         <source>SVG fill</source>
         <translation>Umplere cu SVG</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="58"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="58"/>
         <source>Centroid fill</source>
         <translation>Umplere de tip centroid</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="60"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="60"/>
         <source>Line pattern fill</source>
         <translation>Umplere cu model din linii</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="62"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="62"/>
         <source>Point pattern fill</source>
         <translation>Umplere cu model din puncte</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="65"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="65"/>
         <source>Geometry generator</source>
         <translation>Generatorul de geometrie</translation>
     </message>
@@ -20588,7 +20588,7 @@ Doar %1 din %2 entități au fost scrise.</translation>
         <translation>Instrumente pentru încărcarea și importul datelor GPS</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="69"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="69"/>
         <location filename="../src/plugins/heatmap/heatmap.cpp" line="57"/>
         <source>Heatmap</source>
         <translation>Hartă calorică</translation>
@@ -21955,42 +21955,42 @@ SQL: %1</translation>
         <translation>ID entitate</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="620"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="620"/>
         <source>linear</source>
         <translation>liniar</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="624"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="624"/>
         <source>radial</source>
         <translation>radial</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="628"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="628"/>
         <source>conical</source>
         <translation>conic</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="642"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="642"/>
         <source>feature</source>
         <translation>entitate</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="646"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="646"/>
         <source>viewport</source>
         <translation>port de vizualizare</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="660"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="660"/>
         <source>pad</source>
         <translation>dreptunghi</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="664"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="664"/>
         <source>repeat</source>
         <translation>repetă</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="668"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="668"/>
         <source>reflect</source>
         <translation>reflectă</translation>
     </message>
@@ -22077,7 +22077,7 @@ Răspunsul a fost:
         <translation>Legendă</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="54"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="54"/>
         <source>Raster image fill</source>
         <translation>Umplere cu imagine raster</translation>
     </message>
@@ -25390,24 +25390,24 @@ Data actuală a ultimei modificări este: %2</translation>
 <context>
     <name>Qgs25DRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="32"/>
         <source>The 2.5D renderer only can be used with polygon layers. 
 &apos;%1&apos; is not a polygon layer and cannot be rendered in 2.5D.</source>
         <translation>Renderul 2.5D poate fi folosit doar pentru straturile poligoanale.
 &apos;%1&apos; nu este un strat poligonal, și nu poate fi randat în 2.5D.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="41"/>
         <source>Select wall color</source>
         <translation>Selectează culoarea zidului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="44"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="44"/>
         <source>Select roof color</source>
         <translation>Selectează culoarea acoperișului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="47"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="47"/>
         <source>Select shadow color</source>
         <translation>Selectare culoare umbră</translation>
     </message>
@@ -30638,77 +30638,77 @@ Bază de date: %2</translation>
 <context>
     <name>QgsBrushStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="29"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="29"/>
         <source>Solid</source>
         <translation>Solid</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="30"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="30"/>
         <source>No Brush</source>
         <translation>Fără umplere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="31"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="31"/>
         <source>Horizontal</source>
         <translation>Orizontal</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="32"/>
         <source>Vertical</source>
         <translation>Vertical</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="33"/>
         <source>Cross</source>
         <translation>Încrucișare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="34"/>
         <source>BDiagonal</source>
         <translation>BDiagonal</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="35"/>
         <source>FDiagonal</source>
         <translation>FDiagonal</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="36"/>
         <source>Diagonal X</source>
         <translation>Diagonala X</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="37"/>
         <source>Dense 1</source>
         <translation>Dens 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="38"/>
         <source>Dense 2</source>
         <translation>Dens 2</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="39"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="39"/>
         <source>Dense 3</source>
         <translation>Dens 3</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="40"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="40"/>
         <source>Dense 4</source>
         <translation>Dens 4</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="41"/>
         <source>Dense 5</source>
         <translation>Dens 5</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="42"/>
         <source>Dense 6</source>
         <translation>Dens 6</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="43"/>
         <source>Dense 7</source>
         <translation>Dens 7</translation>
     </message>
@@ -30747,17 +30747,17 @@ Bază de date: %2</translation>
 <context>
     <name>QgsCategorizedSymbolRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Symbol</source>
         <translation>Simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Value</source>
         <translation>Valoare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Legend</source>
         <translation>Legendă</translation>
     </message>
@@ -30820,112 +30820,112 @@ Bază de date: %2</translation>
         <translation>Avansat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="437"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="534"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="806"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="437"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="534"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="806"/>
         <source>Random colors</source>
         <translation>Culori aleatorii</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="491"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="491"/>
         <source>Symbol levels...</source>
         <translation>Nivele simbol...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="705"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="705"/>
         <source>High number of classes!</source>
         <translation>Număr mare de clase!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="706"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="706"/>
         <source>Classification would yield %1 entries which might not be expected. Continue?</source>
         <translation>Clasificarea generează %1 comentarii neașteptate. Continuați?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
         <source>Error</source>
         <translation>Eroare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="489"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="489"/>
         <source>Match to saved symbols</source>
         <translation>Potrivire cu simbolurile salvate</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="490"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="490"/>
         <source>Match to symbols from file...</source>
         <translation>Potrivire cu simbolurile din fișier...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
         <source>There are no available color ramps. You can add them in Style Manager.</source>
         <translation>Nu există game de culoare disponibile. Le puteți adăuga în Style Manager.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
         <source>The selected color ramp is not available.</source>
         <translation>Rampa de culoare selectată nu este disponibilă.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="730"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="730"/>
         <source>Confirm Delete</source>
         <translation>Confirmare ștergere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="731"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="731"/>
         <source>The classification field was changed from &apos;%1&apos; to &apos;%2&apos;.
 Should the existing classes be deleted before classification?</source>
         <translation>Câmpul de clasificare a fost schimbat de la &apos;%1&apos; la &apos;%2&apos;.
 Este nevoie ca clasele existente să fie şterse înainte de clasificare?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="939"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="944"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="998"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="1003"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="939"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="944"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="998"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="1003"/>
         <source>Matched symbols</source>
         <translation>Simboluri corespunzătoare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="940"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="940"/>
         <source>Matched %1 categories to symbols.</source>
         <translation>Se potrivesc %1 categorii pentru aceste simboluri.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="945"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="945"/>
         <source>No categories could be matched to symbols in library.</source>
         <translation>Nici o categorie nu se potrivește cu simbolurile din bibliotecă.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="977"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="977"/>
         <source>Match to symbols from file</source>
         <translation>Potrivire cu simbolurile din fișier</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="978"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="978"/>
         <source>XML files (*.xml *XML)</source>
         <translation>Fişiere XML (*.xml *XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="990"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="990"/>
         <source>Matching error</source>
         <translation>Eroare de potrivire</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="991"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="991"/>
         <source>An error occurred reading file:
 %1</source>
         <translation>A apărut o eroare în timpul citirii fișierului:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="999"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="999"/>
         <source>Matched %1 categories to symbols from file.</source>
         <translation>Se potrivesc %1 categorii pentru simbolurile din fișier.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="1004"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="1004"/>
         <source>No categories could be matched to symbols in file.</source>
         <translation>Nici o categorie nu se potrivește cu simbolurile din fișier.</translation>
     </message>
@@ -31233,13 +31233,13 @@ Este nevoie ca clasele existente să fie şterse înainte de clasificare?</trans
 <context>
     <name>QgsColorRampComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="66"/>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="75"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="66"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="75"/>
         <source>Random colors</source>
         <translation>Culori aleatorii</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="67"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="67"/>
         <source>New color ramp...</source>
         <translation>Gamă de culori nouă...</translation>
     </message>
@@ -38627,12 +38627,12 @@ Eroare: %5</translation>
 <context>
     <name>QgsCptCityBrowserModel</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="1437"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="1437"/>
         <source>Name</source>
         <translation>Nume</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="1439"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="1439"/>
         <source>Info</source>
         <translation>Informaţii</translation>
     </message>
@@ -38640,27 +38640,27 @@ Eroare: %5</translation>
 <context>
     <name>QgsCptCityColorRampItem</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="764"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="764"/>
         <source>colors</source>
         <translation>culori</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="766"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="766"/>
         <source>discrete</source>
         <translation>distinct</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="770"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="770"/>
         <source>continuous</source>
         <translation>continuu</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="772"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="772"/>
         <source>continuous (multi)</source>
         <translation>continuu (multi)</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="778"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="778"/>
         <source>variants</source>
         <translation>varietate</translation>
     </message>
@@ -38668,17 +38668,17 @@ Eroare: %5</translation>
 <context>
     <name>QgsCptCityColorRampV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="118"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="118"/>
         <source>Selections by theme</source>
         <translation>Selecții după temă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="119"/>
         <source>All by author</source>
         <translation>Totul după Autor</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="482"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="482"/>
         <source>You can download a more complete set of cpt-city gradients by installing the &quot;Color Ramp Manager&quot; plugin (you must enable Experimental plugins in the plugin manager).
 
 </source>
@@ -38686,12 +38686,12 @@ Eroare: %5</translation>
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="275"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="275"/>
         <source>All Ramps (%1)</source>
         <translation>Toate Gamele (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="65"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="65"/>
         <source>Error - cpt-city gradient files not found.
 
 You have two means of installing them:
@@ -38716,12 +38716,12 @@ Acest fișier poate fi găsit la [%2]
 iar fișierul curent este [%3]</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="345"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="345"/>
         <source>%1 directory details</source>
         <translation>Detaliile directorului %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="349"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="349"/>
         <source>%1 gradient details</source>
         <translation>Detaliile gradientului %1</translation>
     </message>
@@ -39390,12 +39390,12 @@ iar fișierul curent este [%3]</translation>
 <context>
     <name>QgsDataDefinedRotationDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="264"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="264"/>
         <source>Rotation</source>
         <translation>Rotaţie</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="266"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="266"/>
         <source>Symbol rotation</source>
         <translation>Rotire simbol</translation>
     </message>
@@ -39403,17 +39403,17 @@ iar fișierul curent este [%3]</translation>
 <context>
     <name>QgsDataDefinedSizeDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="241"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="241"/>
         <source>Size</source>
         <translation>Dimensiuni</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="243"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="243"/>
         <source>Symbol size</source>
         <translation>Mărimea simbolului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="245"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="245"/>
         <source>Size Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
@@ -39441,37 +39441,37 @@ iar fișierul curent este [%3]</translation>
         <translation>Ajutor</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="104"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="104"/>
         <source>double</source>
         <translation>dublu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="109"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="109"/>
         <source>&apos;&lt;red&gt;,&lt;green&gt;,&lt;blue&gt;,&lt;alpha&gt;&apos;</source>
         <translation>&apos;&lt;red&gt;,&lt;green&gt;,&lt;blue&gt;,&lt;alpha&gt;&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="119"/>
         <source>&apos;&lt;filename&gt;&apos;</source>
         <translation>&apos;&lt;filename&gt;&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="136"/>
         <source>&apos;linear&apos;|&apos;radial&apos;|&apos;conical&apos;</source>
         <translation>&apos;linear&apos;|&apos;radial&apos;|&apos;conical&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="141"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="141"/>
         <source>&apos;feature&apos;|&apos;viewport&apos;</source>
         <translation>&apos;feature&apos;|&apos;viewport&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="146"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="146"/>
         <source>&apos;pad&apos;|&apos;repeat&apos;|&apos;reflect&apos;</source>
         <translation>&apos;pad&apos;|&apos;repeat&apos;|&apos;reflect&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="151"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="151"/>
         <source>0 (false)|1 (true)</source>
         <translation>0 (false)|1 (true)</translation>
     </message>
@@ -39497,12 +39497,12 @@ iar fișierul curent este [%3]</translation>
 <context>
     <name>QgsDataDefinedWidthDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="285"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="285"/>
         <source>Width</source>
         <translation>Lăţime</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="287"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="287"/>
         <source>Symbol width</source>
         <translation>Lăţimea simbolului</translation>
     </message>
@@ -42527,22 +42527,22 @@ Eroare de analiză:
 <context>
     <name>QgsEllipseSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="34"/>
         <source>Select fill color</source>
         <translation>Selectați culoarea de umplere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="37"/>
         <source>Transparent fill</source>
         <translation>Umplere transparentă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="39"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="39"/>
         <source>Select border color</source>
         <translation>Selectare culoare margine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="42"/>
         <source>Transparent border</source>
         <translation>Margine transparentă</translation>
     </message>
@@ -49392,12 +49392,12 @@ Referință în denumirea funcției: my_form_open
 <context>
     <name>QgsFilledMarkerSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="860"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="860"/>
         <source>Size Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="928"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="928"/>
         <source>string </source>
         <translation>șir</translation>
     </message>
@@ -49405,17 +49405,17 @@ Referință în denumirea funcției: my_form_open
 <context>
     <name>QgsFontMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2689"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2689"/>
         <source>Select symbol fill color</source>
         <translation>Selectare culoare de umplere pentru simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2692"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2692"/>
         <source>Select symbol outline color</source>
         <translation>Selectare culoare pentru conturul simbolului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2702"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2702"/>
         <source>Size Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
@@ -51573,17 +51573,17 @@ Va rog să reselectați un fișier valid.</translation>
 <context>
     <name>QgsGeometryGeneratorSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3356"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3356"/>
         <source>Polygon / MultiPolygon</source>
         <translation>Poligon / MultiPoligon</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3357"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3357"/>
         <source>LineString / MultiLineString</source>
         <translation>LineString / MultiLineString</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3358"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3358"/>
         <source>Point / MultiPoint</source>
         <translation>Punct / MultiPunct</translation>
     </message>
@@ -53503,14 +53503,14 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGradientFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1037"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1042"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1037"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1042"/>
         <source>Select gradient color</source>
         <translation>Selectare culoare gradient</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1040"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1045"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1040"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1045"/>
         <source>Transparent</source>
         <translation>Transparent</translation>
     </message>
@@ -53518,12 +53518,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGraduatedHistogramWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedhistogramwidget.cpp" line="89"/>
+        <location filename="../src/gui/symbology/qgsgraduatedhistogramwidget.cpp" line="89"/>
         <source>Ranges are overlapping and can&apos;t be edited by the histogram</source>
         <translation>Zonele se suprapun și nu pot fi editate de histogramă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedhistogramwidget.cpp" line="94"/>
+        <location filename="../src/gui/symbology/qgsgraduatedhistogramwidget.cpp" line="94"/>
         <source>Ranges have gaps and can&apos;t be edited by the histogram</source>
         <translation>Zonele au lacune și nu pot fi editate de histogramă</translation>
     </message>
@@ -53531,17 +53531,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGraduatedSymbolRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Symbol</source>
         <translation>Simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Values</source>
         <translation>Valori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Legend</source>
         <translation>Legendă</translation>
     </message>
@@ -53706,53 +53706,53 @@ Folosiți &quot;%1&quot; pentru limita inferioară a clasificării, și &quot;%2
         <translation>Avansat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="501"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="501"/>
         <source>Symbol levels...</source>
         <translation>Nivele simbol...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
         <source>Error</source>
         <translation>Eroare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
         <source>There are no available color ramps. You can add them in Style Manager.</source>
         <translation>Nu există game de culoare disponibile. Le puteți adăuga în Style Manager.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
         <source>The selected color ramp is not available.</source>
         <translation>Rampa de culoare selectată nu este disponibilă.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
         <source>Warning</source>
         <translation>Avertisment</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
         <source>Natural break classification (Jenks) is O(n2) complexity, your classification may take a long time.
 Press cancel to abort breaks calculation or OK to continue.</source>
         <translation>Clasificarea Intervalelor Naturale (Jenks) este de complexitatea O(n2), clasificarea putând fi mare consumatoare de timp.
 Apăsați Cancel pentru a opri calculul, sau OK pentru a continua.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="1002"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="1002"/>
         <source>Linked range warning</source>
         <translation>Avertisment de interval asociat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="1003"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="1003"/>
         <source>Rows will be reordered before linking boundaries. Continue?</source>
         <translation>Rândurile vor fi reordonate înainte de a li se asocia limitele. Continuați?</translation>
     </message>
@@ -56243,7 +56243,7 @@ la linia %2 coloana %3</translation>
 <context>
     <name>QgsHeatmapRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsheatmaprendererwidget.cpp" line="73"/>
+        <location filename="../src/gui/symbology/qgsheatmaprendererwidget.cpp" line="73"/>
         <source>The heatmap renderer only applies to point and multipoint layers. 
 &apos;%1&apos; is not a point layer and cannot be rendered as a heatmap.</source>
         <translation>Renderul de hărți calorice poate fi aplicat doar straturilor de tip  punct și multipunct. 
@@ -57016,7 +57016,7 @@ Poate exista o problemă la conexiunea de rețea sau la serverul WMS.</numerusfo
 <context>
     <name>QgsInvertedPolygonRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsinvertedpolygonrendererwidget.cpp" line="45"/>
+        <location filename="../src/gui/symbology/qgsinvertedpolygonrendererwidget.cpp" line="45"/>
         <source>The inverted polygon renderer only applies to polygon and multipolygon layers. 
 &apos;%1&apos; is not a polygon layer and then cannot be displayed</source>
         <translation>Renderul de inversare a poligonului poate fi aplicat doar straturilor de tip poligon și multipoligon. 
@@ -58954,7 +58954,7 @@ Poate exista o problemă la conexiunea de rețea sau la serverul WMS.</numerusfo
 <context>
     <name>QgsLayerPropertiesWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgslayerpropertieswidget.cpp" line="168"/>
+        <location filename="../src/gui/symbology/qgslayerpropertieswidget.cpp" line="168"/>
         <source>Outline: %1</source>
         <translation>Contur: %1</translation>
     </message>
@@ -60616,7 +60616,7 @@ Poate exista o problemă la conexiunea de rețea sau la serverul WMS.</numerusfo
 <context>
     <name>QgsMarkerLineSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1687"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1687"/>
         <source>string </source>
         <translation>șir</translation>
     </message>
@@ -62918,7 +62918,7 @@ Informații de eroare extinse:
 <context>
     <name>QgsNullSymbolRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsnullsymbolrendererwidget.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgsnullsymbolrendererwidget.cpp" line="41"/>
         <source>No symbols will be rendered for features in this layer.</source>
         <translation>Nu vor fi randate simboluri pentru entitățile acestui strat.</translation>
     </message>
@@ -67931,17 +67931,17 @@ Eroare: %2</translation>
 <context>
     <name>QgsPenCapStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="107"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="107"/>
         <source>Square</source>
         <translation>Pătrat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="108"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="108"/>
         <source>Flat</source>
         <translation>Plat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="109"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="109"/>
         <source>Round</source>
         <translation>Rotund</translation>
     </message>
@@ -67949,17 +67949,17 @@ Eroare: %2</translation>
 <context>
     <name>QgsPenJoinStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="83"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="83"/>
         <source>Bevel</source>
         <translation>Oblic</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="84"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="84"/>
         <source>Miter</source>
         <translation>Unghi ascuțit</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="85"/>
         <source>Round</source>
         <translation>Rotund</translation>
     </message>
@@ -67967,32 +67967,32 @@ Eroare: %2</translation>
 <context>
     <name>QgsPenStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="30"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="30"/>
         <source>Solid Line</source>
         <translation>Linie solidă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="31"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="31"/>
         <source>No Pen</source>
         <translation>Fără linie</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="32"/>
         <source>Dash Line</source>
         <translation>Linie Întreruptă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="33"/>
         <source>Dot Line</source>
         <translation>Linie Punctată</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="34"/>
         <source>Dash Dot Line</source>
         <translation>Linie de tipul Cratimă-Punct</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="35"/>
         <source>Dash Dot Dot Line</source>
         <translation>Linie de tipul Cratimă-Punct-Punct</translation>
     </message>
@@ -69571,40 +69571,40 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsPointDisplacementRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="66"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="66"/>
         <source>Ring</source>
         <translation>Inel</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="67"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="67"/>
         <source>Concentric rings</source>
         <translation>Inele concentrice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="76"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="85"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="184"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="76"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="184"/>
         <source>None</source>
         <translation>Niciunul/Niciuna</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="101"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="107"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="101"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="107"/>
         <source>Select color</source>
         <translation>Selectare culoare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="105"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="105"/>
         <source>No outline</source>
         <translation>Fără contur</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="251"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="251"/>
         <source>Label Font</source>
         <translation>Font etichetă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="398"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="398"/>
         <source>The point displacement renderer only applies to (single) point layers. 
 &apos;%1&apos; is not a point layer and cannot be displayed by the point displacement renderer</source>
         <translation>Render-ul de mutare a punctelor se aplică doar straturilor tip punct (singulare).
@@ -72220,7 +72220,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsRasterFillSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3059"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3059"/>
         <source>Select image file</source>
         <translation>Selectare fișier imagine</translation>
     </message>
@@ -75114,7 +75114,7 @@ Elimină toate straturile tematice din Zona de Previzualizare</translation>
     </message>
     <message>
         <location filename="../src/ui/qgsrendererrulepropsdialogbase.ui" line="35"/>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="780"/>
         <source>Filter</source>
         <translation>Filtru</translation>
     </message>
@@ -75144,23 +75144,23 @@ Elimină toate straturile tematice din Zona de Previzualizare</translation>
         <translation>Simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="736"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="736"/>
         <source>Error</source>
         <translation>Eroare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="736"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="736"/>
         <source>Filter expression parsing error:
 </source>
         <translation>Eroare separare expresie filtru:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="757"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="757"/>
         <source>Evaluation error</source>
         <translation>Eroare de evaluare</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="780"/>
         <source>Filter returned %n feature(s)</source>
         <comment>number of filtered features</comment>
         <translation>
@@ -75173,43 +75173,43 @@ Elimină toate straturile tematice din Zona de Previzualizare</translation>
 <context>
     <name>QgsRendererV2DataDefinedMenus</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="286"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="286"/>
         <source>Rotation field</source>
         <translation>Câmp rotaţie</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="287"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="287"/>
         <source>Size scale field</source>
         <translation>Câmp mărime scară</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="298"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="436"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="298"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="436"/>
         <source>Scale area</source>
         <translation>Zonă scară</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="299"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="440"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="299"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="440"/>
         <source>Scale diameter</source>
         <translation>Diametru scară</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="337"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="371"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="390"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="393"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="398"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="417"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="420"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="425"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="337"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="371"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="390"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="393"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="398"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="420"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="425"/>
         <source>- expression -</source>
         <translation>- expresie -</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="341"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="386"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="413"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="341"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="386"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="413"/>
         <source>- no field -</source>
         <translation>- nici un câmp - </translation>
     </message>
@@ -75260,78 +75260,78 @@ Elimină toate straturile tematice din Zona de Previzualizare</translation>
 <context>
     <name>QgsRendererV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="34"/>
         <source>Renderer Options</source>
         <translation>Opțiuni de Randare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="36"/>
         <source>Copy</source>
         <translation>Copiere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="38"/>
         <source>Paste</source>
         <translation>Lipire</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="42"/>
         <source>Change color</source>
         <translation>Schimbă culoarea</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="43"/>
         <source>Change transparency</source>
         <translation>Schimbă transparenţa</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="44"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="44"/>
         <source>Change output unit</source>
         <translation>Schimbă  mărimea rezultatului/output</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="48"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="48"/>
         <source>Change width</source>
         <translation>Schimbă lăţimea</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="52"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="52"/>
         <source>Change size</source>
         <translation>Schimbă mărimea</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="53"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="53"/>
         <source>Change angle</source>
         <translation>Schimbă unghiul</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="116"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="116"/>
         <source>Transparency</source>
         <translation>Transparenţă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="116"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="116"/>
         <source>Change symbol transparency [%]</source>
         <translation>Schimbă transparenţa simbolului [%]</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Symbol unit</source>
         <translation>Unitate simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Select symbol unit</source>
         <translation>Selectare unitate simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="153"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="153"/>
         <source>Millimeter</source>
         <translation>Milimetru</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Map unit</source>
         <translation>Unitate hartă</translation>
     </message>
@@ -75414,52 +75414,52 @@ Elimină toate straturile tematice din Zona de Previzualizare</translation>
 <context>
     <name>QgsRuleBasedRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="862"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="862"/>
         <source>(no filter)</source>
         <translation>(fără filtru)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="889"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="889"/>
         <source>&lt;li&gt;&lt;nobr&gt;%1 features also in rule %2&lt;/nobr&gt;&lt;/li&gt;</source>
         <translation>&lt;li&gt;&lt;nobr&gt;%1 entități, de asemenea, în regula %2&lt;/nobr&gt;&lt;/li&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Label</source>
         <translation>Etichetă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Rule</source>
         <translation>Regulă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Min. scale</source>
         <translation>Scară min</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Count</source>
         <translation>Numărare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Duplicate count</source>
         <translation>Duplicare număr</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Max. scale</source>
         <translation>Scară max</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="961"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="961"/>
         <source>Number of features in this rule.</source>
         <translation>Numărul de entități din această regulă.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="965"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="965"/>
         <source>Number of features in this rule which are also present in other rule(s).</source>
         <translation>Numărul de entități din această regulă, care sunt, de asemenea, prezente în alte regul(i).</translation>
     </message>
@@ -75497,78 +75497,78 @@ Elimină toate straturile tematice din Zona de Previzualizare</translation>
         <translation>Nivele simbol...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="75"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="75"/>
         <source>Remove Rule</source>
         <translation>Eliminare regulă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="82"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="82"/>
         <source>Refine current rule</source>
         <translation>Rafinare regulă curentă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="83"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="83"/>
         <source>Add scales to rule</source>
         <translation>Adăugare scări la regulă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="84"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="84"/>
         <source>Add categories to rule</source>
         <translation>Adăugare categorii la regulă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="85"/>
         <source>Add ranges to rule</source>
         <translation>Adăugare distanţă la regulă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="182"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="182"/>
         <source>Edit rule</source>
         <translation>Editare regulă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="259"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="259"/>
         <source>Add categories to rules</source>
         <translation>Adăugare categorii la reguli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="269"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="269"/>
         <source>Add ranges to rules</source>
         <translation>Adăugare intervale la reguli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="285"/>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="291"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="285"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="291"/>
         <source>Scale refinement</source>
         <translation>Perfecţionare scară</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="285"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="285"/>
         <source>Parent rule %1 must have a symbol for this operation.</source>
         <translation>Regula principală %1 trebuie să aibă un simbol pentru această operaţiune.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="292"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="292"/>
         <source>Please enter scale denominators at which will split the rule, separate them by commas (e.g. 1000,5000):</source>
         <translation>Vă rugăm să introduceţi denominatorii scării la care se va scinda regula, despărţiţi de virgule (ex. 1000,5000):</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="304"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="304"/>
         <source>Error</source>
         <translation>Eroare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="304"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="304"/>
         <source>&quot;%1&quot; is not valid scale denominator, ignoring it.</source>
         <translation>&quot;%1&quot; nu este un denominator de scară valid, se va ignora.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="542"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="542"/>
         <source>Calculating feature count.</source>
         <translation>Se calculează numărul de entități.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="542"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="542"/>
         <source>Abort</source>
         <translation>Renunţare</translation>
     </message>
@@ -75888,27 +75888,27 @@ mai multe tabele, dar trebuie obligatoriu să includă principalul typename%1 di
 <context>
     <name>QgsSVGFillSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>SVG file</source>
         <translation>Fişier SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2169"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2169"/>
         <source>Select fill color</source>
         <translation>Selectați culoarea de umplere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2171"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2171"/>
         <source>Select border color</source>
         <translation>Selectare culoare margine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>Select SVG texture file</source>
         <translation>Selectează fișierul texturii SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>All files</source>
         <translation>Toate fişierele</translation>
     </message>
@@ -76260,19 +76260,19 @@ mai multe tabele, dar trebuie obligatoriu să includă principalul typename%1 di
 <context>
     <name>QgsShapeburstFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1372"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1377"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1372"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1377"/>
         <source>Select gradient color</source>
         <translation>Selectare culoare gradient</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1375"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1380"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1375"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1380"/>
         <source>Transparent</source>
         <translation>Transparent</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1487"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1487"/>
         <source>Integer between 0 and 18</source>
         <translation>Întreg cuprins între 0 și 18</translation>
     </message>
@@ -76280,22 +76280,22 @@ mai multe tabele, dar trebuie obligatoriu să includă principalul typename%1 di
 <context>
     <name>QgsSimpleFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="705"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="705"/>
         <source>Select fill color</source>
         <translation>Selectați culoarea de umplere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="708"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="708"/>
         <source>Transparent fill</source>
         <translation>Umplere transparentă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="710"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="710"/>
         <source>Select border color</source>
         <translation>Selectare culoare margine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="713"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="713"/>
         <source>Transparent border</source>
         <translation>Margine transparentă</translation>
     </message>
@@ -76303,12 +76303,12 @@ mai multe tabele, dar trebuie obligatoriu să includă principalul typename%1 di
 <context>
     <name>QgsSimpleLineSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="180"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="180"/>
         <source>Select line color</source>
         <translation>Selecţie culoare linie</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="195"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="195"/>
         <source>Width Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
@@ -76316,32 +76316,32 @@ mai multe tabele, dar trebuie obligatoriu să includă principalul typename%1 di
 <context>
     <name>QgsSimpleMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="425"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="425"/>
         <source>Select fill color</source>
         <translation>Selectați culoarea de umplere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="428"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="428"/>
         <source>Transparent fill</source>
         <translation>Umplere transparentă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="430"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="430"/>
         <source>Select border color</source>
         <translation>Selectare culoare margine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="433"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="433"/>
         <source>Transparent border</source>
         <translation>Margine transparentă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="442"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="442"/>
         <source>Size Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="544"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="544"/>
         <source>string </source>
         <translation>șir</translation>
     </message>
@@ -76679,7 +76679,7 @@ sufixul unităţii</translation>
 <context>
     <name>QgsSingleSymbolRendererV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssinglesymbolrendererv2widget.cpp" line="65"/>
+        <location filename="../src/gui/symbology/qgssinglesymbolrendererv2widget.cpp" line="65"/>
         <source>Symbol levels...</source>
         <translation>Nivele simbol...</translation>
     </message>
@@ -76687,32 +76687,32 @@ sufixul unităţii</translation>
 <context>
     <name>QgsSizeScaleWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="132"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="132"/>
         <source>Compute from layer</source>
         <translation>Calculează din strat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="148"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="148"/>
         <source>Flannery</source>
         <translation>Flannery</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="149"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="149"/>
         <source>Surface</source>
         <translation>Suprafață</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="150"/>
         <source>Radius</source>
         <translation>Rază</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="154"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="154"/>
         <source>Exponential</source>
         <translation>Exponențial</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="155"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="155"/>
         <source>Linear</source>
         <translation>Liniar</translation>
     </message>
@@ -76720,32 +76720,32 @@ sufixul unităţii</translation>
 <context>
     <name>QgsSmartGroupCondition</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="33"/>
         <source>has the tag</source>
         <translation>are eticheta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="34"/>
         <source>is a member of group</source>
         <translation>este un membru al grupului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="35"/>
         <source>has a part of name matching</source>
         <translation>nici o parte a numelui NU se potrivește</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="36"/>
         <source>does NOT have the tag</source>
         <translation>NU are etichetă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="37"/>
         <source>is NOT a member of group</source>
         <translation>NU este un membru al grupului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="38"/>
         <source>has NO part of name matching</source>
         <translation>nici o parte a numelui NU se potrivește</translation>
     </message>
@@ -76766,22 +76766,22 @@ sufixul unităţii</translation>
 <context>
     <name>QgsSmartGroupEditorDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="87"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="87"/>
         <source>ALL the constraints</source>
         <translation>TOATE constrângerile</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="88"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="88"/>
         <source>any ONE of the constraints</source>
         <translation>oricare dintre constrângeri</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="205"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="205"/>
         <source>Invalid name</source>
         <translation>Nume nevalid</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="205"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="205"/>
         <source>The smart group name field is empty. Kindly provide a name</source>
         <translation>Un câmp pentru numele smart group este gol. Vă rugăm să furnizaţi un nume</translation>
     </message>
@@ -78092,142 +78092,142 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsStyleV2ExportImportDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="43"/>
         <source>Select all</source>
         <translation>Selectare completă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="47"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="47"/>
         <source>Clear selection</source>
         <translation>Ştergere selecţie</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="70"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="70"/>
         <source>file specified below</source>
         <translation>fișierul specificat mai jos</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="72"/>
         <source>URL specified below</source>
         <translation>URL-ul specificat mai jos</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="85"/>
         <source>Select symbols to import</source>
         <translation>Selectare simboluri pentru importare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="86"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="86"/>
         <source>Import</source>
         <translation>Importare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="68"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="68"/>
         <source>Import symbol(s)</source>
         <translation>Importare simbol(uri)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="90"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="90"/>
         <source>Export symbol(s)</source>
         <translation>Exportare simbol(uri)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="98"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="98"/>
         <source>Select by group</source>
         <translation>Selecție după grup</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="104"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="104"/>
         <source>Export</source>
         <translation>Exportare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="122"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="147"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="122"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="147"/>
         <source>Export/import error</source>
         <translation>Eroare exportare/importare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="123"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="123"/>
         <source>You should select at least one symbol/color ramp.</source>
         <translation>Ar trebui selectat cel puţin un gradient de simboluri/culoare.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="129"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="129"/>
         <source>Save styles</source>
         <translation>Salvare stiluri</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="130"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="130"/>
         <source>XML files (*.xml *.XML)</source>
         <translation>Fişiere XML (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="148"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="148"/>
         <source>Error when saving selected symbols to file:
 %1</source>
         <translation>Eroare în timpul salvării simbolurilor selectate în fişierul
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="175"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="175"/>
         <source>Import error</source>
         <translation>Eroare import</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="176"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="176"/>
         <source>An error occurred during import:
 %1</source>
         <translation>A apărut o eroare pe durata importării:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="262"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="309"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="262"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="309"/>
         <source>Duplicate names</source>
         <translation>Duplicare nume</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="263"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="263"/>
         <source>Symbol with name &apos;%1&apos; already exists.
 Overwrite?</source>
         <translation>Simbolul cu numele &apos;%1&apos; există deja.
 Doriţi să salvaţi peste acesta?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="310"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="310"/>
         <source>Color ramp with name &apos;%1&apos; already exists.
 Overwrite?</source>
         <translation>Gradientul de culoare cu numele &apos;%1&apos; există deja.
 Doriţi să salvaţi peste acesta?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="435"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="435"/>
         <source>Select symbols by group</source>
         <translation>Selecție simboluri în funcție de grup</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="477"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="477"/>
         <source>Load styles</source>
         <translation>Încărcare stiluri</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="478"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="478"/>
         <source>XML files (*.xml *XML)</source>
         <translation>Fişiere XML (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="517"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="517"/>
         <source>Downloading style ... </source>
         <translation>Descărcare stil...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="544"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="544"/>
         <source>HTTP Error!</source>
         <translation>Eroare HTTP!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="545"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="545"/>
         <source>Download failed: %1.</source>
         <translation>Descărcare eşuată: %1.</translation>
     </message>
@@ -78263,22 +78263,22 @@ Doriţi să salvaţi peste acesta?</translation>
 <context>
     <name>QgsStyleV2GroupSelectionDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="34"/>
         <source>All Symbols</source>
         <translation>Toate simbolurile</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="45"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="45"/>
         <source>Groups</source>
         <translation>Grupuri</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="46"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="46"/>
         <source>Ungrouped</source>
         <translation>Degrupat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="54"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="54"/>
         <source>Smart Groups</source>
         <translation>Grupuri Inteligente</translation>
     </message>
@@ -78286,316 +78286,316 @@ Doriţi să salvaţi peste acesta?</translation>
 <context>
     <name>QgsStyleV2ManagerDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="60"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="60"/>
         <source>Type here to filter symbols...</source>
         <translation>Scrie aici pentru a filtra simbolurile...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="214"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="214"/>
         <source>Marker symbol (%1)</source>
         <translation>Simbolul marcajului (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="215"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="215"/>
         <source>Line symbol (%1)</source>
         <translation>Simbolul liniei (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="216"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="216"/>
         <source>Fill symbol (%1)</source>
         <translation>Simbolul umplerii (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="218"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="218"/>
         <source>Color ramp (%1)</source>
         <translation>Gama de culori (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="458"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="458"/>
         <source>Gradient</source>
         <translation>Gradient</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="73"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="73"/>
         <source>Share menu</source>
         <translation>Meniu de partajare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="76"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="76"/>
         <source>Export...</source>
         <translation>Export...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="78"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="78"/>
         <source>Import...</source>
         <translation>Import...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="112"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="112"/>
         <source>Group actions</source>
         <translation>Acțiunile Grupului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="470"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="470"/>
         <source>Random</source>
         <translation>Aleatoriu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="482"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="482"/>
         <source>ColorBrewer</source>
         <translation>ColorBrewer</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="137"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="448"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="494"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="137"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="448"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="494"/>
         <source>cpt-city</source>
         <translation>cpt-city</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="147"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="147"/>
         <source>Add to group</source>
         <translation>Adăugare la grup</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="362"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="362"/>
         <source>new symbol</source>
         <translation>simbol nou</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="367"/>
         <source>new marker</source>
         <translation>Simbol nou</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="371"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="371"/>
         <source>new line</source>
         <translation>linie nouă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="375"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="375"/>
         <source>new fill symbol</source>
         <translation>Simbol nou de umplere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="400"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="400"/>
         <source>Symbol Name</source>
         <translation>Numele simbolului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="401"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="401"/>
         <source>Please enter a name for new symbol:</source>
         <translation>Vă rugăm introduceți un nume pentru noul simbol:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="411"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="416"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="411"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="416"/>
         <source>Save symbol</source>
         <translation>Salvare simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="412"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="412"/>
         <source>Cannot save symbol without name. Enter a name.</source>
         <translation>Simbolul nou nu poate fi creat fără a avea un nume. Vă rugăm să introduceţi un nume.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="417"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Simbolul cu numele &apos;%1&apos; există deja. Salvaţi peste acesta?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="449"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="449"/>
         <source>Color ramp type</source>
         <translation>Tipul gamei de culori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="450"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="450"/>
         <source>Please select color ramp type:</source>
         <translation>Vă rugăm selectați tipul gamei de culori:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="455"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="455"/>
         <source>new ramp</source>
         <translation>Gamă nouă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="468"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="468"/>
         <source>new gradient ramp</source>
         <translation>Gradient nou</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="480"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="480"/>
         <source>new random ramp</source>
         <translation>Gamă aleatorie nouă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="529"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="529"/>
         <source>Color Ramp Name</source>
         <translation>Numele gamei de culori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="530"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="530"/>
         <source>Please enter a name for new color ramp:</source>
         <translation>Introduceți un nume pentru noua gamă de culori:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="540"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="540"/>
         <source>Save Color Ramp</source>
         <translation>Salvare Gamă de Culori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="541"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="541"/>
         <source>Cannot save color ramp without name. Enter a name.</source>
         <translation>Nu se poate salva o gamă de culori fără a avea un nume. Introduceţi un nume.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="545"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="545"/>
         <source>Save color ramp</source>
         <translation>Salvare gamă de culori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="546"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="546"/>
         <source>Color ramp with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Gama de culori cu numele &apos;%1&apos; există deja. O suprascrieți?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="720"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="740"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="720"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="740"/>
         <source>Confirm removal</source>
         <translation>Confirmare ștergere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="721"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="721"/>
         <source>Do you really want to remove %n symbol(s)?</source>
         <translation>Sigur doriți să ştergeți %n simbol(uri)?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="741"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="741"/>
         <source>Do you really want to remove %n ramps(s)?</source>
         <translation>Sigur doriți să ştergeți %n interval(e)?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="787"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="787"/>
         <source>Exported selected symbols as PNG</source>
         <translation>Simboluri selectate exportate ca PNG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="796"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="796"/>
         <source>Exported selected symbols as SVG</source>
         <translation>Simboluri selectate exportate ca SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="845"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="845"/>
         <source>All Symbols</source>
         <translation>Toate simbolurile</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="855"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="855"/>
         <source>Groups</source>
         <translation>Grupuri</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="856"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="856"/>
         <source>Ungrouped</source>
         <translation>Degrupat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="863"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="863"/>
         <source>Smart Groups</source>
         <translation>Grupuri Inteligente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="998"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1436"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="998"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1436"/>
         <source>Invalid Selection</source>
         <translation>Selecție nevalidă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="999"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="999"/>
         <source>The parent group you have selected is not user editable.
 Kindly select a user defined group.</source>
         <translation>Grupul părinte selectat nu este editabil.
 Selectați un grup definit de utilizator.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1008"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1008"/>
         <source>Operation Not Allowed</source>
         <translation>Operaţiunea nu este permisă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1009"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1009"/>
         <source>Creation of nested smart groups are not allowed
 Select the &apos;Smart Group&apos; to create a new group.</source>
         <translation>Crearea grupurilor inteligente imbricate nu este permisă
 Selectați &apos;Grup Inteligent&apos; pentru a crea un grup nou.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1036"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1036"/>
         <source>New Group</source>
         <translation>Grup nou</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1069"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1069"/>
         <source>Invalid selection</source>
         <translation>Selecție nevalidă</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1070"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1070"/>
         <source>Cannot delete system defined categories.
 Kindly select a group or smart group you might want to delete.</source>
         <translation>Nu se pot șterge categoriile definite ale sistemului.
 Vă rugăm să selectați un grup sau un grup inteligent pe care doriți să îl ștergeți.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1041"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1041"/>
         <source>Error!</source>
         <translation>Eroare!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1042"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1042"/>
         <source>New group could not be created.
 There was a problem with your symbol database.</source>
         <translation>Noul grup nu a putut fi creat.
 A apărut o problemă cu baza de date a simbolurilor.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1199"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1199"/>
         <source>Database Error</source>
         <translation>Eroare bază de date</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1200"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1200"/>
         <source>There was a problem with the Symbols database while regrouping.</source>
         <translation>A apărut o problemă cu baza de date a simbolurilor în timpul regrupării.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1437"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1437"/>
         <source>You have not selected a Smart Group. Kindly select a Smart Group to edit.</source>
         <translation>Nu ați selectat un Grup Inteligent. Vă rugăm selectați un Grup Inteligent pentru a-l edita.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1455"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1455"/>
         <source>Database Error!</source>
         <translation>Eroare bază de date!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1456"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1456"/>
         <source>There was some error while editing the smart group.</source>
         <translation>A apărut o eroare în timpul editării grupului inteligent.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="779"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="779"/>
         <source>Cannot rename item</source>
         <translation>Nu se poate redenumi itemul</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="780"/>
         <source>Name is already taken by another item. Choose a different name.</source>
         <translation>Numele este deja luat de un alt element. Alegeți un alt nume.</translation>
     </message>
@@ -78802,23 +78802,23 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSvgCache</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="466"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="466"/>
         <source>SVG request failed [error: %1 - url: %2]</source>
         <translation>Cererea SVG a eșuat [eroare: %1 - url: %2]</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="466"/>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="489"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="466"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="489"/>
         <source>SVG</source>
         <translation>SVG</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="489"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="489"/>
         <source>SVG request error [status: %1 - reason phrase: %2]</source>
         <translation>Eroare de cerere SVG [stare: %1 - motiv: %2]</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="976"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="976"/>
         <source>%1 of %2 bytes of svg image downloaded.</source>
         <translation>%1 din %2 octeți ai imaginii svg au fost descărcați</translation>
     </message>
@@ -78879,27 +78879,27 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSvgMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1786"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1786"/>
         <source>Select fill color</source>
         <translation>Selectați culoarea de umplere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1789"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1789"/>
         <source>Select border color</source>
         <translation>Selectare culoare margine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1808"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1808"/>
         <source>Size Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2034"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2034"/>
         <source>Select SVG file</source>
         <translation>Selectare fişier SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2036"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2036"/>
         <source>SVG files</source>
         <translation>Fişiere SVG</translation>
     </message>
@@ -78907,12 +78907,12 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSvgSelectorGroupsModel</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="120"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="120"/>
         <source>App Symbols</source>
         <translation>Simbolurile Aplicației</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="124"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="124"/>
         <source>User Symbols</source>
         <translation>Simbolurile Utilizatorului</translation>
     </message>
@@ -78920,17 +78920,17 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSvgSelectorWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="273"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="273"/>
         <source>Select SVG file</source>
         <translation>Selectare fişier SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="275"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="275"/>
         <source>SVG files</source>
         <translation>Fişiere SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="298"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="298"/>
         <source>File not found</source>
         <translation>Fișierul nu poate fi găsit</translation>
     </message>
@@ -78938,17 +78938,17 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="151"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="151"/>
         <source>Size</source>
         <translation>Dimensiuni</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="158"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="158"/>
         <source>area</source>
         <translation>aria</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="161"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="161"/>
         <source>diameter</source>
         <translation>diametru</translation>
     </message>
@@ -78956,7 +78956,7 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSymbolLevelsV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollevelsv2dialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgssymbollevelsv2dialog.cpp" line="72"/>
         <source>Layer %1</source>
         <translation>Stratul %1</translation>
     </message>
@@ -79020,32 +79020,32 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSymbolV2SelectorWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="264"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="264"/>
         <source>Symbol selector</source>
         <translation>Selectare simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="647"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="647"/>
         <source>Symbol name</source>
         <translation>Nume simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="648"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="648"/>
         <source>Please enter name for the symbol:</source>
         <translation>Vă rugăm introduceţi numele pentru simbol:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="648"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="648"/>
         <source>New symbol</source>
         <translation>Simbol nou</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="655"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="655"/>
         <source>Save symbol</source>
         <translation>Salvare simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="656"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="656"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Simbolul cu numele &apos;%1&apos; există deja. Salvaţi peste acesta?</translation>
     </message>
@@ -79053,57 +79053,57 @@ A apărut o problemă cu baza de date a simbolurilor.</translation>
 <context>
     <name>QgsSymbolsListWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="68"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="68"/>
         <source>Clip features to canvas extent</source>
         <translation>Decupează entitățile după extinderea canevasului</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="112"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="112"/>
         <source>Size Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="114"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="114"/>
         <source>Width Assistant...</source>
         <translation>Asistent Dimensiune...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="119"/>
         <source>Select color</source>
         <translation>Selectare culoare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="337"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="366"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="337"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="366"/>
         <source>Symbol name</source>
         <translation>Nume simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="338"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="338"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="367"/>
         <source>Please enter name for the symbol:</source>
         <translation>Vă rugăm introduceţi numele pentru simbol:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="338"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="338"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="367"/>
         <source>New symbol</source>
         <translation>Simbol nou</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="345"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="374"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="345"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="374"/>
         <source>Save symbol</source>
         <translation>Salvare simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="346"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="375"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="346"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="375"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Simbolul cu numele &apos;%1&apos; există deja. Salvaţi peste acesta?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="417"/>
         <source>Transparency %1%</source>
         <translation>Transparenţă %1</translation>
     </message>
@@ -80133,27 +80133,27 @@ Eroarea:%2</translation>
 <context>
     <name>QgsVectorFieldSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="141"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="141"/>
         <source>X attribute</source>
         <translation>Atribut X</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="142"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="142"/>
         <source>Y attribute</source>
         <translation>Atribut Y</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="154"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="154"/>
         <source>Length attribute</source>
         <translation>Atribut lungime</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="155"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="155"/>
         <source>Angle attribute</source>
         <translation>Atribut unghi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="167"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="167"/>
         <source>Height attribute</source>
         <translation>Atribut înălţime</translation>
     </message>
@@ -80161,34 +80161,34 @@ Eroarea:%2</translation>
 <context>
     <name>QgsVectorGradientColorRampV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="56"/>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="61"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="56"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="61"/>
         <source>Select ramp color</source>
         <translation>Selectare gamă de culori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="59"/>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="64"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="59"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="64"/>
         <source>Transparent</source>
         <translation>Transparent</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="71"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="71"/>
         <source>Discrete</source>
         <translation>Discret</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="72"/>
         <source>Continuous</source>
         <translation>Continuu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="215"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="215"/>
         <source>Gradient file : %1</source>
         <translation>Fișier Gradient : %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="232"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="232"/>
         <source>License file : %1</source>
         <translation>Fișier de licență : %1</translation>
     </message>
