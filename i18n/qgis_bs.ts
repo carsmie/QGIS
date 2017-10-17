@@ -1231,7 +1231,7 @@ Procesiranje algoritma %d/%d...</translation>
 <context>
     <name>CharacterWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/characterwidget.cpp" line="136"/>
+        <location filename="../src/gui/symbology/characterwidget.cpp" line="136"/>
         <source>&lt;p&gt;Character: &lt;span style=&quot;font-size: 24pt; font-family: %1&quot;&gt;%2&lt;/span&gt;&lt;p&gt;Value: 0x%3</source>
         <translation>&lt;p&gt;Karakter: &lt;span style=&quot;font-size: 24pt; font-family: %1&quot;&gt;%2&lt;/span&gt;&lt;p&gt;Vrijednost: 0x%3</translation>
     </message>
@@ -20249,133 +20249,133 @@ Samo %1 od %2 objekata je zapisano.</translation>
         <translation>Orijentacije padina (Hillshade)</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="83"/>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="86"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="83"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="86"/>
         <source>All Ramps</source>
         <translation>Svi rasponi</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="33"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="33"/>
         <source>No symbols</source>
         <translation>Nema simbola</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="37"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="37"/>
         <source>Single symbol</source>
         <translation>Jedan simbol</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="42"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="42"/>
         <source>Categorized</source>
         <translation>Kategorizirano</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="46"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="46"/>
         <source>Graduated</source>
         <translation>Skalirano</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="50"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="50"/>
         <source>Rule-based</source>
         <translation>Na osnovu pravila</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="55"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="55"/>
         <source>Point displacement</source>
         <translation>Pomjeranje tačke</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="62"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="62"/>
         <source>Inverted polygons</source>
         <translation>Invertovani poligoni</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="77"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="77"/>
         <source>2.5 D</source>
         <translation>2.5 D</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="29"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="29"/>
         <source>Simple line</source>
         <translation>Jednostavna linija</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="31"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="31"/>
         <source>Marker line</source>
         <translation>Markirana linija</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="33"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="33"/>
         <source>Arrow</source>
         <translation>Strelica</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="35"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="35"/>
         <source>Simple marker</source>
         <translation>Jednostavan marker</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="37"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="37"/>
         <source>Filled marker</source>
         <translation>Ispunjen marker</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="39"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="39"/>
         <source>SVG marker</source>
         <translation>SVG marker</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="41"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="41"/>
         <source>Font marker</source>
         <translation>Font marker</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="43"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="43"/>
         <source>Ellipse marker</source>
         <translation>Eliptičan marker</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="45"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="45"/>
         <source>Vector field marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="48"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="48"/>
         <source>Simple fill</source>
         <translation>Jednostavna ispuna</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="50"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="50"/>
         <source>Gradient fill</source>
         <translation>Gradijentna ispuna</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="52"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="52"/>
         <source>Shapeburst fill</source>
         <translation>Shapeburst ispuna</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="56"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="56"/>
         <source>SVG fill</source>
         <translation>SVG ispuna</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="58"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="58"/>
         <source>Centroid fill</source>
         <translation>Ispuna iz centroida</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="60"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="60"/>
         <source>Line pattern fill</source>
         <translation>Ispuna linijskim uzorkom</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="62"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="62"/>
         <source>Point pattern fill</source>
         <translation>Ispuna tačkama</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="65"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="65"/>
         <source>Geometry generator</source>
         <translation>Generator geometrije</translation>
     </message>
@@ -20592,7 +20592,7 @@ Samo %1 od %2 objekata je zapisano.</translation>
         <translation>Alati za učitavanje i importovanja GPS alata</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="69"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="69"/>
         <location filename="../src/plugins/heatmap/heatmap.cpp" line="57"/>
         <source>Heatmap</source>
         <translation>Heatmap (toplinska karta)</translation>
@@ -21959,42 +21959,42 @@ SQL: %1</translation>
         <translation>ID objekta</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="620"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="620"/>
         <source>linear</source>
         <translation>linearno</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="624"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="624"/>
         <source>radial</source>
         <translation>radijalno</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="628"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="628"/>
         <source>conical</source>
         <translation>konično</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="642"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="642"/>
         <source>feature</source>
         <translation>objekat</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="646"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="646"/>
         <source>viewport</source>
         <translation>okvir prikaza</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="660"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="660"/>
         <source>pad</source>
         <translation>postaviti</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="664"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="664"/>
         <source>repeat</source>
         <translation>ponoviti</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="668"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="668"/>
         <source>reflect</source>
         <translation>reflektovati</translation>
     </message>
@@ -22081,7 +22081,7 @@ Odgovor je bio:
         <translation>Legenda</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="54"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="54"/>
         <source>Raster image fill</source>
         <translation>Ispuna rasterske slike</translation>
     </message>
@@ -25395,24 +25395,24 @@ Datum trenutne zadnje izmjene je: %2</translation>
 <context>
     <name>Qgs25DRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="32"/>
         <source>The 2.5D renderer only can be used with polygon layers. 
 &apos;%1&apos; is not a polygon layer and cannot be rendered in 2.5D.</source>
         <translation>2.5D renderiranje se može koristiti samo sa slojevima poligona.
 &apos;%1&apos; nije sloj poligona i ne može biti renderiran u 2.5D.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="41"/>
         <source>Select wall color</source>
         <translation>Izbor boje zida</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="44"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="44"/>
         <source>Select roof color</source>
         <translation>Izbor boje krova</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="47"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="47"/>
         <source>Select shadow color</source>
         <translation>Izbor boje sjenke</translation>
     </message>
@@ -30643,77 +30643,77 @@ Baza:%2</translation>
 <context>
     <name>QgsBrushStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="29"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="29"/>
         <source>Solid</source>
         <translation>Puna ispuna</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="30"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="30"/>
         <source>No Brush</source>
         <translation>Bez ispune</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="31"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="31"/>
         <source>Horizontal</source>
         <translation>Horizontalno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="32"/>
         <source>Vertical</source>
         <translation>Vertikalno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="33"/>
         <source>Cross</source>
         <translation>Ukršteno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="34"/>
         <source>BDiagonal</source>
         <translation>V dijagonalno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="35"/>
         <source>FDiagonal</source>
         <translation>F dijagonalno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="36"/>
         <source>Diagonal X</source>
         <translation>Dijagonalno X</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="37"/>
         <source>Dense 1</source>
         <translation>Gusto 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="38"/>
         <source>Dense 2</source>
         <translation>Gusto 2</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="39"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="39"/>
         <source>Dense 3</source>
         <translation>Gusto 3</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="40"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="40"/>
         <source>Dense 4</source>
         <translation>Gusto 4</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="41"/>
         <source>Dense 5</source>
         <translation>Gusto 5</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="42"/>
         <source>Dense 6</source>
         <translation>Gusto 6</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="43"/>
         <source>Dense 7</source>
         <translation>Gusto 7</translation>
     </message>
@@ -30752,17 +30752,17 @@ Baza:%2</translation>
 <context>
     <name>QgsCategorizedSymbolRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Symbol</source>
         <translation>Simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Value</source>
         <translation>Vrijednost</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Legend</source>
         <translation>Legenda</translation>
     </message>
@@ -30825,112 +30825,112 @@ Baza:%2</translation>
         <translation>Napredno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="437"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="534"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="806"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="437"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="534"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="806"/>
         <source>Random colors</source>
         <translation>Nasumične boje</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="491"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="491"/>
         <source>Symbol levels...</source>
         <translation>Nivoi simbola...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="705"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="705"/>
         <source>High number of classes!</source>
         <translation>Veliki broj klasa!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="706"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="706"/>
         <source>Classification would yield %1 entries which might not be expected. Continue?</source>
         <translation>Klasifikacija će donijeti %1 unosa što možda nije očekivano. Želite li nastaviti?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
         <source>Error</source>
         <translation>Greška</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="489"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="489"/>
         <source>Match to saved symbols</source>
         <translation>Spari sa snimljenim simbolima</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="490"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="490"/>
         <source>Match to symbols from file...</source>
         <translation>Spari sa simbolima iz fajla...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
         <source>There are no available color ramps. You can add them in Style Manager.</source>
         <translation>Nema dostupnih raspona boja. Možete ih dodati u Upravlju stilovima.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
         <source>The selected color ramp is not available.</source>
         <translation>Izabrani raspon boja nije dostupan.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="730"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="730"/>
         <source>Confirm Delete</source>
         <translation>Potvrdi brisanje</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="731"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="731"/>
         <source>The classification field was changed from &apos;%1&apos; to &apos;%2&apos;.
 Should the existing classes be deleted before classification?</source>
         <translation>Polje za klasifikaciju je promijenjeno iz &apos;%1&apos; u &apos;%2&apos;.
 Treba li izbrisati postojeće klase prije klasifikacije?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="939"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="944"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="998"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="1003"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="939"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="944"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="998"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="1003"/>
         <source>Matched symbols</source>
         <translation>Spareni simboli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="940"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="940"/>
         <source>Matched %1 categories to symbols.</source>
         <translation>Spareno %1 kategorija sa simbolima.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="945"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="945"/>
         <source>No categories could be matched to symbols in library.</source>
         <translation>Nema kategorija koje bi mogle biti sparene sa simbolima u biblioteci.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="977"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="977"/>
         <source>Match to symbols from file</source>
         <translation>Spari sa simbolima iz fajla</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="978"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="978"/>
         <source>XML files (*.xml *XML)</source>
         <translation>XML fajlovi (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="990"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="990"/>
         <source>Matching error</source>
         <translation>Greška sparivanja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="991"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="991"/>
         <source>An error occurred reading file:
 %1</source>
         <translation>Greška prilikom čitanja fajla:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="999"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="999"/>
         <source>Matched %1 categories to symbols from file.</source>
         <translation>Spareno %1 kategorija sa simbolima iz fajla.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="1004"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="1004"/>
         <source>No categories could be matched to symbols in file.</source>
         <translation>Nema kategorija koje bi mogle biti sparene sa simbolima iz fajla.</translation>
     </message>
@@ -31238,13 +31238,13 @@ Treba li izbrisati postojeće klase prije klasifikacije?</translation>
 <context>
     <name>QgsColorRampComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="66"/>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="75"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="66"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="75"/>
         <source>Random colors</source>
         <translation>Nasumične boje</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="67"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="67"/>
         <source>New color ramp...</source>
         <translation>Novi raspon boja...</translation>
     </message>
@@ -38632,12 +38632,12 @@ Greška: %5</translation>
 <context>
     <name>QgsCptCityBrowserModel</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="1437"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="1437"/>
         <source>Name</source>
         <translation>Naziv</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="1439"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="1439"/>
         <source>Info</source>
         <translation>Info</translation>
     </message>
@@ -38645,27 +38645,27 @@ Greška: %5</translation>
 <context>
     <name>QgsCptCityColorRampItem</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="764"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="764"/>
         <source>colors</source>
         <translation>boje</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="766"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="766"/>
         <source>discrete</source>
         <translation>diskretno</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="770"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="770"/>
         <source>continuous</source>
         <translation>kontinualno</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="772"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="772"/>
         <source>continuous (multi)</source>
         <translation>kontinualno (multi)</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="778"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="778"/>
         <source>variants</source>
         <translation>varijante</translation>
     </message>
@@ -38673,17 +38673,17 @@ Greška: %5</translation>
 <context>
     <name>QgsCptCityColorRampV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="118"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="118"/>
         <source>Selections by theme</source>
         <translation>Selekcije po temi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="119"/>
         <source>All by author</source>
         <translation>Svi od autora</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="482"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="482"/>
         <source>You can download a more complete set of cpt-city gradients by installing the &quot;Color Ramp Manager&quot; plugin (you must enable Experimental plugins in the plugin manager).
 
 </source>
@@ -38691,12 +38691,12 @@ Greška: %5</translation>
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="275"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="275"/>
         <source>All Ramps (%1)</source>
         <translation>Svi rasponi (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="65"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="65"/>
         <source>Error - cpt-city gradient files not found.
 
 You have two means of installing them:
@@ -38721,12 +38721,12 @@ Fajl se može naći na [%2]
 a trenutni fajl je [%3]</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="345"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="345"/>
         <source>%1 directory details</source>
         <translation>%1 direktorij - detalji</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="349"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="349"/>
         <source>%1 gradient details</source>
         <translation>%1 gradijent - detalji</translation>
     </message>
@@ -39395,12 +39395,12 @@ a trenutni fajl je [%3]</translation>
 <context>
     <name>QgsDataDefinedRotationDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="264"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="264"/>
         <source>Rotation</source>
         <translation>Rotacija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="266"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="266"/>
         <source>Symbol rotation</source>
         <translation>Rotacija simbola</translation>
     </message>
@@ -39408,17 +39408,17 @@ a trenutni fajl je [%3]</translation>
 <context>
     <name>QgsDataDefinedSizeDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="241"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="241"/>
         <source>Size</source>
         <translation>Veličina</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="243"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="243"/>
         <source>Symbol size</source>
         <translation>Veličina simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="245"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="245"/>
         <source>Size Assistant...</source>
         <translation>Asistent veličine...</translation>
     </message>
@@ -39446,37 +39446,37 @@ a trenutni fajl je [%3]</translation>
         <translation>Pomoć</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="104"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="104"/>
         <source>double</source>
         <translation>dvostruko</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="109"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="109"/>
         <source>&apos;&lt;red&gt;,&lt;green&gt;,&lt;blue&gt;,&lt;alpha&gt;&apos;</source>
         <translation>&apos;&lt;red&gt;,&lt;green&gt;,&lt;blue&gt;,&lt;alpha&gt;&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="119"/>
         <source>&apos;&lt;filename&gt;&apos;</source>
         <translation>&apos;&lt;filename&gt;&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="136"/>
         <source>&apos;linear&apos;|&apos;radial&apos;|&apos;conical&apos;</source>
         <translation>&apos;linearno&apos;|&apos;radijalno&apos;|&apos;konično&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="141"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="141"/>
         <source>&apos;feature&apos;|&apos;viewport&apos;</source>
         <translation>&apos;objekat&apos;|&apos;okvirprikaza&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="146"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="146"/>
         <source>&apos;pad&apos;|&apos;repeat&apos;|&apos;reflect&apos;</source>
         <translation>&apos;postavi&apos;|&apos;ponovi&apos;|&apos;reflektuj&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="151"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="151"/>
         <source>0 (false)|1 (true)</source>
         <translation>0 (laž)|1 (istina)</translation>
     </message>
@@ -39502,12 +39502,12 @@ a trenutni fajl je [%3]</translation>
 <context>
     <name>QgsDataDefinedWidthDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="285"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="285"/>
         <source>Width</source>
         <translation>Širina</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="287"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="287"/>
         <source>Symbol width</source>
         <translation>Širina simbola</translation>
     </message>
@@ -42531,22 +42531,22 @@ Greška u parsiranju:
 <context>
     <name>QgsEllipseSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="34"/>
         <source>Select fill color</source>
         <translation>Izbor boje ispune</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="37"/>
         <source>Transparent fill</source>
         <translation>Transparentna ispuna</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="39"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="39"/>
         <source>Select border color</source>
         <translation>Izbor boja granice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="42"/>
         <source>Transparent border</source>
         <translation>Transparentnost granice</translation>
     </message>
@@ -49393,12 +49393,12 @@ Reference u function name: my_form_open
 <context>
     <name>QgsFilledMarkerSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="860"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="860"/>
         <source>Size Assistant...</source>
         <translation>Asistent veličine...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="928"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="928"/>
         <source>string </source>
         <translation>niz </translation>
     </message>
@@ -49406,17 +49406,17 @@ Reference u function name: my_form_open
 <context>
     <name>QgsFontMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2689"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2689"/>
         <source>Select symbol fill color</source>
         <translation>Izbor boje ispune simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2692"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2692"/>
         <source>Select symbol outline color</source>
         <translation>Selekcija boje obruba simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2702"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2702"/>
         <source>Size Assistant...</source>
         <translation>Asistent veličine...</translation>
     </message>
@@ -51579,17 +51579,17 @@ Izaberite valjan fajl.</translation>
 <context>
     <name>QgsGeometryGeneratorSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3356"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3356"/>
         <source>Polygon / MultiPolygon</source>
         <translation>Poligon / Multipoligon</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3357"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3357"/>
         <source>LineString / MultiLineString</source>
         <translation>LinijskiNiz / MultiLinijskiNiz</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3358"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3358"/>
         <source>Point / MultiPoint</source>
         <translation>Tačka / Multitačka</translation>
     </message>
@@ -53509,14 +53509,14 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGradientFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1037"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1042"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1037"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1042"/>
         <source>Select gradient color</source>
         <translation>Izbor boje gradijenta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1040"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1045"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1040"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1045"/>
         <source>Transparent</source>
         <translation>Transparentno</translation>
     </message>
@@ -53524,12 +53524,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGraduatedHistogramWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedhistogramwidget.cpp" line="89"/>
+        <location filename="../src/gui/symbology/qgsgraduatedhistogramwidget.cpp" line="89"/>
         <source>Ranges are overlapping and can&apos;t be edited by the histogram</source>
         <translation>Rasponi se preklapaju i ne mogu biti editovani histogramom</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedhistogramwidget.cpp" line="94"/>
+        <location filename="../src/gui/symbology/qgsgraduatedhistogramwidget.cpp" line="94"/>
         <source>Ranges have gaps and can&apos;t be edited by the histogram</source>
         <translation>Rasponi imaju rupe i ne mogu biti editovani histogramom</translation>
     </message>
@@ -53537,17 +53537,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGraduatedSymbolRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Symbol</source>
         <translation>Simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Values</source>
         <translation>Vrijednosti</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Legend</source>
         <translation>Legenda</translation>
     </message>
@@ -53712,53 +53712,53 @@ Koristite &quot;%1&quot; za donju granicu klasifikacije, i &quot;%2&quot; za gor
         <translation>Napredno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="501"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="501"/>
         <source>Symbol levels...</source>
         <translation>Nivoi simbola...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
         <source>Error</source>
         <translation>Greška</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
         <source>There are no available color ramps. You can add them in Style Manager.</source>
         <translation>Nema dostupnih raspona boja. Možete ih dodati u Upravlju stilovima.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
         <source>The selected color ramp is not available.</source>
         <translation>Izabrani raspon boja nije dostupan.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
         <source>Warning</source>
         <translation>Upozorenje</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
         <source>Natural break classification (Jenks) is O(n2) complexity, your classification may take a long time.
 Press cancel to abort breaks calculation or OK to continue.</source>
         <translation>Klasifikacija prirodnom razdiobom (Jenks) je kompleksnosti O(n2), vaša klasifikacija može dugo trajati.
 Kliknite na otkaži da prekinete proračun ili OK da nastavite.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="1002"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="1002"/>
         <source>Linked range warning</source>
         <translation>Upozorenje na linkovane raspone</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="1003"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="1003"/>
         <source>Rows will be reordered before linking boundaries. Continue?</source>
         <translation>Promijeniti će se redoslijed redova prije povezivanja granica. Nastaviti?</translation>
     </message>
@@ -56249,7 +56249,7 @@ na liniji %2 kolona %3</translation>
 <context>
     <name>QgsHeatmapRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsheatmaprendererwidget.cpp" line="73"/>
+        <location filename="../src/gui/symbology/qgsheatmaprendererwidget.cpp" line="73"/>
         <source>The heatmap renderer only applies to point and multipoint layers. 
 &apos;%1&apos; is not a point layer and cannot be rendered as a heatmap.</source>
         <translation>Renderiranje toplinske karte se samo primjenjuje na multitačkaste slojeve.
@@ -57022,7 +57022,7 @@ Ovo može biti problem do vaše mrežne konekcije ili na WMS serveru.</numerusfo
 <context>
     <name>QgsInvertedPolygonRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsinvertedpolygonrendererwidget.cpp" line="45"/>
+        <location filename="../src/gui/symbology/qgsinvertedpolygonrendererwidget.cpp" line="45"/>
         <source>The inverted polygon renderer only applies to polygon and multipolygon layers. 
 &apos;%1&apos; is not a polygon layer and then cannot be displayed</source>
         <translation>Renderiranje invertovanog poligona se može koristiti samo sa slojevima multipoligona.
@@ -58961,7 +58961,7 @@ Ovo može biti problem do vaše mrežne konekcije ili na WMS serveru.</numerusfo
 <context>
     <name>QgsLayerPropertiesWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgslayerpropertieswidget.cpp" line="168"/>
+        <location filename="../src/gui/symbology/qgslayerpropertieswidget.cpp" line="168"/>
         <source>Outline: %1</source>
         <translation>Vanjska linija: %1</translation>
     </message>
@@ -60623,7 +60623,7 @@ Ovo može biti problem do vaše mrežne konekcije ili na WMS serveru.</numerusfo
 <context>
     <name>QgsMarkerLineSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1687"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1687"/>
         <source>string </source>
         <translation>niz </translation>
     </message>
@@ -62925,7 +62925,7 @@ Dodatne informacije o greški:
 <context>
     <name>QgsNullSymbolRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsnullsymbolrendererwidget.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgsnullsymbolrendererwidget.cpp" line="41"/>
         <source>No symbols will be rendered for features in this layer.</source>
         <translation>Nijedan simbol neće biti iscrtan za objekte na ovom sloju.</translation>
     </message>
@@ -67935,17 +67935,17 @@ SQL: %2</translation>
 <context>
     <name>QgsPenCapStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="107"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="107"/>
         <source>Square</source>
         <translation>Kvadrat</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="108"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="108"/>
         <source>Flat</source>
         <translation>Ravno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="109"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="109"/>
         <source>Round</source>
         <translation>Zaobljeno</translation>
     </message>
@@ -67953,17 +67953,17 @@ SQL: %2</translation>
 <context>
     <name>QgsPenJoinStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="83"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="83"/>
         <source>Bevel</source>
         <translation>Udubljeno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="84"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="84"/>
         <source>Miter</source>
         <translation>Oštro</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="85"/>
         <source>Round</source>
         <translation>Zaobljeno</translation>
     </message>
@@ -67971,32 +67971,32 @@ SQL: %2</translation>
 <context>
     <name>QgsPenStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="30"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="30"/>
         <source>Solid Line</source>
         <translation>Puna linija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="31"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="31"/>
         <source>No Pen</source>
         <translation>Nema linije</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="32"/>
         <source>Dash Line</source>
         <translation>Isprekidana linija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="33"/>
         <source>Dot Line</source>
         <translation>Tačkasta linija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="34"/>
         <source>Dash Dot Line</source>
         <translation>Crta-tačka linija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="35"/>
         <source>Dash Dot Dot Line</source>
         <translation>Crta-tačka-tačka linija</translation>
     </message>
@@ -69575,40 +69575,40 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsPointDisplacementRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="66"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="66"/>
         <source>Ring</source>
         <translation>Prsten</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="67"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="67"/>
         <source>Concentric rings</source>
         <translation>Koncentrični krugovi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="76"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="85"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="184"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="76"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="184"/>
         <source>None</source>
         <translation>Nema</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="101"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="107"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="101"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="107"/>
         <source>Select color</source>
         <translation>Izbor boje</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="105"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="105"/>
         <source>No outline</source>
         <translation>Nema obruba</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="251"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="251"/>
         <source>Label Font</source>
         <translation>Font natpisa</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="398"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="398"/>
         <source>The point displacement renderer only applies to (single) point layers. 
 &apos;%1&apos; is not a point layer and cannot be displayed by the point displacement renderer</source>
         <translation>Iscrtavanje premještanja tačke se samo primjenjuje na tačkaste slojeve.
@@ -72231,7 +72231,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsRasterFillSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3059"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3059"/>
         <source>Select image file</source>
         <translation>Sektuj fajl slike</translation>
     </message>
@@ -75117,7 +75117,7 @@ standardna devijacija ×</translation>
     </message>
     <message>
         <location filename="../src/ui/qgsrendererrulepropsdialogbase.ui" line="35"/>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="780"/>
         <source>Filter</source>
         <translation>Filter</translation>
     </message>
@@ -75147,24 +75147,24 @@ standardna devijacija ×</translation>
         <translation>Simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="736"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="736"/>
         <source>Error</source>
         <translation>Greška</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="736"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="736"/>
         <source>Filter expression parsing error:
 </source>
         <translation>Greška u parsiranju izraza filtriranja:
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="757"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="757"/>
         <source>Evaluation error</source>
         <translation>Greška prlikom evaluacije</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="780"/>
         <source>Filter returned %n feature(s)</source>
         <comment>number of filtered features</comment>
         <translation type="unfinished">
@@ -75177,43 +75177,43 @@ standardna devijacija ×</translation>
 <context>
     <name>QgsRendererV2DataDefinedMenus</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="286"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="286"/>
         <source>Rotation field</source>
         <translation>Polje rotacije</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="287"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="287"/>
         <source>Size scale field</source>
         <translation>Polje skaliranja veličine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="298"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="436"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="298"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="436"/>
         <source>Scale area</source>
         <translation>Skaliranje površine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="299"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="440"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="299"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="440"/>
         <source>Scale diameter</source>
         <translation>Skaliranje prečnika</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="337"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="371"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="390"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="393"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="398"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="417"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="420"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="425"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="337"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="371"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="390"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="393"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="398"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="420"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="425"/>
         <source>- expression -</source>
         <translation>- izraz -</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="341"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="386"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="413"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="341"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="386"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="413"/>
         <source>- no field -</source>
         <translation>- nema polja -</translation>
     </message>
@@ -75264,78 +75264,78 @@ standardna devijacija ×</translation>
 <context>
     <name>QgsRendererV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="34"/>
         <source>Renderer Options</source>
         <translation>Opcije iscrtavanja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="36"/>
         <source>Copy</source>
         <translation>Kopiraj</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="38"/>
         <source>Paste</source>
         <translation>Zalijepi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="42"/>
         <source>Change color</source>
         <translation>Promijeni boju</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="43"/>
         <source>Change transparency</source>
         <translation>Promijeni transparentnost</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="44"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="44"/>
         <source>Change output unit</source>
         <translation>Promijeni izlazne jedinice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="48"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="48"/>
         <source>Change width</source>
         <translation>Promijeni širinu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="52"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="52"/>
         <source>Change size</source>
         <translation>Promijeni veličinu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="53"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="53"/>
         <source>Change angle</source>
         <translation>Promijeni ugao</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="116"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="116"/>
         <source>Transparency</source>
         <translation>Transparentnost</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="116"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="116"/>
         <source>Change symbol transparency [%]</source>
         <translation>Promijeni transparentnost simbola [%]</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Symbol unit</source>
         <translation>Jedinice simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Select symbol unit</source>
         <translation>Izaberi jedinicu simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="153"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="153"/>
         <source>Millimeter</source>
         <translation>Milimetar</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Map unit</source>
         <translation>Jedinica karte</translation>
     </message>
@@ -75418,52 +75418,52 @@ standardna devijacija ×</translation>
 <context>
     <name>QgsRuleBasedRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="862"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="862"/>
         <source>(no filter)</source>
         <translation>(nema filtera)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="889"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="889"/>
         <source>&lt;li&gt;&lt;nobr&gt;%1 features also in rule %2&lt;/nobr&gt;&lt;/li&gt;</source>
         <translation>&lt;li&gt;&lt;nobr&gt;%1 objekata u pravilu takođe %2&lt;/nobr&gt;&lt;/li&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Label</source>
         <translation>Natpis</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Rule</source>
         <translation>Pravilo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Min. scale</source>
         <translation>Min razmjera</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Count</source>
         <translation>Broj</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Duplicate count</source>
         <translation>Duplikacija broja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Max. scale</source>
         <translation>Max razmjera</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="961"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="961"/>
         <source>Number of features in this rule.</source>
         <translation>Broj objekata u ovom pravilu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="965"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="965"/>
         <source>Number of features in this rule which are also present in other rule(s).</source>
         <translation>Broj objekata u ovom pravilu koja su takođe predstavljena u drugim pravilima.</translation>
     </message>
@@ -75501,78 +75501,78 @@ standardna devijacija ×</translation>
         <translation>Nivoi simbola...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="75"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="75"/>
         <source>Remove Rule</source>
         <translation>Ukloni pravilo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="82"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="82"/>
         <source>Refine current rule</source>
         <translation>Rafiniraj pravilo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="83"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="83"/>
         <source>Add scales to rule</source>
         <translation>Dodaj razmjere u pravilo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="84"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="84"/>
         <source>Add categories to rule</source>
         <translation>Dodaj kategorije u pravilo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="85"/>
         <source>Add ranges to rule</source>
         <translation>Dodaj raspone u pravilo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="182"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="182"/>
         <source>Edit rule</source>
         <translation>Edituj pravilo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="259"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="259"/>
         <source>Add categories to rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="269"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="269"/>
         <source>Add ranges to rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="285"/>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="291"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="285"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="291"/>
         <source>Scale refinement</source>
         <translation>Radiniranje razmjere</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="285"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="285"/>
         <source>Parent rule %1 must have a symbol for this operation.</source>
         <translation>Pravilo višeg nivoa %1 mora imati simbol za ovu operaciju.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="292"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="292"/>
         <source>Please enter scale denominators at which will split the rule, separate them by commas (e.g. 1000,5000):</source>
         <translation>Unesite denominatore razmjere na kojoj će se dijeliti pravilo, razdijelite ih zarezima (npr. 1000, 5000):</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="304"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="304"/>
         <source>Error</source>
         <translation>Greška</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="304"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="304"/>
         <source>&quot;%1&quot; is not valid scale denominator, ignoring it.</source>
         <translation>&quot;%1&quot; nije valjan denominator razmjere, biće zanemaren.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="542"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="542"/>
         <source>Calculating feature count.</source>
         <translation>Računanje broja objekata.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="542"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="542"/>
         <source>Abort</source>
         <translation>Prekini</translation>
     </message>
@@ -75893,27 +75893,27 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSVGFillSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>SVG file</source>
         <translation>SVG fajl</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2169"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2169"/>
         <source>Select fill color</source>
         <translation>Izbor boje ispune</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2171"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2171"/>
         <source>Select border color</source>
         <translation>Izbor boja granice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>Select SVG texture file</source>
         <translation>Selekcija SVG teksturnog fajla</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>All files</source>
         <translation>Svi fajlovi</translation>
     </message>
@@ -76265,19 +76265,19 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsShapeburstFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1372"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1377"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1372"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1377"/>
         <source>Select gradient color</source>
         <translation>Izbor boje gradijenta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1375"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1380"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1375"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1380"/>
         <source>Transparent</source>
         <translation>Transparentno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1487"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1487"/>
         <source>Integer between 0 and 18</source>
         <translation>Cjelobrojni između 0 i 18</translation>
     </message>
@@ -76285,22 +76285,22 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSimpleFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="705"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="705"/>
         <source>Select fill color</source>
         <translation>Izbor boje ispune</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="708"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="708"/>
         <source>Transparent fill</source>
         <translation>Transparentna ispuna</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="710"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="710"/>
         <source>Select border color</source>
         <translation>Izbor boja granice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="713"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="713"/>
         <source>Transparent border</source>
         <translation>Transparentnost granice</translation>
     </message>
@@ -76308,12 +76308,12 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSimpleLineSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="180"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="180"/>
         <source>Select line color</source>
         <translation>Izbor boje linije</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="195"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="195"/>
         <source>Width Assistant...</source>
         <translation>Asistent širine...</translation>
     </message>
@@ -76321,32 +76321,32 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSimpleMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="425"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="425"/>
         <source>Select fill color</source>
         <translation>Izbor boje ispune</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="428"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="428"/>
         <source>Transparent fill</source>
         <translation>Transparentna ispuna</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="430"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="430"/>
         <source>Select border color</source>
         <translation>Izbor boja granice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="433"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="433"/>
         <source>Transparent border</source>
         <translation>Transparentnost granice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="442"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="442"/>
         <source>Size Assistant...</source>
         <translation>Asistent veličine...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="544"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="544"/>
         <source>string </source>
         <translation>niz </translation>
     </message>
@@ -76684,7 +76684,7 @@ suffix</source>
 <context>
     <name>QgsSingleSymbolRendererV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssinglesymbolrendererv2widget.cpp" line="65"/>
+        <location filename="../src/gui/symbology/qgssinglesymbolrendererv2widget.cpp" line="65"/>
         <source>Symbol levels...</source>
         <translation>Nivoi simbola...</translation>
     </message>
@@ -76692,32 +76692,32 @@ suffix</source>
 <context>
     <name>QgsSizeScaleWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="132"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="132"/>
         <source>Compute from layer</source>
         <translation>Izračunaj sa sloja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="148"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="148"/>
         <source>Flannery</source>
         <translation>Flannery</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="149"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="149"/>
         <source>Surface</source>
         <translation>Površ (surface)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="150"/>
         <source>Radius</source>
         <translation>Radijus</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="154"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="154"/>
         <source>Exponential</source>
         <translation>Eksponencijalno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="155"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="155"/>
         <source>Linear</source>
         <translation>Linearno</translation>
     </message>
@@ -76725,32 +76725,32 @@ suffix</source>
 <context>
     <name>QgsSmartGroupCondition</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="33"/>
         <source>has the tag</source>
         <translation>ima tag</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="34"/>
         <source>is a member of group</source>
         <translation>je član grupe</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="35"/>
         <source>has a part of name matching</source>
         <translation>ima dio imena koji odgovara</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="36"/>
         <source>does NOT have the tag</source>
         <translation>NEMA tag</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="37"/>
         <source>is NOT a member of group</source>
         <translation>NIJE član grupe</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="38"/>
         <source>has NO part of name matching</source>
         <translation>NEMA dio imena koji odgovara</translation>
     </message>
@@ -76771,22 +76771,22 @@ suffix</source>
 <context>
     <name>QgsSmartGroupEditorDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="87"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="87"/>
         <source>ALL the constraints</source>
         <translation>Sva ograničenja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="88"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="88"/>
         <source>any ONE of the constraints</source>
         <translation>bilo koje JEDNO od ograničenja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="205"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="205"/>
         <source>Invalid name</source>
         <translation>Pogrešan naziv</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="205"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="205"/>
         <source>The smart group name field is empty. Kindly provide a name</source>
         <translation>Polje sa nazivom pametne grupe je prazno. Osigurajte naziv</translation>
     </message>
@@ -78093,142 +78093,142 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsStyleV2ExportImportDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="43"/>
         <source>Select all</source>
         <translation>Selektuj sve</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="47"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="47"/>
         <source>Clear selection</source>
         <translation>Očisti selekciju</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="70"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="70"/>
         <source>file specified below</source>
         <translation>fajl specificiran ispod</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="72"/>
         <source>URL specified below</source>
         <translation>URL specificiran ispod</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="85"/>
         <source>Select symbols to import</source>
         <translation>Selekcija simbola za import</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="86"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="86"/>
         <source>Import</source>
         <translation>Import</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="68"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="68"/>
         <source>Import symbol(s)</source>
         <translation>Import simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="90"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="90"/>
         <source>Export symbol(s)</source>
         <translation>Eksport simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="98"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="98"/>
         <source>Select by group</source>
         <translation>Selektuj po grupi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="104"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="104"/>
         <source>Export</source>
         <translation>Eksport</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="122"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="147"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="122"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="147"/>
         <source>Export/import error</source>
         <translation>Greška u eksport/import</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="123"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="123"/>
         <source>You should select at least one symbol/color ramp.</source>
         <translation>Trebate selektovati barem jedan simbol / raspon boja.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="129"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="129"/>
         <source>Save styles</source>
         <translation>Snimi stilove</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="130"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="130"/>
         <source>XML files (*.xml *.XML)</source>
         <translation>XML fajlovi (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="148"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="148"/>
         <source>Error when saving selected symbols to file:
 %1</source>
         <translation>Greška prilikom snimanja selektovanih simbola u fajl:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="175"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="175"/>
         <source>Import error</source>
         <translation>Greška u importu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="176"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="176"/>
         <source>An error occurred during import:
 %1</source>
         <translation>Greška prilikom importovanja:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="262"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="309"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="262"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="309"/>
         <source>Duplicate names</source>
         <translation>Duplikacija naziva</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="263"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="263"/>
         <source>Symbol with name &apos;%1&apos; already exists.
 Overwrite?</source>
         <translation>Simbol naziva &apos;%1&apos; već postoji.
 Prepisati?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="310"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="310"/>
         <source>Color ramp with name &apos;%1&apos; already exists.
 Overwrite?</source>
         <translation>Raspon boja naziva &apos;%1&apos; već postoji.
 Prepisati?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="435"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="435"/>
         <source>Select symbols by group</source>
         <translation>Selektuj simbole po grupi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="477"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="477"/>
         <source>Load styles</source>
         <translation>Učitaj stilove</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="478"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="478"/>
         <source>XML files (*.xml *XML)</source>
         <translation>XML fajlovi (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="517"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="517"/>
         <source>Downloading style ... </source>
         <translation>Skidanje stilova ... </translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="544"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="544"/>
         <source>HTTP Error!</source>
         <translation>HTTP greška!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="545"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="545"/>
         <source>Download failed: %1.</source>
         <translation>Skidanje neuspješno: %1.</translation>
     </message>
@@ -78264,22 +78264,22 @@ Prepisati?</translation>
 <context>
     <name>QgsStyleV2GroupSelectionDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="34"/>
         <source>All Symbols</source>
         <translation>Svi simboli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="45"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="45"/>
         <source>Groups</source>
         <translation>Grupe</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="46"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="46"/>
         <source>Ungrouped</source>
         <translation>Razgrupisano</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="54"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="54"/>
         <source>Smart Groups</source>
         <translation>Pametne grupe</translation>
     </message>
@@ -78287,316 +78287,316 @@ Prepisati?</translation>
 <context>
     <name>QgsStyleV2ManagerDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="60"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="60"/>
         <source>Type here to filter symbols...</source>
         <translation>Kucajte ovdje za filtriranje simbola ...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="214"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="214"/>
         <source>Marker symbol (%1)</source>
         <translation>Simbol markera (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="215"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="215"/>
         <source>Line symbol (%1)</source>
         <translation>Simbol linije (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="216"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="216"/>
         <source>Fill symbol (%1)</source>
         <translation>Simbol ispune (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="218"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="218"/>
         <source>Color ramp (%1)</source>
         <translation>Raspon boja (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="458"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="458"/>
         <source>Gradient</source>
         <translation>Gradijent</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="73"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="73"/>
         <source>Share menu</source>
         <translation>Dijeli meni</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="76"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="76"/>
         <source>Export...</source>
         <translation>Eksport...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="78"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="78"/>
         <source>Import...</source>
         <translation>Import...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="112"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="112"/>
         <source>Group actions</source>
         <translation>Grupiši akcije</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="470"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="470"/>
         <source>Random</source>
         <translation>Nasumice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="482"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="482"/>
         <source>ColorBrewer</source>
         <translation>ColorBrewer</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="137"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="448"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="494"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="137"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="448"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="494"/>
         <source>cpt-city</source>
         <translation>cpt-city</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="147"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="147"/>
         <source>Add to group</source>
         <translation>Dodaj u grupu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="362"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="362"/>
         <source>new symbol</source>
         <translation>novi simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="367"/>
         <source>new marker</source>
         <translation>novi marker</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="371"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="371"/>
         <source>new line</source>
         <translation>nova linija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="375"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="375"/>
         <source>new fill symbol</source>
         <translation>novi simbol ispune</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="400"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="400"/>
         <source>Symbol Name</source>
         <translation>Naziv simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="401"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="401"/>
         <source>Please enter a name for new symbol:</source>
         <translation>Unesite naziv novog simbola:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="411"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="416"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="411"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="416"/>
         <source>Save symbol</source>
         <translation>Snimi simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="412"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="412"/>
         <source>Cannot save symbol without name. Enter a name.</source>
         <translation>Simbol ne može biti kreiran bez naziva. Unesite naziv.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="417"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Simbol naziva &apos;%1&apos; već postoji. Prepisati?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="449"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="449"/>
         <source>Color ramp type</source>
         <translation>Tip raspona boja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="450"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="450"/>
         <source>Please select color ramp type:</source>
         <translation>Odaberite tip raspona boja:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="455"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="455"/>
         <source>new ramp</source>
         <translation>novi raspon</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="468"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="468"/>
         <source>new gradient ramp</source>
         <translation>novi raspon gradijent</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="480"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="480"/>
         <source>new random ramp</source>
         <translation>novi nasumični raspon</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="529"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="529"/>
         <source>Color Ramp Name</source>
         <translation>Naziv raspona boja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="530"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="530"/>
         <source>Please enter a name for new color ramp:</source>
         <translation>Unesite naziv novog raspona boja:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="540"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="540"/>
         <source>Save Color Ramp</source>
         <translation>Snimi raspon boja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="541"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="541"/>
         <source>Cannot save color ramp without name. Enter a name.</source>
         <translation>Raspon boja ne može biti snimljen bez naziva. Unesite naziv.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="545"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="545"/>
         <source>Save color ramp</source>
         <translation>Snimi raspon boja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="546"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="546"/>
         <source>Color ramp with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Raspon boja naziva &apos;%1&apos; već postoji. Prepisati?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="720"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="740"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="720"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="740"/>
         <source>Confirm removal</source>
         <translation>Potvrdi uklanjanje</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="721"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="721"/>
         <source>Do you really want to remove %n symbol(s)?</source>
         <translation>Jeste li sigurni da želite ukloniti %n simbola?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="741"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="741"/>
         <source>Do you really want to remove %n ramps(s)?</source>
         <translation>Jeste li sigurni da želite ukloniti %n rampi?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="787"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="787"/>
         <source>Exported selected symbols as PNG</source>
         <translation>Eksportovan selektovan simbol kao PNG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="796"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="796"/>
         <source>Exported selected symbols as SVG</source>
         <translation>Eksportovan selektovan simbol kao SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="845"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="845"/>
         <source>All Symbols</source>
         <translation>Svi simboli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="855"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="855"/>
         <source>Groups</source>
         <translation>Grupe</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="856"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="856"/>
         <source>Ungrouped</source>
         <translation>Razgrupisano</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="863"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="863"/>
         <source>Smart Groups</source>
         <translation>Pametne grupe</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="998"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1436"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="998"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1436"/>
         <source>Invalid Selection</source>
         <translation>Pogrešna selekcija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="999"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="999"/>
         <source>The parent group you have selected is not user editable.
 Kindly select a user defined group.</source>
         <translation>Grupa koju ste selektovali nije dozvoljena za editovanje.
 Izaberite korisnički definisanu grupu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1008"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1008"/>
         <source>Operation Not Allowed</source>
         <translation>Operacija nije dozvoljena</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1009"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1009"/>
         <source>Creation of nested smart groups are not allowed
 Select the &apos;Smart Group&apos; to create a new group.</source>
         <translation>Kreiranje ugniježđenih pametnih grupa nije dozvoljeno
 Izaberite &apos;Pametna grupa&apos; da kreirate novu grupu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1036"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1036"/>
         <source>New Group</source>
         <translation>Nova grupa</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1069"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1069"/>
         <source>Invalid selection</source>
         <translation>Pogrešna selekcija</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1070"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1070"/>
         <source>Cannot delete system defined categories.
 Kindly select a group or smart group you might want to delete.</source>
         <translation>Nije moguće brisati sistemski definisane kategorije.
 Selektujte grupu ili pametnu grupu koju želite obrisati.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1041"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1041"/>
         <source>Error!</source>
         <translation>Greška!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1042"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1042"/>
         <source>New group could not be created.
 There was a problem with your symbol database.</source>
         <translation>Nova grupa ne može biti kreirana.
 Problem je sa vašom bazom podataka simbola.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1199"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1199"/>
         <source>Database Error</source>
         <translation>Greška u bazi podataka</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1200"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1200"/>
         <source>There was a problem with the Symbols database while regrouping.</source>
         <translation>desio se problem sa bazom podataka simbola prilikom regrupisanja.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1437"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1437"/>
         <source>You have not selected a Smart Group. Kindly select a Smart Group to edit.</source>
         <translation>Niste selektovali Pametnu grupu. Izaberite Pametnu grupu za editovanje.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1455"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1455"/>
         <source>Database Error!</source>
         <translation>Greška u bazi podataka!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1456"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1456"/>
         <source>There was some error while editing the smart group.</source>
         <translation>Desila se greška prilikom editovanja pametne grupe.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="779"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="779"/>
         <source>Cannot rename item</source>
         <translation>Nije moguće preimenovati</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="780"/>
         <source>Name is already taken by another item. Choose a different name.</source>
         <translation>Naziv je već zauzet. Izaberite drugi naziv.</translation>
     </message>
@@ -78803,23 +78803,23 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSvgCache</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="466"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="466"/>
         <source>SVG request failed [error: %1 - url: %2]</source>
         <translation>SVG zahtjev nije uspio [greška: %1 - url: %2]</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="466"/>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="489"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="466"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="489"/>
         <source>SVG</source>
         <translation>SVG</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="489"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="489"/>
         <source>SVG request error [status: %1 - reason phrase: %2]</source>
         <translation>Greška u SVG zahtjevu [status: %1 - razlog: %2]</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="976"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="976"/>
         <source>%1 of %2 bytes of svg image downloaded.</source>
         <translation>%1 od %2 bajti svg slike je skinuto.</translation>
     </message>
@@ -78880,27 +78880,27 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSvgMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1786"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1786"/>
         <source>Select fill color</source>
         <translation>Izbor boje ispune</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1789"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1789"/>
         <source>Select border color</source>
         <translation>Izbor boja granice</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1808"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1808"/>
         <source>Size Assistant...</source>
         <translation>Asistent veličine...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2034"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2034"/>
         <source>Select SVG file</source>
         <translation>Izaberi SVG fajl</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2036"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2036"/>
         <source>SVG files</source>
         <translation>SVG fajlovi</translation>
     </message>
@@ -78908,12 +78908,12 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSvgSelectorGroupsModel</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="120"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="120"/>
         <source>App Symbols</source>
         <translation>Ugrađeni simboli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="124"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="124"/>
         <source>User Symbols</source>
         <translation>Korisnički simboli</translation>
     </message>
@@ -78921,17 +78921,17 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSvgSelectorWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="273"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="273"/>
         <source>Select SVG file</source>
         <translation>Izaberi SVG fajl</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="275"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="275"/>
         <source>SVG files</source>
         <translation>SVG fajlovi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="298"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="298"/>
         <source>File not found</source>
         <translation>Nije pronađen fajl</translation>
     </message>
@@ -78939,17 +78939,17 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="151"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="151"/>
         <source>Size</source>
         <translation>Veličina</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="158"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="158"/>
         <source>area</source>
         <translation>površonu</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="161"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="161"/>
         <source>diameter</source>
         <translation>prečnik</translation>
     </message>
@@ -78957,7 +78957,7 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSymbolLevelsV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollevelsv2dialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgssymbollevelsv2dialog.cpp" line="72"/>
         <source>Layer %1</source>
         <translation>Sloj %1</translation>
     </message>
@@ -79021,32 +79021,32 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSymbolV2SelectorWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="264"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="264"/>
         <source>Symbol selector</source>
         <translation>Selektor simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="647"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="647"/>
         <source>Symbol name</source>
         <translation>Naziv simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="648"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="648"/>
         <source>Please enter name for the symbol:</source>
         <translation>Unesite naziv simbola:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="648"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="648"/>
         <source>New symbol</source>
         <translation>Novi simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="655"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="655"/>
         <source>Save symbol</source>
         <translation>Snimi simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="656"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="656"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Simbol naziva &apos;%1&apos; već postoji. Prepisati?</translation>
     </message>
@@ -79054,57 +79054,57 @@ Problem je sa vašom bazom podataka simbola.</translation>
 <context>
     <name>QgsSymbolsListWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="68"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="68"/>
         <source>Clip features to canvas extent</source>
         <translation>Isijeci objekte na obuhvat kanvasa</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="112"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="112"/>
         <source>Size Assistant...</source>
         <translation>Asistent veličine...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="114"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="114"/>
         <source>Width Assistant...</source>
         <translation>Asistent širine...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="119"/>
         <source>Select color</source>
         <translation>Izbor boje</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="337"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="366"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="337"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="366"/>
         <source>Symbol name</source>
         <translation>Naziv simbola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="338"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="338"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="367"/>
         <source>Please enter name for the symbol:</source>
         <translation>Unesite naziv simbola:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="338"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="338"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="367"/>
         <source>New symbol</source>
         <translation>Novi simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="345"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="374"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="345"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="374"/>
         <source>Save symbol</source>
         <translation>Snimi simbol</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="346"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="375"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="346"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="375"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Simbol naziva &apos;%1&apos; već postoji. Prepisati?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="417"/>
         <source>Transparency %1%</source>
         <translation>Transparentnost: %1%</translation>
     </message>
@@ -80134,27 +80134,27 @@ Greška:%2</translation>
 <context>
     <name>QgsVectorFieldSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="141"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="141"/>
         <source>X attribute</source>
         <translation>X atribut</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="142"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="142"/>
         <source>Y attribute</source>
         <translation>Y atribut</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="154"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="154"/>
         <source>Length attribute</source>
         <translation>Atribut dužine</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="155"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="155"/>
         <source>Angle attribute</source>
         <translation>Atribut ugla</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="167"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="167"/>
         <source>Height attribute</source>
         <translation>Atribut visine</translation>
     </message>
@@ -80162,34 +80162,34 @@ Greška:%2</translation>
 <context>
     <name>QgsVectorGradientColorRampV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="56"/>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="61"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="56"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="61"/>
         <source>Select ramp color</source>
         <translation>Izaberi raspon boja</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="59"/>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="64"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="59"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="64"/>
         <source>Transparent</source>
         <translation>Transparentno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="71"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="71"/>
         <source>Discrete</source>
         <translation>Diskretno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="72"/>
         <source>Continuous</source>
         <translation>Kontinualno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="215"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="215"/>
         <source>Gradient file : %1</source>
         <translation>Gradijent fajl: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="232"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="232"/>
         <source>License file : %1</source>
         <translation>Licencni fajl: %1</translation>
     </message>

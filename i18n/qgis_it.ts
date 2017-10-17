@@ -1232,7 +1232,7 @@ Algoritmo in esecuzione %d/%d...</translation>
 <context>
     <name>CharacterWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/characterwidget.cpp" line="136"/>
+        <location filename="../src/gui/symbology/characterwidget.cpp" line="136"/>
         <source>&lt;p&gt;Character: &lt;span style=&quot;font-size: 24pt; font-family: %1&quot;&gt;%2&lt;/span&gt;&lt;p&gt;Value: 0x%3</source>
         <translation>&lt;p&gt;Carattere: &lt;span style=&quot;font-size: 24pt; font-family: %1&quot;&gt;%2&lt;/span&gt;&lt;p&gt;Value: 0x%3</translation>
     </message>
@@ -20228,133 +20228,133 @@ Soltanto %1 di %2 geometrie sono state scritte.</translation>
         <translation>Ombreggiatura</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="83"/>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="86"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="83"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="86"/>
         <source>All Ramps</source>
         <translation>Tutte le scale</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="33"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="33"/>
         <source>No symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="37"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="37"/>
         <source>Single symbol</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="42"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="42"/>
         <source>Categorized</source>
         <translation>Categorizzato</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="46"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="46"/>
         <source>Graduated</source>
         <translation>Graduato</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="50"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="50"/>
         <source>Rule-based</source>
         <translation>Tramite regole</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="55"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="55"/>
         <source>Point displacement</source>
         <translation>Spostamento punto</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="62"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="62"/>
         <source>Inverted polygons</source>
         <translation>Poligoni invertiti</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="77"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="77"/>
         <source>2.5 D</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="29"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="29"/>
         <source>Simple line</source>
         <translation>Linea semplice</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="31"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="31"/>
         <source>Marker line</source>
         <translation>Linea di evidenziazione</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="33"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="33"/>
         <source>Arrow</source>
         <translation>Freccia</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="35"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="35"/>
         <source>Simple marker</source>
         <translation>Simbolo semplice</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="37"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="37"/>
         <source>Filled marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="39"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="39"/>
         <source>SVG marker</source>
         <translation>Simbolo SVG</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="41"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="41"/>
         <source>Font marker</source>
         <translation>Simbolo carattere</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="43"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="43"/>
         <source>Ellipse marker</source>
         <translation>Ellisse</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="45"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="45"/>
         <source>Vector field marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="48"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="48"/>
         <source>Simple fill</source>
         <translation>Riempimento semplice</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="50"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="50"/>
         <source>Gradient fill</source>
         <translation>Riempimento a gradiente</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="52"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="52"/>
         <source>Shapeburst fill</source>
         <translation>Riempimento sfumato</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="56"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="56"/>
         <source>SVG fill</source>
         <translation>Riempimento SVG</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="58"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="58"/>
         <source>Centroid fill</source>
         <translation>Riempimento con centroide</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="60"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="60"/>
         <source>Line pattern fill</source>
         <translation>Riempimento a pattern lineare</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="62"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="62"/>
         <source>Point pattern fill</source>
         <translation>Riempimento a pattern puntuale</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="65"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="65"/>
         <source>Geometry generator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -20571,7 +20571,7 @@ Soltanto %1 di %2 geometrie sono state scritte.</translation>
         <translation>Strumenti per caricare ed importare dati GPS</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsrendererv2registry.cpp" line="69"/>
+        <location filename="../src/core/symbology/qgsrendererv2registry.cpp" line="69"/>
         <location filename="../src/plugins/heatmap/heatmap.cpp" line="57"/>
         <source>Heatmap</source>
         <translation>Mappa di concentrazione</translation>
@@ -21937,42 +21937,42 @@ SQL: %1</translation>
         <translation>ID geometria</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="620"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="620"/>
         <source>linear</source>
         <translation>lineare</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="624"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="624"/>
         <source>radial</source>
         <translation>radiale</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="628"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="628"/>
         <source>conical</source>
         <translation>conico</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="642"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="642"/>
         <source>feature</source>
         <translation>geometria</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="646"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="646"/>
         <source>viewport</source>
         <translation>viewport</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="660"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="660"/>
         <source>pad</source>
         <translation>pannello</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="664"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="664"/>
         <source>repeat</source>
         <translation>ripeti</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgsfillsymbollayerv2.cpp" line="668"/>
+        <location filename="../src/core/symbology/qgsfillsymbollayerv2.cpp" line="668"/>
         <source>reflect</source>
         <translation>rispecchia</translation>
     </message>
@@ -22059,7 +22059,7 @@ La risposta è stata:
         <translation>Legenda</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssymbollayerv2registry.cpp" line="54"/>
+        <location filename="../src/core/symbology/qgssymbollayerv2registry.cpp" line="54"/>
         <source>Raster image fill</source>
         <translation>Riempimento raster</translation>
     </message>
@@ -25356,23 +25356,23 @@ La data della modifica corrente è: %2</translation>
 <context>
     <name>Qgs25DRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="32"/>
         <source>The 2.5D renderer only can be used with polygon layers. 
 &apos;%1&apos; is not a polygon layer and cannot be rendered in 2.5D.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="41"/>
         <source>Select wall color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="44"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="44"/>
         <source>Select roof color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgs25drendererwidget.cpp" line="47"/>
+        <location filename="../src/gui/symbology/qgs25drendererwidget.cpp" line="47"/>
         <source>Select shadow color</source>
         <translation>Scegli colore dell&apos;ombreggiatura</translation>
     </message>
@@ -30583,77 +30583,77 @@ Database: %2</translation>
 <context>
     <name>QgsBrushStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="29"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="29"/>
         <source>Solid</source>
         <translation>Pieno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="30"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="30"/>
         <source>No Brush</source>
         <translation>Vuoto</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="31"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="31"/>
         <source>Horizontal</source>
         <translation>Orizzontale</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="32"/>
         <source>Vertical</source>
         <translation>Verticale</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="33"/>
         <source>Cross</source>
         <translation>Croce</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="34"/>
         <source>BDiagonal</source>
         <translation>Diagonale B</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="35"/>
         <source>FDiagonal</source>
         <translation>Diagonale F</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="36"/>
         <source>Diagonal X</source>
         <translation>Diagonale X</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="37"/>
         <source>Dense 1</source>
         <translation>Compatto 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="38"/>
         <source>Dense 2</source>
         <translation>Compatto 2</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="39"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="39"/>
         <source>Dense 3</source>
         <translation>Compatto 3</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="40"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="40"/>
         <source>Dense 4</source>
         <translation>Compatto 4</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="41"/>
         <source>Dense 5</source>
         <translation>Compatto 5</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="42"/>
         <source>Dense 6</source>
         <translation>Compatto 6</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsbrushstylecombobox.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsbrushstylecombobox.cpp" line="43"/>
         <source>Dense 7</source>
         <translation>Compatto 7</translation>
     </message>
@@ -30692,17 +30692,17 @@ Database: %2</translation>
 <context>
     <name>QgsCategorizedSymbolRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Symbol</source>
         <translation>Simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Value</source>
         <translation>Valore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="212"/>
         <source>Legend</source>
         <translation>Legenda</translation>
     </message>
@@ -30765,110 +30765,110 @@ Database: %2</translation>
         <translation>Avanzato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="437"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="534"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="806"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="437"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="534"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="806"/>
         <source>Random colors</source>
         <translation>Colori casuali</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="491"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="491"/>
         <source>Symbol levels...</source>
         <translation>Livelli simbolo...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="705"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="705"/>
         <source>High number of classes!</source>
         <translation>Numero di classi alto!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="706"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="706"/>
         <source>Classification would yield %1 entries which might not be expected. Continue?</source>
         <translation>La classificazione restituirebbe %1 voci inaspettate. Continuare?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
         <source>Error</source>
         <translation>Errore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="489"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="489"/>
         <source>Match to saved symbols</source>
         <translation>Fai corrispondere ai simboli salvati</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="490"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="490"/>
         <source>Match to symbols from file...</source>
         <translation>Fai corrispondere ai simboli da file...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="662"/>
         <source>There are no available color ramps. You can add them in Style Manager.</source>
         <translation>Non ci sono rampe colori disponibili. Puoi aggiungerle nel gestore di stili.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="664"/>
         <source>The selected color ramp is not available.</source>
         <translation>La scala di colori selezionata non è disponibile.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="730"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="730"/>
         <source>Confirm Delete</source>
         <translation>Conferma eliminazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="731"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="731"/>
         <source>The classification field was changed from &apos;%1&apos; to &apos;%2&apos;.
 Should the existing classes be deleted before classification?</source>
         <translation>Il campo di classificazione è cambiato da &apos;%1&apos; a &apos;%2&apos;.￼Devono essere cancellate le classi esistenti prima della classificazione?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="939"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="944"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="998"/>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="1003"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="939"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="944"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="998"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="1003"/>
         <source>Matched symbols</source>
         <translation>Simboli corrispondenti</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="940"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="940"/>
         <source>Matched %1 categories to symbols.</source>
         <translation>%1 categorie associate ai simboli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="945"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="945"/>
         <source>No categories could be matched to symbols in library.</source>
         <translation>Nessuna categoria può essere associata ai simboli nella libreria</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="977"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="977"/>
         <source>Match to symbols from file</source>
         <translation>Fai corrispondere ai simboli da file</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="978"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="978"/>
         <source>XML files (*.xml *XML)</source>
         <translation>File XML (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="990"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="990"/>
         <source>Matching error</source>
         <translation>Errore nella corrispondenza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="991"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="991"/>
         <source>An error occurred reading file:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="999"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="999"/>
         <source>Matched %1 categories to symbols from file.</source>
         <translation>%1 categorie associate ai simboli da file</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscategorizedsymbolrendererv2widget.cpp" line="1004"/>
+        <location filename="../src/gui/symbology/qgscategorizedsymbolrendererv2widget.cpp" line="1004"/>
         <source>No categories could be matched to symbols in file.</source>
         <translation>Nessuna categoria può essere associata ai simboli nel file.</translation>
     </message>
@@ -31176,13 +31176,13 @@ Should the existing classes be deleted before classification?</source>
 <context>
     <name>QgsColorRampComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="66"/>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="75"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="66"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="75"/>
         <source>Random colors</source>
         <translation>Colori casuali</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscolorrampcombobox.cpp" line="67"/>
+        <location filename="../src/gui/symbology/qgscolorrampcombobox.cpp" line="67"/>
         <source>New color ramp...</source>
         <translation>Nuova scala di colori...</translation>
     </message>
@@ -38570,12 +38570,12 @@ Errore: %5</translation>
 <context>
     <name>QgsCptCityBrowserModel</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="1437"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="1437"/>
         <source>Name</source>
         <translation>Nome</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="1439"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="1439"/>
         <source>Info</source>
         <translation>Informazioni</translation>
     </message>
@@ -38583,27 +38583,27 @@ Errore: %5</translation>
 <context>
     <name>QgsCptCityColorRampItem</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="764"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="764"/>
         <source>colors</source>
         <translation>colori</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="766"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="766"/>
         <source>discrete</source>
         <translation>discreto</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="770"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="770"/>
         <source>continuous</source>
         <translation>colore continuo</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="772"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="772"/>
         <source>continuous (multi)</source>
         <translation>continuo (multi)</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgscptcityarchive.cpp" line="778"/>
+        <location filename="../src/core/symbology/qgscptcityarchive.cpp" line="778"/>
         <source>variants</source>
         <translation>varianti</translation>
     </message>
@@ -38611,17 +38611,17 @@ Errore: %5</translation>
 <context>
     <name>QgsCptCityColorRampV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="118"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="118"/>
         <source>Selections by theme</source>
         <translation>Selezioni per tema</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="119"/>
         <source>All by author</source>
         <translation>Tutti per autore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="482"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="482"/>
         <source>You can download a more complete set of cpt-city gradients by installing the &quot;Color Ramp Manager&quot; plugin (you must enable Experimental plugins in the plugin manager).
 
 </source>
@@ -38630,12 +38630,12 @@ Errore: %5</translation>
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="275"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="275"/>
         <source>All Ramps (%1)</source>
         <translation>Tutte le scale (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="65"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="65"/>
         <source>Error - cpt-city gradient files not found.
 
 You have two means of installing them:
@@ -38660,12 +38660,12 @@ Questo file si può trovare nel [%2]
 ed il file attuale è [%3]</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="345"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="345"/>
         <source>%1 directory details</source>
         <translation>%1 dettagli cartella</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgscptcitycolorrampv2dialog.cpp" line="349"/>
+        <location filename="../src/gui/symbology/qgscptcitycolorrampv2dialog.cpp" line="349"/>
         <source>%1 gradient details</source>
         <translation>%1 dettagli gradiente</translation>
     </message>
@@ -39334,12 +39334,12 @@ ed il file attuale è [%3]</translation>
 <context>
     <name>QgsDataDefinedRotationDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="264"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="264"/>
         <source>Rotation</source>
         <translation>Rotazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="266"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="266"/>
         <source>Symbol rotation</source>
         <translation>Rotazione del simbolo</translation>
     </message>
@@ -39347,17 +39347,17 @@ ed il file attuale è [%3]</translation>
 <context>
     <name>QgsDataDefinedSizeDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="241"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="241"/>
         <source>Size</source>
         <translation>Dimensione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="243"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="243"/>
         <source>Symbol size</source>
         <translation>Dimensione del simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="245"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="245"/>
         <source>Size Assistant...</source>
         <translation>Assistente delle dimensioni</translation>
     </message>
@@ -39385,37 +39385,37 @@ ed il file attuale è [%3]</translation>
         <translation>Guida</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="104"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="104"/>
         <source>double</source>
         <translation>doppio</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="109"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="109"/>
         <source>&apos;&lt;red&gt;,&lt;green&gt;,&lt;blue&gt;,&lt;alpha&gt;&apos;</source>
         <translation>&apos;&lt;red&gt;,&lt;green&gt;,&lt;blue&gt;,&lt;alpha&gt;&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="119"/>
         <source>&apos;&lt;filename&gt;&apos;</source>
         <translation>&apos;&lt;filename&gt;&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="136"/>
         <source>&apos;linear&apos;|&apos;radial&apos;|&apos;conical&apos;</source>
         <translation>&apos;lineare&apos;|&apos;radiale&apos;|&apos;conico&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="141"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="141"/>
         <source>&apos;feature&apos;|&apos;viewport&apos;</source>
         <translation>&apos;geometria&apos;|&apos;viewport&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="146"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="146"/>
         <source>&apos;pad&apos;|&apos;repeat&apos;|&apos;reflect&apos;</source>
         <translation>&apos;pannello&apos;|&apos;ripeti&apos;|&apos;rifletti&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsdatadefinedsymboldialog.cpp" line="151"/>
+        <location filename="../src/gui/symbology/qgsdatadefinedsymboldialog.cpp" line="151"/>
         <source>0 (false)|1 (true)</source>
         <translation>0 (falso)|1 (vero)</translation>
     </message>
@@ -39441,12 +39441,12 @@ ed il file attuale è [%3]</translation>
 <context>
     <name>QgsDataDefinedWidthDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="285"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="285"/>
         <source>Width</source>
         <translation>Larghezza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.h" line="287"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.h" line="287"/>
         <source>Symbol width</source>
         <translation>Larghezza simbolo</translation>
     </message>
@@ -42465,22 +42465,22 @@ Errore di elaborazione:
 <context>
     <name>QgsEllipseSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="34"/>
         <source>Select fill color</source>
         <translation>Colore del riempimento</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="37"/>
         <source>Transparent fill</source>
         <translation>Riempimento trasparente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="39"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="39"/>
         <source>Select border color</source>
         <translation>Colore del bordo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsellipsesymbollayerv2widget.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsellipsesymbollayerv2widget.cpp" line="42"/>
         <source>Transparent border</source>
         <translation>Bordo trasparente</translation>
     </message>
@@ -48807,12 +48807,12 @@ Reference in function name: my_form_open
 <context>
     <name>QgsFilledMarkerSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="860"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="860"/>
         <source>Size Assistant...</source>
         <translation>Assistente delle dimensioni</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="928"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="928"/>
         <source>string </source>
         <translation>stringa </translation>
     </message>
@@ -48820,17 +48820,17 @@ Reference in function name: my_form_open
 <context>
     <name>QgsFontMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2689"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2689"/>
         <source>Select symbol fill color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2692"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2692"/>
         <source>Select symbol outline color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2702"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2702"/>
         <source>Size Assistant...</source>
         <translation>Assistente delle dimensioni</translation>
     </message>
@@ -50989,17 +50989,17 @@ Scegli un file valido.</translation>
 <context>
     <name>QgsGeometryGeneratorSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3356"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3356"/>
         <source>Polygon / MultiPolygon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3357"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3357"/>
         <source>LineString / MultiLineString</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3358"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3358"/>
         <source>Point / MultiPoint</source>
         <translation type="unfinished"></translation>
     </message>
@@ -52919,14 +52919,14 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGradientFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1037"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1042"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1037"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1042"/>
         <source>Select gradient color</source>
         <translation>Scegli colore del gradiente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1040"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1045"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1040"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1045"/>
         <source>Transparent</source>
         <translation>Trasparenza</translation>
     </message>
@@ -52934,12 +52934,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGraduatedHistogramWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedhistogramwidget.cpp" line="89"/>
+        <location filename="../src/gui/symbology/qgsgraduatedhistogramwidget.cpp" line="89"/>
         <source>Ranges are overlapping and can&apos;t be edited by the histogram</source>
         <translation>Gli intervalli si sovrappongono e non possono essere modificati dall&apos;istogramma</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedhistogramwidget.cpp" line="94"/>
+        <location filename="../src/gui/symbology/qgsgraduatedhistogramwidget.cpp" line="94"/>
         <source>Ranges have gaps and can&apos;t be edited by the histogram</source>
         <translation>Gli intervalli hanno discontinuità e non possono essere modificai dall&apos;istogramma</translation>
     </message>
@@ -52947,17 +52947,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsGraduatedSymbolRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Symbol</source>
         <translation>Simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Values</source>
         <translation>Valori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="204"/>
         <source>Legend</source>
         <translation>Legenda</translation>
     </message>
@@ -53122,53 +53122,53 @@ Usa &quot;%1&quot; per il limite inferiore della classificazione, e &quot;%2&quo
         <translation>Avanzato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="501"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="501"/>
         <source>Symbol levels...</source>
         <translation>Livelli simbolo...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
         <source>Error</source>
         <translation>Errore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="666"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="750"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="788"/>
         <source>There are no available color ramps. You can add them in Style Manager.</source>
         <translation>Non ci sono rampe colore disponibili. Si possono aggiungere nel manager di stile.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="668"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="752"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="790"/>
         <source>The selected color ramp is not available.</source>
         <translation>La scala di colori scelta non è disponibile.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
         <source>Warning</source>
         <translation>Attenzione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="772"/>
         <source>Natural break classification (Jenks) is O(n2) complexity, your classification may take a long time.
 Press cancel to abort breaks calculation or OK to continue.</source>
         <translation>La classificazione Natural break (Jenks) è O(n2) complessa, la classificazione può richiedere molto tempo.
 Premi annulla per interrompere il calcolo degli intervalli o OK per continuare.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="1002"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="1002"/>
         <source>Linked range warning</source>
         <translation>Avviso intervallo collegato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsgraduatedsymbolrendererv2widget.cpp" line="1003"/>
+        <location filename="../src/gui/symbology/qgsgraduatedsymbolrendererv2widget.cpp" line="1003"/>
         <source>Rows will be reordered before linking boundaries. Continue?</source>
         <translation>Le righe saranno riordinate prima di collegare i limiti. Volete continuare?</translation>
     </message>
@@ -55656,7 +55656,7 @@ alla linea %2 colonna %3</translation>
 <context>
     <name>QgsHeatmapRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsheatmaprendererwidget.cpp" line="73"/>
+        <location filename="../src/gui/symbology/qgsheatmaprendererwidget.cpp" line="73"/>
         <source>The heatmap renderer only applies to point and multipoint layers. 
 &apos;%1&apos; is not a point layer and cannot be rendered as a heatmap.</source>
         <translation>Il visualizzatore mappa di concentrazione è disponibile solo per vettori di punti.
@@ -56427,7 +56427,7 @@ Può essere o un problema della propria connessione di rete o sul lato del serve
 <context>
     <name>QgsInvertedPolygonRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsinvertedpolygonrendererwidget.cpp" line="45"/>
+        <location filename="../src/gui/symbology/qgsinvertedpolygonrendererwidget.cpp" line="45"/>
         <source>The inverted polygon renderer only applies to polygon and multipolygon layers. 
 &apos;%1&apos; is not a polygon layer and then cannot be displayed</source>
         <translation>La visualizzazione dei poligoni invertiti si applica solo a vettori poligonali e multipoligonali.
@@ -58364,7 +58364,7 @@ Può essere o un problema della propria connessione di rete o sul lato del serve
 <context>
     <name>QgsLayerPropertiesWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgslayerpropertieswidget.cpp" line="168"/>
+        <location filename="../src/gui/symbology/qgslayerpropertieswidget.cpp" line="168"/>
         <source>Outline: %1</source>
         <translation>Cornice: %1</translation>
     </message>
@@ -60026,7 +60026,7 @@ Può essere o un problema della propria connessione di rete o sul lato del serve
 <context>
     <name>QgsMarkerLineSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1687"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1687"/>
         <source>string </source>
         <translation>stringa </translation>
     </message>
@@ -62322,7 +62322,7 @@ Ulteriori informazioni sull&apos;errore:
 <context>
     <name>QgsNullSymbolRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsnullsymbolrendererwidget.cpp" line="41"/>
+        <location filename="../src/gui/symbology/qgsnullsymbolrendererwidget.cpp" line="41"/>
         <source>No symbols will be rendered for features in this layer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -67328,17 +67328,17 @@ Errore: %2</translation>
 <context>
     <name>QgsPenCapStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="107"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="107"/>
         <source>Square</source>
         <translation>Quadrato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="108"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="108"/>
         <source>Flat</source>
         <translation>Piatto</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="109"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="109"/>
         <source>Round</source>
         <translation>Tondo</translation>
     </message>
@@ -67346,17 +67346,17 @@ Errore: %2</translation>
 <context>
     <name>QgsPenJoinStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="83"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="83"/>
         <source>Bevel</source>
         <translation>Smussato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="84"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="84"/>
         <source>Miter</source>
         <translation>Seghettato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="85"/>
         <source>Round</source>
         <translation>Arrotondato</translation>
     </message>
@@ -67364,32 +67364,32 @@ Errore: %2</translation>
 <context>
     <name>QgsPenStyleComboBox</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="30"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="30"/>
         <source>Solid Line</source>
         <translation>Linea continua</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="31"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="31"/>
         <source>No Pen</source>
         <translation>Nessuna linea</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="32"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="32"/>
         <source>Dash Line</source>
         <translation>Linea tratteggiata</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="33"/>
         <source>Dot Line</source>
         <translation>Linea punteggiata</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="34"/>
         <source>Dash Dot Line</source>
         <translation>Linea a tratteggio e punto</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspenstylecombobox.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgspenstylecombobox.cpp" line="35"/>
         <source>Dash Dot Dot Line</source>
         <translation>Linea a tratteggio e doppi punti</translation>
     </message>
@@ -68967,40 +68967,40 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsPointDisplacementRendererWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="66"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="66"/>
         <source>Ring</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="67"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="67"/>
         <source>Concentric rings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="76"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="85"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="184"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="76"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="184"/>
         <source>None</source>
         <translation>Nessuno</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="101"/>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="107"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="101"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="107"/>
         <source>Select color</source>
         <translation>Seleziona il colore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="105"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="105"/>
         <source>No outline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="251"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="251"/>
         <source>Label Font</source>
         <translation>Font dell&apos;etichetta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgspointdisplacementrendererwidget.cpp" line="398"/>
+        <location filename="../src/gui/symbology/qgspointdisplacementrendererwidget.cpp" line="398"/>
         <source>The point displacement renderer only applies to (single) point layers. 
 &apos;%1&apos; is not a point layer and cannot be displayed by the point displacement renderer</source>
         <translation>La visualizzazione per lo spostamento del punto si applica solo a vettori puntuali (singoli). 
@@ -71620,7 +71620,7 @@ p, li { white-space: pre-wrap; }(new line)
 <context>
     <name>QgsRasterFillSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="3059"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="3059"/>
         <source>Select image file</source>
         <translation>Seleziona file immagine</translation>
     </message>
@@ -74501,7 +74501,7 @@ deviazione standard ×</translation>
     </message>
     <message>
         <location filename="../src/ui/qgsrendererrulepropsdialogbase.ui" line="35"/>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="780"/>
         <source>Filter</source>
         <translation>Filtro</translation>
     </message>
@@ -74531,24 +74531,24 @@ deviazione standard ×</translation>
         <translation>Simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="736"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="736"/>
         <source>Error</source>
         <translation>Errore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="736"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="736"/>
         <source>Filter expression parsing error:
 </source>
         <translation>Errore nell&apos;analisi dell&apos;espressione del filtro:
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="757"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="757"/>
         <source>Evaluation error</source>
         <translation>Errore di valutazione</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="780"/>
         <source>Filter returned %n feature(s)</source>
         <comment>number of filtered features</comment>
         <translation type="unfinished">
@@ -74560,43 +74560,43 @@ deviazione standard ×</translation>
 <context>
     <name>QgsRendererV2DataDefinedMenus</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="286"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="286"/>
         <source>Rotation field</source>
         <translation>Campo di rotazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="287"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="287"/>
         <source>Size scale field</source>
         <translation>Campo di dimensione della scala</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="298"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="436"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="298"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="436"/>
         <source>Scale area</source>
         <translation>Area scala</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="299"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="440"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="299"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="440"/>
         <source>Scale diameter</source>
         <translation>Diametro scala</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="337"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="371"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="390"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="393"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="398"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="417"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="420"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="425"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="337"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="371"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="390"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="393"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="398"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="420"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="425"/>
         <source>- expression -</source>
         <translation>- espressione -</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="341"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="386"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="413"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="341"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="386"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="413"/>
         <source>- no field -</source>
         <translation>- nessun campo -</translation>
     </message>
@@ -74647,78 +74647,78 @@ deviazione standard ×</translation>
 <context>
     <name>QgsRendererV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="34"/>
         <source>Renderer Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="36"/>
         <source>Copy</source>
         <translation>Copia</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="38"/>
         <source>Paste</source>
         <translation>Incolla</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="42"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="42"/>
         <source>Change color</source>
         <translation>Cambia colore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="43"/>
         <source>Change transparency</source>
         <translation>Cambia trasparenza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="44"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="44"/>
         <source>Change output unit</source>
         <translation>Cambia unità di uscita</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="48"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="48"/>
         <source>Change width</source>
         <translation>Cambia larghezza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="52"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="52"/>
         <source>Change size</source>
         <translation>Cambia dimensione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="53"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="53"/>
         <source>Change angle</source>
         <translation>Modifica angolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="116"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="116"/>
         <source>Transparency</source>
         <translation>Trasparenza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="116"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="116"/>
         <source>Change symbol transparency [%]</source>
         <translation>Cambia trasparenza del simbolo [%]</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Symbol unit</source>
         <translation>Unità del simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Select symbol unit</source>
         <translation>Scegli l&apos;unità del simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="153"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="153"/>
         <source>Millimeter</source>
         <translation>Millimetri</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrendererv2widget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgsrendererv2widget.cpp" line="150"/>
         <source>Map unit</source>
         <translation>Unità mappa</translation>
     </message>
@@ -74801,52 +74801,52 @@ deviazione standard ×</translation>
 <context>
     <name>QgsRuleBasedRendererV2Model</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="862"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="862"/>
         <source>(no filter)</source>
         <translation>(nessun filtro)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="889"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="889"/>
         <source>&lt;li&gt;&lt;nobr&gt;%1 features also in rule %2&lt;/nobr&gt;&lt;/li&gt;</source>
         <translation>&lt;li&gt;&lt;nobr&gt;%1 geometria anche in regola %2&lt;/nobr&gt;&lt;/li&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Label</source>
         <translation>Etichetta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Rule</source>
         <translation>Regola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Min. scale</source>
         <translation>Scala min</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Count</source>
         <translation>Conteggio</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Duplicate count</source>
         <translation>Duplica conteggio</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="954"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="954"/>
         <source>Max. scale</source>
         <translation>Scala max</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="961"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="961"/>
         <source>Number of features in this rule.</source>
         <translation>Numero di geometrie in questa regola.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="965"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="965"/>
         <source>Number of features in this rule which are also present in other rule(s).</source>
         <translation>Numero di geometrie in questa regola che sono anche presenti in altre regole.</translation>
     </message>
@@ -74884,78 +74884,78 @@ deviazione standard ×</translation>
         <translation>Livelli simbolo...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="75"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="75"/>
         <source>Remove Rule</source>
         <translation>Rimuovi regola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="82"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="82"/>
         <source>Refine current rule</source>
         <translation>Affina la regola attuale</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="83"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="83"/>
         <source>Add scales to rule</source>
         <translation>Aggiungi scale alla regola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="84"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="84"/>
         <source>Add categories to rule</source>
         <translation>Aggiungi categorie alla regola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="85"/>
         <source>Add ranges to rule</source>
         <translation>Aggiungi intervalli alla regola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="182"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="182"/>
         <source>Edit rule</source>
         <translation>Modifica regola</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="259"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="259"/>
         <source>Add categories to rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="269"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="269"/>
         <source>Add ranges to rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="285"/>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="291"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="285"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="291"/>
         <source>Scale refinement</source>
         <translation>Affinamento scala</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="285"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="285"/>
         <source>Parent rule %1 must have a symbol for this operation.</source>
         <translation>Per questa operazione la regola superiore %1 deve avere un simbolo.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="292"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="292"/>
         <source>Please enter scale denominators at which will split the rule, separate them by commas (e.g. 1000,5000):</source>
         <translation>Inserisci i denominatori di scala ai quali effettuare l&apos;interruzione, separati da virgole (ad es. 1000,5000):</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="304"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="304"/>
         <source>Error</source>
         <translation>Errore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="304"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="304"/>
         <source>&quot;%1&quot; is not valid scale denominator, ignoring it.</source>
         <translation>&quot;%1&quot; non è un denominatore di scala valido. Verrà ignorato.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="542"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="542"/>
         <source>Calculating feature count.</source>
         <translation>Calcolo numero di geometrie.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsrulebasedrendererv2widget.cpp" line="542"/>
+        <location filename="../src/gui/symbology/qgsrulebasedrendererv2widget.cpp" line="542"/>
         <source>Abort</source>
         <translation>Interrompi</translation>
     </message>
@@ -75275,27 +75275,27 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSVGFillSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>SVG file</source>
         <translation>File SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2169"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2169"/>
         <source>Select fill color</source>
         <translation>Scegli colore del riempimento</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2171"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2171"/>
         <source>Select border color</source>
         <translation>Scegli colore del bordo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>Select SVG texture file</source>
         <translation>Scegli un file di riempimento SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2236"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2236"/>
         <source>All files</source>
         <translation>Tutti i file</translation>
     </message>
@@ -75645,19 +75645,19 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsShapeburstFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1372"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1377"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1372"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1377"/>
         <source>Select gradient color</source>
         <translation>Scegli colore del gradiente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1375"/>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1380"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1375"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1380"/>
         <source>Transparent</source>
         <translation>Trasparenza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1487"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1487"/>
         <source>Integer between 0 and 18</source>
         <translation>Intero fra 0 e 18</translation>
     </message>
@@ -75665,22 +75665,22 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSimpleFillSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="705"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="705"/>
         <source>Select fill color</source>
         <translation>Scegli colore del riempimento</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="708"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="708"/>
         <source>Transparent fill</source>
         <translation>Riempimento trasparente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="710"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="710"/>
         <source>Select border color</source>
         <translation>Scegli colore del bordo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="713"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="713"/>
         <source>Transparent border</source>
         <translation>Bordo trasparente</translation>
     </message>
@@ -75688,12 +75688,12 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSimpleLineSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="180"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="180"/>
         <source>Select line color</source>
         <translation>Colore della linea</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="195"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="195"/>
         <source>Width Assistant...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -75701,32 +75701,32 @@ and only the geometry column of the main typename can be used as the geometry co
 <context>
     <name>QgsSimpleMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="425"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="425"/>
         <source>Select fill color</source>
         <translation>Colore del riempimento</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="428"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="428"/>
         <source>Transparent fill</source>
         <translation>Riempimento trasparente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="430"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="430"/>
         <source>Select border color</source>
         <translation>Colore del bordo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="433"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="433"/>
         <source>Transparent border</source>
         <translation>Bordo trasparente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="442"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="442"/>
         <source>Size Assistant...</source>
         <translation>Assistente delle dimensioni</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="544"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="544"/>
         <source>string </source>
         <translation>stringa </translation>
     </message>
@@ -76063,7 +76063,7 @@ suffix</source>
 <context>
     <name>QgsSingleSymbolRendererV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssinglesymbolrendererv2widget.cpp" line="65"/>
+        <location filename="../src/gui/symbology/qgssinglesymbolrendererv2widget.cpp" line="65"/>
         <source>Symbol levels...</source>
         <translation>Livelli simbolo...</translation>
     </message>
@@ -76071,32 +76071,32 @@ suffix</source>
 <context>
     <name>QgsSizeScaleWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="132"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="132"/>
         <source>Compute from layer</source>
         <translation>Calcola da layer</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="148"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="148"/>
         <source>Flannery</source>
         <translation>Flannery</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="149"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="149"/>
         <source>Surface</source>
         <translation>Superficie</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="150"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="150"/>
         <source>Radius</source>
         <translation>Raggio</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="154"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="154"/>
         <source>Exponential</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssizescalewidget.cpp" line="155"/>
+        <location filename="../src/gui/symbology/qgssizescalewidget.cpp" line="155"/>
         <source>Linear</source>
         <translation>Lineare</translation>
     </message>
@@ -76104,32 +76104,32 @@ suffix</source>
 <context>
     <name>QgsSmartGroupCondition</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="33"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="33"/>
         <source>has the tag</source>
         <translation>ha l&apos;etichetta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="34"/>
         <source>is a member of group</source>
         <translation>è un membro del gruppo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="35"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="35"/>
         <source>has a part of name matching</source>
         <translation>ha una parte del nome corrispondente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="36"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="36"/>
         <source>does NOT have the tag</source>
         <translation>non ha l&apos;etichetta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="37"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="37"/>
         <source>is NOT a member of group</source>
         <translation>non è membro del gruppo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="38"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="38"/>
         <source>has NO part of name matching</source>
         <translation>non ha parti del nome corrispondenti</translation>
     </message>
@@ -76150,22 +76150,22 @@ suffix</source>
 <context>
     <name>QgsSmartGroupEditorDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="87"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="87"/>
         <source>ALL the constraints</source>
         <translation>Tutti i vincoli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="88"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="88"/>
         <source>any ONE of the constraints</source>
         <translation>qualunque vincolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="205"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="205"/>
         <source>Invalid name</source>
         <translation>Nome non valido</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssmartgroupeditordialog.cpp" line="205"/>
+        <location filename="../src/gui/symbology/qgssmartgroupeditordialog.cpp" line="205"/>
         <source>The smart group name field is empty. Kindly provide a name</source>
         <translation>Il campo nome del gruppo intelligente è vuoto. Fornire un nome </translation>
     </message>
@@ -77469,141 +77469,141 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QgsStyleV2ExportImportDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="43"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="43"/>
         <source>Select all</source>
         <translation>Seleziona tutto</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="47"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="47"/>
         <source>Clear selection</source>
         <translation>Annulla la selezione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="70"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="70"/>
         <source>file specified below</source>
         <translation>file specificato sotto</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="72"/>
         <source>URL specified below</source>
         <translation>URL specificato sotto</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="85"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="85"/>
         <source>Select symbols to import</source>
         <translation>Selezionare i simboli da importare</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="86"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="86"/>
         <source>Import</source>
         <translation>Importa</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="68"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="68"/>
         <source>Import symbol(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="90"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="90"/>
         <source>Export symbol(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="98"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="98"/>
         <source>Select by group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="104"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="104"/>
         <source>Export</source>
         <translation>Esporta</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="122"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="147"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="122"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="147"/>
         <source>Export/import error</source>
         <translation>Errore di importazione/esportazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="123"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="123"/>
         <source>You should select at least one symbol/color ramp.</source>
         <translation>Seleziona almeno un simbolo/rampa colore.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="129"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="129"/>
         <source>Save styles</source>
         <translation>Salva gli stili</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="130"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="130"/>
         <source>XML files (*.xml *.XML)</source>
         <translation>File XML (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="148"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="148"/>
         <source>Error when saving selected symbols to file:
 %1</source>
         <translation>Errore nel salvataggio dei simboli selezionati:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="175"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="175"/>
         <source>Import error</source>
         <translation>Errore di importazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="176"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="176"/>
         <source>An error occurred during import:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="262"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="309"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="262"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="309"/>
         <source>Duplicate names</source>
         <translation>Nomi duplicati</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="263"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="263"/>
         <source>Symbol with name &apos;%1&apos; already exists.
 Overwrite?</source>
         <translation>Il simbolo con nome &apos;%1&apos; esiste già.
 Sovrascrivere?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="310"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="310"/>
         <source>Color ramp with name &apos;%1&apos; already exists.
 Overwrite?</source>
         <translation>La rampa colore con nome &apos;%1&apos;esiste già.
 Sovrascrivere?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="435"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="435"/>
         <source>Select symbols by group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="477"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="477"/>
         <source>Load styles</source>
         <translation>Carica stili</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="478"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="478"/>
         <source>XML files (*.xml *XML)</source>
         <translation>File XML (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="517"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="517"/>
         <source>Downloading style ... </source>
         <translation>Scaricamento stile...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="544"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="544"/>
         <source>HTTP Error!</source>
         <translation>Errore HTTP!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2exportimportdialog.cpp" line="545"/>
+        <location filename="../src/gui/symbology/qgsstylev2exportimportdialog.cpp" line="545"/>
         <source>Download failed: %1.</source>
         <translation>Errore di download: %1.</translation>
     </message>
@@ -77639,22 +77639,22 @@ Sovrascrivere?</translation>
 <context>
     <name>QgsStyleV2GroupSelectionDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="34"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="34"/>
         <source>All Symbols</source>
         <translation>Tutti i simboli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="45"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="45"/>
         <source>Groups</source>
         <translation>Gruppi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="46"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="46"/>
         <source>Ungrouped</source>
         <translation>Non raggruppato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2groupselectiondialog.cpp" line="54"/>
+        <location filename="../src/gui/symbology/qgsstylev2groupselectiondialog.cpp" line="54"/>
         <source>Smart Groups</source>
         <translation>Gruppi intelligenti</translation>
     </message>
@@ -77662,316 +77662,316 @@ Sovrascrivere?</translation>
 <context>
     <name>QgsStyleV2ManagerDialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="60"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="60"/>
         <source>Type here to filter symbols...</source>
         <translation>Digita qui per filtrare i simboli...</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="214"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="214"/>
         <source>Marker symbol (%1)</source>
         <translation>Simbolo (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="215"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="215"/>
         <source>Line symbol (%1)</source>
         <translation>Simbolo di linea (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="216"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="216"/>
         <source>Fill symbol (%1)</source>
         <translation>Simbolo di riempimento (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="218"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="218"/>
         <source>Color ramp (%1)</source>
         <translation>Scala di colore (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="458"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="458"/>
         <source>Gradient</source>
         <translation>Gradiente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="73"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="73"/>
         <source>Share menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="76"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="76"/>
         <source>Export...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="78"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="78"/>
         <source>Import...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="112"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="112"/>
         <source>Group actions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="470"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="470"/>
         <source>Random</source>
         <translation>Casuale</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="136"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="447"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="482"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="136"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="447"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="482"/>
         <source>ColorBrewer</source>
         <translation>ColorBrewer</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="137"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="448"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="494"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="137"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="448"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="494"/>
         <source>cpt-city</source>
         <translation>cpt-city</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="147"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="147"/>
         <source>Add to group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="362"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="362"/>
         <source>new symbol</source>
         <translation>nuovo simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="367"/>
         <source>new marker</source>
         <translation>nuovo simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="371"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="371"/>
         <source>new line</source>
         <translation>nuova linea</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="375"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="375"/>
         <source>new fill symbol</source>
         <translation>nuovo simbolo di riempimento</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="400"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="400"/>
         <source>Symbol Name</source>
         <translation>Nome simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="401"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="401"/>
         <source>Please enter a name for new symbol:</source>
         <translation>Inserire un nome per il nuovo simbolo:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="411"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="416"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="411"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="416"/>
         <source>Save symbol</source>
         <translation>Salva simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="412"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="412"/>
         <source>Cannot save symbol without name. Enter a name.</source>
         <translation>Senza un nome è impossibile salvare il simbolo. Inserire un nome.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="417"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Il simbolo con nome &apos;%1&apos; esiste già. Sovrascrivi?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="449"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="449"/>
         <source>Color ramp type</source>
         <translation>Tipo di scala di colori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="450"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="450"/>
         <source>Please select color ramp type:</source>
         <translation>Scegli il tipo di scala di colori:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="455"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="455"/>
         <source>new ramp</source>
         <translation>nuova scala</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="468"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="468"/>
         <source>new gradient ramp</source>
         <translation>nuova scala di colori a gradiente</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="480"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="480"/>
         <source>new random ramp</source>
         <translation>nuova scala di colori casuale</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="529"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="529"/>
         <source>Color Ramp Name</source>
         <translation>Nome scala di colori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="530"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="530"/>
         <source>Please enter a name for new color ramp:</source>
         <translation>Digita il nome per la nuova scala colori:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="540"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="540"/>
         <source>Save Color Ramp</source>
         <translation>Salva scala di colori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="541"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="541"/>
         <source>Cannot save color ramp without name. Enter a name.</source>
         <translation>Senza un nome è impossibile salvare la scala di colori. Inserire un nome.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="545"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="545"/>
         <source>Save color ramp</source>
         <translation>Salva scala di colori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="546"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="546"/>
         <source>Color ramp with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>La rampa colore con nome &apos;%1&apos;esiste già. Sovrascrivere?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="720"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="740"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="720"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="740"/>
         <source>Confirm removal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="721"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="721"/>
         <source>Do you really want to remove %n symbol(s)?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="741"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="741"/>
         <source>Do you really want to remove %n ramps(s)?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="787"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="787"/>
         <source>Exported selected symbols as PNG</source>
         <translation>Esporta i simboli selezionati come PNG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="796"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="796"/>
         <source>Exported selected symbols as SVG</source>
         <translation>Esporta i simboli selezionati come SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="845"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="845"/>
         <source>All Symbols</source>
         <translation>Tutti i simboli</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="855"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="855"/>
         <source>Groups</source>
         <translation>Gruppi</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="856"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="856"/>
         <source>Ungrouped</source>
         <translation>Non raggruppato</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="863"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="863"/>
         <source>Smart Groups</source>
         <translation>Gruppi intelligenti</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="998"/>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1436"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="998"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1436"/>
         <source>Invalid Selection</source>
         <translation>Selezione non valida</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="999"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="999"/>
         <source>The parent group you have selected is not user editable.
 Kindly select a user defined group.</source>
         <translation>Il gruppo selezionato non è modificabile dall&apos;utente.
 Scegliere un gruppo definito dall&apos;utente. </translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1008"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1008"/>
         <source>Operation Not Allowed</source>
         <translation>Operazione non permessa</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1009"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1009"/>
         <source>Creation of nested smart groups are not allowed
 Select the &apos;Smart Group&apos; to create a new group.</source>
         <translation>Non è possibile creare gruppi intelligenti annidati.
 Scegliere la voce &quot;Gruppo intelligente&quot; per creare un nuovo gruppo.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1036"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1036"/>
         <source>New Group</source>
         <translation>Nuovo gruppo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1069"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1069"/>
         <source>Invalid selection</source>
         <translation>Selezione non valida</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1070"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1070"/>
         <source>Cannot delete system defined categories.
 Kindly select a group or smart group you might want to delete.</source>
         <translation>Impossibile eliminare categorie di sistema.
 Seleziona un gruppo o un gruppo intelligente che puoi eliminare.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1041"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1041"/>
         <source>Error!</source>
         <translation>Errore!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1042"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1042"/>
         <source>New group could not be created.
 There was a problem with your symbol database.</source>
         <translation>Impossibile creare nuovo gruppo.
 C&apos;è stato un problema con il tuo database dei simboli.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1199"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1199"/>
         <source>Database Error</source>
         <translation>Errore database</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1200"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1200"/>
         <source>There was a problem with the Symbols database while regrouping.</source>
         <translation>C&apos;è stato un problema con il database dei simboli durante il raggruppamento.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1437"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1437"/>
         <source>You have not selected a Smart Group. Kindly select a Smart Group to edit.</source>
         <translation>Non hai selezionato nessun gruppo intelligente. Scegline uno da modificare.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1455"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1455"/>
         <source>Database Error!</source>
         <translation>Errore database!</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="1456"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="1456"/>
         <source>There was some error while editing the smart group.</source>
         <translation>C&apos;è stato qualche errore durante la modifica del gruppo intelligente.</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="779"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="779"/>
         <source>Cannot rename item</source>
         <translation>Impossibile rinominare l&apos;elemento</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsstylev2managerdialog.cpp" line="780"/>
+        <location filename="../src/gui/symbology/qgsstylev2managerdialog.cpp" line="780"/>
         <source>Name is already taken by another item. Choose a different name.</source>
         <translation>Il seguente nome è già stato assegnato ad un altro elemento. Scegliere un nome differente</translation>
     </message>
@@ -78178,23 +78178,23 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSvgCache</name>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="466"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="466"/>
         <source>SVG request failed [error: %1 - url: %2]</source>
         <translation>Richiesta SVG non riuscita [errore: %1- URL:%2]</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="466"/>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="489"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="466"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="489"/>
         <source>SVG</source>
         <translation>SVG</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="489"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="489"/>
         <source>SVG request error [status: %1 - reason phrase: %2]</source>
         <translation>Errore nella richiesta SVG [Stato: %1 - Motivo: %2]</translation>
     </message>
     <message>
-        <location filename="../src/core/symbology-ng/qgssvgcache.cpp" line="976"/>
+        <location filename="../src/core/symbology/qgssvgcache.cpp" line="976"/>
         <source>%1 of %2 bytes of svg image downloaded.</source>
         <translation>%1 of %2 bytes dell&apos;immagine SVG scaricati.</translation>
     </message>
@@ -78255,27 +78255,27 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSvgMarkerSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1786"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1786"/>
         <source>Select fill color</source>
         <translation>Scegli colore del riempimento</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1789"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1789"/>
         <source>Select border color</source>
         <translation>Scegli colore del bordo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="1808"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="1808"/>
         <source>Size Assistant...</source>
         <translation>Assistente delle dimensioni</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2034"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2034"/>
         <source>Select SVG file</source>
         <translation>Scegli file SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="2036"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="2036"/>
         <source>SVG files</source>
         <translation>File SVG</translation>
     </message>
@@ -78283,12 +78283,12 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSvgSelectorGroupsModel</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="120"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="120"/>
         <source>App Symbols</source>
         <translation>Simboli app</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="124"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="124"/>
         <source>User Symbols</source>
         <translation>Simboli utente</translation>
     </message>
@@ -78296,17 +78296,17 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSvgSelectorWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="273"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="273"/>
         <source>Select SVG file</source>
         <translation>Scegli file SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="275"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="275"/>
         <source>SVG files</source>
         <translation>File SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssvgselectorwidget.cpp" line="298"/>
+        <location filename="../src/gui/symbology/qgssvgselectorwidget.cpp" line="298"/>
         <source>File not found</source>
         <translation>File non trovato</translation>
     </message>
@@ -78314,17 +78314,17 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSymbolLayerV2Widget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="151"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="151"/>
         <source>Size</source>
         <translation>Dimensione</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="158"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="158"/>
         <source>area</source>
         <translation>area</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollayerv2widget.cpp" line="161"/>
+        <location filename="../src/gui/symbology/qgssymbollayerv2widget.cpp" line="161"/>
         <source>diameter</source>
         <translation>diametro</translation>
     </message>
@@ -78332,7 +78332,7 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSymbolLevelsV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbollevelsv2dialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgssymbollevelsv2dialog.cpp" line="72"/>
         <source>Layer %1</source>
         <translation>Layer %1</translation>
     </message>
@@ -78396,32 +78396,32 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSymbolV2SelectorWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="264"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="264"/>
         <source>Symbol selector</source>
         <translation>Selettore simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="647"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="647"/>
         <source>Symbol name</source>
         <translation>Nome simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="648"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="648"/>
         <source>Please enter name for the symbol:</source>
         <translation>Inserire un nome per il simbolo:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="648"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="648"/>
         <source>New symbol</source>
         <translation>Nuovo simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="655"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="655"/>
         <source>Save symbol</source>
         <translation>Salva simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolv2selectordialog.cpp" line="656"/>
+        <location filename="../src/gui/symbology/qgssymbolv2selectordialog.cpp" line="656"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Il simbolo con nome &apos;%1&apos; esiste già. Sovrascrivere?</translation>
     </message>
@@ -78429,57 +78429,57 @@ C&apos;è stato un problema con il tuo database dei simboli.</translation>
 <context>
     <name>QgsSymbolsListWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="68"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="68"/>
         <source>Clip features to canvas extent</source>
         <translation>Ritaglia le geometrie all&apos;estensione della mappa</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="112"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="112"/>
         <source>Size Assistant...</source>
         <translation>Assistente delle dimensioni</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="114"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="114"/>
         <source>Width Assistant...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="119"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="119"/>
         <source>Select color</source>
         <translation>Scegli colore</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="337"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="366"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="337"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="366"/>
         <source>Symbol name</source>
         <translation>Nome simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="338"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="338"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="367"/>
         <source>Please enter name for the symbol:</source>
         <translation>Inserire un nome per il simbolo:</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="338"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="367"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="338"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="367"/>
         <source>New symbol</source>
         <translation>Nuovo simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="345"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="374"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="345"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="374"/>
         <source>Save symbol</source>
         <translation>Salva simbolo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="346"/>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="375"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="346"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="375"/>
         <source>Symbol with name &apos;%1&apos; already exists. Overwrite?</source>
         <translation>Il simbolo con nome &apos;%1&apos; esiste già. Sovrascrivere?</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgssymbolslistwidget.cpp" line="417"/>
+        <location filename="../src/gui/symbology/qgssymbolslistwidget.cpp" line="417"/>
         <source>Transparency %1%</source>
         <translation>Trasparenza %1%</translation>
     </message>
@@ -79509,27 +79509,27 @@ L&apos;errore è: %2</translation>
 <context>
     <name>QgsVectorFieldSymbolLayerWidget</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="141"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="141"/>
         <source>X attribute</source>
         <translation>Attributo X</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="142"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="142"/>
         <source>Y attribute</source>
         <translation>Attributo Y</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="154"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="154"/>
         <source>Length attribute</source>
         <translation>Attributo lunghezza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="155"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="155"/>
         <source>Angle attribute</source>
         <translation>Angolo attributo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorfieldsymbollayerwidget.cpp" line="167"/>
+        <location filename="../src/gui/symbology/qgsvectorfieldsymbollayerwidget.cpp" line="167"/>
         <source>Height attribute</source>
         <translation>Altezza attributo</translation>
     </message>
@@ -79537,34 +79537,34 @@ L&apos;errore è: %2</translation>
 <context>
     <name>QgsVectorGradientColorRampV2Dialog</name>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="56"/>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="61"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="56"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="61"/>
         <source>Select ramp color</source>
         <translation>Scegli scala colori</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="59"/>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="64"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="59"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="64"/>
         <source>Transparent</source>
         <translation>Trasparenza</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="71"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="71"/>
         <source>Discrete</source>
         <translation>Discreto</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="72"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="72"/>
         <source>Continuous</source>
         <translation>Continuo</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="215"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="215"/>
         <source>Gradient file : %1</source>
         <translation>File gradiente: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/symbology-ng/qgsvectorgradientcolorrampv2dialog.cpp" line="232"/>
+        <location filename="../src/gui/symbology/qgsvectorgradientcolorrampv2dialog.cpp" line="232"/>
         <source>License file : %1</source>
         <translation>File licenza: %1</translation>
     </message>
