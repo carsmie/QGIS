@@ -48972,7 +48972,7 @@ Reference in function name: my_form_open
     </message>
 </context>
 <context>
-    <name>QgsGPSDetector</name>
+    <name>QgsGpsDetector</name>
     <message>
         <location filename="../src/core/gps/qgsgpsdetector.cpp" line="39"/>
         <source>internal GPS</source>
@@ -48985,7 +48985,7 @@ Reference in function name: my_form_open
     </message>
 </context>
 <context>
-    <name>QgsGPSDeviceDialog</name>
+    <name>QgsGpsDeviceDialog</name>
     <message>
         <location filename="../src/plugins/gps_importer/qgsgpsdevicedialog.cpp" line="39"/>
         <source>New device %1</source>
@@ -49003,7 +49003,7 @@ Reference in function name: my_form_open
     </message>
 </context>
 <context>
-    <name>QgsGPSDeviceDialogBase</name>
+    <name>QgsGpsDeviceDialogBase</name>
     <message>
         <location filename="../src/plugins/gps_importer/qgsgpsdevicedialogbase.ui" line="20"/>
         <source>GPS Device Editor</source>
@@ -49118,7 +49118,7 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>QgsGPSInformationWidget</name>
+    <name>QgsGpsInformationWidget</name>
     <message>
         <location filename="../src/app/gps/qgsgpsinformationwidget.cpp" line="405"/>
         <source>/gps</source>
@@ -49334,7 +49334,7 @@ Błędy:  %2
     </message>
 </context>
 <context>
-    <name>QgsGPSInformationWidgetBase</name>
+    <name>QgsGpsInformationWidgetBase</name>
     <message>
         <location filename="../src/ui/qgsgpsinformationwidgetbase.ui" line="14"/>
         <source>GPS Connect</source>
@@ -49711,7 +49711,7 @@ szary = brak danych
     </message>
 </context>
 <context>
-    <name>QgsGPSPlugin</name>
+    <name>QgsGpsPlugin</name>
     <message>
         <location filename="../src/plugins/gps_importer/qgsgpsplugin.cpp" line="94"/>
         <source>&amp;GPS Tools</source>
@@ -49877,7 +49877,7 @@ Please reselect a valid file.</source>
     </message>
 </context>
 <context>
-    <name>QgsGPSPluginGui</name>
+    <name>QgsGpsPluginGui</name>
     <message>
         <location filename="../src/plugins/gps_importer/qgsgpsplugingui.cpp" line="105"/>
         <location filename="../src/plugins/gps_importer/qgsgpsplugingui.cpp" line="299"/>
@@ -49949,7 +49949,7 @@ Please reselect a valid file.</source>
     </message>
 </context>
 <context>
-    <name>QgsGPSPluginGuiBase</name>
+    <name>QgsGpsPluginGuiBase</name>
     <message>
         <location filename="../src/plugins/gps_importer/qgsgpspluginguibase.ui" line="14"/>
         <source>GPS Tools</source>
