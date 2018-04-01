@@ -6998,7 +6998,7 @@ Objektgeometriefehler: Eine oder mehrere Ausgabeobjekte mit ungültiger Geometri
     <message>
         <location filename="../python/plugins/db_manager/python-i18n.cpp" line="427"/>
         <source>{0} rows, {1:.1f} seconds</source>
-        <translation>{0} Zeilen, {1:%.1f} Sekunden</translation>
+        <translation>{0} Zeilen, {1:.1f} Sekunden</translation>
     </message>
 </context>
 <context>
@@ -7021,7 +7021,7 @@ Objektgeometriefehler: Eine oder mehrere Ausgabeobjekte mit ungültiger Geometri
     <message>
         <location filename="../python/plugins/db_manager/python-i18n.cpp" line="434"/>
         <source>{0} rows, {1:.1f} seconds</source>
-        <translation>{0} Zeilen, {1:%.1f} Sekunden</translation>
+        <translation>{0} Zeilen, {1:.1f} Sekunden</translation>
     </message>
     <message>
         <source>%d rows, %.1f seconds</source>
