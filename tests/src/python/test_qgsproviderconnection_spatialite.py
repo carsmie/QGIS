@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""QGIS Unit tests for OGR GeoPackage QgsAbastractProviderConnection API.
+"""QGIS Unit tests for Spatialite QgsAbastractProviderConnection API.
 
 .. note:: This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -8,7 +8,7 @@ the Free Software Foundation; either version 2 of the License, or
 
 """
 __author__ = 'Alessandro Pasotti'
-__date__ = '10/08/2019'
+__date__ = '28/10/2019'
 __copyright__ = 'Copyright 2019, The QGIS Project'
 # This will get replaced with a git SHA1 when you do a git archive
 __revision__ = '$Format:%H$'
@@ -32,58 +32,55 @@ from utilities import unitTestDataPath
 TEST_DATA_DIR = unitTestDataPath()
 
 
-class TestPyQgsProviderConnectionGpkg(unittest.TestCase, TestPyQgsProviderConnectionBase):
+class TestPyQgsProviderConnectionSpatialite(unittest.TestCase, TestPyQgsProviderConnectionBase):
 
     # Provider test cases must define the string URI for the test
     uri = ''
     # Provider test cases must define the provider name (e.g. "postgres" or "ogr")
-    providerKey = 'ogr'
+    providerKey = 'spatialite'
 
     @classmethod
     def setUpClass(cls):
         """Run before all tests"""
         TestPyQgsProviderConnectionBase.setUpClass()
-        gpkg_original_path = '{}/qgis_server/test_project_wms_grouped_layers.gpkg'.format(TEST_DATA_DIR)
-        cls.gpkg_path = '{}/qgis_server/test_project_wms_grouped_layers_test.gpkg'.format(TEST_DATA_DIR)
-        shutil.copy(gpkg_original_path, cls.gpkg_path)
-        vl = QgsVectorLayer('{}|layername=cdb_lines'.format(cls.gpkg_path), 'test', 'ogr')
+        spatialite_original_path = '{}/qgis_server/test_project_wms_grouped_layers.sqlite'.format(TEST_DATA_DIR)
+        cls.spatialite_path = '{}/qgis_server/test_project_wms_grouped_layers_test.sqlite'.format(TEST_DATA_DIR)
+        shutil.copy(spatialite_original_path, cls.spatialite_path)
+        cls.uri = "dbname=\'%s\'" % cls.spatialite_path
+        vl = QgsVectorLayer('{} table=\'cdb_lines\''.format(cls.uri), 'test', 'spatialite')
         assert vl.isValid()
-        cls.uri = cls.gpkg_path
 
     @classmethod
     def tearDownClass(cls):
         """Run after all tests"""
-        os.unlink(cls.gpkg_path)
+        os.unlink(cls.spatialite_path)
 
-    def test_gpkg_connections_from_uri(self):
+    def test_spatialite_connections_from_uri(self):
         """Create a connection from a layer uri and retrieve it"""
 
-        md = QgsProviderRegistry.instance().providerMetadata('ogr')
-        vl = QgsVectorLayer('{}|layername=cdb_lines'.format(self.gpkg_path), 'test', 'ogr')
+        md = QgsProviderRegistry.instance().providerMetadata('spatialite')
+        vl = QgsVectorLayer('{} table=\'cdb_lines\''.format(self.uri), 'test', 'spatialite')
+        self.assertTrue(vl.isValid())
         conn = md.createConnection(vl.dataProvider().uri().uri(), {})
-        self.assertEqual(conn.uri(), self.gpkg_path)
+        self.assertEqual(conn.uri(), self.uri + ' table="cdb_lines"')
+        conn.tables()
 
-    def test_gpkg_table_uri(self):
+    def test_spatialite_table_uri(self):
         """Create a connection from a layer uri and create a table URI"""
 
-        md = QgsProviderRegistry.instance().providerMetadata('ogr')
+        md = QgsProviderRegistry.instance().providerMetadata('spatialite')
         conn = md.createConnection(self.uri, {})
-        self.assertEqual(conn.tableUri('', 'cdb_lines'), '{}|layername=cdb_lines'.format(self.gpkg_path))
-        vl = QgsVectorLayer(conn.tableUri('', 'cdb_lines'), 'lines', 'ogr')
+        self.assertEqual(conn.tableUri('', 'cdb_lines'), '{} table="cdb_lines"'.format(self.uri))
+        vl = QgsVectorLayer(conn.tableUri('', 'cdb_lines'), 'lines', 'spatialite')
         self.assertTrue(vl.isValid())
 
         # Test table(), throws if not found
-        table_info = conn.table('', 'osm')
         table_info = conn.table('', 'cdb_lines')
 
-        self.assertEqual(conn.tableUri('', 'osm'), "GPKG:%s:osm" % self.uri)
-        rl = QgsRasterLayer(conn.tableUri('', 'osm'), 'r', 'gdal')
-        self.assertTrue(rl.isValid())
-
-    def test_gpkg_connections(self):
+    def test_spatialite_connections(self):
         """Create some connections and retrieve them"""
 
-        md = QgsProviderRegistry.instance().providerMetadata('ogr')
+        md = QgsProviderRegistry.instance().providerMetadata('spatialite')
 
         conn = md.createConnection(self.uri, {})
         md.saveConnection(conn, 'qgis_test1')
@@ -102,19 +99,12 @@ class TestPyQgsProviderConnectionGpkg(unittest.TestCase, TestPyQgsProviderConnec
         conn.createVectorTable('', 'myNewAspatialTable', QgsFields(), QgsWkbTypes.NoGeometry, crs, True, {})
         conn.createVectorTable('', 'myNewTable', QgsFields(), typ, crs, True, {})
 
-        # Check filters and special cases
-        table_names = self._table_names(conn.tables('', QgsAbstractDatabaseProviderConnection.Raster))
-        self.assertTrue('osm' in table_names)
-        self.assertFalse('myNewTable' in table_names)
-        self.assertFalse('myNewAspatialTable' in table_names)
-
         table_names = self._table_names(conn.tables('', QgsAbstractDatabaseProviderConnection.View))
-        self.assertFalse('osm' in table_names)
+        self.assertTrue('my_view' in table_names)
         self.assertFalse('myNewTable' in table_names)
         self.assertFalse('myNewAspatialTable' in table_names)
 
         table_names = self._table_names(conn.tables('', QgsAbstractDatabaseProviderConnection.Aspatial))
-        self.assertFalse('osm' in table_names)
         self.assertFalse('myNewTable' in table_names)
         self.assertTrue('myNewAspatialTable' in table_names)
 
