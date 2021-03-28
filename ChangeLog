@@ -256734,7 +256734,7 @@ Nathan Woodrow <madmanwoo@gmail.com>	2013-09-14
 
 Jürgen E. Fischer <jef@norbit.de>	2013-09-13
 
-    fix retrieval of PYTHON_SITE_PACKAGES_DIR - broke debian builds
+    fix retrieval of Python_SITEARCH - broke debian builds
 
 Merge: b14e13388e 2b4e13930d
 Marco Hugentobler <marco.hugentobler@sourcepole.ch>	2013-09-13
