@@ -170695,8 +170695,8 @@ Reason phrase: %2</source>
         <translation>Настільний додаток QGIS</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt; QGIS - зручна для користувачів географічна інформаційна система з відкритим кодом (GIS), ліцензована за загальною публічною ліцензією GNU. QGIS - це офіційний проект геопросторового фонду з відкритим кодом (OSGeo). Він працює на Linux, Unix, Mac OSX, Windows та Android і підтримує численні формати та функції векторних, растрових та баз даних. &lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation> QGIS - зручна для користувачів географічна інформаційна система з відкритим кодом (GIS), ліцензована за загальною публічною ліцензією GNU. QGIS - це офіційний проект геопросторового фонду з відкритим кодом (OSGeo). Він працює на Linux, Unix, Mac OSX, Windows та Android і підтримує численні формати та функції векторних, растрових та баз даних. </translation>
     </message>
     <message>
         <source>Geographic Information System</source>

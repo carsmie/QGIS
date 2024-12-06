@@ -171509,8 +171509,8 @@ Procent kan inte vara större än 100. Välj ett korrekt värde och fösök igen
         <translation>QGIS Desktop</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS är ett användarvänligt Geografiskt Informationssystem (GIS) på öppen källkod licensierad under GNU General Public License. QGIS är ett officiellt projekt hos the Open Source Geospatial Foundation (OSGeo). Det är kompatibelt med Linux, Unix, Mac OSX, Windows och Android och kan hantera ett stort antal vektor-, raster och databasformat och funktioner.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS är ett användarvänligt Geografiskt Informationssystem (GIS) på öppen källkod licensierad under GNU General Public License. QGIS är ett officiellt projekt hos the Open Source Geospatial Foundation (OSGeo). Det är kompatibelt med Linux, Unix, Mac OSX, Windows och Android och kan hantera ett stort antal vektor-, raster och databasformat och funktioner.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

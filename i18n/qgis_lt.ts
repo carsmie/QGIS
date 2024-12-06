@@ -171529,8 +171529,8 @@ Priežasties frazė: %2</translation>
         <translation>QGIS Darbastalis</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS yra draugiška atviro kodo geografinė informacinė sistema (GIS), licencijuojama pagal GNU bendrą viešą licenciją. QGIS yra oficialus atviro kodo geoerdvinio fondo (OSGeo) projektas. Jis veikia Linux, Unix, Mac OSX, Windows ir Android sistemose, palaiko įvairius vektorinius, rastro ir duomenų bazių formatus ir funkcionalumus.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS yra draugiška atviro kodo geografinė informacinė sistema (GIS), licencijuojama pagal GNU bendrą viešą licenciją. QGIS yra oficialus atviro kodo geoerdvinio fondo (OSGeo) projektas. Jis veikia Linux, Unix, Mac OSX, Windows ir Android sistemose, palaiko įvairius vektorinius, rastro ir duomenų bazių formatus ir funkcionalumus.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

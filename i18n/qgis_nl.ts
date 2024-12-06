@@ -171531,8 +171531,8 @@ Omschrijving: %2</translation>
         <translation>QGIS Desktop</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS is een gebruiksvriendelijk Open Source Geographic Information System (GIS) gelicenseerd onder de GNU General Public License. QGIS is een officieel project van de Open Source Geospatial Foundation (OSGeo). Het kan worden uitgevoerd op Linux, Unix, Mac OSX, Windows en Android en ondersteunt verscheidene vector-, raster-, en database-indelingen en functionaliteiten.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS is een gebruiksvriendelijk Open Source Geographic Information System (GIS) gelicenseerd onder de GNU General Public License. QGIS is een officieel project van de Open Source Geospatial Foundation (OSGeo). Het kan worden uitgevoerd op Linux, Unix, Mac OSX, Windows en Android en ondersteunt verscheidene vector-, raster-, en database-indelingen en functionaliteiten.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>
