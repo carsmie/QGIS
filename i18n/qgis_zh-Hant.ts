@@ -171281,8 +171281,8 @@ Reason phrase: %2</source>
         <translation>QGIS 桌面</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt; QGIS是根据GNU通用公共许可证许可的，用户友好的开源地理信息系统（GIS）。 QGIS是开源地理空间基金会（OSGeo）的官方專案。 它可以在Linux，Unix，Mac OSX，Windows和Android上运行，并支持多种向量、網格以及数据库格式和众多功能的软件。&lt;/ p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation> QGIS是根据GNU通用公共许可证许可的，用户友好的开源地理信息系统（GIS）。 QGIS是开源地理空间基金会（OSGeo）的官方專案。 它可以在Linux，Unix，Mac OSX，Windows和Android上运行，并支持多种向量、網格以及数据库格式和众多功能的软件。</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

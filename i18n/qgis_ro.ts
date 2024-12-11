@@ -171538,8 +171538,8 @@ Motiv: %2</translation>
         <translation>QGIS Desktop</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS este un Sistem de Informații Geografice (GIS), prietenos cu utilizatorul, cu sursă deschisă, aflat sub Licența Publică Generală GNU. QGIS este un proiect oficial al Fundației Surselor Geospațiale Deschise (OSGeo). Acesta rulează pe Linux, Unix, Mac OSX, Windows și Android și acceptă numeroase formate vectoriale, raster, baze de date și funcționalități.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS este un Sistem de Informații Geografice (GIS), prietenos cu utilizatorul, cu sursă deschisă, aflat sub Licența Publică Generală GNU. QGIS este un proiect oficial al Fundației Surselor Geospațiale Deschise (OSGeo). Acesta rulează pe Linux, Unix, Mac OSX, Windows și Android și acceptă numeroase formate vectoriale, raster, baze de date și funcționalități.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

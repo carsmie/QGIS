@@ -171356,8 +171356,8 @@ Mệnh đề nguyên nhân: %2</translation>
         <translation>QGIS Phiên bản Máy tính Để bàn</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS là một Hệ thống Thông tin Địa lý Nguồn mở (GIS) được đăng ký dưới Giấy phép Công cộng Chung GNU. QGIS là một dự án chính thức của Hiệp hội Địa lý Không gian Nguồn mở (OSGeo). Nó chạy trên Linux, Unix, Mac OSX, Windows và Android và hỗ trợ rất nhiều các định dạng véc-tơ, raster và csdl cũng như rất nhiều tính năng.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS là một Hệ thống Thông tin Địa lý Nguồn mở (GIS) được đăng ký dưới Giấy phép Công cộng Chung GNU. QGIS là một dự án chính thức của Hiệp hội Địa lý Không gian Nguồn mở (OSGeo). Nó chạy trên Linux, Unix, Mac OSX, Windows và Android và hỗ trợ rất nhiều các định dạng véc-tơ, raster và csdl cũng như rất nhiều tính năng.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

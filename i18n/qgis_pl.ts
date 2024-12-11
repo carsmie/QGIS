@@ -171308,8 +171308,8 @@ Przyczyna: %2</translation>
         <translation>QGIS Desktop</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS jest przyjaznym dla użytkownika otwartoźródłowym Systemem Informacji Geograficznej (GIS) na licencji GNU General Public License. QGIS jest oficjalnym projektem Open Source Geospatial Foundation (OSGeo). Działa na systemach Linux, Unix, Mac OSX, Windows oraz Android i obsługuje wiele wektorowych, rastrowych i bazodanowych formatów danych i funkcji.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS jest przyjaznym dla użytkownika otwartoźródłowym Systemem Informacji Geograficznej (GIS) na licencji GNU General Public License. QGIS jest oficjalnym projektem Open Source Geospatial Foundation (OSGeo). Działa na systemach Linux, Unix, Mac OSX, Windows oraz Android i obsługuje wiele wektorowych, rastrowych i bazodanowych formatów danych i funkcji.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

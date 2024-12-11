@@ -171484,8 +171484,8 @@ Reason phrase: %2</source>
         <translation>QGIS Desktop</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS kode irekiko Geografia-Informazioko Sistema (GIS) bat da, erabiltzeko erraza, GNU General Public License lizentziapean argitaratzen dena. Open Source Geospatial Foundation (OSGeo) erakundearen proiektu ofizial bat da. Linux, Unix, Mac OSX, Windows eta Android plataformetan dabil, hainbat funtzionaltasun ditu eta formatu bektorial, raster eta datu-base mota anitz onartzen ditu.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS kode irekiko Geografia-Informazioko Sistema (GIS) bat da, erabiltzeko erraza, GNU General Public License lizentziapean argitaratzen dena. Open Source Geospatial Foundation (OSGeo) erakundearen proiektu ofizial bat da. Linux, Unix, Mac OSX, Windows eta Android plataformetan dabil, hainbat funtzionaltasun ditu eta formatu bektorial, raster eta datu-base mota anitz onartzen ditu.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

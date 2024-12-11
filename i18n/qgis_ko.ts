@@ -171397,8 +171397,8 @@ Reason phrase: %2</source>
         <translation>QGIS 데스크탑</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt; QGIS는 GNU 일반 공중 사용 허가서에 따라 사용이 편리한 오픈 소스 지리 정보 시스템 (GIS)입니다. QGIS는 OSGeo (Open Source Geospatial Foundation)의 공식 프로젝트입니다. Linux, Unix, Mac OSX, Windows 및 Android에서 실행되며 수많은 벡터, 래스터 및 데이터베이스 포맷과 기능을 지원합니다. &lt;/ p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation> QGIS는 GNU 일반 공중 사용 허가서에 따라 사용이 편리한 오픈 소스 지리 정보 시스템 (GIS)입니다. QGIS는 OSGeo (Open Source Geospatial Foundation)의 공식 프로젝트입니다. Linux, Unix, Mac OSX, Windows 및 Android에서 실행되며 수많은 벡터, 래스터 및 데이터베이스 포맷과 기능을 지원합니다. </translation>
     </message>
     <message>
         <source>Geographic Information System</source>
