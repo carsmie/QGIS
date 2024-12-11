@@ -170665,8 +170665,8 @@ Reason phrase: %2</source>
         <translation>QGIS-skjáborð</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS er notendavænt landupplýsingakerfi (Geographic Information System - GIS) með opinn grunnkóða og almennu GNU General Public License notkunarleyfi. QGIS er opinbert verkefni á vegum Open Source Geospatial Foundation (OSGeo). Það keyrir á Linux, Unix, Mac OSX, Windows og Android og styður fjöldan allan af sniðum og aðgerðurm fyrir vektora, rasta og  gagnagrunna.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS er notendavænt landupplýsingakerfi (Geographic Information System - GIS) með opinn grunnkóða og almennu GNU General Public License notkunarleyfi. QGIS er opinbert verkefni á vegum Open Source Geospatial Foundation (OSGeo). Það keyrir á Linux, Unix, Mac OSX, Windows og Android og styður fjöldan allan af sniðum og aðgerðurm fyrir vektora, rasta og  gagnagrunna.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

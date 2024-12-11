@@ -171510,8 +171510,8 @@ Grund: %2</translation>
         <translation>QGIS-Desktop</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGIS ist eine benutzerfreundliches Open-Source geographisches Informationssystem (GIS), das unter der GNU General-Public-License steht. QGIS ist ein offizielles Mitglied der Open-Source-Geospatial-Foundation (OSGeo). Es läuft unter Linux, Unix, Mac OSX, Windows und Android und unterstützt eine Vielzahl von Vektor-, Raster- und Datenbankformate und -funktionen.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGIS ist eine benutzerfreundliches Open-Source geographisches Informationssystem (GIS), das unter der GNU General-Public-License steht. QGIS ist ein offizielles Mitglied der Open-Source-Geospatial-Foundation (OSGeo). Es läuft unter Linux, Unix, Mac OSX, Windows und Android und unterstützt eine Vielzahl von Vektor-, Raster- und Datenbankformate und -funktionen.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

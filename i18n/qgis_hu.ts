@@ -171530,8 +171530,8 @@ Ok: %2</translation>
         <translation>QGIS asztali alkalmazás</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;A QGIS egy felhasználóbarát nyílt forráskódú térinformatikai rendszer (GIS), GNU GNU Általános Nyilvános Licenc alatt. A QGIS az Open Source Geospatial Foundation (OSGeo) hivatalos projektje. Futtatható Linux, Unix, Mac OSX, Windows és Android környezetben és számos vektoros, raszteres és adatbázis-formátumot és -funkciót támogat.&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>A QGIS egy felhasználóbarát nyílt forráskódú térinformatikai rendszer (GIS), GNU GNU Általános Nyilvános Licenc alatt. A QGIS az Open Source Geospatial Foundation (OSGeo) hivatalos projektje. Futtatható Linux, Unix, Mac OSX, Windows és Android környezetben és számos vektoros, raszteres és adatbázis-formátumot és -funkciót támogat.</translation>
     </message>
     <message>
         <source>Geographic Information System</source>

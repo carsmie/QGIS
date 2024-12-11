@@ -171993,8 +171993,8 @@ Reason phrase: %2</source>
         <translation>QGISデスクトップ</translation>
     </message>
     <message>
-        <source>&lt;p&gt;QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;QGISは、GNU General Public Licenseで提供されている、ユーザーフレンドリーなオープンソースの Geographic Information System（GIS）です。QGISは、Open Source Geospatial Foundation（OSGeo）のオフィシャルプロジェクトで、Linux・Unix・Mac OSX・Windows・Android で動作し、数多くのベクタ、ラスタ、データベースフォーマットや機能をサポートしています。&lt;/p&gt;</translation>
+        <source>QGIS is a user friendly Open Source Geographic Information System (GIS) licensed under the GNU General Public License. QGIS is an official project of the Open Source Geospatial Foundation (OSGeo). It runs on Linux, Unix, Mac OSX, Windows and Android and supports numerous vector, raster, and database formats and functionalities.</source>
+        <translation>QGISは、GNU General Public Licenseで提供されている、ユーザーフレンドリーなオープンソースの Geographic Information System（GIS）です。QGISは、Open Source Geospatial Foundation（OSGeo）のオフィシャルプロジェクトで、Linux・Unix・Mac OSX・Windows・Android で動作し、数多くのベクタ、ラスタ、データベースフォーマットや機能をサポートしています。</translation>
     </message>
     <message>
         <source>Geographic Information System</source>
