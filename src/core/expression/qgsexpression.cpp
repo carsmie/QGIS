@@ -343,6 +343,12 @@ void QgsExpression::detach()
   }
 }
 
+void QgsExpression::initFunctionHelp()
+{
+  static std::once_flag initialized;
+  std::call_once( initialized, buildFunctionHelp );
+}
+
 void QgsExpression::setGeomCalculator( const QgsDistanceArea *calc )
 {
   detach();
@@ -719,9 +725,12 @@ QStringList QgsExpression::tags( const QString &name )
 
 void QgsExpression::initVariableHelp()
 {
-  if ( !sVariableHelpTexts()->isEmpty() )
-    return;
+  static std::once_flag initialized;
+  std::call_once( initialized, buildVariableHelp );
+}
 
+void QgsExpression::buildVariableHelp()
+{
   //global variables
   sVariableHelpTexts()->insert( QStringLiteral( "qgis_version" ), QCoreApplication::translate( "variable_help", "Current QGIS version string." ) );
   sVariableHelpTexts()->insert( QStringLiteral( "qgis_version_no" ), QCoreApplication::translate( "variable_help", "Current QGIS version number." ) );
@@ -949,9 +958,9 @@ void QgsExpression::initVariableHelp()
   sVariableHelpTexts()->insert( QStringLiteral( "plot_axis_value" ), QCoreApplication::translate( "plot_axis_value", "The current value for the plot axis." ) );
 }
 
-
 bool QgsExpression::addVariableHelpText( const QString name, const QString &description )
 {
+  QgsExpression::initVariableHelp();
   if ( sVariableHelpTexts()->contains( name ) )
   {
     return false;
