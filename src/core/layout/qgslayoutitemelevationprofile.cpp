@@ -641,15 +641,16 @@ void QgsLayoutItemElevationProfile::paint( QPainter *painter, const QStyleOption
 
     QSizeF layoutSize = mLayout->convertToLayoutUnits( sizeWithUnits() );
 
-    if ( mLayout->renderContext().flags() & QgsLayoutRenderContext::FlagLosslessImageRendering )
+    if ( mLayout->renderContext().flags() & Qgis::LayoutRenderFlag::LosslessImageRendering )
       painter->setRenderHint( QPainter::LosslessImageRendering, true );
 
     mPlot->xScale = QgsUnitTypes::fromUnitToUnitFactor( mDistanceUnit, mCrs.mapUnits() );
 
     if ( !qgsDoubleNear( layoutSize.width(), 0.0 ) && !qgsDoubleNear( layoutSize.height(), 0.0 ) )
     {
+      const bool forceVector = mLayout && mLayout->renderContext().rasterizedRenderingPolicy() == Qgis::RasterizedRenderingPolicy::ForceVector;
       if ( ( containsAdvancedEffects() || ( blendModeForRender() != QPainter::CompositionMode_SourceOver ) )
-           && ( !( mLayout->renderContext().flags() & QgsLayoutRenderContext::FlagForceVectorOutput ) ) )
+           && !forceVector )
       {
         // rasterize
         double destinationDpi = QgsLayoutUtils::scaleFactorFromItemStyle( itemStyle, painter ) * 25.4;
@@ -684,7 +685,7 @@ void QgsLayoutItemElevationProfile::paint( QPainter *painter, const QStyleOption
         sources << QgsApplication::profileSourceRegistry()->profileSources();
         for ( const QgsMapLayerRef &layer : std::as_const( mLayers ) )
         {
-          if ( QgsAbstractProfileSource *source = dynamic_cast< QgsAbstractProfileSource * >( layer.get() ) )
+          if ( QgsAbstractProfileSource *source = layer->profileSource() )
             sources.append( source );
         }
 
@@ -739,7 +740,7 @@ void QgsLayoutItemElevationProfile::paint( QPainter *painter, const QStyleOption
         sources << QgsApplication::profileSourceRegistry()->profileSources();
         for ( const QgsMapLayerRef &layer : std::as_const( mLayers ) )
         {
-          if ( QgsAbstractProfileSource *source = dynamic_cast< QgsAbstractProfileSource * >( layer.get() ) )
+          if ( QgsAbstractProfileSource *source = layer->profileSource() )
             sources.append( source );
         }
 
@@ -996,7 +997,7 @@ void QgsLayoutItemElevationProfile::recreateCachedImageInBackground()
   sources << QgsApplication::profileSourceRegistry()->profileSources();
   for ( const QgsMapLayerRef &layer : std::as_const( mLayers ) )
   {
-    if ( QgsAbstractProfileSource *source = dynamic_cast< QgsAbstractProfileSource * >( layer.get() ) )
+    if ( QgsAbstractProfileSource *source = layer->profileSource() )
       sources.append( source );
   }
 

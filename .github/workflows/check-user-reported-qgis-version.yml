@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get version details
         run: |
@@ -61,8 +61,8 @@ jobs:
 
 
             // Match qgis version reported e.g : "3.40.0-Bratislava"
-            // More example here : https://regex101.com/r/jvHJAf/1
-            var regex = /QGIS version \| (\d)\.(\d{2})\.(\d*)-[A-Z]{1}[a-z]+/
+            // More example here : https://regex101.com/r/jvHJAf/2
+            var regex = /QGIS [Vv]ersion(?:: | \| )(\d)\.(\d{2})\.(\d*)-[A-Z][a-z]+/
 
             var m = ISSUE_BODY.match(regex)
 
