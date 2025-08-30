@@ -8791,6 +8791,7 @@ void TestProcessingGui::testDatabaseTableWrapper()
 void TestProcessingGui::testFieldMapWidget()
 {
   QgsProcessingFieldMapPanelWidget widget;
+  widget.mSkipConfirmDialog = true;
 
   QVariantMap map;
   map.insert( QStringLiteral( "name" ), QStringLiteral( "n" ) );
@@ -8862,6 +8863,7 @@ void TestProcessingGui::testFieldMapWrapper()
 
     QgsProcessingContext context;
     QWidget *w = wrapper.createWrappedWidget( context );
+    qobject_cast<QgsProcessingFieldMapPanelWidget *>( w )->mSkipConfirmDialog = true;
 
     QVariantMap map;
     map.insert( QStringLiteral( "name" ), QStringLiteral( "n" ) );
@@ -8920,6 +8922,7 @@ void TestProcessingGui::testFieldMapWrapper()
     param.setParentLayerParameterName( QStringLiteral( "other" ) );
     QgsProcessingFieldMapWidgetWrapper wrapper2( &param, type );
     w = wrapper2.createWrappedWidget( context );
+    qobject_cast<QgsProcessingFieldMapPanelWidget *>( w )->mSkipConfirmDialog = true;
 
     QSignalSpy spy2( &wrapper2, &QgsProcessingFieldMapWidgetWrapper::widgetValueHasChanged );
     wrapper2.setWidgetValue( QVariantList() << map, context );
@@ -9062,6 +9065,7 @@ void TestProcessingGui::testAggregateWrapper()
 
     QgsProcessingContext context;
     QWidget *w = wrapper.createWrappedWidget( context );
+    qobject_cast<QgsProcessingAggregatePanelWidget *>( w )->mSkipConfirmDialog = true;
 
     QVariantMap map;
     map.insert( QStringLiteral( "name" ), QStringLiteral( "n" ) );
@@ -9122,6 +9126,7 @@ void TestProcessingGui::testAggregateWrapper()
     param.setParentLayerParameterName( QStringLiteral( "other" ) );
     QgsProcessingAggregateWidgetWrapper wrapper2( &param, type );
     w = wrapper2.createWrappedWidget( context );
+    qobject_cast<QgsProcessingAggregatePanelWidget *>( w )->mSkipConfirmDialog = true;
 
     QSignalSpy spy2( &wrapper2, &QgsProcessingAggregateWidgetWrapper::widgetValueHasChanged );
     wrapper2.setWidgetValue( QVariantList() << map, context );
@@ -11458,7 +11463,7 @@ void TestProcessingGui::testModelGraphicsView()
   //check model bounds
   scene2.updateBounds();
   QRectF modelRect = scene2.sceneRect();
-  QGSCOMPARENEAR( modelRect.height(), 624.4, 3 ); // Sligtly higher threeshold because of various font size can marginally change the bounding rect
+  QGSCOMPARENEAR( modelRect.height(), 624.4, 5 ); // Slightly higher threeshold because of various font size can marginally change the bounding rect
   QGSCOMPARENEAR( modelRect.width(), 655.00, 0.01 );
   QGSCOMPARENEAR( modelRect.left(), -252.0, 0.01 );
   QGSCOMPARENEAR( modelRect.top(), -232.0, 0.01 );
@@ -11486,11 +11491,10 @@ void TestProcessingGui::testModelGraphicsView()
 
   scene3.updateBounds();
   QRectF modelRect2 = scene3.sceneRect();
-  QGSCOMPARENEAR( modelRect2.height(), 4505.4, 3 ); // Sligtly higher threeshold because of various font size can marginally change the bounding rect
+  QGSCOMPARENEAR( modelRect2.height(), 4505.4, 5 ); // Slightly higher threeshold because of various font size can marginally change the bounding rect
   QGSCOMPARENEAR( modelRect2.width(), 4603.0, 0.01 );
   QGSCOMPARENEAR( modelRect2.left(), -201.0, 0.01 );
   QGSCOMPARENEAR( modelRect2.top(), -150.0, 0.01 );
-
 
   QgsModelGraphicsScene scene;
   QVERIFY( !scene.model() );

@@ -215,7 +215,7 @@ QMenu::indicator
     width: 0em;
 }
 
-QWidget:disabled, QWidget:editable:disabled
+QWidget:disabled, QWidget:editable:disabled, QWidget:read-only:disabled
 {
     color: @itemdarkbackground;
     background-color: @background;
@@ -616,6 +616,7 @@ QMenu::separator
 
 QProgressBar
 {
+    color: @textlight;
     height: 1.3em;
     border-width: 1px;
     border-color: @itemdarkbackground;

@@ -1,9 +1,6 @@
 # Qt6 blocklist
 test_core_compositionconverter
-test_core_labelingengine
 test_core_layoutpicture
-test_core_vectortilelayer
-test_gui_processinggui
 test_app_advanceddigitizing
 test_app_vertextool
 
@@ -26,18 +23,9 @@ test_core_openclutils
 # Relies on a broken/unreliable 3rd party service
 test_core_layerdefinition
 
-# MSSQL requires the MSSQL docker
-PyQgsProviderConnectionMssql
-PyQgsStyleStorageMssql
-
 # To be fixed
-PyQgsAnnotation
 PyQgsAuthenticationSystem
-PyQgsEditWidgets
-PyQgsElevationProfileCanvas
 PyQgsLayoutHtml
-PyQgsPalLabelingPlacement
-PyQgsRasterLayerRenderer
 PyQgsSettings
 PyQgsSettingsEntry
 ProcessingQgisAlgorithmsTestPt4
