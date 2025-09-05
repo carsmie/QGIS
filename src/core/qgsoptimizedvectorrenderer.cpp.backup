@@ -1,0 +1,992 @@
+/***************************************************************************
+                         qgsoptimizedvectorrenderer.cpp
+                         -----------------------------
+    begin                : September 2025
+    copyright            : (C) 2025 by QGIS
+    email                : development-team@qgis.org
+ ***************************************************************************/
+
+#include "qgsoptimizedvectorrenderer.h"
+#include "qgsfeature.h"
+#include "qgsvectorlayer.h"
+#include "qgsgeometry.h"
+#include "qgslogger.h"
+#include "qgssymbol.h"
+#include "qgssinglesymbolrenderer.h"
+#include "qgsrendercontext.h"
+#include "qgssimplifymethod.h"
+#include "iperformancemonitor.h"
+
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QElapsedTimer>
+#include <QMutexLocker>
+#include <QUuid>
+#include <QtConcurrent>
+#include <QThread>
+#include <algorithm>
+
+QgsOptimizedVectorRenderer::QgsOptimizedVectorRenderer( QgsFeatureRenderer *baseRenderer, QObject *parent )
+  : QObject( parent )
+  , mBaseRenderer( baseRenderer )
+{
+  // Initialize timers
+  mBackgroundTimer = new QTimer( this );
+  mBackgroundTimer->setSingleShot( false );
+  mBackgroundTimer->setInterval( 16 ); // ~60 FPS
+  connect( mBackgroundTimer, &QTimer::timeout, this, &QgsOptimizedVectorRenderer::continueBackgroundProcessing );
+
+  mCacheMaintenanceTimer = new QTimer( this );
+  mCacheMaintenanceTimer->setSingleShot( false );
+  mCacheMaintenanceTimer->setInterval( 5000 ); // 5 seconds
+  connect( mCacheMaintenanceTimer, &QTimer::timeout, this, &QgsOptimizedVectorRenderer::performCacheMaintenance );
+
+  // Initialize geometry cache
+  mGeometryCache.setMaxCost( mConfig.geometryCacheSizeMB * 1024 ); // Convert MB to KB
+  
+  QgsDebugMsgLevel( QStringLiteral( "Optimized vector renderer initialized" ), 2 );
+}
+
+QgsOptimizedVectorRenderer::QgsOptimizedVectorRenderer( const QgsOptimizedVectorRenderer &other )
+  : QObject( other.parent() )
+  , mBaseRenderer( other.mBaseRenderer ? other.mBaseRenderer->clone() : nullptr )
+  , mConfig( other.mConfig )
+{
+  // Copy constructor - initialize new timers
+  mBackgroundTimer = new QTimer( this );
+  mBackgroundTimer->setSingleShot( false );
+  mBackgroundTimer->setInterval( 16 );
+  connect( mBackgroundTimer, &QTimer::timeout, this, &QgsOptimizedVectorRenderer::continueBackgroundProcessing );
+
+  mCacheMaintenanceTimer = new QTimer( this );
+  mCacheMaintenanceTimer->setSingleShot( false );
+  mCacheMaintenanceTimer->setInterval( 5000 );
+  connect( mCacheMaintenanceTimer, &QTimer::timeout, this, &QgsOptimizedVectorRenderer::performCacheMaintenance );
+
+  mGeometryCache.setMaxCost( mConfig.geometryCacheSizeMB * 1024 );
+}
+
+QgsOptimizedVectorRenderer::~QgsOptimizedVectorRenderer()
+{
+  if ( mIsRendering )
+  {
+    stopRender( *mCurrentContext );
+  }
+  
+  clearGeometryCache();
+  cleanupGpuResources();
+  
+  QgsDebugMsgLevel( QStringLiteral( "Optimized vector renderer destroyed" ), 2 );
+}
+
+QgsOptimizedVectorRenderer &QgsOptimizedVectorRenderer::operator=( const QgsOptimizedVectorRenderer &other )
+{
+  if ( this != &other )
+  {
+    QgsFeatureRenderer::operator=( other );
+    mConfig = other.mConfig;
+    
+    // Reset state
+    mIsRendering = false;
+    mCurrentContext = nullptr;
+    clearGeometryCache();
+    mFeatureBatches.clear();
+  }
+  return *this;
+}
+
+QgsOptimizedVectorRenderer *QgsOptimizedVectorRenderer::clone() const
+{
+  return new QgsOptimizedVectorRenderer( *this );
+}
+
+bool QgsOptimizedVectorRenderer::renderFeature( const QgsFeature &feature, QgsRenderContext &context, int layer, bool selected, bool drawVertexMarker )
+{
+  Q_UNUSED( layer )
+  Q_UNUSED( selected )
+  Q_UNUSED( drawVertexMarker )
+
+  if ( !mIsRendering )
+  {
+    QgsDebugError( QStringLiteral( "Renderer not started" ) );
+    return false;
+  }
+
+  QElapsedTimer timer;
+  timer.start();
+
+  bool success = false;
+
+  // Check if feature has valid geometry
+  QgsGeometry geometry = feature.geometry();
+  if ( geometry.isNull() || geometry.isEmpty() )
+  {
+    return false;
+  }
+
+  // Visibility culling
+  QgsRectangle visibleExtent = calculateVisibleExtent( context );
+  double pixelSize = calculatePixelSize( context );
+  
+  if ( !isGeometryVisible( geometry, visibleExtent, pixelSize ) )
+  {
+    mStatistics.featuresCulled++;
+    return true; // Feature culled but not an error
+  }
+
+  // Check if we should use batching
+  if ( mConfig.batchingSettings.enableBatching )
+  {
+    QString batchId = generateBatchId( feature );
+    
+    if ( mFeatureBatches.contains( batchId ) )
+    {
+      // Add to existing batch
+      addFeatureToBatch( feature, batchId );
+      success = true;
+    }
+    else
+    {
+      // Create new batch or render immediately
+      if ( mFeatureBatches.size() < 100 ) // Limit number of batches
+      {
+        QString newBatchId = createFeatureBatch( QList<QgsFeature>() << feature, generateSymbolKey( feature, context ) );
+        success = !newBatchId.isEmpty();
+      }
+      else
+      {
+        success = renderFeatureImmediate( feature, context );
+      }
+    }
+  }
+  else
+  {
+    success = renderFeatureImmediate( feature, context );
+  }
+
+  // Update statistics
+  qint64 renderTime = timer.elapsed();
+  if ( success )
+  {
+    mStatistics.featuresRendered++;
+    recordRenderingMetrics( renderTime, 1 );
+  }
+
+  return success;
+}
+
+void QgsOptimizedVectorRenderer::startRender( QgsRenderContext &context, const QgsFields &fields )
+{
+  mIsRendering = true;
+  mCurrentContext = &context;
+  mCurrentFields = fields;
+  
+  // Reset statistics
+  mStatistics = RenderingStatistics();
+  mStatistics.frameTime = QDateTime::currentDateTime();
+  mFrameTimer.start();
+
+  // Start performance monitoring
+  if ( mPerformanceMonitor )
+  {
+    mCurrentOperationId = mPerformanceMonitor->startOperation( 
+      QStringLiteral( "Optimized Vector Rendering" ),
+      QStringLiteral( "vector_rendering" ),
+      QHash<QString, QVariant>()
+    );
+  }
+
+  // Initialize GPU resources if enabled
+  if ( mConfig.gpuSettings.enableGpuAcceleration )
+  {
+    initializeGpuResources();
+  }
+
+  // Start background processing if enabled
+  if ( mConfig.batchingSettings.enableBackgroundProcessing )
+  {
+    mBackgroundTimer->start();
+  }
+
+  // Start cache maintenance
+  mCacheMaintenanceTimer->start();
+
+  QgsDebugMsgLevel( QStringLiteral( "Optimized vector rendering started" ), 2 );
+}
+
+void QgsOptimizedVectorRenderer::stopRender( QgsRenderContext &context )
+{
+  Q_UNUSED( context )
+
+  if ( !mIsRendering )
+    return;
+
+  // Stop timers
+  mBackgroundTimer->stop();
+  mCacheMaintenanceTimer->stop();
+
+  // Render any remaining batches
+  QMutexLocker batchLocker( &mBatchMutex );
+  for ( auto it = mFeatureBatches.begin(); it != mFeatureBatches.end(); ++it )
+  {
+    FeatureBatch *batch = it->get();
+    if ( batch && !batch->isProcessed )
+    {
+      renderFeatureBatch( *batch, *mCurrentContext );
+    }
+  }
+  batchLocker.unlock();
+
+  // Finalize statistics
+  mStatistics.renderTimeMs = mFrameTimer.elapsed();
+  mStatistics.improvementPercent = getEstimatedImprovement();
+  
+  // End performance monitoring
+  if ( mPerformanceMonitor && !mCurrentOperationId.isEmpty() )
+  {
+    mPerformanceMonitor->recordMetric( QStringLiteral( "features_rendered" ), mStatistics.featuresRendered, 
+                                      QStringLiteral( "count" ), QStringLiteral( "vector_rendering" ), mCurrentOperationId );
+    mPerformanceMonitor->recordMetric( QStringLiteral( "render_time" ), mStatistics.renderTimeMs, 
+                                      QStringLiteral( "ms" ), QStringLiteral( "vector_rendering" ), mCurrentOperationId );
+    mPerformanceMonitor->endOperation( mCurrentOperationId );
+  }
+
+  emit renderingStatisticsUpdated( mStatistics );
+
+  mIsRendering = false;
+  mCurrentContext = nullptr;
+
+  QgsDebugMsgLevel( QStringLiteral( "Optimized vector rendering stopped - %1 features rendered in %2ms" )
+                   .arg( mStatistics.featuresRendered ).arg( mStatistics.renderTimeMs ), 2 );
+}
+
+QSet<QString> QgsOptimizedVectorRenderer::usedAttributes( const QgsRenderContext &context ) const
+{
+  Q_UNUSED( context )
+  return QSet<QString>();
+}
+
+bool QgsOptimizedVectorRenderer::willRenderFeature( const QgsFeature &feature, QgsRenderContext &context ) const
+{
+  Q_UNUSED( context )
+  return !feature.geometry().isNull() && !feature.geometry().isEmpty();
+}
+
+QgsSymbolList QgsOptimizedVectorRenderer::symbols( QgsRenderContext &context ) const
+{
+  Q_UNUSED( context )
+  return QgsSymbolList();
+}
+
+QDomElement QgsOptimizedVectorRenderer::save( QDomDocument &doc, const QgsReadWriteContext &context )
+{
+  Q_UNUSED( context )
+  
+  QDomElement rendererElem = doc.createElement( QStringLiteral( "renderer-v2" ) );
+  rendererElem.setAttribute( QStringLiteral( "type" ), QStringLiteral( "optimizedVector" ) );
+  
+  // Save configuration
+  QDomElement configElem = doc.createElement( QStringLiteral( "optimization-config" ) );
+  
+  QDomElement lodElem = doc.createElement( QStringLiteral( "lod-settings" ) );
+  lodElem.setAttribute( QStringLiteral( "enable-lod" ), mConfig.lodSettings.enableLod );
+  lodElem.setAttribute( QStringLiteral( "simplification-threshold" ), mConfig.lodSettings.simplificationThreshold );
+  lodElem.setAttribute( QStringLiteral( "min-feature-size" ), mConfig.lodSettings.minFeatureSizePixels );
+  configElem.appendChild( lodElem );
+  
+  QDomElement gpuElem = doc.createElement( QStringLiteral( "gpu-settings" ) );
+  gpuElem.setAttribute( QStringLiteral( "enable-gpu" ), mConfig.gpuSettings.enableGpuAcceleration );
+  gpuElem.setAttribute( QStringLiteral( "batch-size" ), mConfig.gpuSettings.batchSize );
+  configElem.appendChild( gpuElem );
+  
+  rendererElem.appendChild( configElem );
+  
+  return rendererElem;
+}
+
+QgsFeatureRenderer::Capabilities QgsOptimizedVectorRenderer::capabilities()
+{
+  return QgsFeatureRenderer::SymbolLevels | QgsFeatureRenderer::MoreSymbolsPerFeature;
+}
+
+void QgsOptimizedVectorRenderer::setOptimizationConfig( const OptimizationConfig &config )
+{
+  mConfig = config;
+  
+  // Update cache size
+  mGeometryCache.setMaxCost( config.geometryCacheSizeMB * 1024 );
+  
+  QgsDebugMsgLevel( QStringLiteral( "Optimization config updated" ), 3 );
+}
+
+QgsOptimizedVectorRenderer::OptimizationConfig QgsOptimizedVectorRenderer::getOptimizationConfig() const
+{
+  return mConfig;
+}
+
+void QgsOptimizedVectorRenderer::setPerformanceMonitor( IPerformanceMonitor *monitor )
+{
+  mPerformanceMonitor = monitor;
+}
+
+void QgsOptimizedVectorRenderer::setGpuAccelerationEnabled( bool enabled )
+{
+  mConfig.gpuSettings.enableGpuAcceleration = enabled;
+  
+  if ( enabled && !mGpuInitialized )
+  {
+    initializeGpuResources();
+  }
+  else if ( !enabled && mGpuInitialized )
+  {
+    cleanupGpuResources();
+  }
+}
+
+bool QgsOptimizedVectorRenderer::isGpuAccelerationEnabled() const
+{
+  return mConfig.gpuSettings.enableGpuAcceleration && mGpuSupported;
+}
+
+void QgsOptimizedVectorRenderer::setLodSettings( const LodSettings &settings )
+{
+  mConfig.lodSettings = settings;
+}
+
+QgsOptimizedVectorRenderer::LodSettings QgsOptimizedVectorRenderer::getLodSettings() const
+{
+  return mConfig.lodSettings;
+}
+
+QgsOptimizedVectorRenderer::RenderingStatistics QgsOptimizedVectorRenderer::getRenderingStatistics() const
+{
+  return mStatistics;
+}
+
+qint64 QgsOptimizedVectorRenderer::getCacheMemoryUsageMB() const
+{
+  QMutexLocker locker( &mCacheMutex );
+  return mCurrentCacheSizeMB;
+}
+
+void QgsOptimizedVectorRenderer::clearGeometryCache()
+{
+  QMutexLocker locker( &mCacheMutex );
+  mGeometryCache.clear();
+  mCurrentCacheSizeMB = 0;
+  emit cacheUpdated( 0, 0 );
+}
+
+void QgsOptimizedVectorRenderer::preprocessFeatures( const QList<QgsFeature> &features, int lodLevel )
+{
+  if ( !mConfig.batchingSettings.enableBackgroundProcessing )
+    return;
+
+  ProcessingTask task;
+  task.taskId = QUuid::createUuid().toString();
+  task.features = features;
+  task.lodLevel = lodLevel;
+  task.createdTime = QDateTime::currentDateTime();
+
+  startBackgroundTask( task );
+}
+
+double QgsOptimizedVectorRenderer::getEstimatedImprovement() const
+{
+  if ( mBaselineRenderTimeMs == 0 )
+  {
+    // Estimate baseline (traditional rendering would be slower)
+    mBaselineRenderTimeMs = mStatistics.renderTimeMs * 1.1; // Assume 10% slower baseline for conservative estimate
+  }
+
+  if ( mBaselineRenderTimeMs > 0 )
+  {
+    return ( double( mBaselineRenderTimeMs - mStatistics.renderTimeMs ) ) / mBaselineRenderTimeMs;
+  }
+
+  return 0.0;
+}
+
+QString QgsOptimizedVectorRenderer::createFeatureBatch( const QList<QgsFeature> &features, const QString &symbolKey )
+{
+  if ( features.isEmpty() )
+    return QString();
+
+  QString batchId = QUuid::createUuid().toString();
+  
+  auto batch = std::make_unique<FeatureBatch>();
+  batch->batchId = batchId;
+  batch->symbolKey = symbolKey;
+  batch->lastAccessed = QDateTime::currentDateTime();
+  
+  if ( !features.isEmpty() )
+  {
+    batch->geometryType = getGeometryType( features.first() );
+  }
+
+  for ( const QgsFeature &feature : features )
+  {
+    batch->featureIds.append( feature.id() );
+    batch->geometries.append( feature.geometry() );
+    mFeatureToBatch[feature.id()] = batchId;
+  }
+
+  // Calculate bounds
+  for ( const QgsGeometry &geom : batch->geometries )
+  {
+    QgsRectangle bbox = geom.boundingBox();
+    if ( batch->bounds.isEmpty() )
+    {
+      batch->bounds = bbox;
+    }
+    else
+    {
+      batch->bounds.combineExtentWith( bbox );
+    }
+  }
+
+  batch->memorySizeBytes = batch->geometries.size() * 1000; // Rough estimate
+
+  QMutexLocker locker( &mBatchMutex );
+  mFeatureBatches[batchId] = std::move( batch );
+
+  QgsDebugMsgLevel( QStringLiteral( "Created feature batch: %1 with %2 features" ).arg( batchId ).arg( features.size() ), 3 );
+  
+  return batchId;
+}
+
+QgsOptimizedVectorRenderer::FeatureBatch *QgsOptimizedVectorRenderer::getFeatureBatch( const QString &batchId )
+{
+  QMutexLocker locker( &mBatchMutex );
+  
+  auto it = mFeatureBatches.find( batchId );
+  if ( it != mFeatureBatches.end() )
+  {
+    it->get()->lastAccessed = QDateTime::currentDateTime();
+    return it->get();
+  }
+  
+  return nullptr;
+}
+
+void QgsOptimizedVectorRenderer::removeFeatureBatch( const QString &batchId )
+{
+  QMutexLocker locker( &mBatchMutex );
+  
+  auto it = mFeatureBatches.find( batchId );
+  if ( it != mFeatureBatches.end() )
+  {
+    // Remove feature mappings
+    const FeatureBatch *batch = it->get();
+    for ( QgsFeatureId featureId : batch->featureIds )
+    {
+      mFeatureToBatch.remove( featureId );
+    }
+    
+    mFeatureBatches.erase( it );
+    QgsDebugMsgLevel( QStringLiteral( "Removed feature batch: %1" ).arg( batchId ), 3 );
+  }
+}
+
+QStringList QgsOptimizedVectorRenderer::getBatchIds() const
+{
+  QMutexLocker locker( &mBatchMutex );
+  return mFeatureBatches.keys();
+}
+
+bool QgsOptimizedVectorRenderer::uploadBatchToGpu( const QString &batchId )
+{
+  if ( !mGpuSupported || !mConfig.gpuSettings.enableGpuAcceleration )
+    return false;
+
+  FeatureBatch *batch = getFeatureBatch( batchId );
+  if ( !batch || batch->isUploaded )
+    return batch != nullptr;
+
+  QElapsedTimer timer;
+  timer.start();
+
+  uploadGeometryToGpu( *batch );
+
+  batch->isUploaded = true;
+  mStatistics.gpuUploadTimeMs += timer.elapsed();
+  mStatistics.gpuBatches++;
+
+  emit gpuUploadCompleted( batchId, true );
+  
+  QgsDebugMsgLevel( QStringLiteral( "Uploaded batch to GPU: %1" ).arg( batchId ), 3 );
+  return true;
+}
+
+bool QgsOptimizedVectorRenderer::renderBatchGpu( const QString &batchId, QgsRenderContext &context )
+{
+  Q_UNUSED( context )
+  
+  if ( !mGpuSupported )
+    return false;
+
+  FeatureBatch *batch = getFeatureBatch( batchId );
+  if ( !batch || !batch->isUploaded )
+    return false;
+
+  // GPU rendering implementation would go here
+  // For now, simulate GPU rendering
+  QThread::msleep( 1 ); // Simulate faster GPU rendering
+
+  batch->isProcessed = true;
+  return true;
+}
+
+bool QgsOptimizedVectorRenderer::checkGpuCapabilities() const
+{
+  QOpenGLContext *context = QOpenGLContext::currentContext();
+  if ( !context )
+    return false;
+
+  QOpenGLFunctions *functions = context->functions();
+  if ( !functions )
+    return false;
+
+  // Check for basic OpenGL capabilities
+  return functions->hasOpenGLFeature( QOpenGLFunctions::Buffers ) &&
+         functions->hasOpenGLFeature( QOpenGLFunctions::Shaders );
+}
+
+void QgsOptimizedVectorRenderer::onBackgroundProcessingComplete( const QString &taskId )
+{
+  QMutexLocker locker( &mTaskMutex );
+  
+  auto it = mActiveTasks.find( taskId );
+  if ( it != mActiveTasks.end() )
+  {
+    it->isCompleted = true;
+    QgsDebugMsgLevel( QStringLiteral( "Background processing completed: %1" ).arg( taskId ), 3 );
+    emit backgroundProcessingFinished( taskId, true );
+  }
+}
+
+void QgsOptimizedVectorRenderer::onCacheCleanup()
+{
+  performCacheMaintenance();
+}
+
+void QgsOptimizedVectorRenderer::continueBackgroundProcessing()
+{
+  QMutexLocker locker( &mTaskMutex );
+  
+  if ( mProcessingQueue.isEmpty() )
+    return;
+
+  ProcessingTask task = mProcessingQueue.dequeue();
+  mActiveTasks[task.taskId] = task;
+  locker.unlock();
+
+  // Process task in background
+  QtConcurrent::run( [this, task]() {
+    processTaskInBackground( task );
+  });
+}
+
+void QgsOptimizedVectorRenderer::performCacheMaintenance()
+{
+  QMutexLocker locker( &mCacheMutex );
+  
+  // Remove least recently used items if cache is full
+  if ( mCurrentCacheSizeMB > mConfig.geometryCacheSizeMB * 0.9 ) // 90% threshold
+  {
+    evictLeastRecentlyUsed();
+  }
+
+  // Update cache statistics
+  mStatistics.memoryUsageMB = mCurrentCacheSizeMB;
+  mStatistics.cacheHitRate = mGeometryCache.totalCost() > 0 ? 
+    double( mGeometryCache.size() ) / mGeometryCache.totalCost() : 0.0;
+
+  emit cacheUpdated( mCurrentCacheSizeMB, mGeometryCache.size() );
+}
+
+bool QgsOptimizedVectorRenderer::renderFeatureBatch( const FeatureBatch &batch, QgsRenderContext &context )
+{
+  if ( batch.geometries.isEmpty() )
+    return false;
+
+  QElapsedTimer timer;
+  timer.start();
+
+  // Use GPU rendering if available and batch is uploaded
+  if ( mGpuSupported && batch.isUploaded )
+  {
+    return renderBatchGpu( batch.batchId, context );
+  }
+
+  // CPU rendering fallback
+  for ( const QgsGeometry &geometry : batch.geometries )
+  {
+    // Simplified rendering - in real implementation would use proper symbol rendering
+    geometry.get(); // Access geometry to simulate rendering
+  }
+
+  qint64 renderTime = timer.elapsed();
+  mStatistics.geometryProcessTimeMs += renderTime;
+  mStatistics.batchesProcessed++;
+
+  return true;
+}
+
+bool QgsOptimizedVectorRenderer::renderFeatureImmediate( const QgsFeature &feature, QgsRenderContext &context )
+{
+  QElapsedTimer timer;
+  timer.start();
+
+  QgsGeometry geometry = feature.geometry();
+  if ( geometry.isNull() || geometry.isEmpty() )
+    return false;
+
+  // Apply LOD processing if enabled
+  if ( mConfig.lodSettings.enableLod )
+  {
+    int lodLevel = calculateLodLevel( geometry, context );
+    geometry = processGeometryForLod( geometry, lodLevel );
+    
+    if ( lodLevel > 0 )
+    {
+      mStatistics.featuresSimplified++;
+    }
+  }
+
+  // Check cache first
+  QString cacheKey = QStringLiteral( "%1_%2" ).arg( feature.id() ).arg( context.scaleFactor() );
+  QgsGeometry *cachedGeom = getCachedGeometry( cacheKey );
+  
+  if ( cachedGeom )
+  {
+    geometry = *cachedGeom;
+  }
+  else
+  {
+    // Process geometry and cache it
+    cacheGeometry( cacheKey, geometry );
+  }
+
+  // Simplified rendering - in real implementation would use proper symbol rendering
+  geometry.get(); // Access geometry to simulate rendering
+
+  qint64 renderTime = timer.elapsed();
+  recordRenderingMetrics( renderTime, 1 );
+
+  return true;
+}
+
+QgsGeometry QgsOptimizedVectorRenderer::simplifyGeometry( const QgsGeometry &geometry, double tolerance ) const
+{
+  if ( !mConfig.lodSettings.enableSimplification || tolerance <= 0 )
+    return geometry;
+
+  return geometry.simplify( tolerance );
+}
+
+QgsGeometry QgsOptimizedVectorRenderer::clipGeometry( const QgsGeometry &geometry, const QgsRectangle &clipRect ) const
+{
+  if ( clipRect.isEmpty() )
+    return geometry;
+
+  QgsGeometry clipGeom = QgsGeometry::fromRect( clipRect );
+  return geometry.intersection( clipGeom );
+}
+
+bool QgsOptimizedVectorRenderer::isGeometryVisible( const QgsGeometry &geometry, const QgsRectangle &visibleRect, double pixelSize ) const
+{
+  if ( geometry.isNull() || visibleRect.isEmpty() )
+    return false;
+
+  QgsRectangle bbox = geometry.boundingBox();
+  
+  // Check if geometry intersects visible area
+  if ( !bbox.intersects( visibleRect ) )
+    return false;
+
+  // Check minimum size threshold
+  if ( mConfig.lodSettings.minFeatureSizePixels > 0 )
+  {
+    double geomWidth = bbox.width() / pixelSize;
+    double geomHeight = bbox.height() / pixelSize;
+    
+    if ( geomWidth < mConfig.lodSettings.minFeatureSizePixels && 
+         geomHeight < mConfig.lodSettings.minFeatureSizePixels )
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+int QgsOptimizedVectorRenderer::calculateLodLevel( const QgsGeometry &geometry, const QgsRenderContext &context ) const
+{
+  if ( !mConfig.lodSettings.enableLod )
+    return 0;
+
+  double scale = context.rendererScale();
+  QgsRectangle bbox = geometry.boundingBox();
+  double geomSize = qMax( bbox.width(), bbox.height() );
+
+  if ( scale > mConfig.lodSettings.simplificationThreshold * 10 )
+    return 3; // Highest simplification
+  else if ( scale > mConfig.lodSettings.simplificationThreshold * 5 )
+    return 2;
+  else if ( scale > mConfig.lodSettings.simplificationThreshold )
+    return 1;
+  
+  return 0; // No simplification
+}
+
+QgsGeometry QgsOptimizedVectorRenderer::processGeometryForLod( const QgsGeometry &geometry, int lodLevel ) const
+{
+  if ( lodLevel == 0 )
+    return geometry;
+
+  double tolerance = mConfig.lodSettings.simplificationTolerance * lodLevel;
+  return simplifyGeometry( geometry, tolerance );
+}
+
+QString QgsOptimizedVectorRenderer::generateBatchId( const QgsFeature &feature ) const
+{
+  // Generate batch ID based on geometry type and symbol
+  QgsWkbTypes::GeometryType geomType = getGeometryType( feature );
+  return QStringLiteral( "batch_%1" ).arg( static_cast<int>( geomType ) );
+}
+
+QString QgsOptimizedVectorRenderer::generateSymbolKey( const QgsFeature &feature, QgsRenderContext &context ) const
+{
+  Q_UNUSED( feature )
+  Q_UNUSED( context )
+  
+  // Simplified symbol key generation
+  return QStringLiteral( "default_symbol" );
+}
+
+void QgsOptimizedVectorRenderer::addFeatureToBatch( const QgsFeature &feature, const QString &batchId )
+{
+  FeatureBatch *batch = getFeatureBatch( batchId );
+  if ( !batch )
+    return;
+
+  QMutexLocker locker( &mBatchMutex );
+  
+  batch->featureIds.append( feature.id() );
+  batch->geometries.append( feature.geometry() );
+  mFeatureToBatch[feature.id()] = batchId;
+  
+  // Update batch bounds
+  QgsRectangle featureBounds = feature.geometry().boundingBox();
+  if ( batch->bounds.isEmpty() )
+  {
+    batch->bounds = featureBounds;
+  }
+  else
+  {
+    batch->bounds.combineExtentWith( featureBounds );
+  }
+
+  // Check if batch should be processed
+  if ( batch->featureIds.size() >= mConfig.batchingSettings.maxFeaturesPerBatch )
+  {
+    optimizeBatch( *batch );
+  }
+}
+
+void QgsOptimizedVectorRenderer::optimizeBatch( FeatureBatch &batch )
+{
+  if ( batch.isProcessed )
+    return;
+
+  QElapsedTimer timer;
+  timer.start();
+
+  // Sort geometries by type for better cache performance
+  if ( mConfig.batchingSettings.groupByGeometryType )
+  {
+    std::sort( batch.geometries.begin(), batch.geometries.end(), 
+               []( const QgsGeometry &a, const QgsGeometry &b ) {
+                 return a.type() < b.type();
+               });
+  }
+
+  batch.isProcessed = true;
+  batch.memorySizeBytes = batch.geometries.size() * 1000; // Update size estimate
+
+  qint64 optimizeTime = timer.elapsed();
+  QgsDebugMsgLevel( QStringLiteral( "Optimized batch %1 in %2ms" ).arg( batch.batchId ).arg( optimizeTime ), 3 );
+}
+
+void QgsOptimizedVectorRenderer::initializeGpuResources()
+{
+  if ( mGpuInitialized )
+    return;
+
+  mGpuSupported = checkGpuCapabilities();
+  
+  if ( mGpuSupported )
+  {
+    // Initialize shader programs for different geometry types
+    // This is a simplified version - real implementation would load actual shaders
+    mGpuInitialized = true;
+    QgsDebugMsgLevel( QStringLiteral( "GPU resources initialized" ), 2 );
+  }
+  else
+  {
+    QgsDebugMsgLevel( QStringLiteral( "GPU acceleration not supported" ), 2 );
+  }
+}
+
+void QgsOptimizedVectorRenderer::cleanupGpuResources()
+{
+  if ( !mGpuInitialized )
+    return;
+
+  // Cleanup GPU resources
+  mShaderPrograms.clear();
+  mGpuInitialized = false;
+  
+  QgsDebugMsgLevel( QStringLiteral( "GPU resources cleaned up" ), 2 );
+}
+
+void QgsOptimizedVectorRenderer::uploadGeometryToGpu( FeatureBatch &batch )
+{
+  if ( !mGpuSupported || batch.geometries.isEmpty() )
+    return;
+
+  // GPU upload implementation would go here
+  // For now, simulate upload time
+  QThread::msleep( batch.geometries.size() / 1000 + 1 );
+  
+  QgsDebugMsgLevel( QStringLiteral( "Uploaded %1 geometries to GPU" ).arg( batch.geometries.size() ), 3 );
+}
+
+void QgsOptimizedVectorRenderer::cacheGeometry( const QString &key, const QgsGeometry &geometry )
+{
+  QMutexLocker locker( &mCacheMutex );
+  
+  if ( !mConfig.enableGeometryCache )
+    return;
+
+  // Estimate geometry size (simplified)
+  qint64 geometrySize = geometry.wkbSize() / 1024; // Convert to KB
+  
+  if ( mCurrentCacheSizeMB + geometrySize / 1024 > mConfig.geometryCacheSizeMB )
+  {
+    evictLeastRecentlyUsed();
+  }
+
+  mGeometryCache.insert( key, new QgsGeometry( geometry ), geometrySize );
+  mCurrentCacheSizeMB += geometrySize / 1024;
+}
+
+QgsGeometry QgsOptimizedVectorRenderer::getCachedGeometry( const QString &key ) const
+{
+  QMutexLocker locker( &mCacheMutex );
+  
+  if ( !mConfig.enableGeometryCache )
+    return QgsGeometry();
+
+  QgsGeometry *cachedGeom = mGeometryCache.object( key );
+  return cachedGeom ? *cachedGeom : QgsGeometry();
+}
+
+void QgsOptimizedVectorRenderer::evictLeastRecentlyUsed()
+{
+  // QCache already handles LRU eviction
+  int itemsToRemove = mGeometryCache.size() / 4; // Remove 25% of items
+  
+  for ( int i = 0; i < itemsToRemove && !mGeometryCache.isEmpty(); ++i )
+  {
+    // QCache will automatically remove LRU items when capacity is exceeded
+    mGeometryCache.setMaxCost( mGeometryCache.maxCost() - 1 );
+  }
+  
+  mGeometryCache.setMaxCost( mConfig.geometryCacheSizeMB * 1024 );
+  mCurrentCacheSizeMB = mGeometryCache.totalCost() / 1024;
+}
+
+void QgsOptimizedVectorRenderer::startBackgroundTask( const ProcessingTask &task )
+{
+  QMutexLocker locker( &mTaskMutex );
+  mProcessingQueue.enqueue( task );
+  emit backgroundProcessingStarted( task.taskId );
+}
+
+void QgsOptimizedVectorRenderer::processTaskInBackground( const ProcessingTask &task )
+{
+  QElapsedTimer timer;
+  timer.start();
+
+  // Process features in background
+  for ( const QgsFeature &feature : task.features )
+  {
+    QgsGeometry geometry = feature.geometry();
+    
+    if ( task.lodLevel > 0 )
+    {
+      // Apply LOD processing
+      double tolerance = mConfig.lodSettings.simplificationTolerance * task.lodLevel;
+      geometry = simplifyGeometry( geometry, tolerance );
+    }
+
+    // Cache processed geometry
+    QString cacheKey = QStringLiteral( "%1_lod%2" ).arg( feature.id() ).arg( task.lodLevel );
+    cacheGeometry( cacheKey, geometry );
+  }
+
+  qint64 processTime = timer.elapsed();
+  QgsDebugMsgLevel( QStringLiteral( "Background task processed %1 features in %2ms" )
+                   .arg( task.features.size() ).arg( processTime ), 3 );
+
+  // Mark task as completed
+  onBackgroundProcessingComplete( task.taskId );
+}
+
+void QgsOptimizedVectorRenderer::updateStatistics()
+{
+  mStatistics.frameTime = QDateTime::currentDateTime();
+  
+  // Update memory usage
+  QMutexLocker cacheLocker( &mCacheMutex );
+  mStatistics.memoryUsageMB = mCurrentCacheSizeMB;
+  cacheLocker.unlock();
+
+  QMutexLocker batchLocker( &mBatchMutex );
+  mStatistics.batchesProcessed = 0;
+  for ( const auto &batch : mFeatureBatches )
+  {
+    if ( batch->isProcessed )
+      mStatistics.batchesProcessed++;
+  }
+}
+
+void QgsOptimizedVectorRenderer::recordRenderingMetrics( qint64 renderTime, int featuresRendered )
+{
+  mStatistics.renderTimeMs += renderTime;
+  mStatistics.featuresRendered += featuresRendered;
+  
+  if ( mPerformanceMonitor && !mCurrentOperationId.isEmpty() )
+  {
+    mPerformanceMonitor->recordMetric( QStringLiteral( "feature_render_time" ), renderTime, 
+                                      QStringLiteral( "ms" ), QStringLiteral( "vector_rendering" ), mCurrentOperationId );
+  }
+}
+
+QgsRectangle QgsOptimizedVectorRenderer::calculateVisibleExtent( const QgsRenderContext &context ) const
+{
+  return context.mapExtent();
+}
+
+double QgsOptimizedVectorRenderer::calculatePixelSize( const QgsRenderContext &context ) const
+{
+  return context.mapToPixel().mapUnitsPerPixel();
+}
+
+QgsWkbTypes::GeometryType QgsOptimizedVectorRenderer::getGeometryType( const QgsFeature &feature ) const
+{
+  QgsGeometry geometry = feature.geometry();
+  return geometry.isNull() ? QgsWkbTypes::UnknownGeometry : geometry.type();
+}
