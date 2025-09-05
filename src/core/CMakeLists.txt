@@ -1043,6 +1043,12 @@ set(QGIS_CORE_SRCS
   qgsuserprofile.cpp
   qgsuserprofilemanager.cpp
 
+  # Performance optimization components
+  qgsprogressiveprojectloader.cpp
+  qgsoptimizedvectorrenderer.cpp
+  qgsflatgeobufoptimizer.cpp
+  qgsrastercachemanager.cpp
+
 )
 
 if (WITH_INTERNAL_POLY2TRI)
@@ -2194,6 +2200,12 @@ set(QGIS_CORE_PRIVATE_HDRS
   providers/ogr/qgscplerrorhandler_p.h
 
   textrenderer/qgstextrenderer_p.h
+
+  # Performance optimization components
+  qgsprogressiveprojectloader.h
+  qgsoptimizedvectorrenderer.h
+  qgsflatgeobufoptimizer.h
+  qgsrastercachemanager.h
 )
 
 if (NOT WITH_QTWEBKIT)

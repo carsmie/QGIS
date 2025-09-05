@@ -1,0 +1,555 @@
+/***************************************************************************
+                         qgsoptimizedvectorrenderer.h
+                         ---------------------------
+    begin                : September 2025
+    copyright            : (C) 2025 by QGIS
+    email                : development-team@qgis.org
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef QGSOPTIMIZEDVECTORRENDERER_H
+#define QGSOPTIMIZEDVECTORRENDERER_H
+
+#include "qgis_core.h"
+#include "symbology/qgsrenderer.h"
+#include "qgsgeometry.h"
+#include "qgsrendercontext.h"
+#include "qgsfields.h"
+#include "qgswkbtypes.h"
+
+#include <QObject>
+#include <QCache>
+#include <QMutex>
+#include <QTimer>
+#include <QElapsedTimer>
+#include <QHash>
+#include <QQueue>
+#include <QThread>
+#include <QOpenGLBuffer>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLShaderProgram>
+#include <memory>
+
+class QgsVectorLayer;
+class QgsFeature;
+class QgsMapToPixel;
+class IPerformanceMonitor;
+
+/**
+ * \ingroup core
+ * \class QgsOptimizedVectorRenderer
+ * \brief Optimized vector renderer for improved performance in QGIS vector rendering operations.
+ *
+ * This class provides an optimized rendering pipeline for vector layers, featuring:
+ * - Smart geometry batching to reduce draw calls
+ * - GPU acceleration for supported operations
+ * - View-dependent level-of-detail (LOD) rendering
+ * - Background geometry processing
+ * - Intelligent caching of rendered features
+ * - Performance monitoring and statistics
+ *
+ * The renderer can work as a wrapper around existing QgsFeatureRenderer instances,
+ * providing optimization while maintaining compatibility with existing rendering logic.
+ */
+class CORE_EXPORT QgsOptimizedVectorRenderer : public QObject
+{
+    Q_OBJECT
+
+  public:
+
+    /**
+     * Level of Detail settings for view-dependent rendering
+     */
+    struct LodSettings
+    {
+      //! Enable LOD processing
+      bool enableLod = true;
+      
+      //! Scale threshold for simplified rendering
+      double simplificationThreshold = 1000.0;
+      
+      //! Minimum feature size in pixels to render
+      double minFeatureSizePixels = 2.0;
+      
+      //! Maximum features to render per frame
+      int maxFeaturesPerFrame = 50000;
+      
+      //! Enable geometry simplification
+      bool enableSimplification = true;
+      
+      //! Simplification tolerance in map units
+      double simplificationTolerance = 0.1;
+    };
+
+    /**
+     * GPU acceleration configuration
+     */
+    struct GpuSettings
+    {
+      //! Enable GPU acceleration
+      bool enableGpuAcceleration = true;
+      
+      //! Use vertex buffer objects
+      bool useVertexBuffers = true;
+      
+      //! Batch size for GPU uploads
+      int batchSize = 10000;
+      
+      //! Enable GPU-based clipping
+      bool enableGpuClipping = true;
+      
+      //! Use instanced rendering for points
+      bool useInstancedRendering = true;
+    };
+
+    /**
+     * Batching configuration for optimal performance
+     */
+    struct BatchingSettings
+    {
+      //! Enable feature batching
+      bool enableBatching = true;
+      
+      //! Maximum features per batch
+      int maxFeaturesPerBatch = 5000;
+      
+      //! Group features by symbol
+      bool groupBySymbol = true;
+      
+      //! Group features by geometry type
+      bool groupByGeometryType = true;
+      
+      //! Enable background preprocessing
+      bool enableBackgroundProcessing = true;
+    };
+
+    /**
+     * Optimization configuration
+     */
+    struct OptimizationConfig
+    {
+      LodSettings lodSettings;
+      GpuSettings gpuSettings;
+      BatchingSettings batchingSettings;
+      
+      //! Enable spatial indexing for visibility culling
+      bool enableSpatialIndexing = true;
+      
+      //! Enable geometry caching
+      bool enableGeometryCache = true;
+      
+      //! Geometry cache size in MB
+      int geometryCacheSizeMB = 256;
+      
+      //! Enable multithreaded processing
+      bool enableMultithreading = true;
+      
+      //! Number of background processing threads
+      int backgroundThreads = 2;
+    };
+
+    /**
+     * Feature batch for optimized rendering
+     */
+    struct FeatureBatch
+    {
+      //! Batch identifier
+      QString batchId;
+      
+      //! Geometry type
+      QgsWkbTypes::GeometryType geometryType;
+      
+      //! Symbol key for grouping
+      QString symbolKey;
+      
+      //! Feature IDs in this batch
+      QList<QgsFeatureId> featureIds;
+      
+      //! Preprocessed geometries
+      QList<QgsGeometry> geometries;
+      
+      //! GPU vertex buffer
+      std::unique_ptr<QOpenGLBuffer> vertexBuffer;
+      
+      //! GPU vertex array object
+      std::unique_ptr<QOpenGLVertexArrayObject> vertexArray;
+      
+      //! Batch bounds
+      QgsRectangle bounds;
+      
+      //! LOD level
+      int lodLevel = 0;
+      
+      //! Processing status
+      bool isProcessed = false;
+      
+      //! GPU upload status
+      bool isUploaded = false;
+      
+      //! Last access time for cache management
+      QDateTime lastAccessed;
+      
+      //! Memory size in bytes
+      qint64 memorySizeBytes = 0;
+    };
+
+    /**
+     * Rendering statistics
+     */
+    struct RenderingStatistics
+    {
+      //! Features rendered in last frame
+      int featuresRendered = 0;
+      
+      //! Features culled by visibility
+      int featuresCulled = 0;
+      
+      //! Features simplified
+      int featuresSimplified = 0;
+      
+      //! Batches processed
+      int batchesProcessed = 0;
+      
+      //! GPU batches used
+      int gpuBatches = 0;
+      
+      //! Total render time in milliseconds
+      qint64 renderTimeMs = 0;
+      
+      //! Geometry processing time
+      qint64 geometryProcessTimeMs = 0;
+      
+      //! GPU upload time
+      qint64 gpuUploadTimeMs = 0;
+      
+      //! Cache hit rate (0.0 - 1.0)
+      double cacheHitRate = 0.0;
+      
+      //! Memory usage in MB
+      double memoryUsageMB = 0.0;
+      
+      //! Performance improvement percentage
+      double improvementPercent = 0.0;
+      
+      //! Frame timestamp
+      QDateTime frameTime;
+    };
+
+    /**
+     * Background processing task
+     */
+    struct ProcessingTask
+    {
+      //! Task identifier
+      QString taskId;
+      
+      //! Features to process
+      QList<QgsFeature> features;
+      
+      //! Target LOD level
+      int lodLevel;
+      
+      //! Processing priority
+      int priority = 0;
+      
+      //! Task creation time
+      QDateTime createdTime;
+      
+      //! Processing status
+      bool isCompleted = false;
+    };
+
+    /**
+     * Constructor
+     */
+    explicit QgsOptimizedVectorRenderer( QgsFeatureRenderer *baseRenderer = nullptr, QObject *parent = nullptr );
+
+    /**
+     * Copy constructor
+     */
+    QgsOptimizedVectorRenderer( const QgsOptimizedVectorRenderer &other );
+
+    /**
+     * Destructor
+     */
+    ~QgsOptimizedVectorRenderer() override;
+
+    /**
+     * Assignment operator
+     */
+    QgsOptimizedVectorRenderer &operator=( const QgsOptimizedVectorRenderer &other );
+
+    /**
+     * Set the base renderer to optimize
+     */
+    void setBaseRenderer( QgsFeatureRenderer *renderer );
+
+    /**
+     * Get the base renderer
+     */
+    QgsFeatureRenderer *baseRenderer() const { return mBaseRenderer; }
+
+    /**
+     * Render layer using optimized rendering pipeline
+     */
+    bool renderLayer( QgsVectorLayer *layer, QgsRenderContext &context );
+
+    /**
+     * Configure optimization settings
+     */
+    void setOptimizationConfig( const OptimizationConfig &config );
+
+    /**
+     * Get optimization config
+     */
+    OptimizationConfig getOptimizationConfig() const { return mConfig; }
+
+    /**
+     * Get rendering statistics
+     */
+    RenderingStatistics getRenderingStatistics() const;
+
+    // Configuration methods
+
+    /**
+     * Set performance monitor
+     */
+    void setPerformanceMonitor( IPerformanceMonitor *monitor );
+
+    /**
+     * Enable/disable GPU acceleration
+     */
+    void setGpuAccelerationEnabled( bool enabled );
+
+    /**
+     * Check if GPU acceleration is enabled
+     */
+    bool isGpuAccelerationEnabled() const;
+
+    /**
+     * Set LOD settings
+     */
+    void setLodSettings( const LodSettings &settings );
+
+    /**
+     * Get LOD settings
+     */
+    LodSettings getLodSettings() const;
+
+    // Performance and statistics methods
+
+    /**
+     * Get rendering statistics
+     */
+    RenderingStatistics getRenderingStatistics() const;
+
+    /**
+     * Get cache memory usage in MB
+     */
+    qint64 getCacheMemoryUsageMB() const;
+
+    /**
+     * Clear geometry cache
+     */
+    void clearGeometryCache();
+
+    /**
+     * Preprocess features for optimal rendering
+     */
+    void preprocessFeatures( const QList<QgsFeature> &features, int lodLevel = 0 );
+
+    /**
+     * Get estimated improvement percentage
+     */
+    double getEstimatedImprovement() const;
+
+    // Batch management
+
+    /**
+     * Create feature batch
+     */
+    QString createFeatureBatch( const QList<QgsFeature> &features, const QString &symbolKey );
+
+    /**
+     * Get feature batch
+     */
+    FeatureBatch *getFeatureBatch( const QString &batchId );
+
+    /**
+     * Remove feature batch
+     */
+    void removeFeatureBatch( const QString &batchId );
+
+    /**
+     * Get all batch IDs
+     */
+    QStringList getBatchIds() const;
+
+    // GPU methods
+
+    /**
+     * Upload batch to GPU
+     */
+    bool uploadBatchToGpu( const QString &batchId );
+
+    /**
+     * Render batch using GPU
+     */
+    bool renderBatchGpu( const QString &batchId, QgsRenderContext &context );
+
+    /**
+     * Check GPU capabilities
+     */
+    bool checkGpuCapabilities() const;
+
+  public slots:
+
+    /**
+     * Handle background processing completion
+     */
+    void onBackgroundProcessingComplete( const QString &taskId );
+
+    /**
+     * Handle cache cleanup
+     */
+    void onCacheCleanup();
+
+  signals:
+
+    /**
+     * Emitted when rendering statistics are updated
+     */
+    void renderingStatisticsUpdated( const RenderingStatistics &statistics );
+
+    /**
+     * Emitted when background processing starts
+     */
+    void backgroundProcessingStarted( const QString &taskId );
+
+    /**
+     * Emitted when background processing finishes
+     */
+    void backgroundProcessingFinished( const QString &taskId, bool success );
+
+    /**
+     * Emitted when GPU upload completes
+     */
+    void gpuUploadCompleted( const QString &batchId, bool success );
+
+    /**
+     * Emitted when cache is updated
+     */
+    void cacheUpdated( qint64 sizeMB, int itemCount );
+
+  private slots:
+
+    /**
+     * Continue background processing
+     */
+    void continueBackgroundProcessing();
+
+    /**
+     * Handle cache maintenance
+     */
+    void performCacheMaintenance();
+
+  private:
+
+    // Base renderer to optimize
+    QgsFeatureRenderer *mBaseRenderer = nullptr;
+
+    // Core rendering methods
+    bool renderFeatureBatch( const FeatureBatch &batch, QgsRenderContext &context );
+    bool renderFeatureImmediate( const QgsFeature &feature, QgsRenderContext &context );
+    
+    // Geometry processing
+    QgsGeometry simplifyGeometry( const QgsGeometry &geometry, double tolerance ) const;
+    QgsGeometry clipGeometry( const QgsGeometry &geometry, const QgsRectangle &clipRect ) const;
+    bool isGeometryVisible( const QgsGeometry &geometry, const QgsRectangle &visibleRect, double pixelSize ) const;
+    
+    // LOD processing
+    int calculateLodLevel( const QgsGeometry &geometry, const QgsRenderContext &context ) const;
+    QgsGeometry processGeometryForLod( const QgsGeometry &geometry, int lodLevel ) const;
+    
+    // Batching
+    QString generateBatchId( const QgsFeature &feature ) const;
+    QString generateSymbolKey( const QgsFeature &feature, QgsRenderContext &context ) const;
+    void addFeatureToBatch( const QgsFeature &feature, const QString &batchId );
+    void optimizeBatch( FeatureBatch &batch );
+    
+    // GPU operations
+    void initializeGpuResources();
+    void cleanupGpuResources();
+    QOpenGLShaderProgram *getShaderProgram( QgsWkbTypes::GeometryType geometryType );
+    void uploadGeometryToGpu( FeatureBatch &batch );
+    
+    // Cache management
+    void cacheGeometry( const QString &key, const QgsGeometry &geometry );
+    QgsGeometry getCachedGeometry( const QString &key ) const;
+    void evictLeastRecentlyUsed();
+    
+    // Background processing
+    void startBackgroundTask( const ProcessingTask &task );
+    void processTaskInBackground( const ProcessingTask &task );
+    
+    // Statistics and monitoring
+    void updateStatistics();
+    void recordRenderingMetrics( qint64 renderTime, int featuresRendered );
+    
+    // Utility methods
+    QgsRectangle calculateVisibleExtent( const QgsRenderContext &context ) const;
+    double calculatePixelSize( const QgsRenderContext &context ) const;
+    QgsWkbTypes::GeometryType getGeometryType( const QgsFeature &feature ) const;
+
+    // Configuration
+    OptimizationConfig mConfig;
+    
+    // Performance monitoring
+    IPerformanceMonitor *mPerformanceMonitor = nullptr;
+    QString mCurrentOperationId;
+    
+    // Rendering state
+    bool mIsRendering = false;
+    QgsRenderContext *mCurrentContext = nullptr;
+    QgsFields mCurrentFields;
+    
+    // Feature batches
+    QHash<QString, std::unique_ptr<FeatureBatch>> mFeatureBatches;
+    mutable QMutex mBatchMutex;
+    
+    // Geometry cache
+    mutable QCache<QString, QgsGeometry> mGeometryCache;
+    mutable QMutex mCacheMutex;
+    qint64 mCurrentCacheSizeMB = 0;
+    
+    // GPU resources
+    QHash<QgsWkbTypes::GeometryType, std::unique_ptr<QOpenGLShaderProgram>> mShaderPrograms;
+    bool mGpuInitialized = false;
+    bool mGpuSupported = false;
+    
+    // Background processing
+    QTimer *mBackgroundTimer = nullptr;
+    QQueue<ProcessingTask> mProcessingQueue;
+    QHash<QString, ProcessingTask> mActiveTasks;
+    mutable QMutex mTaskMutex;
+    
+    // Statistics
+    RenderingStatistics mStatistics;
+    QElapsedTimer mFrameTimer;
+    QTimer *mCacheMaintenanceTimer = nullptr;
+    mutable qint64 mBaselineRenderTimeMs = 0;
+    
+    // Feature tracking
+    QHash<QgsFeatureId, QString> mFeatureToBatch;
+    QHash<QString, QDateTime> mBatchAccessTimes;
+};
+
+#endif // QGSOPTIMIZEDVECTORRENDERER_H

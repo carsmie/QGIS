@@ -551,6 +551,9 @@ class CORE_EXPORT QgsApplication : public QApplication
     //! loads providers
     static void initQgis();
 
+    //! Configure GDAL for optimal performance with remote data sources
+    static void configureGdalForOptimalPerformance();
+
     //! initialize qgis.db
     static bool createDatabase( QString *errorMessage = nullptr );
 

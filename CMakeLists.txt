@@ -5,6 +5,10 @@ set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_AUTORCC ON)
 # set path to additional CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
+# Include performance optimizations
+include(PerformanceOptimizations)
+
 # POLICIES
 if("${CMAKE_VERSION}" VERSION_GREATER_EQUAL "3.27")
   # include(Dart) still used, as is the "Experimental" target

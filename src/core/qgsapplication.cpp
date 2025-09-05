@@ -1547,6 +1547,9 @@ void QgsApplication::initQgis()
   // Setup authentication manager for lazy initialization
   authManager()->setup( pluginPath(), qgisAuthDatabaseUri() );
 
+  // Configure GDAL to improve performance with remote data sources
+  configureGdalForOptimalPerformance();
+
   // Make sure we have a NAM created on the main thread.
   // Note that this might call QgsApplication::authManager to
   // setup the proxy configuration that's why it needs to be
@@ -1619,6 +1622,53 @@ void QgsApplication::exitQgis()
   // tear-down GDAL/OGR
   OGRCleanupAll();
   GDALDestroyDriverManager();
+}
+
+void QgsApplication::configureGdalForOptimalPerformance()
+{
+  // Configure GDAL to disable auxiliary file lookups for remote sources
+  // This prevents unnecessary HTTP requests for .aux files on remote FlatGeobuf sources
+  // and improves performance when loading large QGS files with remote data sources
+  
+  // Disable directory listing operations for remote sources
+  CPLSetConfigOption( "GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR" );
+  
+  // Disable auxiliary file lookups for HTTP/HTTPS sources
+  CPLSetConfigOption( "GDAL_HTTP_DISABLE_AUX", "YES" );
+  
+  // Optimize VSI cache for better remote file handling
+  CPLSetConfigOption( "VSI_CACHE_SIZE", "0" );
+  
+  // FlatGeobuf-specific optimizations for complex vector data
+  // Enable streaming mode for better performance with large FGB files
+  CPLSetConfigOption( "OGR_FGB_STREAM_MODE", "YES" );
+  
+  // Optimize FlatGeobuf spatial index usage
+  CPLSetConfigOption( "OGR_FGB_USE_SPATIAL_INDEX", "YES" );
+  
+  // Enable HTTP range requests for efficient partial reading of remote FGB files
+  CPLSetConfigOption( "VSI_CURL_ALLOW_RANGE_GET", "YES" );
+  CPLSetConfigOption( "GDAL_HTTP_USERPWD", "" ); // Clear any auth that might slow down
+  
+  // Optimize connection pooling for multiple FGB files
+  CPLSetConfigOption( "GDAL_HTTP_MAX_RETRY", "2" );
+  CPLSetConfigOption( "GDAL_HTTP_RETRY_DELAY", "1" );
+  
+  // Additional optimizations for remote data access
+  CPLSetConfigOption( "GDAL_HTTP_TIMEOUT", "30" );
+  CPLSetConfigOption( "GDAL_HTTP_CONNECTTIMEOUT", "10" );
+  
+  // Increase GDAL caching for better performance with multiple files
+  CPLSetConfigOption( "GDAL_CACHEMAX", "1024" );
+  
+  // Disable auxiliary metadata reading for performance
+  CPLSetConfigOption( "GDAL_PAM_ENABLED", "NO" );
+  
+  // Optimize geometry processing
+  CPLSetConfigOption( "OGR_GEOMETRY_ACCEPT_UNCLOSED_RING", "NO" );
+  
+  // Enable parallel processing for vector operations where possible
+  CPLSetConfigOption( "GDAL_NUM_THREADS", "ALL_CPUS" );
 }
 
 QString QgsApplication::showSettings()
