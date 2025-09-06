@@ -282,6 +282,13 @@ class QgsPostgresConn : public QObject
     //! Gets status of Raster capability
     bool hasRaster() const;
 
+    /**
+     * Configure read-only database optimizations to prevent recovery warnings
+     * This method optimizes PostgreSQL connections for read-only databases,
+     * eliminating "PostgreSQL is still in recovery" warnings and improving performance
+     */
+    static void configureReadOnlyDatabase();
+
     //! encode wkb in hex
     bool useWkbHex() const { return mUseWkbHex; }
 

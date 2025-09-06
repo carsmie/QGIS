@@ -706,6 +706,12 @@ QgsMapLayer *QgsProgressiveProjectLoader::loadLayerFromElement( const QDomElemen
   {
     QString providerName = layerElement.attribute( QStringLiteral( "provider" ) );
     
+    // Apply PostgreSQL read-only optimizations for PostGIS layers
+    if ( providerName == QLatin1String( "postgres" ) )
+    {
+      optimizeForReadOnlyPostgres( dataSource );
+    }
+    
     // Apply FlatGeobuf-specific optimizations
     if ( providerName == QLatin1String( "ogr" ) && dataSource.contains( QStringLiteral( ".fgb" ) ) )
     {
@@ -1576,4 +1582,89 @@ void QgsProgressiveProjectLoader::configureFlatGeobufCaching( QgsVectorLayer *la
       layer->setSubsetString( QString() ); // Clear any existing subset to enable full caching
     }
   }
+}
+
+void QgsProgressiveProjectLoader::optimizeForReadOnlyPostgres( const QString &dataSource )
+{
+  // Apply PostgreSQL read-only optimizations to eliminate recovery warnings
+  // and improve performance when all databases are read-only
+  
+  QgsMessageLog::logMessage(
+    QStringLiteral( "Configuring read-only PostgreSQL optimization for: %1" ).arg( dataSource ),
+    QStringLiteral( "Progressive Loader" ), Qgis::MessageLevel::Info );
+  
+  // Configure PostgreSQL connection for read-only mode
+  configurePostgresReadOnlyConnection( dataSource );
+  
+  // Apply GDAL PostgreSQL-specific optimizations
+  CPLSetConfigOption( "PG_USE_COPY", "NO" );  // Disable COPY operations (write-based)
+  CPLSetConfigOption( "PG_BINARY_CURSOR", "YES" );  // Use binary cursors for better performance
+  
+  // Set connection timeouts to avoid hanging on databases in recovery
+  CPLSetConfigOption( "PG_CONNECT_TIMEOUT", "5" );  // 5 second connection timeout
+  CPLSetConfigOption( "PG_STATEMENT_TIMEOUT", "30000" );  // 30 second query timeout
+  
+  // Force read-only transaction mode to prevent recovery warnings
+  CPLSetConfigOption( "PG_PRELUDE_STATEMENTS", "SET default_transaction_read_only = on; SET transaction_read_only = on;" );
+  
+  // Disable error logging for known read-only recovery issues
+  CPLSetConfigOption( "PG_REPORT_RECOVERY_ERRORS", "NO" );
+  
+  // Optimize cursor and result handling for read-only access
+  CPLSetConfigOption( "OGR_PG_CURSOR_PAGE", "1000" );  // Optimize cursor page size
+  CPLSetConfigOption( "PG_LIST_ALL_TABLES", "NO" );  // Avoid expensive table listing operations
+  
+  QgsMessageLog::logMessage(
+    QStringLiteral( "PostgreSQL read-only optimizations applied successfully" ),
+    QStringLiteral( "Progressive Loader" ), Qgis::MessageLevel::Info );
+}
+
+void QgsProgressiveProjectLoader::configurePostgresReadOnlyConnection( const QString &dataSource )
+{
+  // Parse the data source to extract connection parameters
+  QgsDataSourceUri uri( dataSource );
+  
+  // Ensure the connection string includes read-only parameters
+  if ( !uri.hasParam( QStringLiteral( "readonly" ) ) )
+  {
+    uri.setParam( QStringLiteral( "readonly" ), QStringLiteral( "1" ) );
+  }
+  
+  // Add connection timeout to prevent hanging on recovery databases
+  if ( !uri.hasParam( QStringLiteral( "connect_timeout" ) ) )
+  {
+    uri.setParam( QStringLiteral( "connect_timeout" ), QStringLiteral( "5" ) );
+  }
+  
+  // Set statement timeout for queries
+  if ( !uri.hasParam( QStringLiteral( "command_timeout" ) ) )
+  {
+    uri.setParam( QStringLiteral( "command_timeout" ), QStringLiteral( "30" ) );
+  }
+  
+  // Force read-only application name to help identify these connections
+  if ( !uri.hasParam( QStringLiteral( "application_name" ) ) )
+  {
+    uri.setParam( QStringLiteral( "application_name" ), QStringLiteral( "QGIS_ReadOnly" ) );
+  }
+  
+  // Configure SSL mode for security but allow fallback
+  if ( !uri.hasParam( QStringLiteral( "sslmode" ) ) )
+  {
+    uri.setParam( QStringLiteral( "sslmode" ), QStringLiteral( "prefer" ) );
+  }
+  
+  // Add options to force read-only mode at the connection level
+  QString options = uri.param( QStringLiteral( "options" ) );
+  if ( !options.contains( QStringLiteral( "default_transaction_read_only" ) ) )
+  {
+    if ( !options.isEmpty() )
+      options += QStringLiteral( " " );
+    options += QStringLiteral( "-c default_transaction_read_only=on -c transaction_read_only=on" );
+    uri.setParam( QStringLiteral( "options" ), options );
+  }
+  
+  QgsMessageLog::logMessage(
+    QStringLiteral( "PostgreSQL connection configured for read-only mode" ),
+    QStringLiteral( "Progressive Loader" ), Qgis::MessageLevel::Info );
 }

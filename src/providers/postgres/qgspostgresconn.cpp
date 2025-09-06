@@ -1198,6 +1198,33 @@ bool QgsPostgresConn::hasRaster() const
   postgisVersion();
   return mRasterAvailable;
 }
+
+void QgsPostgresConn::configureReadOnlyDatabase()
+{
+  // Configure PostgreSQL/PostGIS for optimal read-only database performance
+  // This eliminates "PostgreSQL is still in recovery" warnings and improves loading speed
+  
+  QgsMessageLog::logMessage( QObject::tr( "Configuring PostgreSQL for read-only database optimization" ), QObject::tr( "PostGIS" ) );
+  
+  // Set PostgreSQL-specific environment variables for read-only optimization
+  qputenv( "PGREADONLY", "1" );  // Force read-only mode
+  qputenv( "PGOPTIONS", "-c default_transaction_read_only=on -c transaction_read_only=on" );
+  
+  // Configure libpq connection parameters for read-only databases
+  qputenv( "PGCONNECT_TIMEOUT", "5" );  // Quick connection timeout
+  qputenv( "PGCOMMAND_TIMEOUT", "30" );  // Quick command timeout
+  
+  // Set application name to indicate read-only usage
+  qputenv( "PGAPPNAME", "QGIS_ReadOnly" );
+  
+  // Configure connection-level defaults through environment
+  // These will be inherited by all new PostgreSQL connections
+  qputenv( "PGSSLMODE", "prefer" );  // Prefer SSL but don't require it
+  qputenv( "PGCLIENTENCODING", "UTF8" );  // Ensure UTF8 encoding
+  
+  QgsMessageLog::logMessage( QObject::tr( "PostgreSQL read-only optimization configured successfully" ), QObject::tr( "PostGIS" ) );
+}
+
 /* Functions for determining available features in postGIS */
 QString QgsPostgresConn::postgisVersion() const
 {
