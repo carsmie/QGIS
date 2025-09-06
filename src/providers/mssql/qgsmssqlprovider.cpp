@@ -269,6 +269,23 @@ QgsFeatureIterator QgsMssqlProvider::getFeatures( const QgsFeatureRequest &reque
 
 void QgsMssqlProvider::loadMetadata()
 {
+  // Performance optimization: Skip metadata loading if requested
+  static QHash<QString, QPair<QDateTime, QVariantMap>> metadataCache;
+  const QString cacheKey = QStringLiteral( "%1.%2.%3" ).arg( mConn ? mConn->db().databaseName() : QString(), mSchemaName, mTableName );
+  
+  // Check cache first (5 minute expiry)
+  auto it = metadataCache.find( cacheKey );
+  if ( it != metadataCache.end() && 
+       it.value().first.secsTo( QDateTime::currentDateTime() ) < 300 )
+  {
+    const QVariantMap cached = it.value().second;
+    mSRId = cached.value( QStringLiteral( "srid" ), 0 ).toInt();
+    mWkbType = static_cast<Qgis::WkbType>( cached.value( QStringLiteral( "wkbType" ), static_cast<int>( Qgis::WkbType::Unknown ) ).toInt() );
+    mGeometryColName = cached.value( QStringLiteral( "geometryColumn" ) ).toString();
+    QgsDebugMsgLevel( QStringLiteral( "Using cached metadata for %1" ).arg( cacheKey ), 2 );
+    return;
+  }
+
   mSRId = 0;
   mWkbType = Qgis::WkbType::Unknown;
 
@@ -286,6 +303,15 @@ void QgsMssqlProvider::loadMetadata()
     const int dimensions = query.value( 3 ).toInt();
     const QString detectedType { QgsMssqlProvider::typeFromMetadata( query.value( 2 ).toString().toUpper(), dimensions ) };
     mWkbType = getWkbType( detectedType );
+    
+    // Cache the metadata
+    QVariantMap metadata;
+    metadata[QStringLiteral( "srid" )] = static_cast<int>( mSRId );
+    metadata[QStringLiteral( "wkbType" )] = static_cast<int>( mWkbType );
+    metadata[QStringLiteral( "geometryColumn" )] = mGeometryColName;
+    metadataCache[cacheKey] = qMakePair( QDateTime::currentDateTime(), metadata );
+    
+    QgsDebugMsgLevel( QStringLiteral( "Cached metadata for %1" ).arg( cacheKey ), 2 );
   }
 }
 

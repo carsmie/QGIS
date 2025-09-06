@@ -3656,6 +3656,12 @@ QString QgsPostgresProvider::subsetStringHelpUrl() const
 
 long long QgsPostgresProvider::featureCount() const
 {
+  // Performance optimization: Skip feature count if requested
+  if ( ( mReadFlags & Qgis::DataProviderReadFlag::SkipFeatureCount ) != 0 )
+  {
+    return -1; // Indicate unknown feature count
+  }
+
   long long featuresCounted = mShared->featuresCounted();
   if ( featuresCounted >= 0 )
     return featuresCounted;
@@ -3728,6 +3734,12 @@ bool QgsPostgresProvider::empty() const
 
 QgsRectangle QgsPostgresProvider::extent() const
 {
+  // Performance optimization: Skip extent calculation if requested
+  if ( ( mReadFlags & Qgis::DataProviderReadFlag::SkipGetExtent ) != 0 )
+  {
+    return QgsRectangle(); // Return empty rectangle
+  }
+  
   return extent3D().toRectangle();
 }
 
@@ -3891,6 +3903,12 @@ bool QgsPostgresProvider::computeExtent3D() const
 
 QgsBox3D QgsPostgresProvider::extent3D() const
 {
+  // Performance optimization: Skip extent calculation if requested
+  if ( ( mReadFlags & Qgis::DataProviderReadFlag::SkipGetExtent ) != 0 )
+  {
+    return QgsBox3D(); // Return empty box
+  }
+  
   if ( !isValid() || mGeometryColumn.isNull() )
     return QgsBox3D();
 
@@ -4052,6 +4070,27 @@ bool QgsPostgresProvider::getGeometryDetails()
   QString detectedSrid;
   if ( !schemaName.isEmpty() )
   {
+    // Performance optimization: Check metadata cache first
+    static QHash<QString, QPair<QDateTime, QVariantMap>> geometryMetadataCache;
+    const QString cacheKey = QStringLiteral( "%1.%2.%3.%4" ).arg( 
+      connectionRO()->connInfo(), schemaName, tableName, geomCol );
+    
+    auto it = geometryMetadataCache.find( cacheKey );
+    if ( it != geometryMetadataCache.end() && 
+         it.value().first.secsTo( QDateTime::currentDateTime() ) < 300 )
+    {
+      const QVariantMap cached = it.value().second;
+      detectedType = cached.value( QStringLiteral( "type" ) ).toString();
+      detectedSrid = cached.value( QStringLiteral( "srid" ) ).toString();
+      mSpatialColType = static_cast<QgsPostgresGeometryColumnType>( cached.value( QStringLiteral( "spatialColType" ), SctNone ).toInt() );
+      
+      if ( !detectedType.isEmpty() )
+      {
+        QgsDebugMsgLevel( QStringLiteral( "Using cached geometry metadata for %1" ).arg( cacheKey ), 2 );
+        goto skip_metadata_queries;
+      }
+    }
+
     // check geometry columns
     sql = QStringLiteral( "SELECT upper(type),srid,coord_dimension FROM geometry_columns WHERE f_table_name=%1 AND f_geometry_column=%2 AND f_table_schema=%3" )
             .arg( quotedValue( tableName ), quotedValue( geomCol ), quotedValue( schemaName ) );
@@ -4231,6 +4270,23 @@ bool QgsPostgresProvider::getGeometryDetails()
       mValid = false;
       return false;
     }
+  }
+
+  // Cache metadata for future use
+  skip_metadata_queries:
+  if ( !detectedType.isEmpty() && !schemaName.isEmpty() )
+  {
+    static QHash<QString, QPair<QDateTime, QVariantMap>> geometryMetadataCache;
+    const QString cacheKey = QStringLiteral( "%1.%2.%3.%4" ).arg( 
+      connectionRO()->connInfo(), schemaName, tableName, geomCol );
+    
+    QVariantMap metadata;
+    metadata[QStringLiteral( "type" )] = detectedType;
+    metadata[QStringLiteral( "srid" )] = detectedSrid;
+    metadata[QStringLiteral( "spatialColType" )] = static_cast<int>( mSpatialColType );
+    geometryMetadataCache[cacheKey] = qMakePair( QDateTime::currentDateTime(), metadata );
+    
+    QgsDebugMsgLevel( QStringLiteral( "Cached geometry metadata for %1" ).arg( cacheKey ), 2 );
   }
 
   mDetectedGeomType = QgsPostgresConn::wkbTypeFromPostgis( detectedType );

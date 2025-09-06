@@ -1670,10 +1670,6 @@ void QgsApplication::configureGdalForOptimalPerformance()
   // Disable auxiliary metadata reading for performance
   CPLSetConfigOption( "GDAL_PAM_ENABLED", "NO" );
   
-  // Note: OGR_GEOMETRY_ACCEPT_UNCLOSED_RING, CPL_DEBUG, and CPL_LOG are already
-  // configured early in QgsApplication::init() to ensure they take effect before
-  // any geometry processing begins
-  
   // Enable parallel processing for vector operations where possible
   CPLSetConfigOption( "GDAL_NUM_THREADS", "ALL_CPUS" );
   
@@ -1691,7 +1687,7 @@ void QgsApplication::configureGdalForOptimalPerformance()
   
   // Set aggressive connection timeouts to avoid hanging on recovery databases
   CPLSetConfigOption( "PG_CONNECT_TIMEOUT", "5" );  // 5 second connection timeout
-  CPLSetConfigOption( "PG_STATEMENT_TIMEOUT", "30000" );  // 30 second query timeout
+  CPLSetConfigOption( "PG_STATEMENT_TIMEOUT", "20000" );  // 20 second query timeout
   
   // Configure connection pooling for read-only databases
   CPLSetConfigOption( "PG_ACTIVE_SCHEMA", "public" );  // Default to public schema

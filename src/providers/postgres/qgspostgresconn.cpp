@@ -190,6 +190,32 @@ QgsPostgresConn *QgsPostgresConn::connectDb( const QString &conninfo, bool reado
 
   if ( shared )
   {
+    // Performance optimization: Use connection pool for read-only shared connections
+    // when possible to reduce connection overhead
+    if ( readonly && !transaction && QgsSettings().value( QStringLiteral( "PostgreSQL/use_connection_pool" ), true ).toBool() )
+    {
+      try {
+        conn = QgsPostgresConnPool::instance()->acquireConnection( conninfo );
+        if ( conn )
+        {
+          QgsDebugMsgLevel(
+            QStringLiteral(
+              "Using pooled connection for %1 (%2)"
+            )
+              .arg( conninfo )
+              .arg( reinterpret_cast<std::uintptr_t>( conn ) ),
+            2
+          );
+          conn->mRef++;
+          return conn;
+        }
+      }
+      catch ( ... )
+      {
+        QgsDebugMsgLevel( QStringLiteral( "Failed to acquire pooled connection, falling back to direct connection" ), 2 );
+      }
+    }
+
     QMap<QString, QgsPostgresConn *>::iterator it = connections.find( conninfo );
     if ( it != connections.end() )
     {
@@ -301,12 +327,19 @@ QgsPostgresConn::QgsPostgresConn( const QString &conninfo, bool readOnly, bool s
   // expand connectionInfo
   QString expandedConnectionInfo = mUri.connectionInfo( true );
 
-  auto addDefaultTimeoutAndClientEncoding = []( QString &connectString ) {
+  auto addDefaultTimeoutAndClientEncoding = [readOnly]( QString &connectString ) {
     if ( !connectString.contains( QStringLiteral( "connect_timeout=" ) ) )
     {
-      // add default timeout
+      // add default timeout - use lower timeout for performance in read-only mode
       QgsSettings settings;
       int timeout = settings.value( QStringLiteral( "PostgreSQL/default_timeout" ), PG_DEFAULT_TIMEOUT, QgsSettings::Providers ).toInt();
+      
+      // Performance optimization: Use shorter timeout for read-only connections
+      if ( readOnly && timeout > 15 )
+      {
+        timeout = qMin( timeout, 15 ); // Cap at 15 seconds for read-only
+      }
+      
       connectString += QStringLiteral( " connect_timeout=%1" ).arg( timeout );
     }
 

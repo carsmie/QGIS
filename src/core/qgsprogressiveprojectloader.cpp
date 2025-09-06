@@ -718,7 +718,35 @@ QgsMapLayer *QgsProgressiveProjectLoader::loadLayerFromElement( const QDomElemen
       optimizeForFlatGeobuf( dataSource );
     }
     
-    layer = new QgsVectorLayer( dataSource, layerName, providerName );
+    // Performance optimization: Configure read flags for faster loading
+    QList<Qgis::DataProviderReadFlag> readFlags;
+    readFlags << Qgis::DataProviderReadFlag::SkipFeatureCount;
+    
+    if ( !mConfig.calculateExtents )
+    {
+      readFlags << Qgis::DataProviderReadFlag::SkipGetExtent;
+    }
+    
+    // Defer style loading for faster initial loading
+    if ( mConfig.deferStyleLoading && priority > High )
+    {
+      // Create layer without loading default style
+      layer = new QgsVectorLayer( dataSource, layerName, providerName, QgsVectorLayer::LayerOptions( false /*loadDefaultStyle*/ ) );
+    }
+    else
+    {
+      layer = new QgsVectorLayer( dataSource, layerName, providerName );
+    }
+    
+    // Apply read flags to the provider after creation
+    if ( layer && layer->dataProvider() )
+    {
+      for ( auto flag : readFlags )
+      {
+        QString propName = QStringLiteral( "readFlag_%1" ).arg( static_cast<int>( flag ) );
+        layer->dataProvider()->setProperty( propName.toLatin1().constData(), true );
+      }
+    }
     
     // Apply additional FlatGeobuf optimizations after layer creation
     if ( layer && layer->isValid() && providerName == QLatin1String( "ogr" ) && dataSource.contains( QStringLiteral( ".fgb" ) ) )
@@ -1066,6 +1094,7 @@ bool QgsProgressiveProjectLoader::loadProjectWithStreamingParser( const QString 
   int layersProcessed = 0;
   int totalElements = 0;
   const int streamingBufferSize = mConfig.streamingBufferSizeKB * 1024;
+  Q_UNUSED( streamingBufferSize ) // Reserved for future streaming implementation
   
   // Set buffer size for streaming (QFile doesn't have setReadBufferSize in Qt5)
   // Buffer size is handled by QXmlStreamReader internally
@@ -1522,6 +1551,24 @@ void QgsProgressiveProjectLoader::optimizeFlatGeobufLayer( QgsVectorLayer *layer
   {
     // Disable feature count for faster loading
     provider->setProperty( "skipFeatureCount", true );
+    
+    // Apply SkipFeatureCount flag for supported providers (PostgreSQL, OGR, SensorThings)
+    if ( provider->name().contains( QStringLiteral( "postgres" ) ) ||
+         provider->name().contains( QStringLiteral( "ogr" ) ) ||
+         provider->name().contains( QStringLiteral( "sensorthings" ) ) )
+    {
+      // Set read flags to skip feature count operations
+      QList<Qgis::DataProviderReadFlag> flags;
+      flags << Qgis::DataProviderReadFlag::SkipFeatureCount;
+      
+      // Also skip extent calculation if not needed for initial display
+      if ( !mConfig.calculateExtents )
+      {
+        flags << Qgis::DataProviderReadFlag::SkipGetExtent;
+      }
+      
+      provider->setProperty( "readFlags", QVariant::fromValue( flags ).toByteArray().constData() );
+    }
     
     // Enable caching for frequently accessed data
     if ( mConfig.enableLayerCaching )

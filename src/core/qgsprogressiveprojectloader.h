@@ -90,6 +90,8 @@ class CORE_EXPORT QgsProgressiveProjectLoader : public QObject
       bool suppressNetworkWarnings = true;        //!< Suppress warnings for network errors
       bool skipInaccessibleLayers = true;         //!< Skip layers that cannot be accessed
       bool enableOfflineMode = false;             //!< Load project in offline mode (skip all remote sources)
+      bool deferStyleLoading = true;              //!< Defer loading of layer styles until needed
+      bool calculateExtents = false;              //!< Calculate layer extents during initial loading
       int maxParallelThreads = 4;                //!< Maximum parallel loading threads
       int networkTimeoutMs = 5000;               //!< Network timeout for remote resources (ms)
       int maxNetworkRetries = 2;                 //!< Maximum retry attempts for network resources
