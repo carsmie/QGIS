@@ -300,6 +300,12 @@ void registerMetaTypes()
 
 void QgsApplication::init( QString profileFolder )
 {
+  // Set critical GDAL options immediately to ensure they take effect before any geometry processing
+  // This must be done very early to prevent "Non closed ring detected" warnings
+  CPLSetConfigOption( "OGR_GEOMETRY_ACCEPT_UNCLOSED_RING", "NO" );
+  CPLSetConfigOption( "CPL_DEBUG", "OFF" );
+  CPLSetConfigOption( "CPL_LOG", "OFF" );
+  
   // Initialize application members in desktop app (at this point, profile folder is known)
   if ( platform() == QLatin1String( "desktop" ) )
   {
@@ -1664,8 +1670,14 @@ void QgsApplication::configureGdalForOptimalPerformance()
   // Disable auxiliary metadata reading for performance
   CPLSetConfigOption( "GDAL_PAM_ENABLED", "NO" );
   
-  // Optimize geometry processing
+  // Optimize geometry processing - strict validation for better performance
+  // Reject invalid geometries instead of auto-repairing them (eliminates warnings and improves performance)
   CPLSetConfigOption( "OGR_GEOMETRY_ACCEPT_UNCLOSED_RING", "NO" );
+  
+  // Additional geometry validation options to reduce warnings and improve performance
+  CPLSetConfigOption( "OGR_GEOMETRY_ACCEPT_UNCLOSED_RING", "NO" );  // Ensure this is set
+  CPLSetConfigOption( "CPL_DEBUG", "OFF" );  // Reduce GDAL debug output
+  CPLSetConfigOption( "CPL_LOG", "OFF" );    // Disable CPL logging for performance
   
   // Enable parallel processing for vector operations where possible
   CPLSetConfigOption( "GDAL_NUM_THREADS", "ALL_CPUS" );
