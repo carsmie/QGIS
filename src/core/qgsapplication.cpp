@@ -1670,14 +1670,9 @@ void QgsApplication::configureGdalForOptimalPerformance()
   // Disable auxiliary metadata reading for performance
   CPLSetConfigOption( "GDAL_PAM_ENABLED", "NO" );
   
-  // Optimize geometry processing - strict validation for better performance
-  // Reject invalid geometries instead of auto-repairing them (eliminates warnings and improves performance)
-  CPLSetConfigOption( "OGR_GEOMETRY_ACCEPT_UNCLOSED_RING", "NO" );
-  
-  // Additional geometry validation options to reduce warnings and improve performance
-  CPLSetConfigOption( "OGR_GEOMETRY_ACCEPT_UNCLOSED_RING", "NO" );  // Ensure this is set
-  CPLSetConfigOption( "CPL_DEBUG", "OFF" );  // Reduce GDAL debug output
-  CPLSetConfigOption( "CPL_LOG", "OFF" );    // Disable CPL logging for performance
+  // Note: OGR_GEOMETRY_ACCEPT_UNCLOSED_RING, CPL_DEBUG, and CPL_LOG are already
+  // configured early in QgsApplication::init() to ensure they take effect before
+  // any geometry processing begins
   
   // Enable parallel processing for vector operations where possible
   CPLSetConfigOption( "GDAL_NUM_THREADS", "ALL_CPUS" );
