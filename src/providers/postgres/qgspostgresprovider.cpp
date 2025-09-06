@@ -1276,6 +1276,10 @@ bool QgsPostgresProvider::hasSufficientPermsAndCapabilities()
   bool forceReadOnly = ( mReadFlags & Qgis::DataProviderReadFlag::ForceReadOnly );
   bool inRecovery = false;
 
+  // Check if server is configured to force read-only layers via environment variable
+  // This prevents expensive pg_is_in_recovery() queries that generate recovery warnings
+  bool serverForceReadOnly = qgetenv( "QGIS_SERVER_FORCE_READONLY_LAYERS" ) == "true";
+  
   if ( !mIsQuery )
   {
     // postgres has fast access to features at id (thanks to primary key / unique index)
@@ -1285,13 +1289,33 @@ bool QgsPostgresProvider::hasSufficientPermsAndCapabilities()
       mEnabledCapabilities |= Qgis::VectorProviderCapability::SelectAtId;
     }
 
-    QString sql = QStringLiteral(
-                    "SELECT "
-                    "has_table_privilege(%1,'SELECT')," // 0 (select priv)
-                    "pg_is_in_recovery(),"              // 1 (in recovery)
-                    "current_schema() "                 // 2 (current schema)
-    )
-                    .arg( quotedValue( mQuery ) );
+    QString sql;
+    
+    // Skip pg_is_in_recovery() query if we're in forced read-only mode
+    // This eliminates "PostgreSQL is still in recovery" warnings on read-only databases
+    if ( forceReadOnly || serverForceReadOnly )
+    {
+      // Assume we're in recovery mode for read-only databases to prevent write operations
+      inRecovery = true;
+      sql = QStringLiteral(
+                      "SELECT "
+                      "has_table_privilege(%1,'SELECT')," // 0 (select priv)
+                      "true,"                             // 1 (assume recovery - skip pg_is_in_recovery())
+                      "current_schema() "                 // 2 (current schema)
+      )
+                      .arg( quotedValue( mQuery ) );
+    }
+    else
+    {
+      // Normal mode - query recovery status
+      sql = QStringLiteral(
+                      "SELECT "
+                      "has_table_privilege(%1,'SELECT')," // 0 (select priv)
+                      "pg_is_in_recovery(),"              // 1 (in recovery)
+                      "current_schema() "                 // 2 (current schema)
+      )
+                      .arg( quotedValue( mQuery ) );
+    }
 
 
     if ( connectionRO()->pgVersion() >= 80400 )
@@ -1329,15 +1353,20 @@ bool QgsPostgresProvider::hasSufficientPermsAndCapabilities()
       return false;
     }
 
-    if ( testAccess.PQgetvalue( 0, 1 ) == QLatin1String( "t" ) )
+    // Only check recovery status if we didn't skip the query
+    if ( !forceReadOnly && !serverForceReadOnly )
     {
-      // RECOVERY
-      QgsMessageLog::logMessage(
-        tr( "PostgreSQL is still in recovery after a database crash\n(or you are connected to a (read-only) standby server).\nWrite accesses will be denied." ),
-        tr( "PostGIS" )
-      );
-      inRecovery = true;
+      if ( testAccess.PQgetvalue( 0, 1 ) == QLatin1String( "t" ) )
+      {
+        // RECOVERY - only show warning if not in forced read-only mode
+        QgsMessageLog::logMessage(
+          tr( "PostgreSQL is still in recovery after a database crash\n(or you are connected to a (read-only) standby server).\nWrite accesses will be denied." ),
+          tr( "PostGIS" )
+        );
+        inRecovery = true;
+      }
     }
+    // If we're in forced read-only mode, inRecovery is already set to true
 
     // CURRENT SCHEMA
     if ( mSchemaName.isEmpty() )

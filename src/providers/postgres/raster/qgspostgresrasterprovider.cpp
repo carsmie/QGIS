@@ -218,11 +218,19 @@ bool QgsPostgresRasterProvider::hasSufficientPermsAndCapabilities()
 
     if ( connectionRO()->pgVersion() >= 90000 )
     {
-      testAccess = connectionRO()->PQexec( QStringLiteral( "SELECT pg_is_in_recovery()" ) );
-      if ( testAccess.PQresultStatus() != PGRES_TUPLES_OK || testAccess.PQgetvalue( 0, 0 ) == QLatin1String( "t" ) )
+      // Check if server is configured to force read-only layers
+      // Skip pg_is_in_recovery() query to prevent recovery warnings on read-only databases
+      bool serverForceReadOnly = qgetenv( "QGIS_SERVER_FORCE_READONLY_LAYERS" ) == "true";
+      
+      if ( !serverForceReadOnly )
       {
-        QgsMessageLog::logMessage( tr( "PostgreSQL is still in recovery after a database crash\n(or you are connected to a (read-only) standby server).\nWrite accesses will be denied." ), tr( "PostGIS" ) );
+        testAccess = connectionRO()->PQexec( QStringLiteral( "SELECT pg_is_in_recovery()" ) );
+        if ( testAccess.PQresultStatus() != PGRES_TUPLES_OK || testAccess.PQgetvalue( 0, 0 ) == QLatin1String( "t" ) )
+        {
+          QgsMessageLog::logMessage( tr( "PostgreSQL is still in recovery after a database crash\n(or you are connected to a (read-only) standby server).\nWrite accesses will be denied." ), tr( "PostGIS" ) );
+        }
       }
+      // If forced read-only, silently assume recovery mode without querying
     }
   }
   return true;
