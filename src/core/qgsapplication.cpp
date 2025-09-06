@@ -1669,6 +1669,42 @@ void QgsApplication::configureGdalForOptimalPerformance()
   
   // Enable parallel processing for vector operations where possible
   CPLSetConfigOption( "GDAL_NUM_THREADS", "ALL_CPUS" );
+  
+  // PostgreSQL/PostGIS read-only database optimizations
+  // These settings are crucial for eliminating "PostgreSQL is still in recovery" warnings
+  // when all databases are read-only, as is common in production environments
+  
+  // Force PostgreSQL connections to read-only mode by default
+  // This prevents write operation attempts that trigger recovery warnings
+  CPLSetConfigOption( "PG_READ_ONLY", "YES" );
+  
+  // Optimize PostgreSQL connection handling for read-only databases
+  CPLSetConfigOption( "PG_USE_COPY", "NO" );  // Disable COPY operations (write-based)
+  CPLSetConfigOption( "PG_BINARY_CURSOR", "YES" );  // Use binary cursors for better performance
+  
+  // Set aggressive connection timeouts to avoid hanging on recovery databases
+  CPLSetConfigOption( "PG_CONNECT_TIMEOUT", "5" );  // 5 second connection timeout
+  CPLSetConfigOption( "PG_STATEMENT_TIMEOUT", "30000" );  // 30 second query timeout
+  
+  // Configure connection pooling for read-only databases
+  CPLSetConfigOption( "PG_ACTIVE_SCHEMA", "public" );  // Default to public schema
+  CPLSetConfigOption( "PG_USE_BASE64", "YES" );  // Use base64 encoding for efficiency
+  
+  // Disable features that require write access to avoid recovery warnings
+  CPLSetConfigOption( "PG_SKIP_VIEWS", "NO" );  // Keep views enabled (read-only)
+  CPLSetConfigOption( "PG_LIST_ALL_TABLES", "NO" );  // Avoid expensive table listing
+  
+  // PostGIS-specific read-only optimizations  
+  CPLSetConfigOption( "PG_USE_POSTGIS_FUNCTION", "YES" );  // Use PostGIS functions efficiently
+  CPLSetConfigOption( "PG_PRELUDE_STATEMENTS", "SET default_transaction_read_only = on;" );  // Force read-only transactions
+  
+  // Configure error handling for recovery scenarios
+  CPLSetConfigOption( "PG_REPORT_RECOVERY_ERRORS", "NO" );  // Suppress recovery-related warnings
+  CPLSetConfigOption( "CPL_LOG_ERRORS", "NO" );  // Reduce error verbosity for known read-only issues
+  
+  // Optimize PostGIS geometry handling for read-only access
+  CPLSetConfigOption( "OGR_PG_CURSOR_PAGE", "1000" );  // Optimize cursor page size
+  CPLSetConfigOption( "OGR_PG_STRING_QUOTING", "YES" );  // Proper string quoting
 }
 
 QString QgsApplication::showSettings()

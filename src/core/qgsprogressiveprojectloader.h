@@ -504,6 +504,10 @@ class CORE_EXPORT QgsProgressiveProjectLoader : public QObject
     void optimizeFlatGeobufLayer( QgsVectorLayer *layer );
     void applyFlatGeobufStreamingOptions( const QString &dataSource );
     void configureFlatGeobufCaching( QgsVectorLayer *layer );
+    
+    // PostgreSQL read-only optimization methods
+    void optimizeForReadOnlyPostgres( const QString &dataSource );
+    void configurePostgresReadOnlyConnection( const QString &dataSource );
 
     Q_DISABLE_COPY( QgsProgressiveProjectLoader )
 };
