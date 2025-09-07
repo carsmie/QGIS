@@ -166,6 +166,12 @@ class CORE_EXPORT QgsSettingsRegistryCore : public QgsSettingsRegistry
     //! Settings entry whether layer are loading in parallel
     static const QgsSettingsEntryBool *settingsLayerParallelLoading;
 
+    //! Settings entry whether to use progressive loader for large projects
+    static const QgsSettingsEntryBool *settingsUseProgressiveLoader;
+
+    //! Settings entry file size threshold for progressive loading (MB)
+    static const QgsSettingsEntryInteger *settingsProgressiveLoaderThresholdMB;
+
     //! Settings entry network cache directory
     static const QgsSettingsEntryString *settingsNetworkCacheDirectory;
 

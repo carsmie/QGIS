@@ -769,6 +769,11 @@ set(QGIS_CORE_SRCS
   project/qgsproject.cpp
   project/qgsprojectbadlayerhandler.cpp
   project/qgsprojectelevationproperties.cpp
+  project/qgsprojectloadingperformance.cpp
+  project/qgsprojectstreamingparser.cpp
+  project/qgsparallellayerloader.cpp
+  project/qgslayerstylecache.cpp
+  project/qgsprojectprogressivedisplay.cpp
   project/qgsprojectfiletransform.cpp
   project/qgsprojectdisplaysettings.cpp
   project/qgsprojectgpssettings.cpp
@@ -1870,6 +1875,11 @@ set(QGIS_CORE_HDRS
   project/qgsprojectbadlayerhandler.h
   project/qgsprojectdisplaysettings.h
   project/qgsprojectelevationproperties.h
+  project/qgsprojectloadingperformance.h
+  project/qgsprojectstreamingparser.h
+  project/qgsparallellayerloader.h
+  project/qgslayerstylecache.h
+  project/qgsprojectprogressivedisplay.h
   project/qgsprojectfiletransform.h
   project/qgsprojectgpssettings.h
   project/qgsprojectproperty.h

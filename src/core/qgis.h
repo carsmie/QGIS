@@ -4224,6 +4224,7 @@ class CORE_EXPORT Qgis
       DontLoadProjectStyles = 1 << 5, //!< Skip loading project style databases (deprecated -- use ProjectCapability::ProjectStyles flag instead)
       ForceReadOnlyLayers = 1 << 6, //!< Open layers in a read-only mode. \since QGIS 3.28
       DontUpgradeAnnotations = 1 << 7, //!< Don't upgrade old annotation items to QgsAnnotationItem \since QGIS 3.40
+      DontUseProgressiveLoader = 1 << 8, //!< Don't use progressive loading for large project files \since QGIS 3.41
     };
     Q_ENUM( ProjectReadFlag )
 

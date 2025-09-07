@@ -77,6 +77,12 @@
 #include "qgssettingsregistrycore.h"
 #include "qgspluginlayer.h"
 #include "qgspythonrunner.h"
+#include "qgsprojectloadingperformance.h"
+#include "qgsprojectstreamingparser.h"
+#include "qgsparallellayerloader.h"
+#include "qgslayerstylecache.h"
+#include "qgsprojectprogressivedisplay.h"
+#include "qgsprogressiveprojectloader.h"
 
 #include <algorithm>
 #include <QApplication>
@@ -90,6 +96,7 @@
 #include <QStandardPaths>
 #include <QUuid>
 #include <QRegularExpression>
+#include <QThread>
 #include <QThreadPool>
 
 #ifdef _MSC_VER
@@ -1718,6 +1725,165 @@ bool QgsProject::_getMapLayers( const QDomDocument &doc, QList<QDomNode> &broken
 
   const QVector<QDomNode> sortedLayerNodes = depSorter.sortedLayerNodes();
   const int totalLayerCount = sortedLayerNodes.count();
+  
+  // Use enhanced parallel layer loader for large numbers of layers
+  if ( totalLayerCount >= 20 && // Only for projects with many layers
+       !( flags & Qgis::ProjectReadFlag::DontResolveLayers ) &&
+       QgsSettingsRegistryCore::settingsLayerParallelLoading &&
+       QgsSettingsRegistryCore::settingsLayerParallelLoading->value() )
+  {
+    QgsDebugMsgLevel( QStringLiteral( "Using enhanced parallel layer loader for %1 layers" ).arg( totalLayerCount ), 2 );
+    
+    // Convert nodes to elements for parallel loader
+    QList<QDomElement> layerElements;
+    for ( const QDomNode &node : sortedLayerNodes )
+    {
+      const QDomElement element = node.toElement();
+      if ( element.attribute( QStringLiteral( "embedded" ) ) != QLatin1String( "1" ) )
+      {
+        layerElements.append( element );
+      }
+    }
+    
+    if ( !layerElements.isEmpty() )
+    {
+      QgsParallelLayerLoader parallelLoader;
+      
+      // Configure parallel loader based on project size
+      QgsParallelLayerLoader::LoadingConfig config;
+      if ( totalLayerCount > 100 )
+      {
+        config.strategy = QgsParallelLayerLoader::LoadingStrategy::Aggressive;
+        config.maxParallelLayers = qMin( 8, QThread::idealThreadCount() );
+        config.maxMemoryUsageMB = 1024; // 1GB for large projects
+      }
+      else if ( totalLayerCount > 50 )
+      {
+        config.strategy = QgsParallelLayerLoader::LoadingStrategy::Balanced;
+        config.maxParallelLayers = qMin( 6, QThread::idealThreadCount() );
+        config.maxMemoryUsageMB = 512; // 512MB for medium projects
+      }
+      else
+      {
+        config.strategy = QgsParallelLayerLoader::LoadingStrategy::Conservative;
+        config.maxParallelLayers = qMin( 4, QThread::idealThreadCount() );
+        config.maxMemoryUsageMB = 256; // 256MB for smaller projects
+      }
+      
+      parallelLoader.setLoadingConfig( config );
+      
+      // Set up layer style cache for performance optimization
+      QgsLayerStyleCache styleCache;
+      QgsLayerStyleCache::CacheConfig cacheConfig;
+      cacheConfig.maxMemoryUsageMB = qMin( 128, config.maxMemoryUsageMB / 4 ); // Use 25% of loader memory for cache
+      cacheConfig.maxEntries = totalLayerCount * 2; // Allow caching for potential style reuse
+      cacheConfig.enableSimilarityDetection = true;
+      cacheConfig.similarityThreshold = 0.8; // 80% similarity for style reuse
+      styleCache.setCacheConfig( cacheConfig );
+      parallelLoader.setLayerStyleCache( &styleCache );
+      
+      // Set up context for layer loading
+      QgsReadWriteContext context;
+      context.setPathResolver( pathResolver() );
+      context.setProjectTranslator( this );
+      context.setTransformContext( transformContext() );
+      
+      // Connect progress signals
+      connect( &parallelLoader, &QgsParallelLayerLoader::progressChanged,
+               this, [this, totalLayerCount]( int progress, const QString &layerName )
+      {
+        const int adjustedProgress = ( progress * totalLayerCount ) / 100;
+        emit layerLoaded( adjustedProgress, totalLayerCount );
+        if ( !layerName.isEmpty() )
+        {
+          emit loadingLayer( tr( "Loading layer %1" ).arg( layerName ) );
+        }
+      } );
+      
+      // Connect layer loading signals for performance monitoring
+      connect( &parallelLoader, &QgsParallelLayerLoader::layerLoaded,
+               this, [this]( const QString &layerId, QgsMapLayer *layer )
+      {
+        Q_UNUSED( layer )
+        QgsDebugMsgLevel( QStringLiteral( "Parallel loader completed layer: %1" ).arg( layerId ), 3 );
+      } );
+      
+      connect( &parallelLoader, &QgsParallelLayerLoader::layerLoadFailed,
+               this, [this]( const QString &layerId, const QString &errorMessage )
+      {
+        QgsDebugError( QStringLiteral( "Parallel loader failed to load layer %1: %2" ).arg( layerId, errorMessage ) );
+      } );
+      
+      // Set up progressive display for large projects
+      QgsProjectProgressiveDisplay *progressiveDisplay = nullptr;
+      if ( totalLayerCount > 20 ) // Enable progressive display for projects with many layers
+      {
+        progressiveDisplay = new QgsProjectProgressiveDisplay( this );
+        
+        QgsProjectProgressiveDisplay::DisplayConfig displayConfig;
+        if ( totalLayerCount > 100 )
+        {
+          displayConfig.strategy = QgsProjectProgressiveDisplay::RenderingStrategy::Adaptive;
+          displayConfig.batchSize = 5;
+          displayConfig.refreshIntervalMs = 150;
+        }
+        else if ( totalLayerCount > 50 )
+        {
+          displayConfig.strategy = QgsProjectProgressiveDisplay::RenderingStrategy::Batched;
+          displayConfig.batchSize = 3;
+          displayConfig.refreshIntervalMs = 200;
+        }
+        else
+        {
+          displayConfig.strategy = QgsProjectProgressiveDisplay::RenderingStrategy::Immediate;
+          displayConfig.batchSize = 2;
+          displayConfig.refreshIntervalMs = 300;
+        }
+        
+        displayConfig.enableLayerExtents = true;
+        displayConfig.enableProgressIndicator = true;
+        progressiveDisplay->setDisplayConfig( displayConfig );
+        
+        // Connect progressive display to parallel loader events
+        connect( &parallelLoader, &QgsParallelLayerLoader::layerLoaded,
+                 progressiveDisplay, &QgsProjectProgressiveDisplay::onLayerLoaded );
+        
+        connect( &parallelLoader, &QgsParallelLayerLoader::layerLoadFailed,
+                 progressiveDisplay, &QgsProjectProgressiveDisplay::onLayerLoadFailed );
+        
+        // Start progressive display
+        progressiveDisplay->startDisplay( this );
+      }
+      
+      // Load layers in parallel
+      const bool parallelSuccess = parallelLoader.loadLayers( layerElements, this, context );
+      
+      if ( parallelSuccess )
+      {
+        // Clean up progressive display
+        if ( progressiveDisplay )
+        {
+          progressiveDisplay->stopDisplay();
+          progressiveDisplay->deleteLater();
+        }
+        
+        // Get statistics from parallel loader
+        const QgsParallelLayerLoader::LoadingStatistics stats = parallelLoader.getStatistics();
+        QgsDebugMsgLevel( QStringLiteral( "Parallel loading completed: %1 layers loaded in parallel, %2 sequential, %3 failed" )
+                          .arg( stats.layersLoadedInParallel )
+                          .arg( stats.layersLoadedSequentially )
+                          .arg( stats.layersWithErrors ), 2 );
+        
+        emit layerLoaded( totalLayerCount, totalLayerCount );
+        return returnStatus && stats.layersWithErrors == 0; // Success if no errors
+      }
+      else
+      {
+        QgsDebugMsgLevel( QStringLiteral( "Parallel layer loading failed, falling back to sequential loading" ), 2 );
+        // Fall through to traditional loading method
+      }
+    }
+  }
 
   QVector<QDomNode> parallelLoading;
   QMap<QString, QgsDataProvider *> loadedProviders;
@@ -2024,6 +2190,147 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   // avoid multiple emission of snapping updated signals
   ScopedIntIncrementor snapSignalBlock( &mBlockSnappingUpdates );
 
+  // Initialize performance monitoring for large files
+  QgsProjectLoadingPerformance *perfMonitor = new QgsProjectLoadingPerformance( this );
+  bool shouldMonitorPerformance = false;
+
+  // Check file size and determine loading strategy for large files
+  QFileInfo fileInfo( filename );
+  const qint64 fileSizeMB = fileInfo.size() / ( 1024 * 1024 );
+  
+  // Start performance monitoring for files larger than 10MB
+  if ( fileSizeMB >= 10 ) {
+    shouldMonitorPerformance = true;
+    QString expectedStrategy = QStringLiteral( "Standard" );
+    
+    // Determine the best loading strategy based on file size
+    // Use streaming parser for extremely large files (>200MB)
+    const qint64 streamingThresholdMB = 200;
+    
+    // Use progressive loading for files larger than 50MB (configurable threshold)
+    // unless explicitly disabled via flags
+    const qint64 progressiveThresholdMB = QgsSettingsRegistryCore::settingsProgressiveLoaderThresholdMB ? 
+                                          QgsSettingsRegistryCore::settingsProgressiveLoaderThresholdMB->value() : 50;
+    
+    if ( fileSizeMB >= streamingThresholdMB && 
+         !( flags & Qgis::ProjectReadFlag::DontUseProgressiveLoader ) &&
+         QgsSettingsRegistryCore::settingsUseProgressiveLoader &&
+         QgsSettingsRegistryCore::settingsUseProgressiveLoader->value() )
+    {
+      expectedStrategy = QStringLiteral( "Streaming" );
+    }
+    else if ( fileSizeMB >= progressiveThresholdMB && 
+              !( flags & Qgis::ProjectReadFlag::DontUseProgressiveLoader ) &&
+              QgsSettingsRegistryCore::settingsUseProgressiveLoader &&
+              QgsSettingsRegistryCore::settingsUseProgressiveLoader->value() )
+    {
+      expectedStrategy = QStringLiteral( "Progressive" );
+    }
+    
+    perfMonitor->startMonitoring( filename, expectedStrategy );
+  }
+  
+  // Determine the best loading strategy based on file size
+  const qint64 streamingThresholdMB = 200;
+  const qint64 progressiveThresholdMB = QgsSettingsRegistryCore::settingsProgressiveLoaderThresholdMB ? 
+                                        QgsSettingsRegistryCore::settingsProgressiveLoaderThresholdMB->value() : 50;
+
+  // Use streaming parser for extremely large files (>200MB)
+  if ( fileSizeMB >= streamingThresholdMB && 
+       !( flags & Qgis::ProjectReadFlag::DontUseProgressiveLoader ) &&
+       QgsSettingsRegistryCore::settingsUseProgressiveLoader &&
+       QgsSettingsRegistryCore::settingsUseProgressiveLoader->value() )
+  {
+    QgsDebugMsgLevel( QStringLiteral( "Using streaming parser for very large project file (%1 MB)" ).arg( fileSizeMB ), 2 );
+    
+    // Use streaming parser for very large files
+    QgsProjectStreamingParser streamingParser;
+    
+    // Configure parser based on file size and available memory
+    QgsProjectStreamingParser::ParsingConfig config;
+    config.strategy = QgsProjectStreamingParser::ParsingStrategy::Progressive;
+    config.maxMemoryUsageMB = qMin( 1024, static_cast<int>( fileSizeMB / 4 ) ); // Use max 1GB or 1/4 of file size
+    config.enableParallelProcessing = true;
+    config.enableLazyLoading = true;
+    
+    if ( fileSizeMB > 500 ) {
+      // For extremely large files, be more aggressive with memory management
+      config.strategy = QgsProjectStreamingParser::ParsingStrategy::LazyLoad;
+      config.maxMemoryUsageMB = 512; // Limit to 512MB for huge files
+    }
+    
+    streamingParser.setParsingConfig( config );
+    
+    // Set performance monitoring if active
+    if ( shouldMonitorPerformance ) {
+      perfMonitor->setProgressiveLoaderUsed( false ); // Using streaming instead
+      perfMonitor->setParallelThreadsUsed( 1 ); // Streaming is currently single-threaded
+    }
+    
+    const bool result = streamingParser.parseProjectFile( filename, this );
+    
+    // Stop performance monitoring
+    if ( shouldMonitorPerformance ) {
+      perfMonitor->stopMonitoring();
+      
+      // Save performance metrics for future baseline comparison
+      const QString perfFilePath = QStringLiteral( "%1.perf.json" ).arg( filename );
+      perfMonitor->saveToFile( perfFilePath );
+      
+      QgsDebugMsgLevel( perfMonitor->getPerformanceSummary(), 2 );
+    }
+    
+    return result;
+  }
+  
+  // Use progressive loading for files larger than 50MB (configurable threshold)
+  // unless explicitly disabled via flags
+  else if ( fileSizeMB >= progressiveThresholdMB && 
+       !( flags & Qgis::ProjectReadFlag::DontUseProgressiveLoader ) &&
+       QgsSettingsRegistryCore::settingsUseProgressiveLoader &&
+       QgsSettingsRegistryCore::settingsUseProgressiveLoader->value() )
+  {
+    QgsDebugMsgLevel( QStringLiteral( "Using progressive loading for large project file (%1 MB)" ).arg( fileSizeMB ), 2 );
+    
+    // Use progressive loader for large files
+    QgsProgressiveProjectLoader progressiveLoader;
+    
+    // Configure loader based on file size
+    QgsProgressiveProjectLoader::LoadingConfig config = progressiveLoader.getLoadingConfig();
+    if ( fileSizeMB > 200 ) {
+      config.maxParallelThreads = qMin( 8, QThread::idealThreadCount() );
+      config.enableLayerCaching = true;
+      config.enableLazyLoading = true;
+    } else if ( fileSizeMB > 100 ) {
+      config.maxParallelThreads = qMin( 6, QThread::idealThreadCount() );
+      config.enableLayerCaching = true;
+    } else {
+      config.maxParallelThreads = qMin( 4, QThread::idealThreadCount() );
+    }
+    progressiveLoader.setLoadingConfig( config );
+    
+    // Set performance monitoring if active
+    if ( shouldMonitorPerformance ) {
+      perfMonitor->setProgressiveLoaderUsed( true );
+      perfMonitor->setParallelThreadsUsed( config.maxParallelThreads );
+    }
+    
+    const bool result = progressiveLoader.loadProject( filename, this );
+    
+    // Stop performance monitoring
+    if ( shouldMonitorPerformance ) {
+      perfMonitor->stopMonitoring();
+      
+      // Save performance metrics for future baseline comparison
+      const QString perfFilePath = QStringLiteral( "%1.perf.json" ).arg( filename );
+      perfMonitor->saveToFile( perfFilePath );
+      
+      QgsDebugMsgLevel( perfMonitor->getPerformanceSummary(), 2 );
+    }
+    
+    return result;
+  }
+
   QFile projectFile( filename );
   clearError();
 
@@ -2066,6 +2373,11 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
     projectString.replace( QChar( i ), QStringLiteral( "%1%2%1" ).arg( FONTMARKER_CHR_FIX, QString::number( i ) ) );
   }
 
+  // Start XML parsing performance tracking
+  if ( shouldMonitorPerformance ) {
+    perfMonitor->startComponent( QStringLiteral( "xml_parsing" ) );
+  }
+
   // location of problem associated with errorMsg
   int line, column;
   QString errorMsg;
@@ -2077,6 +2389,11 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
     setError( errorString );
 
     return false;
+  }
+
+  // End XML parsing performance tracking
+  if ( shouldMonitorPerformance ) {
+    perfMonitor->endComponent( QStringLiteral( "xml_parsing" ) );
   }
 
   projectFile.close();
@@ -2358,10 +2675,20 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   // get the map layers
   profile.switchTask( tr( "Reading map layers" ) );
 
+  // Start layer loading performance tracking
+  if ( shouldMonitorPerformance ) {
+    perfMonitor->startComponent( QStringLiteral( "layer_loading" ) );
+  }
+
   loadProjectFlags( doc.get() );
 
   QList<QDomNode> brokenNodes;
   const bool clean = _getMapLayers( *doc, brokenNodes, flags );
+
+  // End layer loading performance tracking
+  if ( shouldMonitorPerformance ) {
+    perfMonitor->endComponent( QStringLiteral( "layer_loading" ) );
+  }
 
   // review the integrity of the retrieved map layers
   if ( !clean && !( flags & Qgis::ProjectReadFlag::DontResolveLayers ) )
@@ -2388,6 +2715,12 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   // Resolve references to other layers
   // Needs to be done here once all dependent layers are loaded
   profile.switchTask( tr( "Resolving layer references" ) );
+  
+  // Start dependency resolution performance tracking
+  if ( shouldMonitorPerformance ) {
+    perfMonitor->startComponent( QStringLiteral( "dependency_resolution" ) );
+  }
+  
   QMap<QString, QgsMapLayer *> layers = mLayerStore->mapLayers();
   for ( QMap<QString, QgsMapLayer *>::iterator it = layers.begin(); it != layers.end(); ++it )
   {
@@ -2400,6 +2733,11 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   // now that layers are loaded, we can resolve layer tree's references to the layers
   profile.switchTask( tr( "Resolving references" ) );
   mRootGroup->resolveReferences( this );
+
+  // End dependency resolution performance tracking
+  if ( shouldMonitorPerformance ) {
+    perfMonitor->endComponent( QStringLiteral( "dependency_resolution" ) );
+  }
 
   // we need to migrate old fashion designed QgsSymbolLayerReference to new ones
   if ( QgsProjectVersion( 3, 28, 0 ) > mSaveVersion )
@@ -2534,7 +2872,18 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   if ( !( flags & Qgis::ProjectReadFlag::DontLoadLayouts ) )
   {
     profile.switchTask( tr( "Loading layouts" ) );
+    
+    // Start layout loading performance tracking
+    if ( shouldMonitorPerformance ) {
+      perfMonitor->startComponent( QStringLiteral( "layout_loading" ) );
+    }
+    
     mLayoutManager->readXml( doc->documentElement(), *doc );
+    
+    // End layout loading performance tracking
+    if ( shouldMonitorPerformance ) {
+      perfMonitor->endComponent( QStringLiteral( "layout_loading" ) );
+    }
   }
 
   {
@@ -2689,6 +3038,17 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
         vl->startEditing();
       it.value()->removeCustomProperty( QStringLiteral( "_layer_was_editable" ) );
     }
+  }
+
+  // Stop performance monitoring for standard loading path
+  if ( shouldMonitorPerformance ) {
+    perfMonitor->stopMonitoring();
+    
+    // Save performance metrics for future baseline comparison
+    const QString perfFilePath = QStringLiteral( "%1.perf.json" ).arg( filename );
+    perfMonitor->saveToFile( perfFilePath );
+    
+    QgsDebugMsgLevel( perfMonitor->getPerformanceSummary(), 2 );
   }
 
   return true;

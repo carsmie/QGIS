@@ -115,6 +115,10 @@ const QgsSettingsEntryInteger *QgsSettingsRegistryCore::settingsLayerParallelLoa
 
 const QgsSettingsEntryBool *QgsSettingsRegistryCore::settingsLayerParallelLoading = new QgsSettingsEntryBool( QStringLiteral( "provider-parallel-loading" ), QgsSettingsTree::sTreeCore, true, QStringLiteral( "Load layers in parallel (only available for some providers (GDAL and PostgreSQL)" ), Qgis::SettingsOption() );
 
+const QgsSettingsEntryBool *QgsSettingsRegistryCore::settingsUseProgressiveLoader = new QgsSettingsEntryBool( QStringLiteral( "use-progressive-loader" ), QgsSettingsTree::sTreeCore, true, QStringLiteral( "Use progressive loader for large project files" ), Qgis::SettingsOption() );
+
+const QgsSettingsEntryInteger *QgsSettingsRegistryCore::settingsProgressiveLoaderThresholdMB = new QgsSettingsEntryInteger( QStringLiteral( "progressive-loader-threshold-mb" ), QgsSettingsTree::sTreeCore, 50, QStringLiteral( "File size threshold for progressive loading (MB)" ), Qgis::SettingsOption(), 10 );
+
 const QgsSettingsEntryString *QgsSettingsRegistryCore::settingsNetworkCacheDirectory = new QgsSettingsEntryString( QStringLiteral( "directory" ), QgsSettingsTree::sTreeNetworkCache, QString(), QStringLiteral( "Network disk cache directory" ) );
 
 const QgsSettingsEntryInteger64 *QgsSettingsRegistryCore::settingsNetworkCacheSize = new QgsSettingsEntryInteger64( QStringLiteral( "size-bytes" ), QgsSettingsTree::sTreeNetworkCache, 0, QStringLiteral( "Network disk cache size in bytes (0 = automatic size)" ) );
