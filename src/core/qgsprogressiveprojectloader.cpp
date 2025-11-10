@@ -8,6 +8,7 @@
 
 #include "qgsprogressiveprojectloader.h"
 #include "qgsproject.h"
+#include "qgssettings.h"
 #include <QThread>
 #include "qgsmaplayer.h"
 #include "qgsvectorlayer.h"
@@ -473,6 +474,13 @@ QgsProgressiveProjectLoader::LoadingConfig QgsProgressiveProjectLoader::getLoadi
 void QgsProgressiveProjectLoader::setLoadingConfig( const LoadingConfig &config )
 {
   mConfig = config;
+  
+  // Override with QgsSettings optimizations if enabled
+  QgsSettings settings;
+  if ( settings.value( QStringLiteral( "qgis/defer_style_loading" ), false ).toBool() )
+  {
+    mConfig.deferStyleLoading = true;
+  }
 }
 
 void QgsProgressiveProjectLoader::clearCache()

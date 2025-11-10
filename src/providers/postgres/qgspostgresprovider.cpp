@@ -3749,10 +3749,17 @@ bool QgsPostgresProvider::empty() const
 
 QgsRectangle QgsPostgresProvider::extent() const
 {
-  // Performance optimization: Skip extent calculation if requested
+  // Performance optimization: Skip extent calculation if requested via read flags
   if ( ( mReadFlags & Qgis::DataProviderReadFlag::SkipGetExtent ) != 0 )
   {
     return QgsRectangle(); // Return empty rectangle
+  }
+
+  // Performance optimization: Check QgsSettings for skip extent calculation optimization
+  QgsSettings settings;
+  if ( settings.value( QStringLiteral( "PostgreSQL/skip_extent_calculation" ), false ).toBool() )
+  {
+    return QgsRectangle(); // Return empty rectangle when optimization is enabled
   }
   
   return extent3D().toRectangle();
