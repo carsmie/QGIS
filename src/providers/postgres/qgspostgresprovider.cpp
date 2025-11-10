@@ -23,6 +23,7 @@
 #include "qgsprojectstorageregistry.h"
 #include "qgslayermetadataproviderregistry.h"
 #include "qgsrectangle.h"
+#include "qgssettings.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgsxmlutils.h"
 #include "qgsvectorlayer.h"
@@ -3656,10 +3657,17 @@ QString QgsPostgresProvider::subsetStringHelpUrl() const
 
 long long QgsPostgresProvider::featureCount() const
 {
-  // Performance optimization: Skip feature count if requested
+  // Performance optimization: Skip feature count if requested via read flags
   if ( ( mReadFlags & Qgis::DataProviderReadFlag::SkipFeatureCount ) != 0 )
   {
     return -1; // Indicate unknown feature count
+  }
+
+  // Performance optimization: Check QgsSettings for skip feature count optimization
+  QgsSettings settings;
+  if ( settings.value( QStringLiteral( "PostgreSQL/skip_feature_count" ), false ).toBool() )
+  {
+    return -1; // Indicate unknown feature count when optimization is enabled
   }
 
   long long featuresCounted = mShared->featuresCounted();

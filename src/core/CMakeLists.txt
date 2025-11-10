@@ -520,6 +520,7 @@ set(QGIS_CORE_SRCS
   qgslegendrenderer.cpp
   qgslegendsettings.cpp
   qgslegendstyle.cpp
+  qgsloadingprofile.cpp
   qgslocaldefaultsettings.cpp
   qgslocalec.cpp
   qgslocalizeddatapathregistry.cpp
@@ -1230,6 +1231,7 @@ set(QGIS_CORE_HDRS
   qgslegendrenderer.h
   qgslegendsettings.h
   qgslegendstyle.h
+  qgsloadingprofile.h
   qgslocaldefaultsettings.h
   qgslocalec.h
   qgslocalizeddatapathregistry.h

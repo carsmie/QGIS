@@ -29,8 +29,10 @@
 #include "qgspostgresconnpool.h"
 #include "qgsvariantutils.h"
 #include "qgsdbquerylog.h"
+#include "qgsloadingprofile.h"
 #include "qgsdbquerylog_p.h"
 #include "qgsapplication.h"
+#include "qgsloadingprofile.h"
 
 #include <QApplication>
 #include <QStringList>
@@ -190,18 +192,32 @@ QgsPostgresConn *QgsPostgresConn::connectDb( const QString &conninfo, bool reado
 
   if ( shared )
   {
-    // Performance optimization: Use connection pool for read-only shared connections
-    // when possible to reduce connection overhead
-    if ( readonly && !transaction && QgsSettings().value( QStringLiteral( "PostgreSQL/use_connection_pool" ), true ).toBool() )
+    // Enhanced performance optimization: Use connection pool for read-only shared connections
+    // Check settings for connection pooling preference (default: enabled)
+    QgsSettings settings;
+    bool useConnectionPool = settings.value( QStringLiteral( "PostgreSQL/use_connection_pool" ), true ).toBool();
+    
+    // Check if connection pooling optimization is explicitly enabled via settings
+    // This allows QgsLoadingProfile or other components to enable pooling via settings
+    bool enablePoolingOptimization = settings.value( 
+      QStringLiteral( "PostgreSQL/enable_connection_pooling_optimization" ), false ).toBool();
+    
+    if ( enablePoolingOptimization )
     {
-      try {
+      useConnectionPool = true;
+      QgsDebugMsgLevel( QStringLiteral( "Connection pooling optimization enabled via settings" ), 2 );
+    }
+    
+    // For read-only, non-transactional connections, try to use connection pool
+    if ( readonly && !transaction && useConnectionPool )
+    {
+      try 
+      {
         conn = QgsPostgresConnPool::instance()->acquireConnection( conninfo );
         if ( conn )
         {
           QgsDebugMsgLevel(
-            QStringLiteral(
-              "Using pooled connection for %1 (%2)"
-            )
+            QStringLiteral( "Using pooled connection for %1 (%2)" )
               .arg( conninfo )
               .arg( reinterpret_cast<std::uintptr_t>( conn ) ),
             2
