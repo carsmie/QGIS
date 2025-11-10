@@ -168,6 +168,64 @@ const QgsSettingsEntryInteger *QgsApplication::settingsConnectionPoolMaximumConc
 
 #define CONN_POOL_MAX_CONCURRENT_CONNS      4
 
+struct QgsApplication::ApplicationMembers
+{
+  std::unique_ptr<QgsSettingsRegistryCore > mSettingsRegistryCore;
+  std::unique_ptr<QgsCoordinateReferenceSystemRegistry > mCrsRegistry;
+  std::unique_ptr<Qgs3DRendererRegistry > m3DRendererRegistry;
+  std::unique_ptr<Qgs3DSymbolRegistry > m3DSymbolRegistry;
+  std::unique_ptr<QgsActionScopeRegistry > mActionScopeRegistry;
+  std::unique_ptr<QgsAnnotationRegistry > mAnnotationRegistry;
+  std::unique_ptr<QgsColorSchemeRegistry > mColorSchemeRegistry;
+  std::unique_ptr<QgsLocalizedDataPathRegistry > mLocalizedDataPathRegistry;
+  std::unique_ptr<QgsNumericFormatRegistry > mNumericFormatRegistry;
+  std::unique_ptr<QgsFieldFormatterRegistry > mFieldFormatterRegistry;
+  std::unique_ptr<QgsGpsConnectionRegistry > mGpsConnectionRegistry;
+  std::unique_ptr<QgsBabelFormatRegistry > mGpsBabelFormatRegistry;
+  std::unique_ptr<QgsNetworkContentFetcherRegistry > mNetworkContentFetcherRegistry;
+  std::unique_ptr<QgsScaleBarRendererRegistry > mScaleBarRendererRegistry;
+  std::unique_ptr<QgsLabelingEngineRuleRegistry > mLabelingEngineRuleRegistry;
+  std::unique_ptr<QgsValidityCheckRegistry > mValidityCheckRegistry;
+  std::unique_ptr<QgsMessageLog > mMessageLog;
+  std::unique_ptr<QgsPaintEffectRegistry > mPaintEffectRegistry;
+  std::unique_ptr<QgsPluginLayerRegistry > mPluginLayerRegistry;
+  std::unique_ptr<QgsClassificationMethodRegistry > mClassificationMethodRegistry;
+  std::unique_ptr<QgsProcessingRegistry > mProcessingRegistry;
+  std::unique_ptr<QgsConnectionRegistry > mConnectionRegistry;
+  std::unique_ptr<QgsProjectStorageRegistry > mProjectStorageRegistry;
+  std::unique_ptr<QgsLayerMetadataProviderRegistry > mLayerMetadataProviderRegistry;
+  std::unique_ptr<QgsExternalStorageRegistry > mExternalStorageRegistry;
+  std::unique_ptr<QgsProfileSourceRegistry > mProfileSourceRegistry;
+  std::unique_ptr<QgsPageSizeRegistry > mPageSizeRegistry;
+  std::unique_ptr<QgsRasterRendererRegistry > mRasterRendererRegistry;
+  std::unique_ptr<QgsRendererRegistry > mRendererRegistry;
+  std::unique_ptr<QgsPointCloudRendererRegistry > mPointCloudRendererRegistry;
+  std::unique_ptr<QgsTiledSceneRendererRegistry > mTiledSceneRendererRegistry;
+  std::unique_ptr<QgsSvgCache > mSvgCache;
+  std::unique_ptr<QgsImageCache > mImageCache;
+  std::unique_ptr<QgsSourceCache > mSourceCache;
+  std::unique_ptr<QgsSymbolLayerRegistry > mSymbolLayerRegistry;
+  std::unique_ptr<QgsCalloutRegistry > mCalloutRegistry;
+  std::unique_ptr<QgsTaskManager > mTaskManager;
+  std::unique_ptr<QgsLayoutItemRegistry > mLayoutItemRegistry;
+  std::unique_ptr<QgsAnnotationItemRegistry > mAnnotationItemRegistry;
+  std::unique_ptr<QgsSensorRegistry > mSensorRegistry;
+  std::unique_ptr<QgsPlotRegistry > mPlotRegistry;
+  std::unique_ptr<QgsBookmarkManager > mBookmarkManager;
+  std::unique_ptr<QgsTileDownloadManager > mTileDownloadManager;
+  std::unique_ptr<QgsStyleModel > mStyleModel;
+  std::unique_ptr<QgsRecentStyleHandler > mRecentStyleHandler;
+  std::unique_ptr<QgsDatabaseQueryLog > mQueryLogger;
+  std::unique_ptr<QgsFontManager > mFontManager;
+  QString mNullRepresentation;
+  QStringList mSvgPathCache;
+  bool mSvgPathCacheValid = false;
+
+  ApplicationMembers();
+  ~ApplicationMembers();
+};
+
+
 QObject *ABISYM( QgsApplication::mFileOpenEventReceiver ) = nullptr;
 bool ABISYM( QgsApplication::mInitialized ) = false;
 bool ABISYM( QgsApplication::mRunningFromBuildDir ) = false;
@@ -221,7 +279,14 @@ QgsApplication::QgsApplication( int &argc, char **argv, bool GUIenabled, const Q
   if ( platformName != QLatin1String( "desktop" ) )
   {
     mApplicationMembers = std::make_unique<ApplicationMembers>();
-    mApplicationMembers->mSettingsRegistryCore->migrateOldSettings();
+    try
+    {
+      mApplicationMembers->mSettingsRegistryCore->migrateOldSettings();
+    }
+    catch ( QgsSettingsException &e )
+    {
+      QgsDebugError( QStringLiteral( "Error migrating old settings: %1" ).arg( e.what() ) );
+    }
   }
   else
   {
@@ -292,6 +357,7 @@ void registerMetaTypes()
   qRegisterMetaType<QMap<QNetworkRequest::Attribute, QVariant>>( "QMap<QNetworkRequest::Attribute,QVariant>" );
   qRegisterMetaType<QMap<QNetworkRequest::KnownHeaders, QVariant>>( "QMap<QNetworkRequest::KnownHeaders,QVariant>" );
   qRegisterMetaType<QList<QNetworkReply::RawHeaderPair>>( "QList<QNetworkReply::RawHeaderPair>" );
+  qRegisterMetaType<QNetworkReply::NetworkError>( "QNetworkReply::NetworkError" );
   qRegisterMetaType< QAuthenticator * >( "QAuthenticator*" );
   qRegisterMetaType< QgsGpsInformation >( "QgsGpsInformation" );
   qRegisterMetaType< QgsSensorThingsExpansionDefinition >( "QgsSensorThingsExpansionDefinition" );
@@ -310,7 +376,14 @@ void QgsApplication::init( QString profileFolder )
   if ( platform() == QLatin1String( "desktop" ) )
   {
     instance()->mApplicationMembers = std::make_unique<ApplicationMembers>();
-    instance()->mApplicationMembers->mSettingsRegistryCore->migrateOldSettings();
+    try
+    {
+      instance()->mApplicationMembers->mSettingsRegistryCore->migrateOldSettings();
+    }
+    catch ( QgsSettingsException &e )
+    {
+      QgsDebugError( QStringLiteral( "Error migrating old settings: %1" ).arg( e.what() ) );
+    }
   }
 
   if ( profileFolder.isEmpty() )
@@ -327,9 +400,8 @@ void QgsApplication::init( QString profileFolder )
     // This doesn't get this hit for QGIS Desktop because we setup the profile via main
     QString rootProfileFolder = QgsUserProfileManager::resolveProfilesFolder( profileFolder );
     QgsUserProfileManager manager( rootProfileFolder );
-    QgsUserProfile *profile = manager.getProfile();
+    std::unique_ptr< QgsUserProfile > profile = manager.getProfile();
     profileFolder = profile->folder();
-    delete profile;
   }
 
   *sProfilePath() = profileFolder;
@@ -577,7 +649,16 @@ void QgsApplication::installTranslators()
 QgsApplication::~QgsApplication()
 {
   if ( mApplicationMembers )
-    mApplicationMembers->mSettingsRegistryCore->backwardCompatibility();
+  {
+    try
+    {
+      mApplicationMembers->mSettingsRegistryCore->backwardCompatibility();
+    }
+    catch ( QgsSettingsException &e )
+    {
+      QgsDebugError( QStringLiteral( "An error occurred while performing backwards compatibility for settings: %1" ).arg( e.what() ) );
+    }
+  }
 
   // we do this here as well as in exitQgis() -- it's safe to call as often as we want,
   // and there's just a *chance* that someone hasn't properly called exitQgis prior to
@@ -2190,6 +2271,26 @@ void QgsApplication::setCustomVariable( const QString &name, const QVariant &val
   emit instance()->customVariablesChanged();
 }
 
+QStringList QgsApplication::temporarilyTrustedProjectsFolders()
+{
+  return instance()->mTemporarilyTrustedProjectFolders;
+}
+
+void QgsApplication::setTemporarilyTrustedProjectsFolders( const QStringList &trustedProjectsFolders )
+{
+  instance()->mTemporarilyTrustedProjectFolders = trustedProjectsFolders;
+}
+
+QStringList QgsApplication::temporarilyUntrustedProjectsFolders()
+{
+  return instance()->mTemporarilyUntrustedProjectFolders;
+}
+
+void QgsApplication::setTemporarilyUntrustedProjectsFolders( const QStringList &untrustedProjectsFolders )
+{
+  instance()->mTemporarilyUntrustedProjectFolders = untrustedProjectsFolders;
+}
+
 int QgsApplication::scaleIconSize( int standardSize, bool applyDevicePixelRatio )
 {
   QFontMetrics fm( ( QFont() ) );
@@ -3003,7 +3104,6 @@ QgsApplication::ApplicationMembers::~ApplicationMembers()
   mFieldFormatterRegistry.reset();
   mGpsConnectionRegistry.reset();
   mGpsBabelFormatRegistry.reset();
-  mMessageLog.reset();
   mPaintEffectRegistry.reset();
   mPluginLayerRegistry.reset();
   mProcessingRegistry.reset();
@@ -3037,6 +3137,7 @@ QgsApplication::ApplicationMembers::~ApplicationMembers()
   mLocalizedDataPathRegistry.reset();
   mCrsRegistry.reset();
   mQueryLogger.reset();
+  mMessageLog.reset();
 }
 
 QgsApplication::ApplicationMembers *QgsApplication::members()

@@ -1310,7 +1310,7 @@ bool QgsMssqlProvider::addAttributes( const QList<QgsField> &attributes )
 
     attributeClauses.append( QStringLiteral( "[%1] %2" ).arg( it->name(), type ) );
   }
-  statement += attributeClauses.join( QStringLiteral( ", " ) );
+  statement += attributeClauses.join( QLatin1String( ", " ) );
 
   QSqlQuery query = createQuery();
   query.setForwardOnly( true );
@@ -3156,9 +3156,8 @@ bool QgsMssqlProvider::getExtentFromGeometryColumns( QgsRectangle &extent ) cons
 
   const QString statement = sql.arg( QgsMssqlUtils::quotedValue( mTableName ), QgsMssqlUtils::quotedValue( mSchemaName ) );
 
-  if ( LoggedExec( query, statement ) && query.isActive() )
+  if ( LoggedExec( query, statement ) && query.isActive() && query.next() )
   {
-    query.next();
     if ( query.isValid() )
     {
       extent.setXMinimum( query.value( 0 ).toDouble() );
@@ -3183,9 +3182,8 @@ bool QgsMssqlProvider::getPrimaryKeyFromGeometryColumns( QStringList &primaryKey
                                       "WHERE f_table_name = %1 AND f_table_schema = %2 AND NOT qgis_pkey IS NULL" );
   const QString statement = sql.arg( QgsMssqlUtils::quotedValue( mTableName ), QgsMssqlUtils::quotedValue( mSchemaName ) );
 
-  if ( LoggedExec( query, statement ) && query.isActive() )
+  if ( LoggedExec( query, statement ) && query.isActive() && query.next() )
   {
-    query.next();
     if ( query.isValid() )
     {
       primaryKeys = query.value( 0 ).toString().split( ',' );

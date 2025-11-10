@@ -131,6 +131,7 @@
 %Include auto_generated/qgsmimedatautils.sip
 %Include auto_generated/qgsmultirenderchecker.sip
 %Include auto_generated/qgsobjectcustomproperties.sip
+%Include auto_generated/qgsobjectvisitor.sip
 %Include auto_generated/qgsofflineediting.sip
 %Include auto_generated/qgsogcutils.sip
 %Include auto_generated/qgsoptional.sip
@@ -216,6 +217,7 @@
 %Include auto_generated/qgsvirtuallayerdefinition.sip
 %Include auto_generated/qgsvirtuallayerdefinitionutils.sip
 %Include auto_generated/qgsvirtuallayertask.sip
+%Include auto_generated/qgswmsutils.sip
 %Include auto_generated/qgsxmlutils.sip
 %Include auto_generated/qgsziputils.sip
 %Include auto_generated/./3d/qgs3drendererregistry.sip
@@ -414,6 +416,7 @@
 %Include auto_generated/layertree/qgscolorramplegendnodesettings.sip
 %Include auto_generated/layertree/qgslayertree.sip
 %Include auto_generated/layertree/qgslayertreefiltersettings.sip
+%Include auto_generated/layertree/qgslayertreecustomnode.sip
 %Include auto_generated/layertree/qgslayertreegroup.sip
 %Include auto_generated/layertree/qgslayertreelayer.sip
 %Include auto_generated/layertree/qgslayertreemodel.sip
@@ -521,6 +524,7 @@
 %Include auto_generated/pdf/qgspdfrenderer.sip
 %Include auto_generated/plot/qgsbarchartplot.sip
 %Include auto_generated/plot/qgslinechartplot.sip
+%Include auto_generated/plot/qgspiechartplot.sip
 %Include auto_generated/plot/qgsplotregistry.sip
 %Include auto_generated/plot/qgsplot.sip
 %Include auto_generated/plot/qgsvectorlayerplotdatagatherer.sip

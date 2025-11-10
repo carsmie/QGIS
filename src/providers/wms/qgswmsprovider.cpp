@@ -4227,6 +4227,13 @@ bool QgsWmsProvider::isUrlForWMTS( const QString &url )
   return url.contains( QLatin1String( "SERVICE=WMTS" ), Qt::CaseInsensitive ) || url.contains( QLatin1String( "/WMTSCapabilities.xml" ), Qt::CaseInsensitive );
 }
 
+QVariantMap QgsWmsProvider::metadata() const
+{
+  QVariantMap metadata;
+  metadata.insert( QStringLiteral( "WmsVersion" ), mCaps.mCapabilities.version );
+  return metadata;
+}
+
 
 QgsWmsProvider *QgsWmsProviderMetadata::createProvider( const QString &uri, const QgsDataProvider::ProviderOptions &options, Qgis::DataProviderReadFlags flags )
 {
@@ -4925,7 +4932,7 @@ QgsCachedImageFetcher::QgsCachedImageFetcher( const QImage &img )
 
 void QgsCachedImageFetcher::start()
 {
-  QTimer::singleShot( 1, this, SLOT( send() ) );
+  QTimer::singleShot( 1, this, &QgsCachedImageFetcher::send );
 }
 
 

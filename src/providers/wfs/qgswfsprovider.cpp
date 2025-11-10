@@ -984,10 +984,7 @@ bool QgsWFSProvider::supportsSubsetString() const
 
 QgsAbstractFeatureSource *QgsWFSProvider::featureSource() const
 {
-  auto fs = new QgsBackgroundCachedFeatureSource( mShared );
-  /*connect( fs, SIGNAL( extentRequested( const QgsRectangle & ) ),
-           this, SLOT( extendExtent( const QgsRectangle & ) ) );*/
-  return fs;
+  return new QgsBackgroundCachedFeatureSource( mShared );
 }
 
 void QgsWFSProvider::reloadProviderData()
@@ -1003,7 +1000,7 @@ QDomElement QgsWFSProvider::geometryElement( const QgsGeometry &geometry, QDomDo
   bool applyAxisInversion;
   QgsOgcUtils::GMLVersion gmlVersion;
 
-  if ( mShared->mWFSVersion.startsWith( QLatin1String( "1.1" ) ) || mShared->mWFSVersion.startsWith( QLatin1String( "2" ) ) )
+  if ( mShared->mWFSVersion.startsWith( QLatin1String( "1.1" ) ) || mShared->mWFSVersion.startsWith( QLatin1Char( '2' ) ) )
   {
     // WFS 1.1.0 uses preferably GML 3, but ESRI mapserver in 2020 doesn't like it so we stick to GML2
     if ( !mShared->mServerPrefersCoordinatesForTransactions_1_1 )

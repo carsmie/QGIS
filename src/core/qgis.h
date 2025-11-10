@@ -162,6 +162,25 @@ class CORE_EXPORT Qgis
     Q_ENUM( MessageLevel )
 
     /**
+     * \brief Flags controlling behavior of network requests.
+     *
+     * \since QGIS 4.0
+     */
+    enum class NetworkRequestFlag : int SIP_ENUM_BASETYPE( IntFlag )
+    {
+      DisableMessageLogging = 1 << 0, //!< If present, indicates that no message logging should be performed when network errors are encountered
+    };
+    Q_ENUM( NetworkRequestFlag )
+
+    /**
+     * \brief Flags controlling behavior of network requests.
+     *
+     * \since QGIS 3.40
+     */
+    Q_DECLARE_FLAGS( NetworkRequestFlags, NetworkRequestFlag )
+    Q_FLAG( NetworkRequestFlags )
+
+    /**
      * Types of layers that can be added to a map
      *
      * \since QGIS 3.30. Prior to 3.30 this was available as QgsMapLayerType.
@@ -397,29 +416,44 @@ class CORE_EXPORT Qgis
     Q_FLAG( VectorLayerTypeFlags )
 
     /**
-     * Authorisation to run Python Embedded in projects
+     * Authorisation to run script embedded in projects
      * \since QGIS 3.40
      */
-    enum class PythonEmbeddedMode SIP_MONKEYPATCH_SCOPEENUM_UNNEST( Qgis, PythonMacroMode ) : int
+    enum class EmbeddedScriptMode SIP_MONKEYPATCH_SCOPEENUM_UNNEST( Qgis, PythonMacroMode ) : int
       {
-      Never = 0, //!< Python embedded never run
-      Ask = 1, //!< User is prompt before running
-      SessionOnly = 2, //!< Only during this session
-      Always = 3, //!< Python embedded is always run
-      NotForThisSession, //!< Python embedded will not be run for this session
+      Never = 0,              //!< Embedded scripts never run
+      Ask = 1,                //!< User is prompted before running scripts
+      SessionOnly = 2,        //!< Only during this session (only used prior to QGIS 4.0)
+      Always = 3,             //!< Embedded scripts are always run
+      NotForThisSession = 4,  //!< Embedded scripts will not be run for this session (only used prior to QGIS 4.0)
+      NeverAsk = 5,           //!< The user is never prompted, embedded scripts are only run on trusted projects and folders \since QGIS 4.0
     };
-    Q_ENUM( PythonEmbeddedMode )
+    Q_ENUM( EmbeddedScriptMode )
 
     /**
      * Type of Python Embedded in projects
      * \since QGIS 3.40
      */
-    enum class PythonEmbeddedType : int
+    enum class EmbeddedScriptType : int
     {
-      Macro = 0,
-      ExpressionFunction = 1,
+      Macro = 0,              //! Project macros
+      ExpressionFunction = 1, //! Expression functions
+      Action = 2,             //! Map layers' action \since QGIS 4.0
+      FormInitCode = 3,       //! Attribute forms' initiation code \since QGIS 4.0
     };
-    Q_ENUM( PythonEmbeddedType )
+    Q_ENUM( EmbeddedScriptType )
+
+    /**
+     * Project trust status
+     * \since QGIS 4.0
+     */
+    enum class ProjectTrustStatus : int
+    {
+      Undetermined = 0, //! The project trust has not yet been determined by the user
+      Trusted = 1,      //! The project has been determined by the user as trusted
+      Untrusted = 2,    //! The project has been determined by the user as untrusted
+    };
+    Q_ENUM( ProjectTrustStatus )
 
     /**
      * Flags which control data provider construction.
@@ -1358,6 +1392,7 @@ class CORE_EXPORT Qgis
       ResolveGeometryType = 1 << 1, //!< Attempt to resolve the geometry type for vector sublayers
       CountFeatures = 1 << 2, //!< Count features in vector sublayers
       IncludeSystemTables = 1 << 3, //!< Include system or internal tables (these are not included by default)
+      OpenLayersToResolveDescriptions = 1 << 4, //!< Attempt to open layers in order to resolve layer descriptions. May be slow and should never be done in a UI blocking call. \since QGIS 4.0
     };
     //! Sublayer query flags
     Q_DECLARE_FLAGS( SublayerQueryFlags, SublayerQueryFlag )
@@ -3281,6 +3316,19 @@ class CORE_EXPORT Qgis
     Q_ENUM( PlotAxisType )
 
     /**
+     * Pie chart label types.
+     *
+     * \since QGIS 4.0
+     */
+    enum class PieChartLabelType : int
+    {
+      NoLabels,       //!< Labels are not drawn
+      Categories, //!< Category labels are drawn
+      Values,    //!< Value labels are drawn
+    };
+    Q_ENUM( PieChartLabelType )
+
+    /**
      * DpiMode enum
      * \since QGIS 3.26
      */
@@ -3471,7 +3519,8 @@ class CORE_EXPORT Qgis
       Plugin SIP_MONKEYPATCH_COMPAT_NAME( TypePlugin ) = 7, //!< Plugin layers \since QGIS 3.22
       PointCloud SIP_MONKEYPATCH_COMPAT_NAME( TypePointCloud ) = 8, //!< Point cloud layers \since QGIS 3.22
       Annotation SIP_MONKEYPATCH_COMPAT_NAME( TypeAnnotation ) = 9, //!< Annotation layers \since QGIS 3.22
-      VectorTile SIP_MONKEYPATCH_COMPAT_NAME( TypeVectorTile ) = 10 //!< Vector tile layers \since QGIS 3.32
+      VectorTile SIP_MONKEYPATCH_COMPAT_NAME( TypeVectorTile ) = 10, //!< Vector tile layers \since QGIS 3.32
+      TiledScene = 11 //!< Tiled scene layers \since QGIS 4.0
     };
     Q_ENUM( ProcessingSourceType )
 
@@ -4305,6 +4354,7 @@ class CORE_EXPORT Qgis
       GPServer, //!< GPServer
       GeocodeServer, //!< GeocodeServer
       Unknown, //!< Other unknown/unsupported type
+      SceneServer, //!< SceneServer
     };
     Q_ENUM( ArcGisRestServiceType )
 
@@ -5447,6 +5497,19 @@ class CORE_EXPORT Qgis
     Q_ENUM( AttributeFormPythonInitCodeSource )
 
     /**
+     * Attribute form policy for reusing last entered values.
+     *
+     * \since QGIS 4.0
+     */
+    enum class AttributeFormReuseLastValuePolicy : int
+    {
+      NotAllowed = 0,       //!< Reuse of last values not allowed
+      AllowedDefaultOn = 1, //!< Reuse of last values allowed and enabled by default
+      AllowedDefaultOff = 2, //!< Reuse of last values allowed and disabled by default
+    };
+    Q_ENUM( AttributeFormReuseLastValuePolicy )
+
+    /**
      * Expression types
      *
      * \since QGIS 3.32
@@ -6029,6 +6092,38 @@ class CORE_EXPORT Qgis
     Q_ENUM( StacObjectType )
 
     /**
+     * Capabilities of a raster layer processing parameter.
+     * \since QGIS 4.0
+     */
+    enum class RasterProcessingParameterCapability : int SIP_ENUM_BASETYPE( IntFlag )
+    {
+      WmsScale = 1 << 0, //!< The parameter supports a reference scale for WMS source layers
+      WmsDpi = 1 << 1,   //!< The parameter supports a server resolution for WMS source layers
+    };
+    Q_ENUM( RasterProcessingParameterCapability )
+
+    /**
+     * Raster layer processing parameter capabilities.
+     * \since QGIS 4.0
+     */
+    Q_DECLARE_FLAGS( RasterProcessingParameterCapabilities, RasterProcessingParameterCapability )
+    Q_FLAG( RasterProcessingParameterCapabilities )
+
+    /**
+     * Dev tools node custom data roles.
+     * \since QGIS 4.0
+     */
+    enum class DevToolsNodeRole
+    {
+      Status = Qt::UserRole + 1, //!< Request status role
+      Id,                        //!< Request ID role
+      ElapsedTime,               //!< Elapsed time
+      MaximumTime,               //!< Maximum encountered elapsed time
+      Sort,                      //!< Sort order role
+    };
+    Q_ENUM( DevToolsNodeRole )
+
+    /**
      * Identify search radius in mm
      */
     static const double DEFAULT_SEARCH_RADIUS_MM;
@@ -6205,6 +6300,7 @@ class CORE_EXPORT Qgis
 QHASH_FOR_CLASS_ENUM( Qgis::CaptureTechnique )
 QHASH_FOR_CLASS_ENUM( Qgis::RasterAttributeTableFieldUsage )
 
+Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::NetworkRequestFlags )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::AnnotationItemFlags )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::AnnotationItemGuiFlags )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::AuthConfigurationStorageCapabilities )
@@ -6277,6 +6373,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::StringStatistics )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::RasterBandStatistics )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::RasterInterfaceCapabilities )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::RasterProviderCapabilities )
+Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::RasterProcessingParameterCapabilities )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::ProcessingProviderFlags )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::ProcessingAlgorithmFlags )
 Q_DECLARE_OPERATORS_FOR_FLAGS( Qgis::ProcessingAlgorithmDocumentationFlags )
