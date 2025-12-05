@@ -14,63 +14,64 @@
  ***************************************************************************/
 
 
-#include <random>
+#include "qgsexpressionfunction.h"
 
+#include <random>
+#include <sqlite3.h>
+
+#include "qgis.h"
+#include "qgsapplication.h"
+#include "qgscolorramp.h"
+#include "qgscolorrampimpl.h"
 #include "qgscoordinateformatter.h"
 #include "qgscoordinateutils.h"
-#include "qgsexpressionfunction.h"
-#include "qgsexpressionutils.h"
-#include "qgsexpressionnodeimpl.h"
-#include "qgsexiftools.h"
-#include "qgsfeaturerequest.h"
-#include "qgsgeos.h"
-#include "qgsstringutils.h"
-#include "qgsmultipoint.h"
-#include "qgsgeometryutils.h"
-#include "qgshstoreutils.h"
-#include "qgsmultilinestring.h"
-#include "qgslinestring.h"
-#include "qgscurvepolygon.h"
-#include "qgsmaptopixelgeometrysimplifier.h"
-#include "qgspolygon.h"
-#include "qgstriangle.h"
 #include "qgscurve.h"
-#include "qgsregularpolygon.h"
-#include "qgsquadrilateral.h"
-#include "qgsvariantutils.h"
-#include "qgsogcutils.h"
+#include "qgscurvepolygon.h"
 #include "qgsdistancearea.h"
-#include "qgsgeometryengine.h"
-#include "qgsexpressionsorter_p.h"
-#include "qgssymbollayerutils.h"
-#include "qgsstyle.h"
 #include "qgsexception.h"
-#include "qgsmessagelog.h"
-#include "qgsrasterlayer.h"
-#include "qgsvectorlayer.h"
-#include "qgsvectorlayerutils.h"
-#include "qgsrasterbandstats.h"
-#include "qgscolorramp.h"
-#include "qgsfieldformatterregistry.h"
-#include "qgsfieldformatter.h"
-#include "qgsvectorlayerfeatureiterator.h"
-#include "qgsproviderregistry.h"
-#include "sqlite3.h"
-#include "qgstransaction.h"
-#include "qgsthreadingutils.h"
-#include "qgsapplication.h"
-#include "qgis.h"
+#include "qgsexiftools.h"
 #include "qgsexpressioncontextutils.h"
-#include "qgsunittypes.h"
+#include "qgsexpressionnodeimpl.h"
+#include "qgsexpressionsorter_p.h"
+#include "qgsexpressionutils.h"
+#include "qgsfeaturerequest.h"
+#include "qgsfieldformatter.h"
+#include "qgsfieldformatterregistry.h"
+#include "qgsgeometryengine.h"
+#include "qgsgeometryutils.h"
+#include "qgsgeos.h"
+#include "qgshstoreutils.h"
+#include "qgslinestring.h"
+#include "qgsmaptopixelgeometrysimplifier.h"
+#include "qgsmessagelog.h"
+#include "qgsmultilinestring.h"
+#include "qgsmultipoint.h"
+#include "qgsogcutils.h"
+#include "qgspolygon.h"
+#include "qgsproviderregistry.h"
+#include "qgsquadrilateral.h"
+#include "qgsrasterbandstats.h"
+#include "qgsrasterlayer.h"
+#include "qgsregularpolygon.h"
 #include "qgsspatialindex.h"
-#include "qgscolorrampimpl.h"
+#include "qgsstringutils.h"
+#include "qgsstyle.h"
+#include "qgssymbollayerutils.h"
+#include "qgsthreadingutils.h"
+#include "qgstransaction.h"
+#include "qgstriangle.h"
+#include "qgsunittypes.h"
+#include "qgsvariantutils.h"
+#include "qgsvectorlayer.h"
+#include "qgsvectorlayerfeatureiterator.h"
+#include "qgsvectorlayerutils.h"
 
+#include <QCryptographicHash>
 #include <QMimeDatabase>
 #include <QProcessEnvironment>
-#include <QCryptographicHash>
 #include <QRegularExpression>
-#include <QUuid>
 #include <QUrlQuery>
+#include <QUuid>
 
 typedef QList<QgsExpressionFunction *> ExpressionFunctionList;
 
@@ -2904,6 +2905,29 @@ static QVariant fcnToDegreeMinuteSecond( const QVariantList &values, const QgsEx
 {
   QgsCoordinateFormatter::Format format = QgsCoordinateFormatter::FormatDegreesMinutesSeconds;
   return floatToDegreeFormat( format, values, context, parent, node );
+}
+
+static QVariant fcnExtractDegrees( const QVariantList &values, const QgsExpressionContext *, QgsExpression *parent, const QgsExpressionNodeFunction * )
+{
+  const double decimalDegrees = QgsExpressionUtils::getDoubleValue( values.at( 0 ), parent );
+  return static_cast< int >( decimalDegrees );
+}
+
+static QVariant fcnExtractMinutes( const QVariantList &values, const QgsExpressionContext *, QgsExpression *parent, const QgsExpressionNodeFunction * )
+{
+  const double absoluteDecimalDegrees = std::abs( QgsExpressionUtils::getDoubleValue( values.at( 0 ), parent ) );
+  const double remainder = absoluteDecimalDegrees - static_cast<int>( absoluteDecimalDegrees );
+  return static_cast< int >( remainder * 60 );
+}
+
+static QVariant fcnExtractSeconds( const QVariantList &values, const QgsExpressionContext *, QgsExpression *parent, const QgsExpressionNodeFunction * )
+{
+  const double absoluteDecimalDegrees = std::abs( QgsExpressionUtils::getDoubleValue( values.at( 0 ), parent ) );
+  const double remainder = absoluteDecimalDegrees - static_cast<int>( absoluteDecimalDegrees );
+  const double remainderInMinutes = remainder * 60;
+  const double remainderSecondsFraction = remainderInMinutes - static_cast< int >( remainderInMinutes );
+  // do not truncate to int, this function returns decimal seconds!
+  return remainderSecondsFraction * 60;
 }
 
 static QVariant fcnAge( const QVariantList &values, const QgsExpressionContext *, QgsExpression *parent, const QgsExpressionNodeFunction * )
@@ -8599,6 +8623,9 @@ const QList<QgsExpressionFunction *> &QgsExpression::Functions()
         << new QgsStaticExpressionFunction( QStringLiteral( "to_dm" ), QgsExpressionFunction::ParameterList() << QgsExpressionFunction::Parameter( QStringLiteral( "value" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "axis" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "precision" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "formatting" ), true ), fcnToDegreeMinute, QStringLiteral( "Conversions" ), QString(), false, QSet<QString>(), false, QStringList() << QStringLiteral( "todm" ) )
         << new QgsStaticExpressionFunction( QStringLiteral( "to_dms" ), QgsExpressionFunction::ParameterList() << QgsExpressionFunction::Parameter( QStringLiteral( "value" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "axis" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "precision" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "formatting" ), true ), fcnToDegreeMinuteSecond, QStringLiteral( "Conversions" ), QString(), false, QSet<QString>(), false, QStringList() << QStringLiteral( "todms" ) )
         << new QgsStaticExpressionFunction( QStringLiteral( "to_decimal" ), QgsExpressionFunction::ParameterList() << QgsExpressionFunction::Parameter( QStringLiteral( "value" ) ), fcnToDecimal, QStringLiteral( "Conversions" ), QString(), false, QSet<QString>(), false, QStringList() << QStringLiteral( "todecimal" ) )
+        << new QgsStaticExpressionFunction( QStringLiteral( "extract_degrees" ), { QgsExpressionFunction::Parameter{ QStringLiteral( "value" ) } }, fcnExtractDegrees, QStringLiteral( "Conversions" ) )
+        << new QgsStaticExpressionFunction( QStringLiteral( "extract_minutes" ), { QgsExpressionFunction::Parameter{ QStringLiteral( "value" ) } }, fcnExtractMinutes, QStringLiteral( "Conversions" ) )
+        << new QgsStaticExpressionFunction( QStringLiteral( "extract_seconds" ), { QgsExpressionFunction::Parameter{ QStringLiteral( "value" ) } }, fcnExtractSeconds, QStringLiteral( "Conversions" ) )
         << new QgsStaticExpressionFunction( QStringLiteral( "coalesce" ), -1, fcnCoalesce, QStringLiteral( "Conditionals" ), QString(), false, QSet<QString>(), false, QStringList(), true )
         << new QgsStaticExpressionFunction( QStringLiteral( "nullif" ), QgsExpressionFunction::ParameterList() << QgsExpressionFunction::Parameter( QStringLiteral( "value1" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "value2" ) ), fcnNullIf, QStringLiteral( "Conditionals" ) )
         << new QgsStaticExpressionFunction( QStringLiteral( "if" ), QgsExpressionFunction::ParameterList() << QgsExpressionFunction::Parameter( QStringLiteral( "condition" ) ) << QgsExpressionFunction::Parameter( QStringLiteral( "result_when_true" ) )  << QgsExpressionFunction::Parameter( QStringLiteral( "result_when_false" ) ), fcnIf, QStringLiteral( "Conditionals" ), QString(), false, QSet<QString>(), true )

@@ -19,8 +19,8 @@
 // We don't want to expose this in the public API
 #define SIP_NO_FILE
 
-#include "qgsattributesformview.h"
 #include "qgsattributesformtreeviewindicator.h"
+#include "qgsattributesformview.h"
 
 #include <QObject>
 
@@ -40,6 +40,7 @@ class QgsAttributesFormTreeViewIndicatorProvider : public QObject
 {
     Q_OBJECT
   public:
+
     /**
      * Constructor for QgsAttributesFormTreeViewIndicatorProvider.
      *
@@ -48,7 +49,7 @@ class QgsAttributesFormTreeViewIndicatorProvider : public QObject
     explicit QgsAttributesFormTreeViewIndicatorProvider( QgsAttributesFormBaseView *view );
 
     //! Returns whether the provider is enabled or not.
-    bool isEnabled();
+    bool isEnabled() const;
 
     /**
      * Enables or disables the provider.
@@ -58,6 +59,7 @@ class QgsAttributesFormTreeViewIndicatorProvider : public QObject
     void setEnabled( bool enabled );
 
   public slots:
+
     /**
      * Updates the state of a the indicator for the given \a item.
      *
@@ -104,6 +106,7 @@ class QgsFieldConstraintIndicatorProvider : public QgsAttributesFormTreeViewIndi
     Q_OBJECT
 
   public:
+
     /**
      * Constructor for QgsFieldConstraintIndicatorProvider.
      */
@@ -127,6 +130,7 @@ class QgsFieldDefaultValueIndicatorProvider : public QgsAttributesFormTreeViewIn
     Q_OBJECT
 
   public:
+
     /**
      * Constructor for QgsFieldDefaultValueIndicatorProvider.
      */

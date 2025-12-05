@@ -19,9 +19,10 @@
 #define QGSELEVATIONPROFILELAYERTREEVIEW_H
 
 #include "qgsconfig.h"
+
+#include "qgis_gui.h"
 #include "qgslayertreemodel.h"
 #include "qgslayertreeview.h"
-#include "qgis_gui.h"
 
 #include <QSortFilterProxyModel>
 #include <QTreeView>
@@ -48,6 +49,7 @@ class GUI_EXPORT QgsElevationProfileLayerTreeModel : public QgsLayerTreeModel
     Q_OBJECT
 
   public:
+
     /**
      * Construct a new tree model with given layer tree (root node must not be NULLPTR).
      * The root node is not transferred by the model.
@@ -89,6 +91,7 @@ class GUI_EXPORT QgsElevationProfileLayerTreeProxyModel : public QSortFilterProx
     Q_OBJECT
 
   public:
+
     /**
      * Constructor for QgsElevationProfileLayerTreeProxyModel.
      */
@@ -135,6 +138,7 @@ class GUI_EXPORT QgsElevationProfileLayerTreeView : public QgsLayerTreeViewBase
     QgsElevationProfileLayerTreeProxyModel *proxyModel();
 
   public slots:
+
     /**
      * Adds a custom node in the layer tree corresponding to a registered profile source.
      *
@@ -157,6 +161,13 @@ class GUI_EXPORT QgsElevationProfileLayerTreeView : public QgsLayerTreeViewBase
      */
     void removeNodeForUnregisteredSource( const QString &sourceId );
 
+    /**
+     * Adds any layers from a \a project which currently aren't within the profile's layer tree.
+     *
+     * \since QGIS 4.0
+     */
+    void populateMissingLayers( QgsProject *project );
+
   signals:
 
     /**
@@ -170,11 +181,6 @@ class GUI_EXPORT QgsElevationProfileLayerTreeView : public QgsLayerTreeViewBase
     void resizeEvent( QResizeEvent *event ) override;
 
   private:
-    /**
-     * Initially populates the tree view using layers from a \a project.
-     */
-    void populateInitialLayers( QgsProject *project );
-
     QgsElevationProfileLayerTreeModel *mModel = nullptr;
     QgsElevationProfileLayerTreeProxyModel *mProxyModel = nullptr;
     QgsLayerTree *mLayerTree = nullptr;

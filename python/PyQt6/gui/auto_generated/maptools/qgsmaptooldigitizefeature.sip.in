@@ -24,6 +24,7 @@ signal will then be emitted.
 #include "qgsmaptooldigitizefeature.h"
 %End
   public:
+
     QgsMapToolDigitizeFeature( QgsMapCanvas *canvas, QgsAdvancedDigitizingDockWidget *cadDockWidget, CaptureMode mode = QgsMapToolCapture::CaptureNone );
 %Docstring
 QgsMapToolDigitizeFeature is a map tool to digitize a feature geometry
@@ -83,6 +84,7 @@ Emitted when the digitizing process was interrupted by the user.
 %End
 
   protected:
+
     bool checkGeometryType() const;
 %Docstring
 Check if CaptureMode matches layer type. Default is ``True``.
@@ -93,8 +95,7 @@ Check if CaptureMode matches layer type. Default is ``True``.
 Check if CaptureMode matches layer type. Default is ``True``.
 %End
 
-    virtual void layerGeometryCaptured( const QgsGeometry &geometry ) ${SIP_FINAL};
-
+    void layerGeometryCaptured( const QgsGeometry &geometry ) final;
 %Docstring
 Called when the feature has been digitized.
 
