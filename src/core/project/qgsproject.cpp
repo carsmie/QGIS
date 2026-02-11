@@ -2016,6 +2016,8 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
 
   // avoid multiple emission of snapping updated signals
   ScopedIntIncrementor snapSignalBlock( &mBlockSnappingUpdates );
+  // defer expensive per-layer signal processing until all layers are loaded
+  ScopedIntIncrementor layerAddedBlock( &mBlockMapLayerAddedSignal );
   // defer mProjectScope.reset() calls until project loading is complete
   ScopedIntIncrementor scopeDeferBlock( &mScopeDeferralCount );
 
@@ -2651,6 +2653,27 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   scopeDeferBlock.release();
   mProjectScope.reset();
 
+  // Release the layer-added blocker and run a single catch-up pass for the
+  // dependency reconnection and transaction group work that was deferred
+  // while layers were being added one-by-one during project load.
+  layerAddedBlock.release();
+  {
+    const QMap<QString, QgsMapLayer *> &allLayers = mLayerStore->mapLayersRef();
+    for ( auto it = allLayers.cbegin(); it != allLayers.cend(); ++it )
+    {
+      const QSet<QgsMapLayerDependency> deps = it.value()->dependencies();
+      for ( const QgsMapLayerDependency &dep : deps )
+      {
+        if ( allLayers.contains( dep.layerId() ) )
+        {
+          it.value()->setDependencies( deps );
+          break;
+        }
+      }
+    }
+    updateTransactionGroups();
+  }
+
   snapSignalBlock.release();
   if ( !mBlockSnappingUpdates )
     emit snappingConfigChanged( mSnappingConfig );
@@ -2967,13 +2990,11 @@ void QgsProject::onMapLayersAdded( const QList<QgsMapLayer *> &layers )
 {
   QGIS_PROTECT_QOBJECT_THREAD_ACCESS
 
-  const QMap<QString, QgsMapLayer *> existingMaps = mapLayers();
-
   const auto constLayers = layers;
   for ( QgsMapLayer *layer : constLayers )
   {
     if ( ! layer->isValid() )
-      return;
+      continue;
 
     if ( QgsVectorLayer *vlayer = qobject_cast<QgsVectorLayer *>( layer ) )
     {
@@ -2984,8 +3005,17 @@ void QgsProject::onMapLayersAdded( const QList<QgsMapLayer *> &layers )
     }
 
     connect( layer, &QgsMapLayer::configChanged, this, [this] { setDirty(); } );
+  }
 
-    // check if we have to update connections for layers with dependencies
+  // Defer expensive O(n) work during project load — a single catch-up pass
+  // runs in readProjectFile() once all layers have been added.
+  if ( mBlockMapLayerAddedSignal )
+    return;
+
+  // check if we have to update connections for layers with dependencies
+  const QMap<QString, QgsMapLayer *> &existingMaps = mLayerStore->mapLayersRef();
+  for ( QgsMapLayer *layer : constLayers )
+  {
     for ( QMap<QString, QgsMapLayer *>::const_iterator it = existingMaps.cbegin(); it != existingMaps.cend(); ++it )
     {
       const QSet<QgsMapLayerDependency> deps = it.value()->dependencies();
@@ -3065,13 +3095,13 @@ void QgsProject::updateTransactionGroups()
   }
 
   bool tgChanged = false;
-  const auto constLayers = mapLayers().values();
-  for ( QgsMapLayer *layer : constLayers )
+  const QMap<QString, QgsMapLayer *> &allLayers = mLayerStore->mapLayersRef();
+  for ( auto it = allLayers.cbegin(); it != allLayers.cend(); ++it )
   {
-    if ( ! layer->isValid() )
+    if ( ! it.value()->isValid() )
       continue;
 
-    QgsVectorLayer *vlayer = qobject_cast<QgsVectorLayer *>( layer );
+    QgsVectorLayer *vlayer = qobject_cast<QgsVectorLayer *>( it.value() );
     if ( ! vlayer )
       continue;
 
@@ -3240,6 +3270,10 @@ bool QgsProject::writeProjectFile( const QString &filename )
 {
   QGIS_PROTECT_QOBJECT_THREAD_ACCESS
 
+  // suppress dirty signals from writeEntry() calls during save — the project
+  // is set to clean at the end of a successful save anyway
+  QgsProjectDirtyBlocker dirtyBlocker( this );
+
   QFile projectFile( filename );
   clearError();
 
@@ -3346,7 +3380,7 @@ bool QgsProject::writeProjectFile( const QString &filename )
   emit writeProject( *doc );
 
   // within top level node save list of layers
-  const QMap<QString, QgsMapLayer *> layers = mapLayers();
+  const QMap<QString, QgsMapLayer *> &layers = mLayerStore->mapLayersRef();
 
   QDomElement annotationLayerNode = doc->createElement( QStringLiteral( "main-annotation-layer" ) );
   mMainAnnotationLayer->writeLayerXml( annotationLayerNode, *doc, context );
@@ -3530,7 +3564,8 @@ bool QgsProject::writeProjectFile( const QString &filename )
   }
 
   // now wrap it up and ship it to the project file
-  doc->normalize();             // XXX I'm not entirely sure what this does
+  // (no need for doc->normalize() — the DOM is built cleanly with no
+  //  fragmented text nodes, and normalize() walks the entire tree)
 
   // Create backup file
   if ( QFile::exists( fileName() ) )
@@ -3570,29 +3605,13 @@ bool QgsProject::writeProjectFile( const QString &filename )
     return false;
   }
 
-  QTemporaryFile tempFile;
-  bool ok = tempFile.open();
-  if ( ok )
   {
-    QTextStream projectFileStream( &tempFile );
+    QTextStream projectFileStream( &projectFile );
     doc->save( projectFileStream, 2 );  // save as utf-8
-    ok &= projectFileStream.pos() > -1;
-
-    ok &= tempFile.seek( 0 );
-
-    QByteArray ba;
-    while ( ok && !tempFile.atEnd() )
-    {
-      ba = tempFile.read( 10240 );
-      ok &= projectFile.write( ba ) == ba.size();
-    }
-
-    ok &= projectFile.error() == QFile::NoError;
-
-    projectFile.close();
   }
 
-  tempFile.close();
+  const bool ok = projectFile.error() == QFile::NoError;
+  projectFile.close();
 
   if ( !ok )
   {
@@ -5024,7 +5043,7 @@ bool QgsProject::saveAuxiliaryStorage( const QString &filename )
 {
   QGIS_PROTECT_QOBJECT_THREAD_ACCESS
 
-  const QMap<QString, QgsMapLayer *> layers = mapLayers();
+  const QMap<QString, QgsMapLayer *> &layers = mLayerStore->mapLayersRef();
   bool empty = true;
   for ( auto it = layers.constBegin(); it != layers.constEnd(); ++it )
   {

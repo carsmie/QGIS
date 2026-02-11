@@ -16276,20 +16276,7 @@ void QgisApp::read3DMapViewSettings( Qgs3DMapCanvasWidget *widget, QDomElement &
 
 void QgisApp::writeProject( QDomDocument &doc )
 {
-  // QGIS server does not use QgsProject for loading of QGIS project.
-  // In order to allow reading of new projects, let's also write the original <legend> tag to the project.
-  // Ideally the server should be ported to new layer tree implementation, but that requires
-  // non-trivial changes to the server components.
-  // The <legend> tag is ignored by QGIS application in >= 2.4 and this way also the new project files
-  // can be opened in older versions of QGIS without losing information about layer groups.
-
-  QgsLayerTree *clonedRoot = QgsProject::instance()->layerTreeRoot()->clone();
-  QgsLayerTreeUtils::replaceChildrenOfEmbeddedGroups( QgsLayerTree::toGroup( clonedRoot ) );
-  QgsLayerTreeUtils::updateEmbeddedGroupsProjectPath( QgsLayerTree::toGroup( clonedRoot ), QgsProject::instance() ); // convert absolute paths to relative paths if required
-  QDomElement oldLegendElem = QgsLayerTreeUtils::writeOldLegend( doc, QgsLayerTree::toGroup( clonedRoot ), clonedRoot->hasCustomLayerOrder(), clonedRoot->customLayerOrder() );
-  delete clonedRoot;
   QDomElement qgisNode = doc.firstChildElement( QStringLiteral( "qgis" ) );
-  qgisNode.appendChild( oldLegendElem );
 
   QgsProject::instance()->writeEntry( QStringLiteral( "Legend" ), QStringLiteral( "filterByMap" ), static_cast<bool>( layerTreeView()->layerTreeModel()->legendFilterMapSettings() ) );
 

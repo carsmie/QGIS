@@ -2589,6 +2589,7 @@ class CORE_EXPORT QgsProject : public QObject, public QgsExpressionContextGenera
 
     bool mBlockChangeSignalsDuringClear = false;
     int mBlockSnappingUpdates = 0;
+    int mBlockMapLayerAddedSignal = 0;
     int mScopeDeferralCount = 0;
 
     QgsElevationShadingRenderer mElevationShadingRenderer;

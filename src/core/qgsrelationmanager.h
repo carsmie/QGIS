@@ -185,9 +185,18 @@ class CORE_EXPORT QgsRelationManager : public QObject
     void layersRemoved( const QStringList &layers );
 
   private:
+
+    void invalidateIndexes();
+    void rebuildIndexes() const;
+
     //! The references
     QMap<QString, QgsRelation> mRelations;
     QMap<QString, QgsPolymorphicRelation> mPolymorphicRelations;
+
+    //! Lazily built per-layer lookup indexes for referencingRelations / referencedRelations
+    mutable QHash<QString, QList<QgsRelation>> mReferencingIndex;
+    mutable QHash<QString, QList<QgsRelation>> mReferencedIndex;
+    mutable bool mIndexDirty = true;
 
     QgsProject *mProject = nullptr;
 };

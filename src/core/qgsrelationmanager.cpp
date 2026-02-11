@@ -63,6 +63,7 @@ void QgsRelationManager::addRelation( const QgsRelation &relation )
     return;
 
   mRelations.insert( relation.id(), relation );
+  invalidateIndexes();
   if ( mProject )
   {
     mProject->setDirty( true );
@@ -83,12 +84,14 @@ void QgsRelationManager::updateRelationsStatus()
 void QgsRelationManager::removeRelation( const QString &id )
 {
   mRelations.remove( id );
+  invalidateIndexes();
   emit changed();
 }
 
 void QgsRelationManager::removeRelation( const QgsRelation &relation )
 {
   mRelations.remove( relation.id() );
+  invalidateIndexes();
   emit changed();
 }
 
@@ -127,6 +130,7 @@ QList<QgsRelation> QgsRelationManager::relationsByName( const QString &name ) co
 void QgsRelationManager::clear()
 {
   mRelations.clear();
+  invalidateIndexes();
   emit changed();
 }
 
@@ -137,31 +141,25 @@ QList<QgsRelation> QgsRelationManager::referencingRelations( const QgsVectorLaye
     return mRelations.values();
   }
 
-  QList<QgsRelation> relations;
+  rebuildIndexes();
+  const QList<QgsRelation> candidates = mReferencingIndex.value( layer->id() );
 
-  for ( const QgsRelation &rel : std::as_const( mRelations ) )
+  if ( fieldIdx == -2 )
   {
-    if ( rel.referencingLayer() == layer )
-    {
-      if ( fieldIdx != -2 )
-      {
-        bool containsField = false;
-        const auto constFieldPairs = rel.fieldPairs();
-        for ( const QgsRelation::FieldPair &fp : constFieldPairs )
-        {
-          if ( fieldIdx == layer->fields().lookupField( fp.referencingField() ) )
-          {
-            containsField = true;
-            break;
-          }
-        }
+    return candidates;
+  }
 
-        if ( !containsField )
-        {
-          continue;
-        }
+  QList<QgsRelation> relations;
+  for ( const QgsRelation &rel : candidates )
+  {
+    const auto constFieldPairs = rel.fieldPairs();
+    for ( const QgsRelation::FieldPair &fp : constFieldPairs )
+    {
+      if ( fieldIdx == layer->fields().lookupField( fp.referencingField() ) )
+      {
+        relations.append( rel );
+        break;
       }
-      relations.append( rel );
     }
   }
 
@@ -175,17 +173,32 @@ QList<QgsRelation> QgsRelationManager::referencedRelations( const QgsVectorLayer
     return mRelations.values();
   }
 
-  QList<QgsRelation> relations;
+  rebuildIndexes();
+  return mReferencedIndex.value( layer->id() );
+}
+
+void QgsRelationManager::invalidateIndexes()
+{
+  mIndexDirty = true;
+}
+
+void QgsRelationManager::rebuildIndexes() const
+{
+  if ( !mIndexDirty )
+    return;
+
+  mReferencingIndex.clear();
+  mReferencedIndex.clear();
 
   for ( const QgsRelation &rel : std::as_const( mRelations ) )
   {
-    if ( rel.referencedLayer() == layer )
-    {
-      relations.append( rel );
-    }
+    if ( !rel.referencingLayerId().isEmpty() )
+      mReferencingIndex[rel.referencingLayerId()].append( rel );
+    if ( !rel.referencedLayerId().isEmpty() )
+      mReferencedIndex[rel.referencedLayerId()].append( rel );
   }
 
-  return relations;
+  mIndexDirty = false;
 }
 
 void QgsRelationManager::readProject( const QDomDocument &doc, QgsReadWriteContext &context )
@@ -291,6 +304,7 @@ void QgsRelationManager::layersRemoved( const QStringList &layers )
   }
   if ( relationsChanged )
   {
+    invalidateIndexes();
     emit changed();
   }
 }

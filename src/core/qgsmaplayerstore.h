@@ -110,6 +110,15 @@ class CORE_EXPORT QgsMapLayerStore : public QObject
 #ifndef SIP_RUN
 
     /**
+     * Returns a const reference to the internal map of all layers by layer ID,
+     * avoiding a copy. For performance-sensitive code paths only.
+     *
+     * \note not available in Python bindings
+     * \see mapLayers()
+     */
+    const QMap<QString, QgsMapLayer *> &mapLayersRef() const { return mMapLayers; }
+
+    /**
      * Returns a list of registered map layers with a specified layer type.
      *
      * ### Example
