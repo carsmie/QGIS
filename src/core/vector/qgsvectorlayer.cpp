@@ -3235,133 +3235,118 @@ bool QgsVectorLayer::writeSymbology( QDomNode &node, QDomDocument &doc, QString 
 
   if ( categories.testFlag( Fields ) )
   {
-    //attribute aliases
+    // single pass over mFields for aliases, comments, policies, defaults and constraints
     QDomElement aliasElem = doc.createElement( u"aliases"_s );
-    for ( const QgsField &field : std::as_const( mFields ) )
-    {
-      QDomElement aliasEntryElem = doc.createElement( u"alias"_s );
-      aliasEntryElem.setAttribute( u"field"_s, field.name() );
-      aliasEntryElem.setAttribute( u"index"_s, mFields.indexFromName( field.name() ) );
-      aliasEntryElem.setAttribute( u"name"_s, field.alias() );
-      aliasElem.appendChild( aliasEntryElem );
-    }
-    node.appendChild( aliasElem );
-
-    //custom comments
     QDomElement customCommentElem = doc.createElement( u"customComments"_s );
-    bool hasCustomComments = false;
-    for ( const QgsField &field : std::as_const( mFields ) )
-    {
-      //if empty ("") we store it, if null we don't store it
-      const QString customComment = field.customComment();
-      if ( customComment.isNull() )
-        continue;
-
-      hasCustomComments = true;
-      QDomElement customCommentEntryElem = doc.createElement( u"customComment"_s );
-      customCommentEntryElem.setAttribute( u"field"_s, field.name() );
-      customCommentEntryElem.setAttribute( u"value"_s, customComment );
-      customCommentElem.appendChild( customCommentEntryElem );
-    }
-    if ( hasCustomComments )
-    {
-      node.appendChild( customCommentElem );
-    }
-
-    //split policies
-    {
-      QDomElement splitPoliciesElement = doc.createElement( u"splitPolicies"_s );
-      bool hasNonDefaultSplitPolicies = false;
-      for ( const QgsField &field : std::as_const( mFields ) )
-      {
-        if ( field.splitPolicy() != Qgis::FieldDomainSplitPolicy::Duplicate )
-        {
-          QDomElement splitPolicyElem = doc.createElement( u"policy"_s );
-          splitPolicyElem.setAttribute( u"field"_s, field.name() );
-          splitPolicyElem.setAttribute( u"policy"_s, qgsEnumValueToKey( field.splitPolicy() ) );
-          splitPoliciesElement.appendChild( splitPolicyElem );
-          hasNonDefaultSplitPolicies = true;
-        }
-      }
-      if ( hasNonDefaultSplitPolicies )
-        node.appendChild( splitPoliciesElement );
-    }
-
-    //duplicate policies
-    {
-      QDomElement duplicatePoliciesElement = doc.createElement( u"duplicatePolicies"_s );
-      bool hasNonDefaultDuplicatePolicies = false;
-      for ( const QgsField &field : std::as_const( mFields ) )
-      {
-        if ( field.duplicatePolicy() != Qgis::FieldDuplicatePolicy::Duplicate )
-        {
-          QDomElement duplicatePolicyElem = doc.createElement( u"policy"_s );
-          duplicatePolicyElem.setAttribute( u"field"_s, field.name() );
-          duplicatePolicyElem.setAttribute( u"policy"_s, qgsEnumValueToKey( field.duplicatePolicy() ) );
-          duplicatePoliciesElement.appendChild( duplicatePolicyElem );
-          hasNonDefaultDuplicatePolicies = true;
-        }
-      }
-      if ( hasNonDefaultDuplicatePolicies )
-        node.appendChild( duplicatePoliciesElement );
-    }
-
-    //merge policies
-    {
-      QDomElement mergePoliciesElement = doc.createElement( u"mergePolicies"_s );
-      bool hasNonDefaultMergePolicies = false;
-      for ( const QgsField &field : std::as_const( mFields ) )
-      {
-        if ( field.mergePolicy() != Qgis::FieldDomainMergePolicy::UnsetField )
-        {
-          QDomElement mergePolicyElem = doc.createElement( u"policy"_s );
-          mergePolicyElem.setAttribute( u"field"_s, field.name() );
-          mergePolicyElem.setAttribute( u"policy"_s, qgsEnumValueToKey( field.mergePolicy() ) );
-          mergePoliciesElement.appendChild( mergePolicyElem );
-          hasNonDefaultMergePolicies = true;
-        }
-      }
-      if ( hasNonDefaultMergePolicies )
-        node.appendChild( mergePoliciesElement );
-    }
-
-    //default expressions
+    QDomElement splitPoliciesElement = doc.createElement( u"splitPolicies"_s );
+    QDomElement duplicatePoliciesElement = doc.createElement( u"duplicatePolicies"_s );
+    QDomElement mergePoliciesElement = doc.createElement( u"mergePolicies"_s );
     QDomElement defaultsElem = doc.createElement( u"defaults"_s );
-    for ( const QgsField &field : std::as_const( mFields ) )
-    {
-      QDomElement defaultElem = doc.createElement( u"default"_s );
-      defaultElem.setAttribute( u"field"_s, field.name() );
-      defaultElem.setAttribute( u"expression"_s, field.defaultValueDefinition().expression() );
-      defaultElem.setAttribute( u"applyOnUpdate"_s, field.defaultValueDefinition().applyOnUpdate() ? u"1"_s : u"0"_s );
-      defaultsElem.appendChild( defaultElem );
-    }
-    node.appendChild( defaultsElem );
-
-    // constraints
     QDomElement constraintsElem = doc.createElement( u"constraints"_s );
-    for ( const QgsField &field : std::as_const( mFields ) )
-    {
-      QDomElement constraintElem = doc.createElement( u"constraint"_s );
-      constraintElem.setAttribute( u"field"_s, field.name() );
-      constraintElem.setAttribute( u"constraints"_s, field.constraints().constraints() );
-      constraintElem.setAttribute( u"unique_strength"_s, field.constraints().constraintStrength( QgsFieldConstraints::ConstraintUnique ) );
-      constraintElem.setAttribute( u"notnull_strength"_s, field.constraints().constraintStrength( QgsFieldConstraints::ConstraintNotNull ) );
-      constraintElem.setAttribute( u"exp_strength"_s, field.constraints().constraintStrength( QgsFieldConstraints::ConstraintExpression ) );
-
-      constraintsElem.appendChild( constraintElem );
-    }
-    node.appendChild( constraintsElem );
-
-    // constraint expressions
     QDomElement constraintExpressionsElem = doc.createElement( u"constraintExpressions"_s );
+    bool hasCustomComments = false;
+    bool hasNonDefaultSplitPolicies = false;
+    bool hasNonDefaultDuplicatePolicies = false;
+    bool hasNonDefaultMergePolicies = false;
+    int fieldIndex = 0;
+
     for ( const QgsField &field : std::as_const( mFields ) )
     {
-      QDomElement constraintExpressionElem = doc.createElement( u"constraint"_s );
-      constraintExpressionElem.setAttribute( u"field"_s, field.name() );
-      constraintExpressionElem.setAttribute( u"exp"_s, field.constraints().constraintExpression() );
-      constraintExpressionElem.setAttribute( u"desc"_s, field.constraints().constraintDescription() );
-      constraintExpressionsElem.appendChild( constraintExpressionElem );
+      const QString &name = field.name();
+
+      // alias
+      {
+        QDomElement aliasEntryElem = doc.createElement( u"alias"_s );
+        aliasEntryElem.setAttribute( u"field"_s, name );
+        aliasEntryElem.setAttribute( u"index"_s, fieldIndex );
+        aliasEntryElem.setAttribute( u"name"_s, field.alias() );
+        aliasElem.appendChild( aliasEntryElem );
+      }
+
+      // custom comment: stored if empty, skipped if null
+      const QString customComment = field.customComment();
+      if ( !customComment.isNull() )
+      {
+        QDomElement customCommentEntryElem = doc.createElement( u"customComment"_s );
+        customCommentEntryElem.setAttribute( u"field"_s, name );
+        customCommentEntryElem.setAttribute( u"value"_s, customComment );
+        customCommentElem.appendChild( customCommentEntryElem );
+        hasCustomComments = true;
+      }
+
+      // split policy
+      if ( field.splitPolicy() != Qgis::FieldDomainSplitPolicy::Duplicate )
+      {
+        QDomElement splitPolicyElem = doc.createElement( u"policy"_s );
+        splitPolicyElem.setAttribute( u"field"_s, name );
+        splitPolicyElem.setAttribute( u"policy"_s, qgsEnumValueToKey( field.splitPolicy() ) );
+        splitPoliciesElement.appendChild( splitPolicyElem );
+        hasNonDefaultSplitPolicies = true;
+      }
+
+      // duplicate policy
+      if ( field.duplicatePolicy() != Qgis::FieldDuplicatePolicy::Duplicate )
+      {
+        QDomElement duplicatePolicyElem = doc.createElement( u"policy"_s );
+        duplicatePolicyElem.setAttribute( u"field"_s, name );
+        duplicatePolicyElem.setAttribute( u"policy"_s, qgsEnumValueToKey( field.duplicatePolicy() ) );
+        duplicatePoliciesElement.appendChild( duplicatePolicyElem );
+        hasNonDefaultDuplicatePolicies = true;
+      }
+
+      // merge policy
+      if ( field.mergePolicy() != Qgis::FieldDomainMergePolicy::UnsetField )
+      {
+        QDomElement mergePolicyElem = doc.createElement( u"policy"_s );
+        mergePolicyElem.setAttribute( u"field"_s, name );
+        mergePolicyElem.setAttribute( u"policy"_s, qgsEnumValueToKey( field.mergePolicy() ) );
+        mergePoliciesElement.appendChild( mergePolicyElem );
+        hasNonDefaultMergePolicies = true;
+      }
+
+      // default expression
+      {
+        QDomElement defaultElem = doc.createElement( u"default"_s );
+        defaultElem.setAttribute( u"field"_s, name );
+        defaultElem.setAttribute( u"expression"_s, field.defaultValueDefinition().expression() );
+        defaultElem.setAttribute( u"applyOnUpdate"_s, field.defaultValueDefinition().applyOnUpdate() ? u"1"_s : u"0"_s );
+        defaultsElem.appendChild( defaultElem );
+      }
+
+      // constraints
+      {
+        QDomElement constraintElem = doc.createElement( u"constraint"_s );
+        constraintElem.setAttribute( u"field"_s, name );
+        constraintElem.setAttribute( u"constraints"_s, field.constraints().constraints() );
+        constraintElem.setAttribute( u"unique_strength"_s, field.constraints().constraintStrength( QgsFieldConstraints::ConstraintUnique ) );
+        constraintElem.setAttribute( u"notnull_strength"_s, field.constraints().constraintStrength( QgsFieldConstraints::ConstraintNotNull ) );
+        constraintElem.setAttribute( u"exp_strength"_s, field.constraints().constraintStrength( QgsFieldConstraints::ConstraintExpression ) );
+        constraintsElem.appendChild( constraintElem );
+      }
+
+      // constraint expressions
+      {
+        QDomElement constraintExpressionElem = doc.createElement( u"constraint"_s );
+        constraintExpressionElem.setAttribute( u"field"_s, name );
+        constraintExpressionElem.setAttribute( u"exp"_s, field.constraints().constraintExpression() );
+        constraintExpressionElem.setAttribute( u"desc"_s, field.constraints().constraintDescription() );
+        constraintExpressionsElem.appendChild( constraintExpressionElem );
+      }
+
+      ++fieldIndex;
     }
+
+    node.appendChild( aliasElem );
+    if ( hasCustomComments )
+      node.appendChild( customCommentElem );
+    if ( hasNonDefaultSplitPolicies )
+      node.appendChild( splitPoliciesElement );
+    if ( hasNonDefaultDuplicatePolicies )
+      node.appendChild( duplicatePoliciesElement );
+    if ( hasNonDefaultMergePolicies )
+      node.appendChild( mergePoliciesElement );
+    node.appendChild( defaultsElem );
+    node.appendChild( constraintsElem );
     node.appendChild( constraintExpressionsElem );
 
     // save expression fields

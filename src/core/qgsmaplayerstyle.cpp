@@ -38,6 +38,7 @@ bool QgsMapLayerStyle::isValid() const
 void QgsMapLayerStyle::clear()
 {
   mXmlData.clear();
+  mXmlDocDirty = true;
 }
 
 QString QgsMapLayerStyle::xmlData() const
@@ -60,6 +61,7 @@ void QgsMapLayerStyle::readFromLayer( QgsMapLayer *layer )
   mXmlData.clear();
   QTextStream stream( &mXmlData );
   doc.documentElement().save( stream, 0 );
+  mXmlDocDirty = true;
 }
 
 void QgsMapLayerStyle::writeToLayer( QgsMapLayer *layer ) const
@@ -88,6 +90,7 @@ void QgsMapLayerStyle::readXml( const QDomElement &styleElement )
   mXmlData.clear();
   QTextStream stream( &mXmlData );
   styleElement.firstChildElement().save( stream, 0 );
+  mXmlDocDirty = true;
 }
 
 void QgsMapLayerStyle::writeXml( QDomElement &styleElement ) const
@@ -96,9 +99,12 @@ void QgsMapLayerStyle::writeXml( QDomElement &styleElement ) const
   if ( !isValid() )
     return;
 
-  QDomDocument docX;
-  docX.setContent( mXmlData );
-  styleElement.appendChild( docX.documentElement() );
+  if ( mXmlDocDirty )
+  {
+    mXmlDoc.setContent( mXmlData );
+    mXmlDocDirty = false;
+  }
+  styleElement.appendChild( mXmlDoc.documentElement().cloneNode() );
 }
 
 QgsMapLayerStyleOverride::~QgsMapLayerStyleOverride()

@@ -20,6 +20,7 @@
 #include "qgis_sip.h"
 
 #include <QByteArray>
+#include <QDomDocument>
 #include <QMap>
 #include <QObject>
 #include <QStringList>
@@ -67,6 +68,8 @@ class CORE_EXPORT QgsMapLayerStyle
 
   private:
     QString mXmlData;
+    mutable QDomDocument mXmlDoc;  //!< Cached parsed DOM, lazily populated by writeXml()
+    mutable bool mXmlDocDirty = true;  //!< Whether mXmlDoc needs reparsing
 };
 
 
