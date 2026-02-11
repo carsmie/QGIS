@@ -406,39 +406,48 @@ QgsProject::QgsProject( QObject *parent, Qgis::ProjectCapabilities capabilities 
 
   // proxy map layer store signals to this
   connect( mLayerStore.get(), qOverload<const QStringList &>( &QgsMapLayerStore::layersWillBeRemoved ), this, [this]( const QStringList &layers ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layersWillBeRemoved( layers );
   } );
   connect( mLayerStore.get(), qOverload< const QList<QgsMapLayer *> & >( &QgsMapLayerStore::layersWillBeRemoved ), this, [this]( const QList<QgsMapLayer *> &layers ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layersWillBeRemoved( layers );
   } );
   connect( mLayerStore.get(), qOverload< const QString & >( &QgsMapLayerStore::layerWillBeRemoved ), this, [this]( const QString &layer ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layerWillBeRemoved( layer );
   } );
   connect( mLayerStore.get(), qOverload< QgsMapLayer * >( &QgsMapLayerStore::layerWillBeRemoved ), this, [this]( QgsMapLayer *layer ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layerWillBeRemoved( layer );
   } );
   connect( mLayerStore.get(), qOverload<const QStringList & >( &QgsMapLayerStore::layersRemoved ), this, [this]( const QStringList &layers ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layersRemoved( layers );
   } );
   connect( mLayerStore.get(), &QgsMapLayerStore::layerRemoved, this, [this]( const QString &layer ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layerRemoved( layer );
   } );
   connect( mLayerStore.get(), &QgsMapLayerStore::allLayersRemoved, this, [this]() {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit removeAll();
   } );
   connect( mLayerStore.get(), &QgsMapLayerStore::layersAdded, this, [this]( const QList< QgsMapLayer * > &layers ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layersAdded( layers );
   } );
   connect( mLayerStore.get(), &QgsMapLayerStore::layerWasAdded, this, [this]( QgsMapLayer *layer ) {
-    mProjectScope.reset();
+    if ( !mScopeDeferralCount )
+      mProjectScope.reset();
     emit layerWasAdded( layer );
   } );
 
@@ -1499,17 +1508,13 @@ static void _getTitle( const QDomDocument &doc, QString &title )
 
 static void readProjectFileMetadata( const QDomDocument &doc, QString &lastUser, QString &lastUserFull, QDateTime &lastSaveDateTime )
 {
-  const QDomNodeList nl = doc.elementsByTagName( u"qgis"_s );
+  const QDomElement qgisElement = doc.documentElement();
 
-  if ( !nl.count() )
+  if ( qgisElement.isNull() || qgisElement.tagName() != "qgis"_L1 )
   {
     QgsDebugError( u"unable to find qgis element"_s );
     return;
   }
-
-  const QDomNode qgisNode = nl.item( 0 ); // there should only be one, so zeroth element OK
-
-  const QDomElement qgisElement = qgisNode.toElement(); // qgis node should be element
   lastUser = qgisElement.attribute( u"saveUser"_s, QString() );
   lastUserFull = qgisElement.attribute( u"saveUserFull"_s, QString() );
   lastSaveDateTime = QDateTime::fromString( qgisElement.attribute( u"saveDateTime"_s, QString() ), Qt::ISODate );
@@ -1517,17 +1522,14 @@ static void readProjectFileMetadata( const QDomDocument &doc, QString &lastUser,
 
 QgsProjectVersion getVersion( const QDomDocument &doc )
 {
-  const QDomNodeList nl = doc.elementsByTagName( u"qgis"_s );
+  const QDomElement qgisElement = doc.documentElement();
 
-  if ( !nl.count() )
+  if ( qgisElement.isNull() || qgisElement.tagName() != "qgis"_L1 )
   {
     QgsDebugError( u" unable to find qgis element in project file"_s );
     return QgsProjectVersion( 0, 0, 0, QString() );
   }
 
-  const QDomNode qgisNode = nl.item( 0 ); // there should only be one, so zeroth element OK
-
-  const QDomElement qgisElement = qgisNode.toElement(); // qgis node should be element
   QgsProjectVersion projectVersion( qgisElement.attribute( u"version"_s ) );
   return projectVersion;
 }
@@ -2105,6 +2107,8 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
 
   // avoid multiple emission of snapping updated signals
   ScopedIntIncrementor snapSignalBlock( &mBlockSnappingUpdates );
+  // defer mProjectScope.reset() until loading completes
+  ScopedIntIncrementor scopeDeferBlock( &mScopeDeferralCount );
 
   QFile projectFile( filename );
   clearError();
@@ -2145,13 +2149,23 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   QString projectString = textStream.readAll();
   projectFile.close();
 
-  for ( int i = 0; i < 32; i++ )
+  // replace control chars (except tab/LF/CR) with FONTMARKER_CHR_FIX markers in one pass
   {
-    if ( i == 9 || i == 10 || i == 13 )
+    QString result;
+    result.reserve( projectString.size() );
+    for ( const QChar ch : projectString )
     {
-      continue;
+      const ushort code = ch.unicode();
+      if ( code < 32 && code != 9 && code != 10 && code != 13 )
+      {
+        result += u"%1%2%1"_s.arg( FONTMARKER_CHR_FIX, QString::number( code ) );
+      }
+      else
+      {
+        result += ch;
+      }
     }
-    projectString.replace( QChar( i ), u"%1%2%1"_s.arg( FONTMARKER_CHR_FIX, QString::number( i ) ) );
+    projectString = std::move( result );
   }
 
   // location of problem associated with errorMsg
@@ -2265,10 +2279,9 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
 
   readProjectFileMetadata( *doc, mSaveUser, mSaveUserFull, mSaveDateTime );
 
-  const QDomNodeList homePathNl = doc->elementsByTagName( u"homePath"_s );
-  if ( homePathNl.count() > 0 )
+  const QDomElement homePathElement = doc->documentElement().firstChildElement( u"homePath"_s );
+  if ( !homePathElement.isNull() )
   {
-    const QDomElement homePathElement = homePathNl.at( 0 ).toElement();
     const QString homePath = homePathElement.attribute( u"path"_s );
     if ( !homePath.isEmpty() )
       setPresetHomePath( homePath );
@@ -2741,6 +2754,9 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   emit readProjectWithContext( *doc, context );
 
   profile.switchTask( tr( "Updating interface" ) );
+
+  scopeDeferBlock.release();
+  mProjectScope.reset();
 
   snapSignalBlock.release();
   if ( !mBlockSnappingUpdates )
@@ -4943,7 +4959,8 @@ QList<QgsMapLayer *> QgsProject::addMapLayers( const QList<QgsMapLayer *> &layer
     }
   }
 
-  mProjectScope.reset();
+  if ( !mScopeDeferralCount )
+    mProjectScope.reset();
 
   return myResultList;
 }

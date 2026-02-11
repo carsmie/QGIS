@@ -170,16 +170,15 @@ bool QgsProjectViewSettings::readXml( const QDomElement &element, const QgsReadW
 {
   const bool useProjectScale = element.attribute( u"UseProjectScales"_s, u"0"_s ).toInt();
 
-  QDomNodeList scalesNodes = element.elementsByTagName( u"Scales"_s );
+  const QDomElement scalesElement = element.firstChildElement( u"Scales"_s );
   QVector< double > newScales;
-  if ( !scalesNodes.isEmpty() )
+  if ( !scalesElement.isNull() )
   {
-    const QDomElement scalesElement = scalesNodes.at( 0 ).toElement();
-    scalesNodes = scalesElement.elementsByTagName( u"Scale"_s );
-    for ( int i = 0; i < scalesNodes.count(); i++ )
+    QDomElement scaleElement = scalesElement.firstChildElement( u"Scale"_s );
+    while ( !scaleElement.isNull() )
     {
-      const QDomElement scaleElement = scalesNodes.at( i ).toElement();
       newScales.append( scaleElement.attribute( u"Value"_s ).toDouble() );
+      scaleElement = scaleElement.nextSiblingElement( u"Scale"_s );
     }
   }
   if ( useProjectScale != mUseProjectScales || newScales != mMapScales )

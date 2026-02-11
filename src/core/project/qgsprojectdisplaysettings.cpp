@@ -213,10 +213,9 @@ bool QgsProjectDisplaySettings::readXml( const QDomElement &element, const QgsRe
       }
     }
 
-    QDomNodeList crsNodeList = element.elementsByTagName( u"CoordinateCustomCrs"_s );
-    if ( !crsNodeList.isEmpty() )
+    const QDomElement crsElem = element.firstChildElement( u"CoordinateCustomCrs"_s );
+    if ( !crsElem.isNull() )
     {
-      QDomElement crsElem = crsNodeList.at( 0 ).toElement();
       mCoordinateCustomCrs.readXml( crsElem );
     }
     emit coordinateCustomCrsChanged();

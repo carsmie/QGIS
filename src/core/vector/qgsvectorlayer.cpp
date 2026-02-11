@@ -2537,10 +2537,10 @@ bool QgsVectorLayer::readSymbology( const QDomNode &layerNode, QString &errorMes
     QgsReadWriteContextCategoryPopper p = context.enterCategory( tr( "Relations" ) );
 
     // Restore referenced layers: relations where "this" is the child layer (the referencing part, that holds the FK)
-    QDomNodeList referencedLayersNodeList = layerNode.toElement().elementsByTagName( u"referencedLayers"_s );
-    if ( referencedLayersNodeList.size() > 0 )
+    const QDomElement referencedLayersElem = layerNode.toElement().firstChildElement( u"referencedLayers"_s );
+    if ( !referencedLayersElem.isNull() )
     {
-      const QDomNodeList relationNodes { referencedLayersNodeList.at( 0 ).childNodes() };
+      const QDomNodeList relationNodes { referencedLayersElem.childNodes() };
       for ( int i = 0; i < relationNodes.length(); ++i )
       {
         const QDomElement relationElement = relationNodes.at( i ).toElement();
@@ -2550,10 +2550,10 @@ bool QgsVectorLayer::readSymbology( const QDomNode &layerNode, QString &errorMes
     }
 
     // Restore referencing layers: relations where "this" is the parent layer (the referenced part where the FK points to)
-    QDomNodeList referencingLayersNodeList = layerNode.toElement().elementsByTagName( u"referencingLayers"_s );
-    if ( referencingLayersNodeList.size() > 0 )
+    const QDomElement referencingLayersElem = layerNode.toElement().firstChildElement( u"referencingLayers"_s );
+    if ( !referencingLayersElem.isNull() )
     {
-      const QDomNodeList relationNodes { referencingLayersNodeList.at( 0 ).childNodes() };
+      const QDomNodeList relationNodes { referencingLayersElem.childNodes() };
       for ( int i = 0; i < relationNodes.length(); ++i )
       {
         const QDomElement relationElement = relationNodes.at( i ).toElement();
@@ -2805,7 +2805,7 @@ bool QgsVectorLayer::readSymbology( const QDomNode &layerNode, QString &errorMes
     for ( int i = 0; i < fieldConfigurationElementList.size(); ++i )
     {
       const QDomElement fieldConfigElement = fieldConfigurationElementList.at( i ).toElement();
-      const QDomElement fieldWidgetElement = fieldConfigElement.elementsByTagName( u"editWidget"_s ).at( 0 ).toElement();
+      const QDomElement fieldWidgetElement = fieldConfigElement.firstChildElement( u"editWidget"_s );
 
       QString fieldName = fieldConfigElement.attribute( u"name"_s );
 
@@ -2816,7 +2816,7 @@ bool QgsVectorLayer::readSymbology( const QDomNode &layerNode, QString &errorMes
       if ( categories.testFlag( Forms ) )
       {
         const QString widgetType = fieldWidgetElement.attribute( u"type"_s );
-        const QDomElement cfgElem = fieldConfigElement.elementsByTagName( u"config"_s ).at( 0 ).toElement();
+        const QDomElement cfgElem = fieldConfigElement.firstChildElement( u"config"_s );
         const QDomElement optionsElem = cfgElem.childNodes().at( 0 ).toElement();
         QVariantMap optionsMap = QgsXmlUtils::readVariant( optionsElem ).toMap();
         // translate widget configuration strings

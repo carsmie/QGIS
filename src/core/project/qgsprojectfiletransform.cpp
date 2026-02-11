@@ -151,14 +151,12 @@ void transform3000( QgsProjectFileTransform *pft )
   QDomElement propsElem = pft->dom().firstChildElement( u"qgis"_s ).toElement().firstChildElement( u"properties"_s );
   if ( !propsElem.isNull() )
   {
-    const QDomNodeList srsNodes = propsElem.elementsByTagName( u"SpatialRefSys"_s );
-    QDomElement srsElem;
+    QDomElement srsElem = propsElem.firstChildElement( u"SpatialRefSys"_s );
     QDomElement projElem;
-    if ( srsNodes.count() > 0 )
+    if ( !srsElem.isNull() )
     {
-      srsElem = srsNodes.at( 0 ).toElement();
-      const QDomNodeList projNodes = srsElem.elementsByTagName( u"ProjectionsEnabled"_s );
-      if ( projNodes.count() == 0 )
+      const QDomElement projNode = srsElem.firstChildElement( u"ProjectionsEnabled"_s );
+      if ( projNode.isNull() )
       {
         projElem = pft->dom().createElement( u"ProjectionsEnabled"_s );
         projElem.setAttribute( u"type"_s, u"int"_s );
@@ -181,57 +179,49 @@ void transform3000( QgsProjectFileTransform *pft )
     // transform map canvas CRS to project CRS - this is because project CRS was inconsistently used
     // prior to 3.0. In >= 3.0 main canvas CRS is forced to match project CRS, so we need to make
     // sure we can read the project CRS correctly
-    const QDomNodeList canvasNodes = pft->dom().elementsByTagName( u"mapcanvas"_s );
-    if ( canvasNodes.count() > 0 )
+    const QDomElement canvasElem = pft->dom().documentElement().firstChildElement( u"mapcanvas"_s );
+    if ( !canvasElem.isNull() )
     {
-      const QDomElement canvasElem = canvasNodes.at( 0 ).toElement();
-      const QDomNodeList canvasSrsNodes = canvasElem.elementsByTagName( u"spatialrefsys"_s );
-      if ( canvasSrsNodes.count() > 0 )
+      const QDomElement canvasSrsElem = canvasElem.firstChildElement( u"spatialrefsys"_s );
+      if ( !canvasSrsElem.isNull() )
       {
-        const QDomElement canvasSrsElem = canvasSrsNodes.at( 0 ).toElement();
         QString proj;
         QString authid;
         QString srsid;
 
-        const QDomNodeList proj4Nodes = canvasSrsElem.elementsByTagName( u"proj4"_s );
-        if ( proj4Nodes.count() > 0 )
+        const QDomElement proj4Node = canvasSrsElem.firstChildElement( u"proj4"_s );
+        if ( !proj4Node.isNull() )
         {
-          const QDomElement proj4Node = proj4Nodes.at( 0 ).toElement();
           proj = proj4Node.text();
         }
-        const QDomNodeList authidNodes = canvasSrsElem.elementsByTagName( u"authid"_s );
-        if ( authidNodes.count() > 0 )
+        const QDomElement authidNode = canvasSrsElem.firstChildElement( u"authid"_s );
+        if ( !authidNode.isNull() )
         {
-          const QDomElement authidNode = authidNodes.at( 0 ).toElement();
           authid = authidNode.text();
         }
-        const QDomNodeList srsidNodes = canvasSrsElem.elementsByTagName( u"srsid"_s );
-        if ( srsidNodes.count() > 0 )
+        const QDomElement srsidNode = canvasSrsElem.firstChildElement( u"srsid"_s );
+        if ( !srsidNode.isNull() )
         {
-          const QDomElement srsidNode = srsidNodes.at( 0 ).toElement();
           srsid = srsidNode.text();
         }
 
-        // clear existing project CRS nodes
-        const QDomNodeList oldProjectProj4Nodes = srsElem.elementsByTagName( u"ProjectCRSProj4String"_s );
-        for ( int i = oldProjectProj4Nodes.count(); i >= 0; --i )
+        // clear existing project CRS nodes in a single pass over children
+        QDomNode child = srsElem.firstChild();
+        while ( !child.isNull() )
         {
-          srsElem.removeChild( oldProjectProj4Nodes.at( i ) );
-        }
-        const QDomNodeList oldProjectCrsNodes = srsElem.elementsByTagName( u"ProjectCrs"_s );
-        for ( int i = oldProjectCrsNodes.count(); i >= 0; --i )
-        {
-          srsElem.removeChild( oldProjectCrsNodes.at( i ) );
-        }
-        const QDomNodeList oldProjectCrsIdNodes = srsElem.elementsByTagName( u"ProjectCRSID"_s );
-        for ( int i = oldProjectCrsIdNodes.count(); i >= 0; --i )
-        {
-          srsElem.removeChild( oldProjectCrsIdNodes.at( i ) );
-        }
-        const QDomNodeList projectionsEnabledNodes = srsElem.elementsByTagName( u"ProjectionsEnabled"_s );
-        for ( int i = projectionsEnabledNodes.count(); i >= 0; --i )
-        {
-          srsElem.removeChild( projectionsEnabledNodes.at( i ) );
+          QDomNode next = child.nextSibling();
+          if ( child.isElement() )
+          {
+            const QString tag = child.toElement().tagName();
+            if ( tag == "ProjectCRSProj4String"_L1
+                 || tag == "ProjectCrs"_L1
+                 || tag == "ProjectCRSID"_L1
+                 || tag == "ProjectionsEnabled"_L1 )
+            {
+              srsElem.removeChild( child );
+            }
+          }
+          child = next;
         }
 
         QDomElement proj4Elem = pft->dom().createElement( u"ProjectCRSProj4String"_s );

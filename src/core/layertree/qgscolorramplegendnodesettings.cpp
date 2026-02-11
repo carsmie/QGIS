@@ -170,10 +170,9 @@ void QgsColorRampLegendNodeSettings::readXml( const QDomElement &element, const 
     mDirection = static_cast< QgsColorRampLegendNodeSettings::Direction >( settingsElement.attribute( u"direction"_s ).toInt() );
     mOrientation = static_cast< Qt::Orientation >( settingsElement.attribute( u"orientation"_s, QString::number( Qt::Vertical ) ).toInt() );
 
-    const QDomNodeList numericFormatNodeList = settingsElement.elementsByTagName( u"numericFormat"_s );
-    if ( !numericFormatNodeList.isEmpty() )
+    const QDomElement numericFormatElem = settingsElement.firstChildElement( u"numericFormat"_s );
+    if ( !numericFormatElem.isNull() )
     {
-      const QDomElement numericFormatElem = numericFormatNodeList.at( 0 ).toElement();
       mNumericFormat.reset( QgsApplication::numericFormatRegistry()->createFromXml( numericFormatElem, context ) );
     }
 
