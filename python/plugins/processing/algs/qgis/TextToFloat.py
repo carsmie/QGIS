@@ -19,13 +19,14 @@ __author__ = "Michael Minn"
 __date__ = "May 2010"
 __copyright__ = "(C) 2010, Michael Minn"
 
-from qgis.PyQt.QtCore import QMetaType
 from qgis.core import (
     QgsField,
     QgsProcessing,
-    QgsProcessingParameterField,
     QgsProcessingFeatureSource,
+    QgsProcessingParameterField,
 )
+from qgis.PyQt.QtCore import QMetaType
+
 from processing.algs.qgis.QgisAlgorithm import QgisFeatureBasedAlgorithm
 
 
@@ -65,6 +66,12 @@ class TextToFloat(QgisFeatureBasedAlgorithm):
     def shortDescription(self):
         return self.tr(
             "Converts a text attribute containing numeric strings into a numeric attribute."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm modifies the type of a given attribute in a vector layer, "
+            "converting a text attribute containing numeric strings into a numeric attribute."
         )
 
     def inputLayerTypes(self):

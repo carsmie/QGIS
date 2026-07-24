@@ -7,7 +7,10 @@ usr/lib/qgis/plugins/libauthmethod_identcert.so
 usr/lib/qgis/plugins/libauthmethod_maptilerhmacsha256.so
 usr/lib/qgis/plugins/libauthmethod_pkcs12.so
 usr/lib/qgis/plugins/libauthmethod_pkipaths.so
+usr/lib/qgis/plugins/libauthmethod_oauth2.so
+usr/lib/qgis/plugins/libauthmethod_planetary_computer.so
 usr/lib/qgis/plugins/libprovider_arcgisfeatureserver.so
+usr/lib/qgis/plugins/libprovider_arcgisimageserver.so
 usr/lib/qgis/plugins/libprovider_arcgismapserver.so
 usr/lib/qgis/plugins/libprovider_delimitedtext.so
 usr/lib/qgis/plugins/libprovider_gpx.so
@@ -22,7 +25,7 @@ usr/lib/qgis/plugins/libprovider_virtualraster.so
 usr/lib/qgis/plugins/libprovider_wcs.so
 usr/lib/qgis/plugins/libprovider_wfs.so
 usr/lib/qgis/plugins/libprovider_wms.so
-usr/lib/*/qt5/plugins/sqldrivers/libqsqlspatialite.so
+usr/lib/*/qt6/plugins/sqldrivers/libqsqlspatialite.so
 #pdal#usr/lib/qgis/untwine
 #pdal_wrench#usr/lib/qgis/pdal_wrench
 #pdal#usr/lib/qgis/plugins/libprovider_pdal.so

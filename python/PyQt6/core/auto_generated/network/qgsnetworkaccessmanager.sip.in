@@ -11,6 +11,8 @@
 
 
 
+
+
 class QgsNetworkRequestParameters
 {
 %Docstring(signature="appended")
@@ -23,19 +25,17 @@ Encapsulates parameters and properties of a network request.
 #include "qgsnetworkaccessmanager.h"
 %End
   public:
-
     enum RequestAttributes /BaseType=IntEnum/
     {
       AttributeInitiatorClass,
       AttributeInitiatorRequestId,
+      AttributeOriginalHeaders,
+      AttributeUserAgentSuffix,
     };
 
     QgsNetworkRequestParameters();
 
-    QgsNetworkRequestParameters( QNetworkAccessManager::Operation operation,
-                                 const QNetworkRequest &request,
-                                 int requestId,
-                                 const QByteArray &content = QByteArray() );
+    QgsNetworkRequestParameters( QNetworkAccessManager::Operation operation, const QNetworkRequest &request, int requestId, const QByteArray &content = QByteArray() );
 %Docstring
 Constructor for QgsNetworkRequestParameters, with the specified network
 ``operation`` and original ``request``.
@@ -119,7 +119,6 @@ used.
 #include "qgsnetworkaccessmanager.h"
 %End
   public:
-
     static QgsNetworkAccessManager *instance( Qt::ConnectionType connectionType = Qt::BlockingQueuedConnection );
 %Docstring
 Returns a pointer to the active QgsNetworkAccessManager for the current
@@ -284,7 +283,9 @@ If set to 0, no timeout is set.
 .. versionadded:: 3.6
 %End
 
-    static QgsNetworkReplyContent blockingGet( QNetworkRequest &request, const QString &authCfg = QString(), bool forceRefresh = false, QgsFeedback *feedback = 0 );
+    static QgsNetworkReplyContent blockingGet(
+      QNetworkRequest &request, const QString &authCfg = QString(), bool forceRefresh = false, QgsFeedback *feedback = 0, Qgis::NetworkRequestFlags flags = Qgis::NetworkRequestFlags()
+    );
 %Docstring
 Posts a GET request to obtain the contents of the target request and
 returns a new :py:class:`QgsNetworkReplyContent` object for reading. The
@@ -308,12 +309,21 @@ requests.
 The contents of the reply will be returned after the request is
 completed or an error occurs.
 
+The ``flags`` argument was added in QGIS 4.0.
+
 .. seealso:: :py:func:`blockingPost`
 
 .. versionadded:: 3.6
 %End
 
-    static QgsNetworkReplyContent blockingPost( QNetworkRequest &request, const QByteArray &data, const QString &authCfg = QString(), bool forceRefresh = false, QgsFeedback *feedback = 0 );
+    static QgsNetworkReplyContent blockingPost(
+      QNetworkRequest &request,
+      const QByteArray &data,
+      const QString &authCfg = QString(),
+      bool forceRefresh = false,
+      QgsFeedback *feedback = 0,
+      Qgis::NetworkRequestFlags flags = Qgis::NetworkRequestFlags()
+    );
 %Docstring
 Posts a POST request to obtain the contents of the target ``request``,
 using the given ``data``, and returns a new
@@ -337,6 +347,8 @@ requests.
 
 The contents of the reply will be returned after the request is
 completed or an error occurs.
+
+The ``flags`` argument was added in QGIS 4.0.
 
 .. seealso:: :py:func:`blockingGet`
 

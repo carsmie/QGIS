@@ -14,14 +14,15 @@
  ***************************************************************************/
 
 #include "qgsrangeslider.h"
-#include "moc_qgsrangeslider.cpp"
-#include <QPainter>
+
 #include <QMouseEvent>
+#include <QPainter>
+
+#include "moc_qgsrangeslider.cpp"
 
 QgsRangeSlider::QgsRangeSlider( QWidget *parent )
   : QgsRangeSlider( Qt::Horizontal, parent )
-{
-}
+{}
 
 QgsRangeSlider::QgsRangeSlider( Qt::Orientation orientation, QWidget *parent )
   : QWidget( parent )

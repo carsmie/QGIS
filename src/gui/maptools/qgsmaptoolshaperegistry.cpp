@@ -16,12 +16,11 @@
  ***************************************************************************/
 
 #include "qgsmaptoolshaperegistry.h"
+
 #include "moc_qgsmaptoolshaperegistry.cpp"
 
-
 QgsMapToolShapeRegistry::QgsMapToolShapeRegistry()
-{
-}
+{}
 
 QgsMapToolShapeRegistry::~QgsMapToolShapeRegistry()
 {

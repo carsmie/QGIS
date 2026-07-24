@@ -18,10 +18,15 @@
 #ifndef QGSSPHERE_H
 #define QGSSPHERE_H
 
+#include <limits>
+
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
-#include <limits>
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsPoint;
 class QgsCircle;
@@ -39,13 +44,13 @@ class QgsVector3D;
  */
 class CORE_EXPORT QgsSphere
 {
-
   public:
-
+    // clang-format off
     /**
      * Constructor for an invalid QgsSphere.
      */
     QgsSphere() SIP_HOLDGIL = default;
+    // clang-format on
 
     /**
      * Constructor for QgsSphere with the specified center (\a x, \a y, \a z) and \a radius.
@@ -173,19 +178,21 @@ class CORE_EXPORT QgsSphere
     QgsBox3D boundingBox() const SIP_HOLDGIL;
 
 #ifdef SIP_RUN
+// clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
     QString str;
     if ( sipCpp->isNull() )
     {
-      str = QStringLiteral( "<QgsSphere: null>" ).arg( sipCpp->centerX() ).arg( sipCpp->centerY() ).arg( sipCpp->centerZ() ).arg( sipCpp->radius() );
+      str = u"<QgsSphere: null>"_s.arg( sipCpp->centerX() ).arg( sipCpp->centerY() ).arg( sipCpp->centerZ() ).arg( sipCpp->radius() );
     }
     else
     {
-      str = QStringLiteral( "<QgsSphere: (%1, %2, %3) radius %4>" ).arg( sipCpp->centerX() ).arg( sipCpp->centerY() ).arg( sipCpp->centerZ() ).arg( sipCpp->radius() );
+      str = u"<QgsSphere: (%1, %2, %3) radius %4>"_s.arg( sipCpp->centerX() ).arg( sipCpp->centerY() ).arg( sipCpp->centerZ() ).arg( sipCpp->radius() );
     }
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
   private:

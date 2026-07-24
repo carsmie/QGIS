@@ -18,12 +18,14 @@
 #define QGSOGRFILESOURCEWIDGET_H
 
 #include "qgsprovidersourcewidget.h"
+
 #include <QVariantMap>
+
+#define SIP_NO_FILE
 
 class QgsFileWidget;
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 class QgsOgrFileSourceWidget : public QgsProviderSourceWidget
 {

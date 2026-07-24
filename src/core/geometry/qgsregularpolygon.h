@@ -2,8 +2,8 @@
                          qgsregularpolygon.h
                          --------------
     begin                : May 2017
-    copyright            : (C) 2017 by Loîc Bartoletti
-    email                : lbartoletti at tuxfamily dot org
+    copyright            : (C) 2017 by Loïc Bartoletti
+    email                : lituus at free dot fr
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,15 +18,14 @@
 #ifndef QGSREGULARPOLYGON_H
 #define QGSREGULARPOLYGON_H
 
-#include <QString>
-
 #include "qgis_core.h"
+#include "qgscircle.h"
+#include "qgslinestring.h"
 #include "qgspoint.h"
 #include "qgspolygon.h"
-#include "qgslinestring.h"
-#include "qgscircle.h"
 #include "qgstriangle.h"
 
+#include <QString>
 
 /**
  * \ingroup core
@@ -40,21 +39,22 @@
 class CORE_EXPORT QgsRegularPolygon
 {
   public:
-
     /**
      * A regular polygon can be constructed inscribed in a circle or circumscribed about a circle.
      *
      */
     enum ConstructionOption
     {
-      InscribedCircle, //!< Inscribed in a circle (the radius is the distance between the center and vertices)
+      InscribedCircle,    //!< Inscribed in a circle (the radius is the distance between the center and vertices)
       CircumscribedCircle //!< Circumscribed about a circle (the radius is the distance from the center to the midpoints of the sides)
     };
 
+    // clang-format off
     /**
      * Constructor for QgsRegularPolygon.
      */
     QgsRegularPolygon() SIP_HOLDGIL = default;
+    // clang-format on
 
     /**
      * Constructs a regular polygon by \a center and parameters for the first vertex. An empty regular polygon is returned if \a numberSides < 3 or \a ConstructionOption isn't valid.

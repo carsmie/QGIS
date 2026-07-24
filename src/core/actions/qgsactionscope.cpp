@@ -14,20 +14,19 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsactionscope.h"
+
 #include "qgsexpressioncontext.h"
 
 QgsActionScope::QgsActionScope()
   : mExpressionContextScope( nullptr )
-{
-}
+{}
 
 QgsActionScope::QgsActionScope( const QString &id, const QString &title, const QString &description, const QgsExpressionContextScope &expressionContextScope )
   : mId( id )
   , mTitle( title )
   , mDescription( description )
   , mExpressionContextScope( expressionContextScope )
-{
-}
+{}
 
 bool QgsActionScope::operator==( const QgsActionScope &other ) const
 {
@@ -79,9 +78,9 @@ void QgsActionScope::setDescription( const QString &description )
   mDescription = description;
 }
 
-uint qHash( const QgsActionScope &key, uint seed )
+size_t qHash( const QgsActionScope &key, size_t seed )
 {
-  uint hash = seed;
+  size_t hash = seed;
 
   hash |= qHash( key.expressionContextScope().variableNames().join( ',' ), seed );
   hash |= qHash( key.id(), seed );

@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "qgstest.h"
+
 #include <QObject>
 
 //qgis includes...
@@ -65,8 +66,7 @@ void TestQgsRasterDataProviderTemporalCapabilities::init()
 }
 
 void TestQgsRasterDataProviderTemporalCapabilities::cleanup()
-{
-}
+{}
 
 void TestQgsRasterDataProviderTemporalCapabilities::cleanupTestCase()
 {

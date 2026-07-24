@@ -14,8 +14,10 @@
  ***************************************************************************/
 
 #include "qgslistwidget.h"
-#include "moc_qgslistwidget.cpp"
+
 #include "qgsvariantutils.h"
+
+#include "moc_qgslistwidget.cpp"
 
 QgsListWidget::QgsListWidget( QMetaType::Type subType, QWidget *parent )
   : QgsTableWidgetBase( parent )
@@ -39,9 +41,9 @@ void QgsListWidget::setReadOnly( bool readOnly )
 
 ///@cond PRIVATE
 QgsListModel::QgsListModel( QMetaType::Type subType, QObject *parent )
-  : QAbstractTableModel( parent ), mSubType( subType )
-{
-}
+  : QAbstractTableModel( parent )
+  , mSubType( subType )
+{}
 
 void QgsListModel::setList( const QVariantList &list )
 {

@@ -16,16 +16,20 @@
  ***************************************************************************/
 
 #include "qgsdxfpaintengine.h"
+
 #include "qgsdxfexport.h"
 #include "qgsdxfpaintdevice.h"
 #include "qgslogger.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsDxfPaintEngine::QgsDxfPaintEngine( const QgsDxfPaintDevice *dxfDevice, QgsDxfExport *dxf )
   : QPaintEngine( QPaintEngine::AllFeatures /*QPaintEngine::PainterPaths | QPaintEngine::PaintOutsidePaintEvent*/ )
   , mPaintDevice( dxfDevice )
   , mDxf( dxf )
-{
-}
+{}
 
 bool QgsDxfPaintEngine::begin( QPaintDevice *pdev )
 {
@@ -65,6 +69,73 @@ void QgsDxfPaintEngine::updateState( const QPaintEngineState &state )
   {
     mOpacity = state.opacity();
   }
+
+  // Store the clip in device coordinates so it can be intersected directly
+  // with the device-space polygons we get in clipPolygonLogical().
+  // Region is processed first and path second: when both flags are set in
+  // the same update, the path branch overwrites the region one, matching
+  // QPainter's "setClipPath replaces any region clip" semantics.
+  if ( state.state() & QPaintEngine::DirtyClipRegion )
+  {
+    if ( state.clipOperation() == Qt::NoClip )
+    {
+      mClipPath = QPainterPath();
+    }
+    else
+    {
+      QPainterPath p;
+      p.addRegion( state.clipRegion() );
+      mClipPath = state.transform().map( p );
+    }
+  }
+  if ( state.state() & QPaintEngine::DirtyClipPath )
+  {
+    if ( state.clipOperation() == Qt::NoClip )
+    {
+      mClipPath = QPainterPath();
+    }
+    else
+    {
+      mClipPath = state.transform().map( state.clipPath() );
+    }
+  }
+  if ( state.state() & ( QPaintEngine::DirtyClipPath | QPaintEngine::DirtyClipRegion | QPaintEngine::DirtyClipEnabled ) )
+  {
+    mClipEnabled = state.isClipEnabled() && !mClipPath.isEmpty();
+  }
+}
+
+QList<QPolygonF> QgsDxfPaintEngine::clipPolygonLogical( const QPolygonF &polyLogical ) const
+{
+  if ( !mClipEnabled || mClipPath.isEmpty() || polyLogical.isEmpty() )
+    return { polyLogical };
+
+  // mClipPath is stored in device coords; map the incoming logical polygon
+  // through the current painter transform so the intersection happens in the
+  // same space, then map the clipped subpaths back to logical coords for the
+  // caller (which feeds them into toDxfCoordinates()).
+  const QPolygonF polyDevice = mTransform.map( polyLogical );
+  QPainterPath polyPath;
+  polyPath.addPolygon( polyDevice );
+  const QPainterPath clipped = polyPath.intersected( mClipPath );
+  if ( clipped.isEmpty() )
+    return {};
+
+  bool invertible = false;
+  const QTransform inv = mTransform.inverted( &invertible );
+  if ( !invertible )
+    return { polyLogical };
+
+  QList<QPolygonF> result;
+  const QList<QPolygonF> subs = clipped.toSubpathPolygons();
+  result.reserve( subs.size() );
+  for ( const QPolygonF &sub : subs )
+  {
+    if ( sub.size() < 2 )
+      continue;
+    result << inv.map( sub );
+  }
+  return result;
 }
 
 void QgsDxfPaintEngine::setRing( QgsPointSequence &polyline, const QPointF *points, int pointCount )
@@ -80,19 +151,31 @@ void QgsDxfPaintEngine::drawPolygon( const QPointF *points, int pointCount, Poly
   if ( !mDxf || !mPaintDevice )
     return;
 
-  QgsRingSequence polygon;
-  polygon << QgsPointSequence();
-  setRing( polygon.last(), points, pointCount );
+  QPolygonF inputPoly;
+  inputPoly.reserve( pointCount );
+  for ( int i = 0; i < pointCount; ++i )
+    inputPoly << points[i];
 
-  if ( mode == QPaintEngine::PolylineMode )
+  const QList<QPolygonF> polys = clipPolygonLogical( inputPoly );
+  for ( const QPolygonF &sub : polys )
   {
-    if ( mPen.style() != Qt::NoPen && mPen.brush().style() != Qt::NoBrush )
-      mDxf->writePolyline( polygon.at( 0 ), mLayer, QStringLiteral( "CONTINUOUS" ), penColor(), currentWidth() );
-  }
-  else
-  {
-    if ( mBrush.style() != Qt::NoBrush )
-      mDxf->writePolygon( polygon, mLayer, QStringLiteral( "SOLID" ), brushColor() );
+    if ( sub.size() < 2 )
+      continue;
+
+    QgsRingSequence polygon;
+    polygon << QgsPointSequence();
+    setRing( polygon.last(), sub.constData(), sub.size() );
+
+    if ( mode == QPaintEngine::PolylineMode )
+    {
+      if ( mPen.style() != Qt::NoPen && mPen.brush().style() != Qt::NoBrush )
+        mDxf->writePolyline( polygon.at( 0 ), mLayer, u"CONTINUOUS"_s, penColor(), currentWidth() );
+    }
+    else
+    {
+      if ( mBrush.style() != Qt::NoBrush )
+        mDxf->writePolygon( polygon, mLayer, u"SOLID"_s, brushColor() );
+    }
   }
 }
 
@@ -123,7 +206,7 @@ void QgsDxfPaintEngine::drawPath( const QPainterPath &path )
   endPolygon();
 
   if ( !mPolygon.isEmpty() && mBrush.style() != Qt::NoBrush )
-    mDxf->writePolygon( mPolygon, mLayer, QStringLiteral( "SOLID" ), brushColor() );
+    mDxf->writePolygon( mPolygon, mLayer, u"SOLID"_s, brushColor() );
 
   mPolygon.clear();
 }
@@ -157,8 +240,14 @@ void QgsDxfPaintEngine::endPolygon()
     if ( mPen.style() != Qt::NoPen )
       drawPolygon( mCurrentPolygon.constData(), mCurrentPolygon.size(), QPaintEngine::PolylineMode );
 
-    mPolygon << QgsPointSequence();
-    setRing( mPolygon.last(), mCurrentPolygon.constData(), mCurrentPolygon.size() );
+    const QList<QPolygonF> clipped = clipPolygonLogical( mCurrentPolygon );
+    for ( const QPolygonF &sub : clipped )
+    {
+      if ( sub.size() < 2 )
+        continue;
+      mPolygon << QgsPointSequence();
+      setRing( mPolygon.last(), sub.constData(), sub.size() );
+    }
   }
   mCurrentPolygon.clear();
 }
@@ -197,9 +286,7 @@ void QgsDxfPaintEngine::drawLines( const QLineF *lines, int lineCount )
 
   for ( int i = 0; i < lineCount; ++i )
   {
-    mDxf->writeLine( toDxfCoordinates( lines[i].p1() ),
-                     toDxfCoordinates( lines[i].p2() ),
-                     mLayer, QStringLiteral( "CONTINUOUS" ), penColor(), currentWidth() );
+    mDxf->writeLine( toDxfCoordinates( lines[i].p1() ), toDxfCoordinates( lines[i].p2() ), mLayer, u"CONTINUOUS"_s, penColor(), currentWidth() );
   }
 }
 
@@ -226,7 +313,7 @@ QPointF QgsDxfPaintEngine::bezierPoint( const QList<QPointF> &controlPolygon, do
   double x = 0;
   double y = 0;
   const int cPolySize = controlPolygon.size();
-  double bPoly  = 0;
+  double bPoly = 0;
 
   QList<QPointF>::const_iterator it = controlPolygon.constBegin();
   int i = 0;
@@ -278,14 +365,14 @@ double QgsDxfPaintEngine::power( double a, int b )
 
 int QgsDxfPaintEngine::faculty( int n )
 {
-  if ( n < 0 )//Is faculty also defined for negative integers?
+  if ( n < 0 ) //Is faculty also defined for negative integers?
     return 0;
 
   int i;
   int result = n;
 
   if ( n == 0 || n == 1 )
-    return 1;  //faculty of 0 is 1!
+    return 1; //faculty of 0 is 1!
 
   for ( i = n - 1; i >= 2; i-- )
     result *= i;
@@ -306,11 +393,34 @@ QColor QgsDxfPaintEngine::penColor() const
 
 QColor QgsDxfPaintEngine::brushColor() const
 {
-  if ( qgsDoubleNear( mOpacity, 1.0 ) )
+  QColor c;
+  switch ( mBrush.style() )
   {
-    return mBrush.color();
+    // DXF doesn't support gradients — use the middle color as a fallback for
+    // the brush color
+    case Qt::LinearGradientPattern:
+    case Qt::RadialGradientPattern:
+    case Qt::ConicalGradientPattern:
+    {
+      const QGradientStops stops = mBrush.gradient() ? mBrush.gradient()->stops() : QGradientStops();
+      if ( !stops.isEmpty() )
+      {
+        c = stops.at( stops.size() / 2 ).second;
+      }
+      else
+      {
+        c = mBrush.color();
+      }
+      break;
+    }
+    default:
+      c = mBrush.color();
+      break;
   }
-  QColor c = mBrush.color();
-  c.setAlphaF( c.alphaF() * mOpacity );
+
+  if ( !qgsDoubleNear( mOpacity, 1.0 ) )
+  {
+    c.setAlphaF( static_cast<float>( c.alphaF() * mOpacity ) );
+  }
   return c;
 }

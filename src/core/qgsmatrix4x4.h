@@ -18,9 +18,11 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-
 #include "qgsvector3d.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup core
@@ -42,55 +44,109 @@ class CORE_EXPORT QgsMatrix4x4
     //! Initializes identity matrix
     QgsMatrix4x4() { setToIdentity(); }
     //! Initializes matrix by setting all values in row-major order
-    QgsMatrix4x4( double m11, double m12, double m13, double m14,
-                  double m21, double m22, double m23, double m24,
-                  double m31, double m32, double m33, double m34,
-                  double m41, double m42, double m43, double m44 );
+    // clang-format off
+    QgsMatrix4x4(
+      double m11, double m12, double m13, double m14,
+      double m21, double m22, double m23, double m24,
+      double m31, double m32, double m33, double m34,
+      double m41, double m42, double m43, double m44
+    );
+    // clang-format on
 
-    bool operator==( const QgsMatrix4x4 &other ) const
-    {
-      const double *data = *m;
-      const double *otherData = *( other.m );
-      for ( int i = 0; i < 16; ++i, data++, otherData++ )
-      {
-        if ( !qgsDoubleNear( *data, *otherData ) )
-          return false;
-      }
-      return true;
-    }
+    bool operator==( const QgsMatrix4x4 &other ) const { return fuzzyEqual( other, 4 * std::numeric_limits<double>::epsilon() ); }
 
-    bool operator!=( const QgsMatrix4x4 &other ) const
-    {
-      return !( *this == other );
-    }
+    bool operator!=( const QgsMatrix4x4 &other ) const { return !( *this == other ); }
+
+
+    /**
+     * Performs fuzzy comparison between this matrix and \a other using an \a epsilon.
+     *
+     * \since QGIS 4.2
+     */
+    bool fuzzyEqual( const QgsMatrix4x4 &other, double epsilon = 1e-8 ) const
+    SIP_HOLDGIL;
 
     //! Returns pointer to the matrix data (stored in column-major order)
     const double *constData() const SIP_SKIP { return *m; }
     //! Returns pointer to the matrix data (stored in column-major order)
     double *data() SIP_SKIP { return *m; }
+    // clang-format off
     //! Returns matrix data (in column-major order)
     QList< double > dataList() const SIP_PYNAME( data ) SIP_HOLDGIL;
+    // clang-format on
 
     /**
      * Multiplies this matrix by another that translates coordinates by the components of a \a vector.
      */
     void translate( const QgsVector3D &vector );
 
-    //! Matrix-vector multiplication (vector is converted to homogeneous coordinates [X,Y,Z,1] and back)
+    /**
+     * Matrix-vector multiplication (vector is converted to homogeneous coordinates [X,Y,Z,1] and back)
+     *
+     * \see mapVector()
+     *
+     * \note This function is not the same as mapVector().
+*             For points, always use map(). mapVector() is suitable for vectors (directions) only.
+     */
     QgsVector3D map( const QgsVector3D &vector ) const SIP_HOLDGIL
     {
       return *this * vector;
     }
+
+    /**
+     * Maps vector by multiplying the top 3x3 portion of this matrix by \a vector.
+     * The translation and projection components of this matrix are ignored.
+     * The matrix is applied pre-vector.
+     *
+     * \param vector input vector to transform
+     *
+     * \see map()
+     *
+     * \since QGIS 4.2
+     */
+    QgsVector3D mapVector( const QgsVector3D &vector ) const SIP_HOLDGIL;
+
 
     //! Returns whether this matrix is an identity matrix
     bool isIdentity() const SIP_HOLDGIL;
     //! Sets matrix to be identity matrix
     void setToIdentity() SIP_HOLDGIL;
 
+    /**
+     * Multiplies this matrix by another that scales coordinates by the components of a \a vector.
+     *
+     * \since QGIS 4.2
+     */
+    void scale( const QgsVector3D &vector );
+
+    /**
+     * Multiples this matrix by another that rotates coordinates through
+     * \a angle degrees about the vector (\a x, \a y, \a z).
+     *
+     * \since QGIS 4.2
+     */
+    void rotate( double angle, double x, double y, double z );
+
+    /**
+     * Multiples this matrix by another that rotates coordinates through
+     * \a angle degrees about \a vector.
+     *
+     * \since QGIS 4.2
+     */
+    void rotate( double angle, const QgsVector3D &vector );
+
+    /**
+     * Returns the determinant of this matrix.
+     *
+     * \since QGIS 4.2
+     */
+    double determinant() const;
+
 #ifdef SIP_RUN
+// clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsMatrix4x4(%1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16)>" )
+    QString str = u"<QgsMatrix4x4(%1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16)>"_s
                   .arg( sipCpp->data()[0] )
                   .arg( sipCpp->data()[4] )
                   .arg( sipCpp->data()[8] )
@@ -109,6 +165,7 @@ class CORE_EXPORT QgsMatrix4x4
                   .arg( sipCpp->data()[15] );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
 #ifndef SIP_RUN
@@ -124,9 +181,9 @@ class CORE_EXPORT QgsMatrix4x4
     explicit QgsMatrix4x4( int ) { }   // cppcheck-suppress uninitMemberVarPrivate
 };
 
-//! Matrix-matrix multiplication (useful to concatenate transforms)
-CORE_EXPORT QgsVector3D operator*( const QgsMatrix4x4 &matrix, const QgsVector3D &vector );
 //! Matrix-vector multiplication (vector is converted to homogeneous coordinates [X,Y,Z,1] and back)
+CORE_EXPORT QgsVector3D operator*( const QgsMatrix4x4 &matrix, const QgsVector3D &vector );
+//! Matrix-matrix multiplication (useful to concatenate transforms)
 CORE_EXPORT QgsMatrix4x4 operator*( const QgsMatrix4x4 &m1, const QgsMatrix4x4 &m2 );
 
 

@@ -1,19 +1,24 @@
-//    Copyright (C) 2020-2021 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT.  If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #ifndef PDFSNAPPER_H
 #define PDFSNAPPER_H
@@ -27,6 +32,7 @@
 #include <optional>
 
 class QPainter;
+class QTransform;
 
 namespace pdf
 {
@@ -42,13 +48,14 @@ enum class SnapType
     ImageCenter,       ///< Center of image
     LineCenter,        ///< Center of line
     GeneratedLineProjection,   ///< Generated point to line projections
+    Annotation,        ///< Annotation geometry point
     Custom  ///< Custom snap point
 };
 
 /// Contain informations for snap points in the pdf page. Snap points
 /// can be for example image centers, rectangle corners, line start/end
 /// points, page boundary boxes etc. All coordinates are in page coordinates.
-class PDFSnapInfo
+class PDF4QTLIBCORESHARED_EXPORT PDFSnapInfo
 {
 public:
     explicit inline PDFSnapInfo() = default;
@@ -88,6 +95,19 @@ public:
     /// \param start Start point of line, in page coordinates
     /// \param end End point of line, in page coordinates
     void addLine(const QPointF& start, const QPointF& end);
+
+    /// Adds annotation point.
+    /// \param point Annotation point in page coordinates
+    void addAnnotationPoint(const QPointF& point);
+
+    /// Adds annotation rectangle. Rectangle corners, center and edges are added.
+    /// \param rectangle Annotation rectangle in page coordinates
+    void addAnnotationRectangle(const QRectF& rectangle);
+
+    /// Adds annotation line. Line endpoints and center are added.
+    /// \param start Start point of line, in page coordinates
+    /// \param end End point of line, in page coordinates
+    void addAnnotationLine(const QPointF& start, const QPointF& end);
 
     /// Returns snap points
     const std::vector<SnapPoint>& getSnapPoints() const { return m_snapPoints; }
@@ -158,6 +178,12 @@ public:
     /// \param snapshot Widget snapshot
     void buildSnapImages(const PDFWidgetSnapshot& snapshot);
 
+    /// Adds snap points from external snap info, for example annotations.
+    /// \param pageIndex Page index
+    /// \param pageToDeviceMatrix Page-to-device matrix for the page
+    /// \param info Snap info in page coordinates
+    void addSnapInfo(PDFInteger pageIndex, const QTransform& pageToDeviceMatrix, const PDFSnapInfo& info);
+
     /// Returns current snap point tolerance (while aiming with the mouse cursor,
     /// when mouse cursor is at most tolerance distance from some snap point,
     /// it is snapped.
@@ -210,6 +236,8 @@ private:
     PDFInteger m_currentPage = -1;
     int m_snapPointPixelSize = 0;
     int m_snapPointTolerance = 0;
+
+    void addSnapInfoImpl(PDFInteger pageIndex, const QTransform& pageToDeviceMatrix, const PDFSnapInfo& info, bool includeCustomSnapPoints);
 };
 
 }   // namespace pdf

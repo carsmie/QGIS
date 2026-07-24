@@ -32,15 +32,17 @@
 // version without notice, or even be removed.
 //
 
-#include <QSortFilterProxyModel>
-
-#include "ui_qgsbrowserlayerpropertiesbase.h"
 #include "ui_qgsbrowserdirectorypropertiesbase.h"
+#include "ui_qgsbrowserlayerpropertiesbase.h"
 #include "ui_qgsbrowserpropertiesdialogbase.h"
 
 #include "qgsbrowsertreeview.h"
-#include "qgsdockwidget.h"
 #include "qgsdataitemguiprovider.h"
+#include "qgsdockwidget.h"
+
+#include <QSortFilterProxyModel>
+
+#define SIP_NO_FILE
 
 class QgsBrowserGuiModel;
 class QModelIndex;
@@ -49,7 +51,6 @@ class QgsLayerItem;
 class QgsDataItem;
 class QgsDirectoryParamWidget;
 
-#define SIP_NO_FILE
 
 /**
  * Hack to show wrapped text without spaces

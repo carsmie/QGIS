@@ -30,18 +30,20 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
-#define SIP_NO_FILE
 
+#include <cmath>
+#include <fstream>
+#include <iostream>
 
-#include "qgis_core.h"
+#include "labelposition.h"
 #include "pointset.h"
-#include "labelposition.h" // for LabelPosition enum
+#include "qgis_core.h"
 #include "qgslabelfeature.h"
 #include "qgstextrendererutils.h"
-#include <iostream>
-#include <fstream>
-#include <cmath>
+
 #include <QString>
+
+#define SIP_NO_FILE
 
 namespace pal
 {
@@ -56,9 +58,7 @@ namespace pal
    */
   class CORE_EXPORT FeaturePart : public PointSet
   {
-
     public:
-
       //! Path offset variances used in curved placement.
       enum PathOffset
       {
@@ -95,6 +95,12 @@ namespace pal
        * Returns the unique ID of the feature.
        */
       QgsFeatureId featureId() const;
+
+      /**
+       * Returns the unique sub part ID for the feature, for features which register
+       * multiple labels.
+       */
+      int subPartId() const;
 
       /**
        * Returns the maximum number of point candidates to generate for this feature.
@@ -213,12 +219,22 @@ namespace pal
        * \param distance distance to offset label along curve by
        * \param labeledLineSegmentIsRightToLeft if TRUE label is reversed from lefttoright to righttoleft
        * \param applyAngleConstraints TRUE if label feature character angle constraints should be applied
+       * \param additionalCharacterSpacing additional spacing to apply between every character (grapheme). Can be negative to constrict text placement.
+       * \param additionalWordSpacing additional spacing to apply after every word (space character). Can be negative to constrict text placement.
        * \param flags curved text behavior flags
        * \returns calculated label position
        */
-      std::unique_ptr< LabelPosition > curvedPlacementAtOffset( PointSet *mapShape, const std::vector<double> &pathDistances,
-          QgsTextRendererUtils::LabelLineDirection direction, double distance, bool &labeledLineSegmentIsRightToLeft, bool applyAngleConstraints,
-          QgsTextRendererUtils::CurvedTextFlags flags );
+      std::unique_ptr< LabelPosition > curvedPlacementAtOffset(
+        PointSet *mapShape,
+        const std::vector<double> &pathDistances,
+        QgsTextRendererUtils::LabelLineDirection direction,
+        double distance,
+        bool &labeledLineSegmentIsRightToLeft,
+        bool applyAngleConstraints,
+        Qgis::CurvedTextFlags flags,
+        double additionalCharacterSpacing,
+        double additionalWordSpacing
+      );
 
       /**
        * Generate curved candidates for line features.
@@ -229,6 +245,25 @@ namespace pal
        * \returns the number of generated candidates
        */
       std::size_t createCurvedCandidatesAlongLine( std::vector<std::unique_ptr<LabelPosition> > &lPos, PointSet *mapShape, bool allowOverrun, Pal *pal );
+
+      /**
+       * Generate curved candidates for line features, using default placement.
+       * \param lPos pointer to an array of candidates, will be filled by generated candidates
+       * \param mapShape a pointer to the line
+       * \param allowOverrun set to TRUE to allow labels to overrun features
+       * \param pal point to pal settings object, for cancellation support
+       * \returns the number of generated candidates
+       */
+      std::size_t createDefaultCurvedCandidatesAlongLine( std::vector<std::unique_ptr<LabelPosition> > &lPos, PointSet *mapShape, bool allowOverrun, Pal *pal );
+
+      /**
+       * Generates a curved candidates for line features, placing individual characters on the line vertices.
+       * \param lPos pointer to an array of candidates, will be filled by generated candidate
+       * \param mapShape a pointer to the line
+       * \param pal point to pal settings object, for cancellation support
+       * \returns the number of generated candidates
+       */
+      std::size_t createCurvedCandidateWithCharactersAtVertices( std::vector<std::unique_ptr<LabelPosition> > &lPos, PointSet *mapShape, Pal *pal );
 
       /**
        * Generate candidates for polygon features.
@@ -337,7 +372,6 @@ namespace pal
       void setTotalRepeats( int repeats );
 
     protected:
-
       QgsLabelFeature *mLF = nullptr;
       QList<FeaturePart *> mHoles;
 
@@ -345,7 +379,6 @@ namespace pal
       void extractCoords( const GEOSGeometry *geom );
 
     private:
-
       Qgis::LabelQuadrantPosition quadrantFromOffset() const;
 
       int mTotalRepeats = 0;
@@ -353,7 +386,7 @@ namespace pal
       mutable std::size_t mCachedMaxLineCandidates = 0;
       mutable std::size_t mCachedMaxPolygonCandidates = 0;
 
-      FeaturePart &operator= ( const FeaturePart & ) = delete;
+      FeaturePart &operator=( const FeaturePart & ) = delete;
   };
 
 } // end namespace pal

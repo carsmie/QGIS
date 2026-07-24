@@ -16,17 +16,23 @@
  ***************************************************************************/
 
 #include "qgstaskmanagerwidget.h"
-#include "moc_qgstaskmanagerwidget.cpp"
-#include "qgstaskmanager.h"
+
 #include "qgsapplication.h"
-#include <QPainter>
-#include <QMouseEvent>
-#include <QTreeView>
-#include <QLayout>
-#include <QToolBar>
-#include <QProgressBar>
+#include "qgstaskmanager.h"
+
 #include <QAction>
 #include <QHeaderView>
+#include <QLayout>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QProgressBar>
+#include <QString>
+#include <QToolBar>
+#include <QTreeView>
+
+#include "moc_qgstaskmanagerwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 //
 // QgsTaskManagerWidget
@@ -66,9 +72,7 @@ QgsTaskManagerWidget::QgsTaskManagerWidget( QgsTaskManager *manager, QWidget *pa
 }
 
 QgsTaskManagerWidget::~QgsTaskManagerWidget()
-{
-  delete mModel;
-}
+{}
 
 
 void QgsTaskManagerWidget::modelRowsInserted( const QModelIndex &, int start, int end )
@@ -492,26 +496,26 @@ void QgsTaskStatusWidget::paintEvent( QPaintEvent *e )
   QIcon icon;
   if ( mInside && ( mCanCancel || ( mStatus == QgsTask::Queued || mStatus == QgsTask::OnHold ) ) )
   {
-    icon = QgsApplication::getThemeIcon( QStringLiteral( "/mTaskCancel.svg" ) );
+    icon = QgsApplication::getThemeIcon( u"/mTaskCancel.svg"_s );
   }
   else
   {
     switch ( mStatus )
     {
       case QgsTask::Queued:
-        icon = QgsApplication::getThemeIcon( QStringLiteral( "/mTaskQueued.svg" ) );
+        icon = QgsApplication::getThemeIcon( u"/mTaskQueued.svg"_s );
         break;
       case QgsTask::OnHold:
-        icon = QgsApplication::getThemeIcon( QStringLiteral( "/mTaskOnHold.svg" ) );
+        icon = QgsApplication::getThemeIcon( u"/mTaskOnHold.svg"_s );
         break;
       case QgsTask::Running:
-        icon = QgsApplication::getThemeIcon( QStringLiteral( "/mTaskRunning.svg" ) );
+        icon = QgsApplication::getThemeIcon( u"/mTaskRunning.svg"_s );
         break;
       case QgsTask::Complete:
-        icon = QgsApplication::getThemeIcon( QStringLiteral( "/mTaskComplete.svg" ) );
+        icon = QgsApplication::getThemeIcon( u"/mTaskComplete.svg"_s );
         break;
       case QgsTask::Terminated:
-        icon = QgsApplication::getThemeIcon( QStringLiteral( "/mTaskTerminated.svg" ) );
+        icon = QgsApplication::getThemeIcon( u"/mTaskTerminated.svg"_s );
         break;
     }
   }
@@ -575,8 +579,10 @@ QgsTaskManagerFloatingWidget::QgsTaskManagerFloatingWidget( QgsTaskManager *mana
   const int minHeight = static_cast<int>( fontMetrics().height() * 15 * Qgis::UI_SCALE_FACTOR );
   setMinimumSize( minWidth, minHeight );
   layout()->addWidget( w );
-  setStyleSheet( ".QgsTaskManagerFloatingWidget { border-top-left-radius: 8px;"
-                 "border-top-right-radius: 8px; background-color: rgba(0, 0, 0, 70%); }" );
+  setStyleSheet(
+    ".QgsTaskManagerFloatingWidget { border-top-left-radius: 8px;"
+    "border-top-right-radius: 8px; background-color: rgba(0, 0, 0, 70%); }"
+  );
 }
 
 

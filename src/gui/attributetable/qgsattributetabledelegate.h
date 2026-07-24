@@ -16,9 +16,10 @@
 #ifndef QGSATTRIBUTETABLEDELEGATE_H
 #define QGSATTRIBUTETABLEDELEGATE_H
 
-#include <QItemDelegate>
-#include "qgis_sip.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
+
+#include <QItemDelegate>
 
 class QgsFeatureSelectionModel;
 class QPainter;
@@ -46,8 +47,7 @@ class GUI_EXPORT QgsAttributeTableDelegate : public QItemDelegate
      */
     QgsAttributeTableDelegate( QObject *parent SIP_TRANSFERTHIS = nullptr )
       : QItemDelegate( parent )
-    {
-    }
+    {}
 
     /**
      * Used to create an editor for when the user tries to

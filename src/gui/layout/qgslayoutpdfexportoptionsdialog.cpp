@@ -15,22 +15,29 @@
  ***************************************************************************/
 
 #include "qgslayoutpdfexportoptionsdialog.h"
-#include "moc_qgslayoutpdfexportoptionsdialog.cpp"
+
 #include "qgis.h"
-#include "qgssettings.h"
+#include "qgsabstractgeopdfexporter.h"
+#include "qgsgeopdflayertreemodel.h"
 #include "qgsgui.h"
 #include "qgshelp.h"
-#include "qgsabstractgeopdfexporter.h"
-#include "qgsproject.h"
-#include "qgsmapthemecollection.h"
-#include "qgsgeopdflayertreemodel.h"
 #include "qgslayertree.h"
+#include "qgsmapthemecollection.h"
+#include "qgsproject.h"
+#include "qgssettings.h"
 
 #include <QCheckBox>
-#include <QPushButton>
 #include <QMenu>
+#include <QPushButton>
+#include <QString>
 
-QgsLayoutPdfExportOptionsDialog::QgsLayoutPdfExportOptionsDialog( QWidget *parent, bool allowGeospatialPdfExport, const QString &geospatialPdfReason, const QStringList &geospatialPdfLayerOrder, Qt::WindowFlags flags )
+#include "moc_qgslayoutpdfexportoptionsdialog.cpp"
+
+using namespace Qt::StringLiterals;
+
+QgsLayoutPdfExportOptionsDialog::QgsLayoutPdfExportOptionsDialog(
+  QWidget *parent, bool allowGeospatialPdfExport, const QString &geospatialPdfReason, const QStringList &geospatialPdfLayerOrder, Qt::WindowFlags flags
+)
   : QDialog( parent, flags )
 {
   setupUi( this );
@@ -58,6 +65,10 @@ QgsLayoutPdfExportOptionsDialog::QgsLayoutPdfExportOptionsDialog( QWidget *paren
   {
     mGeospatialPDFOptionsStackedWidget->setCurrentIndex( 1 );
   }
+
+  mGeospatialPDFCustomConfigRadioButton->setChecked( true );
+  mGeospatialPDFCustomConfigFrame->setEnabled( true );
+  connect( mGeospatialPDFLayerTreeConfigRadioButton, &QRadioButton::toggled, this, &QgsLayoutPdfExportOptionsDialog::toggleLayerTreeConfig );
 
   mComboImageCompression->addItem( tr( "Lossy (JPEG)" ), false );
   mComboImageCompression->addItem( tr( "Lossless" ), true );
@@ -198,6 +209,32 @@ bool QgsLayoutPdfExportOptionsDialog::exportGeospatialPdf() const
   return mGeospatialPDFGroupBox->isChecked();
 }
 
+void QgsLayoutPdfExportOptionsDialog::setUseLayerTreeConfig( bool enabled )
+{
+  if ( !mGeospatialPdfAvailable )
+    return;
+
+  mGeospatialPDFLayerTreeConfigRadioButton->setChecked( enabled );
+  mGeospatialPDFCustomConfigFrame->setEnabled( !enabled );
+}
+
+bool QgsLayoutPdfExportOptionsDialog::useLayerTreeConfig() const
+{
+  if ( !mGeospatialPdfAvailable )
+    return false;
+
+  return mGeospatialPDFLayerTreeConfigRadioButton->isChecked();
+}
+
+void QgsLayoutPdfExportOptionsDialog::disableUseLayerTreeConfig()
+{
+  setUseLayerTreeConfig( false );
+  mGeospatialPDFLayerTreeConfigRadioButton->setEnabled( false );
+  mGeospatialPDFLayerTreeConfigRadioButton->setToolTip(
+    u"Unavailable: All map items in the layout are currently following either map themes or locked layers, which is not compatible with the QGIS layer tree configuration."_s
+  );
+}
+
 void QgsLayoutPdfExportOptionsDialog::setExportThemes( const QStringList &themes )
 {
   if ( !mGeospatialPdfAvailable )
@@ -267,7 +304,7 @@ bool QgsLayoutPdfExportOptionsDialog::openAfterExporting() const
 
 void QgsLayoutPdfExportOptionsDialog::showHelp()
 {
-  QgsHelp::openHelp( QStringLiteral( "print_composer/create_output.html" ) );
+  QgsHelp::openHelp( u"print_composer/create_output.html"_s );
 }
 
 void QgsLayoutPdfExportOptionsDialog::showContextMenuForGeospatialPdfStructure( QPoint point, const QModelIndex &index )
@@ -281,14 +318,10 @@ void QgsLayoutPdfExportOptionsDialog::showContextMenuForGeospatialPdfStructure( 
     {
       QAction *selectAll = new QAction( tr( "Select All" ), mGeospatialPdfStructureTreeMenu );
       mGeospatialPdfStructureTreeMenu->addAction( selectAll );
-      connect( selectAll, &QAction::triggered, this, [this, index] {
-        mGeospatialPdfStructureModel->checkAll( true, QModelIndex(), index.column() );
-      } );
+      connect( selectAll, &QAction::triggered, this, [this, index] { mGeospatialPdfStructureModel->checkAll( true, QModelIndex(), index.column() ); } );
       QAction *deselectAll = new QAction( tr( "Deselect All" ), mGeospatialPdfStructureTreeMenu );
       mGeospatialPdfStructureTreeMenu->addAction( deselectAll );
-      connect( deselectAll, &QAction::triggered, this, [this, index] {
-        mGeospatialPdfStructureModel->checkAll( false, QModelIndex(), index.column() );
-      } );
+      connect( deselectAll, &QAction::triggered, this, [this, index] { mGeospatialPdfStructureModel->checkAll( false, QModelIndex(), index.column() ); } );
       break;
     }
 
@@ -300,4 +333,9 @@ void QgsLayoutPdfExportOptionsDialog::showContextMenuForGeospatialPdfStructure( 
   {
     mGeospatialPdfStructureTreeMenu->exec( mGeospatialPdfStructureTree->mapToGlobal( point ) );
   }
+}
+
+void QgsLayoutPdfExportOptionsDialog::toggleLayerTreeConfig()
+{
+  mGeospatialPDFCustomConfigFrame->setEnabled( !mGeospatialPDFLayerTreeConfigRadioButton->isChecked() );
 }

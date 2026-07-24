@@ -16,17 +16,22 @@
  ***************************************************************************/
 
 #include "qgsalgorithmexplode.h"
-#include "qgscurve.h"
-#include "qgslinestring.h"
+
 #include "qgscircularstring.h"
 #include "qgscompoundcurve.h"
+#include "qgscurve.h"
 #include "qgsgeometrycollection.h"
+#include "qgslinestring.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
 QString QgsExplodeAlgorithm::name() const
 {
-  return QStringLiteral( "explodelines" );
+  return u"explodelines"_s;
 }
 
 QString QgsExplodeAlgorithm::displayName() const
@@ -46,16 +51,18 @@ QString QgsExplodeAlgorithm::group() const
 
 QString QgsExplodeAlgorithm::groupId() const
 {
-  return QStringLiteral( "vectorgeometry" );
+  return u"vectorgeometry"_s;
 }
 
 QString QgsExplodeAlgorithm::shortHelpString() const
 {
-  return QObject::tr( "This algorithm takes a lines layer and creates a new one in which each line is replaced by a set of "
-                      "lines representing the segments in the original line. Each line in the resulting layer contains only a "
-                      "start and an end point, with no intermediate nodes between them.\n\n"
-                      "If the input layer consists of CircularStrings or CompoundCurves, the output layer will be of the "
-                      "same type and contain only single curve segments." );
+  return QObject::tr(
+    "This algorithm takes a lines layer and creates a new one in which each line is replaced by a set of "
+    "lines representing the segments in the original line. Each line in the resulting layer contains only a "
+    "start and an end point, with no intermediate nodes between them.\n\n"
+    "If the input layer consists of CircularStrings or CompoundCurves, the output layer will be of the "
+    "same type and contain only single curve segments."
+  );
 }
 
 QString QgsExplodeAlgorithm::shortDescription() const
@@ -130,7 +137,7 @@ std::vector<QgsGeometry> QgsExplodeAlgorithm::extractAsParts( const QgsGeometry 
   if ( geometry.isMultipart() )
   {
     std::vector<QgsGeometry> parts;
-    const QgsGeometryCollection *collection = qgsgeometry_cast<const QgsGeometryCollection *>( geometry.constGet() );
+    const QgsGeometryCollection *collection = qgis::down_cast< const QgsGeometryCollection * >( geometry.constGet() );
     for ( int part = 0; part < collection->numGeometries(); ++part )
     {
       std::vector<QgsGeometry> segments = curveAsSingleSegments( qgsgeometry_cast<const QgsCurve *>( collection->geometryN( part ) ) );

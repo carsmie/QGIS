@@ -15,42 +15,60 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgscoordinatereferencesystem.h"
 #include "qgspointcloudindex.h"
+
+#include <algorithm>
+
+#include "qgsbox3d.h"
+#include "qgscoordinatereferencesystem.h"
+#include "qgslogger.h"
+#include "qgspointcloudeditingindex.h"
+#include "qgspointcloudstatistics.h"
+
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QString>
 #include <QTime>
 #include <QtDebug>
 #include <qglobal.h>
-#include <qstringliteral.h>
 
-#include "qgsbox3d.h"
-#include "qgstiledownloadmanager.h"
-#include "qgspointcloudstatistics.h"
-#include "qgslogger.h"
-#include "qgspointcloudeditingindex.h"
+using namespace Qt::StringLiterals;
 
-QgsPointCloudNodeId::QgsPointCloudNodeId():
-  mD( -1 ),
-  mX( 0 ),
-  mY( 0 ),
-  mZ( 0 )
+QgsPointCloudNodeId::QgsPointCloudNodeId()
+  : mX( 0 )
+  , mY( 0 )
+  , mZ( 0 )
 {}
 
-QgsPointCloudNodeId::QgsPointCloudNodeId( int _d, int _x, int _y, int _z ):
-  mD( _d ),
-  mX( _x ),
-  mY( _y ),
-  mZ( _z )
+QgsPointCloudNodeId::QgsPointCloudNodeId( int _d, int _x, int _y, int _z )
+  : mD( _d )
+  , mX( _x )
+  , mY( _y )
+  , mZ( _z )
 {}
 
 QgsPointCloudNodeId QgsPointCloudNodeId::parentNode() const
 {
   return QgsPointCloudNodeId( mD - 1, mX / 2, mY / 2, mZ / 2 );
+}
+
+QVector<QgsPointCloudNodeId> QgsPointCloudNodeId::childrenNodes() const
+{
+  if ( !isValid() )
+    return {};
+
+  QVector<QgsPointCloudNodeId> children;
+  children.reserve( 8 );
+  for ( int i = 0; i < 8; ++i )
+  {
+    const int dx = i & 1, dy = !!( i & 2 ), dz = !!( i & 4 );
+    children.emplace_back( mD + 1, mX * 2 + dx, mY * 2 + dy, mZ * 2 + dz );
+  }
+  return children;
 }
 
 QgsPointCloudNodeId QgsPointCloudNodeId::fromString( const QString &str )
@@ -63,7 +81,7 @@ QgsPointCloudNodeId QgsPointCloudNodeId::fromString( const QString &str )
 
 QString QgsPointCloudNodeId::toString() const
 {
-  return QStringLiteral( "%1-%2-%3-%4" ).arg( mD ).arg( mX ).arg( mY ).arg( mZ );
+  return u"%1-%2-%3-%4"_s.arg( mD ).arg( mX ).arg( mY ).arg( mZ );
 }
 
 int QgsPointCloudNodeId::d() const
@@ -86,37 +104,24 @@ int QgsPointCloudNodeId::z() const
   return mZ;
 }
 
-uint qHash( QgsPointCloudNodeId id )
-{
-  return id.d() + id.x() + id.y() + id.z();
-}
-
 ///@cond PRIVATE
 
 //
 // QgsPointCloudCacheKey
 //
 
-QgsPointCloudCacheKey::QgsPointCloudCacheKey( const QgsPointCloudNodeId &n, const QgsPointCloudRequest &request, const QString &subset, const QString &uri )
+QgsPointCloudCacheKey::QgsPointCloudCacheKey( QgsPointCloudNodeId n, const QgsPointCloudRequest &request, const QString &subset, const QString &uri )
   : mNode( n )
   , mUri( uri )
   , mRequest( request )
   , mSubsetString( subset )
-{
-}
+{}
 
 bool QgsPointCloudCacheKey::operator==( const QgsPointCloudCacheKey &other ) const
 {
-  return mNode == other.mNode &&
-         mUri == other.mUri &&
-         mRequest == other.mRequest &&
-         mSubsetString == other.mSubsetString;
+  return mNode == other.mNode && mUri == other.mUri && mRequest == other.mRequest && mSubsetString == other.mSubsetString;
 }
 
-uint qHash( const QgsPointCloudCacheKey &key )
-{
-  return qHash( key.node() ) ^ qHash( key.request() ) ^ qHash( key.uri() ) ^ qHash( key.subsetString() );
-}
 
 //
 // QgsPointCloudNode
@@ -160,13 +165,13 @@ QgsAbstractPointCloudIndex::QgsAbstractPointCloudIndex() = default;
 
 QgsAbstractPointCloudIndex::~QgsAbstractPointCloudIndex() = default;
 
-bool QgsAbstractPointCloudIndex::hasNode( const QgsPointCloudNodeId &n ) const
+bool QgsAbstractPointCloudIndex::hasNode( QgsPointCloudNodeId n ) const
 {
   QMutexLocker locker( &mHierarchyMutex );
   return mHierarchy.contains( n );
 }
 
-QgsPointCloudNode QgsAbstractPointCloudIndex::getNode( const QgsPointCloudNodeId &id ) const
+QgsPointCloudNode QgsAbstractPointCloudIndex::getNode( QgsPointCloudNodeId id ) const
 {
   Q_ASSERT( hasNode( id ) );
 
@@ -176,21 +181,8 @@ QgsPointCloudNode QgsAbstractPointCloudIndex::getNode( const QgsPointCloudNodeId
     pointCount = mHierarchy.value( id, -1 );
   }
 
-  QList<QgsPointCloudNodeId> children;
-  {
-    const int d = id.d() + 1;
-    const int x = id.x() * 2;
-    const int y = id.y() * 2;
-    const int z = id.z() * 2;
-
-    for ( int i = 0; i < 8; ++i )
-    {
-      int dx = i & 1, dy = !!( i & 2 ), dz = !!( i & 4 );
-      const QgsPointCloudNodeId n2( d, x + dx, y + dy, z + dz );
-      if ( hasNode( n2 ) )
-        children.append( n2 );
-    }
-  }
+  QList<QgsPointCloudNodeId> children = id.childrenNodes();
+  children.erase( std::remove_if( children.begin(), children.end(), [this]( const QgsPointCloudNodeId &c ) { return !hasNode( c ); } ), children.end() );
 
   QgsBox3D bounds = QgsPointCloudNode::bounds( mRootBounds, id );
   return QgsPointCloudNode( id, pointCount, children, bounds.width() / mSpan, bounds );
@@ -258,12 +250,12 @@ QString QgsAbstractPointCloudIndex::subsetString() const
 QgsPointCloudStatistics QgsAbstractPointCloudIndex::metadataStatistics() const
 {
   QMap<QString, QgsPointCloudAttributeStatistics> statsMap;
-  statsMap[ "X" ].minimum = mExtent.xMinimum();
-  statsMap[ "X" ].maximum = mExtent.xMaximum();
-  statsMap[ "Y" ].minimum = mExtent.yMinimum();
-  statsMap[ "Y" ].maximum = mExtent.yMinimum();
-  statsMap[ "Z" ].minimum = mZMin;
-  statsMap[ "Z" ].maximum = mZMax;
+  statsMap["X"].minimum = mExtent.xMinimum();
+  statsMap["X"].maximum = mExtent.xMaximum();
+  statsMap["Y"].minimum = mExtent.yMinimum();
+  statsMap["Y"].maximum = mExtent.yMinimum();
+  statsMap["Z"].minimum = mZMin;
+  statsMap["Z"].maximum = mZMax;
 
   return QgsPointCloudStatistics( pointCount(), statsMap );
 }
@@ -290,7 +282,7 @@ void QgsAbstractPointCloudIndex::copyCommonProperties( QgsAbstractPointCloudInde
   destination->mFilterExpression = mFilterExpression;
 }
 
-QgsPointCloudBlock *QgsAbstractPointCloudIndex::getNodeDataFromCache( const QgsPointCloudNodeId &node, const QgsPointCloudRequest &request )
+QgsPointCloudBlock *QgsAbstractPointCloudIndex::getNodeDataFromCache( QgsPointCloudNodeId node, const QgsPointCloudRequest &request )
 {
   QgsPointCloudCacheKey key( node, request, mFilterExpression, mUri );
 
@@ -299,12 +291,14 @@ QgsPointCloudBlock *QgsAbstractPointCloudIndex::getNodeDataFromCache( const QgsP
   return cached ? cached->clone() : nullptr;
 }
 
-void QgsAbstractPointCloudIndex::storeNodeDataToCache( QgsPointCloudBlock *data, const QgsPointCloudNodeId &node, const QgsPointCloudRequest &request ) const
+void QgsAbstractPointCloudIndex::storeNodeDataToCache( QgsPointCloudBlock *data, QgsPointCloudNodeId node, const QgsPointCloudRequest &request ) const
 {
   storeNodeDataToCacheStatic( data, node, request, mFilterExpression, mUri );
 }
 
-void QgsAbstractPointCloudIndex::storeNodeDataToCacheStatic( QgsPointCloudBlock *data, const QgsPointCloudNodeId &node, const QgsPointCloudRequest &request, const QgsPointCloudExpression &expression, const QString &uri )
+void QgsAbstractPointCloudIndex::storeNodeDataToCacheStatic(
+  QgsPointCloudBlock *data, QgsPointCloudNodeId node, const QgsPointCloudRequest &request, const QgsPointCloudExpression &expression, const QString &uri
+)
 {
   if ( !data )
     return;
@@ -314,7 +308,7 @@ void QgsAbstractPointCloudIndex::storeNodeDataToCacheStatic( QgsPointCloudBlock 
   const int cost = data->pointCount() * data->pointRecordSize();
 
   QMutexLocker l( &sBlockCacheMutex );
-  QgsDebugMsgLevel( QStringLiteral( "(%1/%2): Caching node %3 of %4" ).arg( sBlockCache.totalCost() ).arg( sBlockCache.maxCost() ).arg( key.node().toString() ).arg( key.uri() ), 4 );
+  QgsDebugMsgLevel( u"(%1/%2): Caching node %3 of %4"_s.arg( sBlockCache.totalCost() ).arg( sBlockCache.maxCost() ).arg( key.node().toString() ).arg( key.uri() ), 4 );
   sBlockCache.insert( key, data->clone(), cost );
 }
 
@@ -338,10 +332,10 @@ QgsPointCloudIndex::operator bool() const
   return mIndex != nullptr;
 }
 
-void QgsPointCloudIndex::load( const QString &fileName )
+void QgsPointCloudIndex::load( const QString &url, const QString &authcfg )
 {
   Q_ASSERT( mIndex );
-  mIndex->load( fileName );
+  mIndex->load( url, authcfg );
 }
 
 bool QgsPointCloudIndex::isValid() const
@@ -351,7 +345,7 @@ bool QgsPointCloudIndex::isValid() const
 
 QString QgsPointCloudIndex::error() const
 {
-  return mIndex ? mIndex->error() : QStringLiteral( "Index is NULL" );
+  return mIndex ? mIndex->error() : u"Index is NULL"_s;
 }
 
 Qgis::PointCloudAccessType QgsPointCloudIndex::accessType() const
@@ -396,13 +390,13 @@ QgsPointCloudNodeId QgsPointCloudIndex::root() const
   return mIndex->root();
 }
 
-bool QgsPointCloudIndex::hasNode( const QgsPointCloudNodeId &id ) const
+bool QgsPointCloudIndex::hasNode( QgsPointCloudNodeId id ) const
 {
   Q_ASSERT( mIndex );
   return mIndex->hasNode( id );
 }
 
-QgsPointCloudNode QgsPointCloudIndex::getNode( const QgsPointCloudNodeId &id ) const
+QgsPointCloudNode QgsPointCloudIndex::getNode( QgsPointCloudNodeId id ) const
 {
   Q_ASSERT( mIndex );
   return mIndex->getNode( id );
@@ -414,13 +408,13 @@ QgsPointCloudAttributeCollection QgsPointCloudIndex::attributes() const
   return mIndex->attributes();
 }
 
-std::unique_ptr<QgsPointCloudBlock> QgsPointCloudIndex::nodeData( const QgsPointCloudNodeId &n, const QgsPointCloudRequest &request )
+std::unique_ptr<QgsPointCloudBlock> QgsPointCloudIndex::nodeData( QgsPointCloudNodeId n, const QgsPointCloudRequest &request )
 {
   Q_ASSERT( mIndex );
   return mIndex->nodeData( n, request );
 }
 
-QgsPointCloudBlockRequest *QgsPointCloudIndex::asyncNodeData( const QgsPointCloudNodeId &n, const QgsPointCloudRequest &request )
+QgsPointCloudBlockRequest *QgsPointCloudIndex::asyncNodeData( QgsPointCloudNodeId n, const QgsPointCloudRequest &request )
 {
   Q_ASSERT( mIndex );
   return mIndex->asyncNodeData( n, request );
@@ -473,6 +467,17 @@ int QgsPointCloudIndex::span() const
   return mIndex->span();
 }
 
+QString QgsPointCloudIndex::uri() const
+{
+  Q_ASSERT( mIndex );
+  return mIndex->uri();
+}
+
+bool QgsPointCloudIndex::needsHierarchyFetching( const QgsPointCloudNodeId &n ) const
+{
+  Q_ASSERT( mIndex );
+  return mIndex->needsHierarchyFetching( n );
+}
 
 bool QgsPointCloudIndex::setSubsetString( const QString &subset )
 {
@@ -486,13 +491,13 @@ QString QgsPointCloudIndex::subsetString() const
   return mIndex->subsetString();
 }
 
-QgsPointCloudBlock *QgsPointCloudIndex::getNodeDataFromCache( const QgsPointCloudNodeId &node, const QgsPointCloudRequest &request )
+QgsPointCloudBlock *QgsPointCloudIndex::getNodeDataFromCache( QgsPointCloudNodeId node, const QgsPointCloudRequest &request )
 {
   Q_ASSERT( mIndex );
   return mIndex->getNodeDataFromCache( node, request );
 }
 
-void QgsPointCloudIndex::storeNodeDataToCache( QgsPointCloudBlock *data, const QgsPointCloudNodeId &node, const QgsPointCloudRequest &request )
+void QgsPointCloudIndex::storeNodeDataToCache( QgsPointCloudBlock *data, QgsPointCloudNodeId node, const QgsPointCloudRequest &request )
 {
   Q_ASSERT( mIndex );
   mIndex->storeNodeDataToCache( data, node, request );

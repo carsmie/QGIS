@@ -17,12 +17,13 @@
 #define QGSVECTORTILEPROVIDERGUIMETADATA_H
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
+
+#include "qgsproviderguimetadata.h"
 
 #include <QList>
 #include <QMainWindow>
 
-#include "qgsproviderguimetadata.h"
+#define SIP_NO_FILE
 
 class QgsVectorTileProviderGuiMetadata : public QgsProviderGuiMetadata
 {

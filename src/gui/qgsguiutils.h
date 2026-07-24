@@ -15,15 +15,19 @@
 #ifndef QGSGUIUTILS_H
 #define QGSGUIUTILS_H
 
-#include <QPair>
-#include <QWidget>
-#include <QStringList>
-#include "qgis_gui.h"
 #include "qgis.h"
+#include "qgis_gui.h"
+#include "qgswkbtypes.h"
+
+#include <QPair>
+#include <QStringList>
+#include <QWidget>
 
 #define SIP_NO_FILE
 
 class QFont;
+class QMainWindow;
+class QDockWidget;
 
 /**
  * \ingroup gui
@@ -199,6 +203,63 @@ namespace QgsGuiUtils
    * \since QGIS 3.16
    */
   int GUI_EXPORT significantDigits( const Qgis::DataType rasterDataType );
+
+  /**
+   * Returns TRUE if the given \a wkbType is a non-standard GeoPackage geometry
+   * type (PolyhedralSurface, TIN, or Triangle).
+   *
+   * \param wkbType the geometry type to check
+   * \returns TRUE if the geometry type is non-standard for GeoPackage
+   * \since QGIS 4.0
+   */
+  bool GUI_EXPORT isNonStandardGeoPackageGeometryType( Qgis::WkbType wkbType );
+
+  /**
+   * Checks if the given \a wkbType is a non-standard GeoPackage geometry type
+   * (PolyhedralSurface, TIN, or Triangle) and displays a warning message box
+   * asking the user if they want to continue.
+   *
+   * \param wkbType the geometry type to check
+   * \param parent the parent widget for the message box (can be nullptr)
+   * \param dialogTitle the title for the warning dialog
+   * \param showDialog if FALSE, the dialog will not be shown and the function
+   *        will return TRUE for non-standard types (useful for automated testing)
+   * \param isNonStandard if not nullptr, will be set to TRUE if the geometry
+   *        type is non-standard for GeoPackage, FALSE otherwise
+   * \returns TRUE if the geometry type is standard, or if non-standard and the
+   *          user chose to continue; FALSE if non-standard and the user chose
+   *          to cancel
+   * \since QGIS 4.0
+   */
+  bool GUI_EXPORT warnAboutNonStandardGeoPackageGeometryType( Qgis::WkbType wkbType, QWidget *parent, const QString &dialogTitle, bool showDialog = true, bool *isNonStandard = nullptr );
+
+  /**
+   * Add a dock widget to a main \a window.
+   *
+   * After adding the dock widget to the UI (by delegating to the QMainWindow
+   * parent class, it will also add it to the View menu list of docks, if the window has one.
+   *
+   * \since QGIS 4.2
+   */
+  GUI_EXPORT void addDockWidget( QMainWindow *window, Qt::DockWidgetArea area, QDockWidget *dockwidget );
+
+  /**
+   * Add a dock widget to the given \a area and tabify it (if other dock widgets
+   * exist in the same \a area).
+   *
+   * The new tab will be below other tabs unless \a raiseTab is passed as TRUE.
+   *
+   * \a tabifyWith is a list of dock widget object names, ordered by
+   * priority, with which the new dock widget should be tabified. Only the
+   * first matching object name will be picked. If none of the given object
+   * names is found in that \a area (or if \a tabifyWith is not given at
+   * all), the new dock widget will be created anyways, but its location
+   * within that \a area will be unpredictable.
+   *
+   * \since QGIS 4.2
+   */
+  GUI_EXPORT void addTabifiedDockWidget( QMainWindow *window, Qt::DockWidgetArea area, QDockWidget *dockWidget, const QStringList &tabifyWith = QStringList(), bool raiseTab = false );
+
 
 } // namespace QgsGuiUtils
 

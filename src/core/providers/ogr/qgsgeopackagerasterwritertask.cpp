@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsgeopackagerasterwritertask.h"
-#include "moc_qgsgeopackagerasterwritertask.cpp"
 
+#include "moc_qgsgeopackagerasterwritertask.cpp"
 
 ///@cond PRIVATE
 
@@ -24,9 +24,7 @@ QgsGeoPackageRasterWriterTask::QgsGeoPackageRasterWriterTask( const QgsMimeDataU
   : QgsTask( tr( "Saving %1" ).arg( destinationPath ), QgsTask::CanCancel )
   , mWriter( sourceUri, destinationPath )
   , mFeedback( new QgsFeedback() )
-{
-
-}
+{}
 
 void QgsGeoPackageRasterWriterTask::cancel()
 {

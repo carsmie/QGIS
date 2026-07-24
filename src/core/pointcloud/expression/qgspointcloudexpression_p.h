@@ -16,11 +16,12 @@
 #ifndef QGSPOINTCLOUDEXPRESSIONPRIVATE_H
 #define QGSPOINTCLOUDEXPRESSIONPRIVATE_H
 
-#include <QString>
 #include <memory>
 
 #include "qgsexpression.h"
 #include "qgspointcloudexpressionnode.h"
+
+#include <QString>
 
 /// @cond PRIVATE
 
@@ -46,14 +47,9 @@ class QgsPointCloudExpressionPrivate
       , mIsPrepared( false )
     {}
 
-    ~QgsPointCloudExpressionPrivate()
-    {
-      delete mRootNode;
-    }
-
     QAtomicInt ref;
 
-    QgsPointCloudExpressionNode *mRootNode = nullptr;
+    std::unique_ptr<QgsPointCloudExpressionNode> mRootNode;
 
     QString mParserErrorString;
     QString mEvalErrorString;
@@ -65,7 +61,7 @@ class QgsPointCloudExpressionPrivate
     //! Whether prepare() has been called before evaluate()
     bool mIsPrepared = false;
 
-    QgsPointCloudExpressionPrivate &operator= ( const QgsPointCloudExpressionPrivate & ) = delete;
+    QgsPointCloudExpressionPrivate &operator=( const QgsPointCloudExpressionPrivate & ) = delete;
 };
 
 ///@endcond

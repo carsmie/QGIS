@@ -16,17 +16,19 @@
  ***************************************************************************/
 
 #include "qgsmaptoolformannotation.h"
-#include "moc_qgsmaptoolformannotation.cpp"
+
 #include "qgsformannotation.h"
 #include "qgsmapcanvas.h"
-#include "qgsvectorlayer.h"
 #include "qgsproject.h"
+#include "qgsvectorlayer.h"
+
 #include <QMouseEvent>
+
+#include "moc_qgsmaptoolformannotation.cpp"
 
 QgsMapToolFormAnnotation::QgsMapToolFormAnnotation( QgsMapCanvas *canvas )
   : QgsMapToolAnnotation( canvas )
-{
-}
+{}
 
 QgsAnnotation *QgsMapToolFormAnnotation::createItem() const
 {

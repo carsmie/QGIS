@@ -19,6 +19,7 @@
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsmapunitscale.h"
+
 #include <QString>
 
 class QgsPropertyCollection;
@@ -41,7 +42,6 @@ class CORE_EXPORT QgsLabelPointSettings
     Q_GADGET
 
   public:
-
     /**
      * Updates the point settings to respect any data defined properties
      * set within the specified \a properties collection.
@@ -128,7 +128,7 @@ class CORE_EXPORT QgsLabelPointSettings
      * \see maximumDistance()
      * \see maximumDistanceMapUnitScale()
      */
-    void setMaximumDistanceUnit( Qgis::RenderUnit unit ) { mMaximumDistanceUnit = unit;}
+    void setMaximumDistanceUnit( Qgis::RenderUnit unit ) { mMaximumDistanceUnit = unit; }
 
     /**
      * Returns the map unit scale for label maximum distance.
@@ -149,7 +149,6 @@ class CORE_EXPORT QgsLabelPointSettings
     void setMaximumDistanceMapUnitScale( const QgsMapUnitScale &scale ) { mMaximumDistanceMapUnitScale = scale; }
 
   private:
-
     Qgis::LabelQuadrantPosition mQuadrant = Qgis::LabelQuadrantPosition::Over;
 
     QVector< Qgis::LabelPredefinedPointPosition > mPredefinedPositionOrder;
@@ -157,7 +156,6 @@ class CORE_EXPORT QgsLabelPointSettings
     double mMaximumDistance = 0;
     Qgis::RenderUnit mMaximumDistanceUnit = Qgis::RenderUnit::Millimeters;
     QgsMapUnitScale mMaximumDistanceMapUnitScale;
-
 };
 
 #endif // QGSLABELPOINTSETTINGS_H

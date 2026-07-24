@@ -14,22 +14,25 @@
  ***************************************************************************/
 
 #include "qgsvectorwarper.h"
-#include "moc_qgsvectorwarper.cpp"
+
+#include <memory>
+
 #include "qgsfeaturesink.h"
 #include "qgsfeedback.h"
 #include "qgsgcpgeometrytransformer.h"
-#include "qgsvectorlayer.h"
 #include "qgsvectorfilewriter.h"
+#include "qgsvectorlayer.h"
 
-#include <QObject>
 #include <QFileInfo>
+#include <QObject>
+
+#include "moc_qgsvectorwarper.cpp"
 
 QgsVectorWarper::QgsVectorWarper( QgsGcpTransformerInterface::TransformMethod method, const QList<QgsGcpPoint> &points, const QgsCoordinateReferenceSystem &destinationCrs )
   : mMethod( method )
   , mPoints( points )
   , mDestinationCrs( destinationCrs )
-{
-}
+{}
 
 bool QgsVectorWarper::transformFeatures( QgsFeatureIterator &iterator, QgsFeatureSink *sink, const QgsCoordinateTransformContext &context, QgsFeedback *feedback ) const
 {
@@ -91,7 +94,9 @@ bool QgsVectorWarper::transformFeatures( QgsFeatureIterator &iterator, QgsFeatur
 // QgsVectorWarperTask
 //
 
-QgsVectorWarperTask::QgsVectorWarperTask( QgsGcpTransformerInterface::TransformMethod method, const QList<QgsGcpPoint> &points, const QgsCoordinateReferenceSystem &destinationCrs, QgsVectorLayer *layer, const QString &fileName )
+QgsVectorWarperTask::QgsVectorWarperTask(
+  QgsGcpTransformerInterface::TransformMethod method, const QList<QgsGcpPoint> &points, const QgsCoordinateReferenceSystem &destinationCrs, QgsVectorLayer *layer, const QString &fileName
+)
   : QgsTask( tr( "Warping %1" ).arg( fileName ), QgsTask::CanCancel )
   , mMethod( method )
   , mPoints( points )
@@ -101,7 +106,7 @@ QgsVectorWarperTask::QgsVectorWarperTask( QgsGcpTransformerInterface::TransformM
   if ( layer )
   {
     mTransformContext = layer->transformContext();
-    mSource.reset( new QgsVectorLayerFeatureSource( layer ) );
+    mSource = std::make_unique<QgsVectorLayerFeatureSource>( layer );
     mFeatureCount = layer->featureCount();
     mFields = layer->fields();
     mWkbType = layer->wkbType();

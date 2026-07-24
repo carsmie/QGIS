@@ -16,20 +16,21 @@
 #ifndef QGSTERRAINDOWNLOADER_H
 #define QGSTERRAINDOWNLOADER_H
 
-#include "qgis_3d.h"
-
 #include <memory>
+
+#include "qgis_3d.h"
+#include "qgscoordinatetransformcontext.h"
+
 #include <QByteArray>
 #include <QImage>
 
-#include "qgscoordinatetransformcontext.h"
+#define SIP_NO_FILE
 
 class QgsRectangle;
 class QgsCoordinateReferenceSystem;
 class QgsRasterLayer;
 class QgsCoordinateTransformContext;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup qgis_3d
@@ -77,7 +78,14 @@ class _3D_EXPORT QgsTerrainDownloader
      * For given extent and resolution (number of pixels for width/height) in specified CRS, download necessary
      * tile images (if not cached already) and produce height map out of them (byte array of res*res float values)
      */
-    QByteArray getHeightMap( const QgsRectangle &extentOrig, int res, const QgsCoordinateReferenceSystem &destCrs, const QgsCoordinateTransformContext &context = QgsCoordinateTransformContext(), QString tmpFilenameImg = QString(), QString tmpFilenameTif = QString() );
+    QByteArray getHeightMap(
+      const QgsRectangle &extentOrig,
+      int res,
+      const QgsCoordinateReferenceSystem &destCrs,
+      const QgsCoordinateTransformContext &context = QgsCoordinateTransformContext(),
+      QString tmpFilenameImg = QString(),
+      QString tmpFilenameTif = QString()
+    );
 
   private:
     /**

@@ -32,8 +32,17 @@
 */
 class CORE_EXPORT QgsSatelliteInfo
 {
-  public:
+    Q_GADGET
 
+    Q_PROPERTY( int id MEMBER id )
+    Q_PROPERTY( bool inUse MEMBER inUse )
+    Q_PROPERTY( double elevation MEMBER elevation )
+    Q_PROPERTY( double azimuth MEMBER azimuth )
+    Q_PROPERTY( double signal MEMBER signal )
+    Q_PROPERTY( QChar satType MEMBER satType )
+    Q_PROPERTY( Qgis::GnssConstellation constellation READ constellation )
+
+  public:
     /**
      * Contains the satellite identifier number.
      *
@@ -96,22 +105,12 @@ class CORE_EXPORT QgsSatelliteInfo
 
     bool operator==( const QgsSatelliteInfo &other ) const
     {
-      return id == other.id &&
-             inUse == other.inUse &&
-             elevation == other.elevation &&
-             azimuth == other.azimuth &&
-             signal == other.signal &&
-             satType == other.satType &&
-             mConstellation == other.mConstellation;
+      return id == other.id && inUse == other.inUse && elevation == other.elevation && azimuth == other.azimuth && signal == other.signal && satType == other.satType && mConstellation == other.mConstellation;
     }
 
-    bool operator!=( const QgsSatelliteInfo &other ) const
-    {
-      return !operator==( other );
-    }
+    bool operator!=( const QgsSatelliteInfo &other ) const { return !operator==( other ); }
 
   private:
-
     Qgis::GnssConstellation mConstellation = Qgis::GnssConstellation::Unknown;
 
     friend class QgsNmeaConnection;

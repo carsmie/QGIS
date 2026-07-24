@@ -20,6 +20,10 @@ email                : marco.hugentobler at sourcepole dot com
 #include "qgis_sip.h"
 #include "qgsmulticurve.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
+
 class QgsLineString;
 
 /**
@@ -27,14 +31,15 @@ class QgsLineString;
  * \class QgsMultiLineString
  * \brief Multi line string geometry collection.
  */
-class CORE_EXPORT QgsMultiLineString: public QgsMultiCurve
+class CORE_EXPORT QgsMultiLineString : public QgsMultiCurve
 {
   public:
-
+    // clang-format off
     /**
      * Constructor for an empty multilinestring geometry.
      */
     QgsMultiLineString() SIP_HOLDGIL;
+    // clang-format on
 
     /**
      * Constructor for a multilinestring containing the specified \a linestrings.
@@ -63,6 +68,7 @@ class CORE_EXPORT QgsMultiLineString: public QgsMultiCurve
      */
     QgsLineString *lineStringN( int index );
 #else
+// clang-format off
 
     /**
      * Returns the line string with the specified \a index.
@@ -83,6 +89,7 @@ class CORE_EXPORT QgsMultiLineString: public QgsMultiCurve
       return sipConvertFromType( sipCpp->lineStringN( a0 ), sipType_QgsLineString, NULL );
     }
     % End
+// clang-format on
 #endif
 
 #ifndef SIP_RUN
@@ -103,7 +110,7 @@ class CORE_EXPORT QgsMultiLineString: public QgsMultiCurve
     bool fromWkt( const QString &wkt ) override;
     QDomElement asGml2( QDomDocument &doc, int precision = 17, const QString &ns = "gml", QgsAbstractGeometry::AxisOrder axisOrder = QgsAbstractGeometry::AxisOrder::XY ) const override;
     QDomElement asGml3( QDomDocument &doc, int precision = 17, const QString &ns = "gml", QgsAbstractGeometry::AxisOrder axisOrder = QgsAbstractGeometry::AxisOrder::XY ) const override;
-    json asJsonObject( int precision = 17 ) const override SIP_SKIP;
+    json asJsonObject( int precision = 17, Qgis::GeoJsonProfile profile = Qgis::GeoJsonProfile::Legacy ) const override SIP_SKIP;
     bool addGeometry( QgsAbstractGeometry *g SIP_TRANSFER ) override;
     bool addGeometries( const QVector< QgsAbstractGeometry * > &geometries SIP_TRANSFER ) final;
     bool insertGeometry( QgsAbstractGeometry *g SIP_TRANSFER, int index ) override;
@@ -151,14 +158,16 @@ class CORE_EXPORT QgsMultiLineString: public QgsMultiCurve
     QgsMultiLineString *createEmptyWithSameType() const override SIP_FACTORY;
 
 #ifdef SIP_RUN
+// clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
     QString wkt = sipCpp->asWkt();
     if ( wkt.length() > 1000 )
-      wkt = wkt.left( 1000 ) + QStringLiteral( "..." );
-    QString str = QStringLiteral( "<QgsMultiLineString: %1>" ).arg( wkt );
+      wkt = wkt.left( 1000 ) + u"..."_s;
+    QString str = u"<QgsMultiLineString: %1>"_s.arg( wkt );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
     /**

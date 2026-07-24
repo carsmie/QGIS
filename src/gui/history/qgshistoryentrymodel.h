@@ -16,10 +16,11 @@
 #ifndef QGSHISTORYENTRYMODEL_H
 #define QGSHISTORYENTRYMODEL_H
 
+#include "qgis.h"
 #include "qgis_gui.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgshistorywidgetcontext.h"
+
 #include <QAbstractItemModel>
 
 class QWidget;
@@ -54,7 +55,13 @@ class GUI_EXPORT QgsHistoryEntryModel : public QAbstractItemModel
      * If no \a registry is specified then the singleton QgsHistoryProviderRegistry from QgsGui::historyProviderRegistry()
      * will be used.
      */
-    QgsHistoryEntryModel( const QString &providerId = QString(), Qgis::HistoryProviderBackends backends = Qgis::HistoryProviderBackend::LocalProfile, QgsHistoryProviderRegistry *registry = nullptr, const QgsHistoryWidgetContext &context = QgsHistoryWidgetContext(), QObject *parent SIP_TRANSFERTHIS = nullptr );
+    QgsHistoryEntryModel(
+      const QString &providerId = QString(),
+      Qgis::HistoryProviderBackends backends = Qgis::HistoryProviderBackend::LocalProfile,
+      QgsHistoryProviderRegistry *registry = nullptr,
+      const QgsHistoryWidgetContext &context = QgsHistoryWidgetContext(),
+      QObject *parent SIP_TRANSFERTHIS = nullptr
+    );
 
     ~QgsHistoryEntryModel() override;
     // Implementation of virtual functions from QAbstractItemModel

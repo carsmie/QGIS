@@ -18,11 +18,11 @@
 #ifndef QGSPROCESSINGALGRUNNERTASK_H
 #define QGSPROCESSINGALGRUNNERTASK_H
 
-#include "qgis_core.h"
 #include "qgis.h"
-#include "qgstaskmanager.h"
-#include "qgsprocessingfeedback.h"
+#include "qgis_core.h"
 #include "qgsprocessingalgorithm.h"
+#include "qgsprocessingfeedback.h"
+#include "qgstaskmanager.h"
 
 class QgsProcessingContext;
 
@@ -36,18 +36,15 @@ class CORE_EXPORT QgsProcessingAlgRunnerTask : public QgsTask
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsProcessingAlgRunnerTask. Takes an \a algorithm, algorithm \a parameters
      * and processing \a context.
      *
      * Since QGIS 3.26, the \a flags argument allows control over task flags.
      */
-    QgsProcessingAlgRunnerTask( const QgsProcessingAlgorithm *algorithm,
-                                const QVariantMap &parameters,
-                                QgsProcessingContext &context,
-                                QgsProcessingFeedback *feedback = nullptr,
-                                QgsTask::Flags flags = QgsTask::CanCancel );
+    QgsProcessingAlgRunnerTask(
+      const QgsProcessingAlgorithm *algorithm, const QVariantMap &parameters, QgsProcessingContext &context, QgsProcessingFeedback *feedback = nullptr, QgsTask::Flags flags = QgsTask::CanCancel
+    );
 
     void cancel() override;
 
@@ -68,21 +65,16 @@ class CORE_EXPORT QgsProcessingAlgRunnerTask : public QgsTask
     void executed( bool successful, const QVariantMap &results );
 
   protected:
-
     bool run() override;
     void finished( bool result ) override;
 
   private:
-
     QVariantMap mParameters;
     QVariantMap mResults;
     QgsProcessingContext &mContext;
     QgsProcessingFeedback *mFeedback = nullptr;
     std::unique_ptr< QgsProcessingFeedback > mOwnedFeedback;
     std::unique_ptr< QgsProcessingAlgorithm > mAlgorithm;
-
 };
 
 #endif // QGSPROCESSINGALGRUNNERTASK_H
-
-

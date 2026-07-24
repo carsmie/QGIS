@@ -19,12 +19,12 @@
 #ifndef QGSRASTERLAYERTEMPORALPROPERTIES_H
 #define QGSRASTERLAYERTEMPORALPROPERTIES_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgsinterval.h"
-#include "qgsrange.h"
 #include "qgsmaplayertemporalproperties.h"
+#include "qgsrange.h"
 
 class QgsRasterLayer;
 
@@ -40,7 +40,6 @@ class CORE_EXPORT QgsRasterLayerTemporalProperties : public QgsMapLayerTemporalP
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsRasterLayerTemporalProperties, with the specified \a parent object.
      *
@@ -184,6 +183,30 @@ class CORE_EXPORT QgsRasterLayerTemporalProperties : public QgsMapLayerTemporalP
     void setTemporalRepresentationOffset( const QDateTime &offset );
 
     /**
+     * Returns TRUE if pixels will be accumulated over time (i.e. all pixels which
+     * occur before or within the map's temporal range should be rendered).
+     *
+     * \warning This setting is only effective when mode() is
+     * Qgis::RasterTemporalMode::RepresentsTemporalValues
+     *
+     * \see setAccumulatePixels()
+     * \since QGIS 4.0
+     */
+    bool accumulatePixels() const;
+
+    /**
+     * Sets whether pixels will be accumulated over time (i.e. all pixels which
+     * occur before or within the map's temporal range should be rendered).
+     *
+     * \warning This setting is only effective when mode() is
+     * Qgis::RasterTemporalMode::RepresentsTemporalValues
+     *
+     * \see accumulatePixels()
+     * \since QGIS 4.0
+     */
+    void setAccumulatePixels( bool accumulate );
+
+    /**
      * Returns the scale, which is an interval factor which should be applied to individual pixel
      * values from the layer.
      *
@@ -210,7 +233,6 @@ class CORE_EXPORT QgsRasterLayerTemporalProperties : public QgsMapLayerTemporalP
     void setDefaultsFromDataProviderTemporalCapabilities( const QgsDataProviderTemporalCapabilities *capabilities ) override;
 
   private:
-
     //! Temporal layer mode.
     Qgis::RasterTemporalMode mMode = Qgis::RasterTemporalMode::FixedTemporalRange;
 
@@ -226,6 +248,7 @@ class CORE_EXPORT QgsRasterLayerTemporalProperties : public QgsMapLayerTemporalP
 
     QDateTime mTemporalRepresentationOffset;
     QgsInterval mTemporalRepresentationScale;
+    bool mAccumulatePixels = false;
 };
 
 #endif // QGSRASTERLAYERTEMPORALPROPERTIES_H

@@ -15,17 +15,21 @@
 #ifndef QGSCONDITIONALSTYLE_H
 #define QGSCONDITIONALSTYLE_H
 
+#include <memory>
+
 #include "qgis_core.h"
 #include "qgsfield.h"
 
-#include <QObject>
-#include <QFont>
 #include <QColor>
-#include <QPixmap>
-#include <QDomNode>
 #include <QDomDocument>
+#include <QDomNode>
+#include <QFont>
 #include <QHash>
-#include <memory>
+#include <QObject>
+#include <QPixmap>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsConditionalStyle;
 class QgsReadWriteContext;
@@ -46,7 +50,6 @@ class CORE_EXPORT QgsConditionalLayerStyles : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsConditionalLayerStyles, with the specified \a parent object.
      */
@@ -135,10 +138,12 @@ class CORE_EXPORT QgsConditionalStyle
   public:
     QgsConditionalStyle();
     QgsConditionalStyle( const QgsConditionalStyle &other );
+    SIP_SKIP QgsConditionalStyle( QgsConditionalStyle &&other );
     QgsConditionalStyle( const QString &rule );
     ~QgsConditionalStyle();
 
     QgsConditionalStyle &operator=( const QgsConditionalStyle &other );
+    QgsConditionalStyle &operator=( QgsConditionalStyle &&other );
 
     /**
      * \brief Check if the rule matches using the given value and feature
@@ -161,32 +166,52 @@ class CORE_EXPORT QgsConditionalStyle
      * \brief Set the name of the style.  Names are optional but handy for display
      * \param value The name given to the style
      */
-    void setName( const QString &value ) { mName = value; mValid = true; }
+    void setName( const QString &value )
+    {
+      mName = value;
+      mValid = true;
+    }
 
     /**
      * \brief Set the rule for the style.  Rules should be of QgsExpression syntax.
      * Special value of \@value is replaced at run time with the check value
      * \param value The QgsExpression style rule to use for this style
      */
-    void setRule( const QString &value ) { mRule = value; mValid = true; }
+    void setRule( const QString &value )
+    {
+      mRule = value;
+      mValid = true;
+    }
 
     /**
      * \brief Set the background color for the style
      * \param value QColor for background color
      */
-    void setBackgroundColor( const QColor &value ) { mBackColor = value; mValid = true; }
+    void setBackgroundColor( const QColor &value )
+    {
+      mBackColor = value;
+      mValid = true;
+    }
 
     /**
      * \brief Set the text color for the style
      * \param value QColor for text color
      */
-    void setTextColor( const QColor &value ) { mTextColor = value; mValid = true; }
+    void setTextColor( const QColor &value )
+    {
+      mTextColor = value;
+      mValid = true;
+    }
 
     /**
      * \brief Set the font for the style
      * \param value QFont to be used for text
      */
-    void setFont( const QFont &value ) { mFont = value; mValid = true; }
+    void setFont( const QFont &value )
+    {
+      mFont = value;
+      mValid = true;
+    }
 
     /**
      * \brief Set the icon for the style. Icons are generated from symbols
@@ -304,20 +329,25 @@ class CORE_EXPORT QgsConditionalStyle
     bool operator!=( const QgsConditionalStyle &other ) const;
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
     QString str;
     if ( !sipCpp->name().isEmpty() )
-      str = QStringLiteral( "<QgsConditionalStyle: '%1' (%2)>" ).arg( sipCpp->name(), sipCpp->rule() );
+      str = u"<QgsConditionalStyle: '%1' (%2)>"_s.arg( sipCpp->name(), sipCpp->rule() );
     else
-      str = QStringLiteral( "<QgsConditionalStyle: %2>" ).arg( sipCpp->rule() );
+      str = u"<QgsConditionalStyle: %2>"_s.arg( sipCpp->rule() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
-  private:
+    // clang-format off
+    private:
+    // clang-format on
 
-    bool mValid = false;
+    bool mValid
+    = false;
     QString mName;
     QString mRule;
     std::unique_ptr<QgsSymbol> mSymbol;

@@ -16,20 +16,26 @@
  ***************************************************************************/
 
 
-#include <QScreen>
-#include <QMessageBox>
-
 #include "qgsgui.h"
-#include "moc_qgsgui.cpp"
+
+#include "callouts/qgscalloutwidget.h"
+#include "qgsadvanceddigitizingtoolsregistry.h"
+#include "qgsannotationitemguiregistry.h"
+#include "qgscalloutsregistry.h"
 #include "qgseditorwidgetregistry.h"
 #include "qgslayertreeembeddedwidgetregistry.h"
+#include "qgslayoutitemguiregistry.h"
 #include "qgsmaplayeractionregistry.h"
 #include "qgssourceselectproviderregistry.h"
-#include "qgslayoutitemguiregistry.h"
-#include "qgsannotationitemguiregistry.h"
-#include "qgsadvanceddigitizingtoolsregistry.h"
-#include "qgscalloutsregistry.h"
-#include "callouts/qgscalloutwidget.h"
+
+#include <QMessageBox>
+#include <QScreen>
+#include <QString>
+
+#include "moc_qgsgui.cpp"
+
+using namespace Qt::StringLiterals;
+
 #ifdef Q_OS_MACOS
 #include "qgsmacnative.h"
 #elif defined( Q_OS_WIN )
@@ -53,7 +59,10 @@
 #include "qgssettings.h"
 #include "qgsdataitemguiproviderregistry.h"
 #include "qgsproviderguiregistry.h"
+#include "qgsproject.h"
 #include "qgsprojectstorageguiregistry.h"
+#include "qgsprojecttrustdialog.h"
+#include "qgsprojectutils.h"
 #include "qgsmessagebar.h"
 #include "qgsmessagebaritem.h"
 #include "qgsnumericformatguiregistry.h"
@@ -70,9 +79,14 @@
 #include "qgshistoryentry.h"
 #include "qgsstacsourceselectprovider.h"
 #include "qgsstoredquerymanager.h"
+#include "qgssettingsentryenumflag.h"
+#include "qgssettingsentryimpl.h"
 #include "qgssettingseditorwidgetregistry.h"
+#include "qgssettingsregistrycore.h"
+#include "qgsplotregistry.h"
+#include "qgsplotwidget.h"
 
-
+#include <QFileInfo>
 #include <QPushButton>
 #include <QToolButton>
 
@@ -84,134 +98,134 @@ QgsGui *QgsGui::instance()
 
 QgsNative *QgsGui::nativePlatformInterface()
 {
-  return instance()->mNative;
+  return instance()->mNative.get();
 }
 
 QgsSettingsRegistryGui *QgsGui::settingsRegistryGui()
 {
-  return instance()->mSettingsRegistryGui;
+  return instance()->mSettingsRegistryGui.get();
 }
 
 QgsEditorWidgetRegistry *QgsGui::editorWidgetRegistry()
 {
-  return instance()->mEditorWidgetRegistry;
+  return instance()->mEditorWidgetRegistry.get();
 }
 
 QgsRelationWidgetRegistry *QgsGui::relationWidgetRegistry()
 {
-  return instance()->mRelationEditorRegistry;
+  return instance()->mRelationEditorRegistry.get();
 }
 
 QgsMapToolShapeRegistry *QgsGui::mapToolShapeRegistry()
 {
-  return instance()->mShapeMapToolRegistry;
+  return instance()->mShapeMapToolRegistry.get();
 }
 
 QgsSourceSelectProviderRegistry *QgsGui::sourceSelectProviderRegistry()
 {
-  return instance()->mSourceSelectProviderRegistry;
+  return instance()->mSourceSelectProviderRegistry.get();
 }
 
 QgsSubsetStringEditorProviderRegistry *QgsGui::subsetStringEditorProviderRegistry()
 {
-  return instance()->mSubsetStringEditorProviderRegistry;
+  return instance()->mSubsetStringEditorProviderRegistry.get();
 }
 
 QgsProviderSourceWidgetProviderRegistry *QgsGui::sourceWidgetProviderRegistry()
 {
-  return instance()->mProviderSourceWidgetProviderRegistry;
+  return instance()->mProviderSourceWidgetProviderRegistry.get();
 }
 
 QgsShortcutsManager *QgsGui::shortcutsManager()
 {
-  return instance()->mShortcutsManager;
+  return instance()->mShortcutsManager.get();
 }
 
 QgsLayerTreeEmbeddedWidgetRegistry *QgsGui::layerTreeEmbeddedWidgetRegistry()
 {
-  return instance()->mLayerTreeEmbeddedWidgetRegistry;
+  return instance()->mLayerTreeEmbeddedWidgetRegistry.get();
 }
 
 QgsMapLayerActionRegistry *QgsGui::mapLayerActionRegistry()
 {
-  return instance()->mMapLayerActionRegistry;
+  return instance()->mMapLayerActionRegistry.get();
 }
 
 QgsLayoutItemGuiRegistry *QgsGui::layoutItemGuiRegistry()
 {
-  return instance()->mLayoutItemGuiRegistry;
+  return instance()->mLayoutItemGuiRegistry.get();
 }
 
 QgsAnnotationItemGuiRegistry *QgsGui::annotationItemGuiRegistry()
 {
-  return instance()->mAnnotationItemGuiRegistry;
+  return instance()->mAnnotationItemGuiRegistry.get();
 }
 
 QgsAdvancedDigitizingToolsRegistry *QgsGui::advancedDigitizingToolsRegistry()
 {
-  return instance()->mAdvancedDigitizingToolsRegistry;
+  return instance()->mAdvancedDigitizingToolsRegistry.get();
 }
 
 QgsProcessingGuiRegistry *QgsGui::processingGuiRegistry()
 {
-  return instance()->mProcessingGuiRegistry;
+  return instance()->mProcessingGuiRegistry.get();
 }
 
 QgsNumericFormatGuiRegistry *QgsGui::numericFormatGuiRegistry()
 {
-  return instance()->mNumericFormatGuiRegistry;
+  return instance()->mNumericFormatGuiRegistry.get();
 }
 
 QgsCodeEditorColorSchemeRegistry *QgsGui::codeEditorColorSchemeRegistry()
 {
-  return instance()->mCodeEditorColorSchemeRegistry;
+  return instance()->mCodeEditorColorSchemeRegistry.get();
 }
 
 QgsProcessingFavoriteAlgorithmManager *QgsGui::processingFavoriteAlgorithmManager()
 {
-  return instance()->mProcessingFavoriteAlgorithmManager;
+  return instance()->mProcessingFavoriteAlgorithmManager.get();
 }
 
 QgsProcessingRecentAlgorithmLog *QgsGui::processingRecentAlgorithmLog()
 {
-  return instance()->mProcessingRecentAlgorithmLog;
+  return instance()->mProcessingRecentAlgorithmLog.get();
 }
 
 QgsDataItemGuiProviderRegistry *QgsGui::dataItemGuiProviderRegistry()
 {
-  return instance()->mDataItemGuiProviderRegistry;
+  return instance()->mDataItemGuiProviderRegistry.get();
 }
 
 QgsProjectStorageGuiRegistry *QgsGui::projectStorageGuiRegistry()
 {
-  return instance()->mProjectStorageGuiRegistry;
+  return instance()->mProjectStorageGuiRegistry.get();
 }
 
 QgsProviderGuiRegistry *QgsGui::providerGuiRegistry()
 {
-  return instance()->mProviderGuiRegistry;
+  return instance()->mProviderGuiRegistry.get();
 }
 
 QgsSensorGuiRegistry *QgsGui::sensorGuiRegistry()
 {
-  return instance()->mSensorGuiRegistry;
+  return instance()->mSensorGuiRegistry.get();
 }
 
 QgsHistoryProviderRegistry *QgsGui::historyProviderRegistry()
 {
-  return instance()->mHistoryProviderRegistry;
+  return instance()->mHistoryProviderRegistry.get();
 }
 
 QgsSettingsEditorWidgetRegistry *QgsGui::settingsEditorWidgetRegistry()
 {
-  return instance()->mSettingsEditorRegistry;
+  return instance()->mSettingsEditorRegistry.get();
 }
 
 void QgsGui::enableAutoGeometryRestore( QWidget *widget, const QString &key )
 {
   if ( widget->objectName().isEmpty() )
   {
-    QgsDebugError( QStringLiteral( "WARNING: No object name set. Best for it to be set objectName when using QgsGui::enableAutoGeometryRestore" ) );
+    QgsDebugError( u"WARNING: No object name set. Best for it to be set objectName when using QgsGui::enableAutoGeometryRestore"_s );
   }
   instance()->mWidgetStateHelper->registerWidget( widget, key );
 }
@@ -223,12 +237,12 @@ QgsWindowManagerInterface *QgsGui::windowManager()
 
 QgsInputControllerManager *QgsGui::inputControllerManager()
 {
-  return instance()->mInputControllerManager;
+  return instance()->mInputControllerManager.get();
 }
 
 QgsStoredQueryManager *QgsGui::storedQueryManager()
 {
-  return instance()->mStoredQueryManager;
+  return instance()->mStoredQueryManager.get();
 }
 
 void QgsGui::setWindowManager( QgsWindowManagerInterface *manager )
@@ -238,7 +252,7 @@ void QgsGui::setWindowManager( QgsWindowManagerInterface *manager )
 
 QgsGui::HigFlags QgsGui::higFlags()
 {
-  if ( QgsApplication::settingsLocaleUserLocale->value().startsWith( QLatin1String( "en" ) ) )
+  if ( QgsApplication::settingsLocaleUserLocale->value().startsWith( "en"_L1 ) )
   {
     return HigMenuTextIsTitleCase | HigDialogTitleIsTitleCase;
   }
@@ -250,34 +264,35 @@ QgsGui::HigFlags QgsGui::higFlags()
 
 QgsGui::~QgsGui()
 {
-  delete mProcessingGuiRegistry;
-  delete mDataItemGuiProviderRegistry;
-  delete mProcessingFavoriteAlgorithmManager;
-  delete mProcessingRecentAlgorithmLog;
-  delete mLayoutItemGuiRegistry;
-  delete mAnnotationItemGuiRegistry;
-  delete mAdvancedDigitizingToolsRegistry;
-  delete mLayerTreeEmbeddedWidgetRegistry;
-  delete mEditorWidgetRegistry;
-  delete mMapLayerActionRegistry;
-  delete mSourceSelectProviderRegistry;
-  delete mHistoryProviderRegistry;
-  delete mShortcutsManager;
-  delete mNative;
-  delete mNumericFormatGuiRegistry;
-  delete mWidgetStateHelper;
-  delete mProjectStorageGuiRegistry;
-  delete mProviderGuiRegistry;
-  delete mCodeEditorColorSchemeRegistry;
-  delete mSubsetStringEditorProviderRegistry;
-  delete mProviderSourceWidgetProviderRegistry;
-  delete mShapeMapToolRegistry;
-  delete mRelationEditorRegistry;
-  delete mInputControllerManager;
-  delete mSettingsRegistryGui;
-  delete mSensorGuiRegistry;
-  delete mStoredQueryManager;
-  delete mSettingsEditorRegistry;
+  // we reset explicit registry because order matters
+  mProcessingGuiRegistry.reset();
+  mDataItemGuiProviderRegistry.reset();
+  mProcessingFavoriteAlgorithmManager.reset();
+  mProcessingRecentAlgorithmLog.reset();
+  mLayoutItemGuiRegistry.reset();
+  mAnnotationItemGuiRegistry.reset();
+  mAdvancedDigitizingToolsRegistry.reset();
+  mLayerTreeEmbeddedWidgetRegistry.reset();
+  mEditorWidgetRegistry.reset();
+  mMapLayerActionRegistry.reset();
+  mSourceSelectProviderRegistry.reset();
+  mHistoryProviderRegistry.reset();
+  mShortcutsManager.reset();
+  mNative.reset();
+  mNumericFormatGuiRegistry.reset();
+  mWidgetStateHelper.reset();
+  mProjectStorageGuiRegistry.reset();
+  mProviderGuiRegistry.reset();
+  mCodeEditorColorSchemeRegistry.reset();
+  mSubsetStringEditorProviderRegistry.reset();
+  mProviderSourceWidgetProviderRegistry.reset();
+  mShapeMapToolRegistry.reset();
+  mRelationEditorRegistry.reset();
+  mInputControllerManager.reset();
+  mSettingsRegistryGui.reset();
+  mSensorGuiRegistry.reset();
+  mStoredQueryManager.reset();
+  mSettingsEditorRegistry.reset();
 }
 
 QColor QgsGui::sampleColor( QPoint point )
@@ -311,191 +326,101 @@ QScreen *QgsGui::findScreenAt( QPoint point )
 QgsGui::QgsGui()
 {
 #ifdef Q_OS_MAC
-  QgsMacNative *macNative = new QgsMacNative();
-  macNative->setIconPath( QgsApplication::iconsPath() + QStringLiteral( "qgis-icon-macos.png" ) );
-  mNative = macNative;
+  auto macNative = std::make_unique<QgsMacNative>();
+  macNative->setIconPath( QgsApplication::iconsPath() + u"qgis-icon-macos.png"_s );
+  mNative = std::move( macNative );
 #elif defined( Q_OS_WIN )
 #ifndef __MINGW32__
-  mNative = new QgsWinNative();
+  mNative = std::make_unique<QgsWinNative>();
 #else
-  mNative = new QgsNative();
+  mNative = std::make_unique<QgsNative>();
 #endif
 #elif defined( Q_OS_LINUX )
-  mNative = new QgsLinuxNative();
+  mNative = std::make_unique<QgsLinuxNative>();
 #else
-  mNative = new QgsNative();
+  mNative = std::make_unique<QgsNative>();
 #endif
 
-  mSettingsRegistryGui = new QgsSettingsRegistryGui();
+  mSettingsRegistryGui = std::make_unique<QgsSettingsRegistryGui>();
 
-  mSettingsEditorRegistry = new QgsSettingsEditorWidgetRegistry();
+  mSettingsEditorRegistry = std::make_unique<QgsSettingsEditorWidgetRegistry>();
 
-  mStoredQueryManager = new QgsStoredQueryManager();
-  mCodeEditorColorSchemeRegistry = new QgsCodeEditorColorSchemeRegistry();
+  mStoredQueryManager = std::make_unique<QgsStoredQueryManager>();
+  mCodeEditorColorSchemeRegistry = std::make_unique<QgsCodeEditorColorSchemeRegistry>();
 
   // provider gui registry initialize QgsProviderRegistry too
-  mSensorGuiRegistry = new QgsSensorGuiRegistry();
+  mSensorGuiRegistry = std::make_unique<QgsSensorGuiRegistry>();
   mSensorGuiRegistry->populate();
 
-  mHistoryProviderRegistry = new QgsHistoryProviderRegistry();
+  mHistoryProviderRegistry = std::make_unique<QgsHistoryProviderRegistry>();
   mHistoryProviderRegistry->addDefaultProviders();
 
-  mInputControllerManager = new QgsInputControllerManager();
+  mInputControllerManager = std::make_unique<QgsInputControllerManager>();
 
-  mProviderGuiRegistry = new QgsProviderGuiRegistry( QgsApplication::pluginPath() );
-  mProjectStorageGuiRegistry = new QgsProjectStorageGuiRegistry();
-  mDataItemGuiProviderRegistry = new QgsDataItemGuiProviderRegistry();
-  mSourceSelectProviderRegistry = new QgsSourceSelectProviderRegistry();
-  mNumericFormatGuiRegistry = new QgsNumericFormatGuiRegistry();
-  mSubsetStringEditorProviderRegistry = new QgsSubsetStringEditorProviderRegistry();
-  mProviderSourceWidgetProviderRegistry = new QgsProviderSourceWidgetProviderRegistry();
+  mProviderGuiRegistry = std::make_unique<QgsProviderGuiRegistry>( QgsApplication::pluginPath() );
+  mProjectStorageGuiRegistry = std::make_unique<QgsProjectStorageGuiRegistry>();
+  mDataItemGuiProviderRegistry = std::make_unique<QgsDataItemGuiProviderRegistry>();
+  mSourceSelectProviderRegistry = std::make_unique<QgsSourceSelectProviderRegistry>();
+  mNumericFormatGuiRegistry = std::make_unique<QgsNumericFormatGuiRegistry>();
+  mSubsetStringEditorProviderRegistry = std::make_unique<QgsSubsetStringEditorProviderRegistry>();
+  mProviderSourceWidgetProviderRegistry = std::make_unique<QgsProviderSourceWidgetProviderRegistry>();
 
-  mProjectStorageGuiRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry );
-  mDataItemGuiProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry );
-  mSourceSelectProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry );
+  mProjectStorageGuiRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry.get() );
+  mDataItemGuiProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry.get() );
+  mSourceSelectProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry.get() );
   mSourceSelectProviderRegistry->addProvider( new QgsLayerMetadataSourceSelectProvider() );
   mSourceSelectProviderRegistry->addProvider( new QgsStacSourceSelectProvider() );
-  mSubsetStringEditorProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry );
-  mProviderSourceWidgetProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry );
+  mSubsetStringEditorProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry.get() );
+  mProviderSourceWidgetProviderRegistry->initializeFromProviderGuiRegistry( mProviderGuiRegistry.get() );
 
-  mEditorWidgetRegistry = new QgsEditorWidgetRegistry();
-  mRelationEditorRegistry = new QgsRelationWidgetRegistry();
-  mShapeMapToolRegistry = new QgsMapToolShapeRegistry();
-  mShortcutsManager = new QgsShortcutsManager();
-  mLayerTreeEmbeddedWidgetRegistry = new QgsLayerTreeEmbeddedWidgetRegistry();
-  mMapLayerActionRegistry = new QgsMapLayerActionRegistry();
-  mLayoutItemGuiRegistry = new QgsLayoutItemGuiRegistry();
+  mEditorWidgetRegistry = std::make_unique<QgsEditorWidgetRegistry>();
+  mRelationEditorRegistry = std::make_unique<QgsRelationWidgetRegistry>();
+  mShapeMapToolRegistry = std::make_unique<QgsMapToolShapeRegistry>();
+  mShortcutsManager = std::make_unique<QgsShortcutsManager>();
+  mLayerTreeEmbeddedWidgetRegistry = std::make_unique<QgsLayerTreeEmbeddedWidgetRegistry>();
+  mMapLayerActionRegistry = std::make_unique<QgsMapLayerActionRegistry>();
+  mLayoutItemGuiRegistry = std::make_unique<QgsLayoutItemGuiRegistry>();
 
-  mAnnotationItemGuiRegistry = new QgsAnnotationItemGuiRegistry();
+  mAnnotationItemGuiRegistry = std::make_unique<QgsAnnotationItemGuiRegistry>();
   mAnnotationItemGuiRegistry->addDefaultItems();
 
-  mAdvancedDigitizingToolsRegistry = new QgsAdvancedDigitizingToolsRegistry();
+  mAdvancedDigitizingToolsRegistry = std::make_unique<QgsAdvancedDigitizingToolsRegistry>();
   mAdvancedDigitizingToolsRegistry->addDefaultTools();
 
-  mWidgetStateHelper = new QgsWidgetStateHelper();
-  mProcessingFavoriteAlgorithmManager = new QgsProcessingFavoriteAlgorithmManager();
-  mProcessingRecentAlgorithmLog = new QgsProcessingRecentAlgorithmLog();
-  mProcessingGuiRegistry = new QgsProcessingGuiRegistry();
+  mWidgetStateHelper = std::make_unique<QgsWidgetStateHelper>();
+  mProcessingFavoriteAlgorithmManager = std::make_unique<QgsProcessingFavoriteAlgorithmManager>();
+  mProcessingRecentAlgorithmLog = std::make_unique<QgsProcessingRecentAlgorithmLog>();
+  mProcessingGuiRegistry = std::make_unique<QgsProcessingGuiRegistry>();
 
   qRegisterMetaType<QgsHistoryEntry>( "QgsHistoryEntry" );
 }
 
-bool QgsGui::pythonEmbeddedInProjectAllowed( void ( *lambda )(), QgsMessageBar *messageBar, Qgis::PythonEmbeddedType embeddedType )
+bool QgsGui::allowExecutionOfEmbeddedScripts( QgsProject *project, QgsMessageBar *messageBar )
 {
-  const Qgis::PythonEmbeddedMode pythonEmbeddedMode = QgsSettings().enumValue( QStringLiteral( "qgis/enablePythonEmbedded" ), Qgis::PythonEmbeddedMode::Ask );
-
-  switch ( pythonEmbeddedMode )
+  const Qgis::EmbeddedScriptMode embeddedScriptMode = QgsSettingsRegistryCore::settingsCodeExecutionBehaviorUndeterminedProjects->value();
+  Qgis::ProjectTrustStatus trustStatus = QgsProjectUtils::checkUserTrust( project );
+  if ( trustStatus == Qgis::ProjectTrustStatus::Undetermined && embeddedScriptMode == Qgis::EmbeddedScriptMode::Ask )
   {
-    case Qgis::PythonEmbeddedMode::SessionOnly:
-    case Qgis::PythonEmbeddedMode::Always:
-      if ( embeddedType == Qgis::PythonEmbeddedType::Macro )
-      {
-        if ( lambda )
-          lambda();
-      }
-      // If this is the case, expression functions
-      // are loaded directly by the QGIS project.
-      return true;
-    case Qgis::PythonEmbeddedMode::Never:
-    case Qgis::PythonEmbeddedMode::NotForThisSession:
-      if ( messageBar )
-      {
-        switch ( embeddedType )
-        {
-          case Qgis::PythonEmbeddedType::Macro:
-            messageBar->pushMessage( tr( "Python Macros" ), tr( "Python macros are currently disabled and will not be run" ), Qgis::MessageLevel::Warning );
-            break;
-          case Qgis::PythonEmbeddedType::ExpressionFunction:
-            messageBar->pushMessage( tr( "Python Expressions" ), tr( "Python expressions from project are currently disabled and will not be loaded" ), Qgis::MessageLevel::Warning );
-            break;
-        }
-      }
-      return false;
-    case Qgis::PythonEmbeddedMode::Ask:
-      if ( embeddedType == Qgis::PythonEmbeddedType::Macro )
-      {
-        if ( !lambda )
-        {
-          QMessageBox msgBox( QMessageBox::Information, tr( "Python Macros" ), tr( "Python macros are currently disabled. Do you allow this macro to run?" ) );
-          QAbstractButton *stopSessionButton = msgBox.addButton( tr( "Disable for this Session" ), QMessageBox::DestructiveRole );
-          msgBox.addButton( tr( "No" ), QMessageBox::NoRole );
-          QAbstractButton *yesButton = msgBox.addButton( tr( "Yes" ), QMessageBox::YesRole );
-          msgBox.exec();
-
-          QAbstractButton *clicked = msgBox.clickedButton();
-          if ( clicked == stopSessionButton )
-          {
-            QgsSettings().setEnumValue( QStringLiteral( "qgis/enablePythonEmbedded" ), Qgis::PythonEmbeddedMode::NotForThisSession );
-          }
-          return clicked == yesButton;
-        }
-        else
-        {
-          // create the notification widget for macros
-          Q_ASSERT( messageBar );
-          if ( messageBar )
-          {
-            QToolButton *btnEnableMacros = new QToolButton();
-            btnEnableMacros->setText( tr( "Enable Macros" ) );
-            btnEnableMacros->setStyleSheet( QStringLiteral( "background-color: rgba(255, 255, 255, 0); color: black; text-decoration: underline;" ) );
-            btnEnableMacros->setCursor( Qt::PointingHandCursor );
-            btnEnableMacros->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred );
-
-            QgsMessageBarItem *macroMsg = new QgsMessageBarItem(
-              tr( "Security warning" ),
-              tr( "Python macros cannot currently be run." ),
-              btnEnableMacros,
-              Qgis::MessageLevel::Warning,
-              0,
-              messageBar
-            );
-
-            connect( btnEnableMacros, &QToolButton::clicked, messageBar, [lambda, messageBar, macroMsg]() {
-              lambda();
-              messageBar->popWidget( macroMsg );
-            } );
-
-            // display the macros notification widget
-            messageBar->pushItem( macroMsg );
-          }
-
-          return false;
-        }
-      }
-      else if ( embeddedType == Qgis::PythonEmbeddedType::ExpressionFunction )
-      {
-        // create the notification widget for expressions from project
-        Q_ASSERT( messageBar );
-        if ( messageBar )
-        {
-          QToolButton *btnEnableExpressionsFromProject = new QToolButton();
-          btnEnableExpressionsFromProject->setText( tr( "Enable python expressions from project" ) );
-          btnEnableExpressionsFromProject->setStyleSheet( QStringLiteral( "background-color: rgba(255, 255, 255, 0); color: black; text-decoration: underline;" ) );
-          btnEnableExpressionsFromProject->setCursor( Qt::PointingHandCursor );
-          btnEnableExpressionsFromProject->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred );
-
-          QgsMessageBarItem *expressionFromProjectMsg = new QgsMessageBarItem(
-            tr( "Security warning" ),
-            tr( "Python expressions from project cannot currently be loaded." ),
-            btnEnableExpressionsFromProject,
-            Qgis::MessageLevel::Warning,
-            0,
-            messageBar
-          );
-
-          connect( btnEnableExpressionsFromProject, &QToolButton::clicked, messageBar, [messageBar, expressionFromProjectMsg]() {
-            QgsProject::instance()->loadFunctionsFromProject( true );
-            messageBar->popWidget( expressionFromProjectMsg );
-          } );
-
-          // display the notification widget
-          messageBar->pushItem( expressionFromProjectMsg );
-        }
-
-        return false;
-      }
+    QgsProjectTrustDialog dialog( project );
+    dialog.exec();
+    trustStatus = QgsProjectUtils::checkUserTrust( project );
   }
-  return false;
+
+  if ( messageBar )
+  {
+    if ( trustStatus == Qgis::ProjectTrustStatus::Trusted )
+    {
+      messageBar
+        ->pushMessage( tr( "Security warning" ), tr( "The loaded project contains embedded scripts which have been allowed execution." ), embeddedScriptMode == Qgis::EmbeddedScriptMode::Always ? Qgis::MessageLevel::Warning : Qgis::MessageLevel::Info );
+    }
+    else
+    {
+      messageBar
+        ->pushMessage( tr( "Security warning" ), tr( "The loaded project contains embedded scripts which have been denied execution." ), embeddedScriptMode == Qgis::EmbeddedScriptMode::Never ? Qgis::MessageLevel::Warning : Qgis::MessageLevel::Info );
+    }
+  }
+
+  return trustStatus == Qgis::ProjectTrustStatus::Trusted;
 }
 
 void QgsGui::initCalloutWidgets()
@@ -508,12 +433,12 @@ void QgsGui::initCalloutWidgets()
       QgsCalloutAbstractMetadata *abstractMetadata = registry->calloutMetadata( name );
       if ( !abstractMetadata )
       {
-        QgsDebugError( QStringLiteral( "Failed to find callout entry in registry: %1" ).arg( name ) );
+        QgsDebugError( u"Failed to find callout entry in registry: %1"_s.arg( name ) );
       }
       QgsCalloutMetadata *metadata = dynamic_cast<QgsCalloutMetadata *>( abstractMetadata );
       if ( !metadata )
       {
-        QgsDebugError( QStringLiteral( "Failed to cast callout's metadata: " ).arg( name ) );
+        QgsDebugError( u"Failed to cast callout's metadata: "_s.arg( name ) );
       }
       else
       {
@@ -521,10 +446,39 @@ void QgsGui::initCalloutWidgets()
       }
     };
 
-    _initCalloutWidgetFunction( QStringLiteral( "simple" ), QgsSimpleLineCalloutWidget::create );
-    _initCalloutWidgetFunction( QStringLiteral( "manhattan" ), QgsManhattanLineCalloutWidget::create );
-    _initCalloutWidgetFunction( QStringLiteral( "curved" ), QgsCurvedLineCalloutWidget::create );
-    _initCalloutWidgetFunction( QStringLiteral( "balloon" ), QgsBalloonCalloutWidget::create );
+    _initCalloutWidgetFunction( u"simple"_s, QgsSimpleLineCalloutWidget::create );
+    _initCalloutWidgetFunction( u"manhattan"_s, QgsManhattanLineCalloutWidget::create );
+    _initCalloutWidgetFunction( u"curved"_s, QgsCurvedLineCalloutWidget::create );
+    _initCalloutWidgetFunction( u"balloon"_s, QgsBalloonCalloutWidget::create );
+  } );
+}
+
+void QgsGui::initPlotWidgets()
+{
+  static std::once_flag initialized;
+  std::call_once( initialized, []() {
+    auto _initPlotWidgetFunction = []( const QString &name, QgsPlotWidgetCreateFunc f ) {
+      QgsPlotRegistry *registry = QgsApplication::plotRegistry();
+
+      QgsPlotAbstractMetadata *abstractMetadata = registry->plotMetadata( name );
+      if ( !abstractMetadata )
+      {
+        QgsDebugError( u"Failed to find plot entry in registry: %1"_s.arg( name ) );
+      }
+      QgsPlotMetadata *metadata = dynamic_cast<QgsPlotMetadata *>( abstractMetadata );
+      if ( !metadata )
+      {
+        QgsDebugError( u"Failed to cast plot's metadata: "_s.arg( name ) );
+      }
+      else
+      {
+        metadata->setWidgetCreateFunction( std::move( f ) );
+      }
+    };
+
+    _initPlotWidgetFunction( u"bar"_s, QgsBarChartPlotWidget::create );
+    _initPlotWidgetFunction( u"line"_s, QgsLineChartPlotWidget::create );
+    _initPlotWidgetFunction( u"pie"_s, QgsPieChartPlotWidget::create );
   } );
 }
 

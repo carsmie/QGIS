@@ -14,18 +14,17 @@
  ***************************************************************************/
 
 #include "qgsgenericfeatureselectionmanager.h"
+
 #include "moc_qgsgenericfeatureselectionmanager.cpp"
 
 QgsGenericFeatureSelectionManager::QgsGenericFeatureSelectionManager( QObject *parent )
   : QgsIFeatureSelectionManager( parent )
-{
-}
+{}
 
 QgsGenericFeatureSelectionManager::QgsGenericFeatureSelectionManager( const QgsFeatureIds &initialSelection, QObject *parent )
   : QgsIFeatureSelectionManager( parent )
   , mSelectedFeatures( initialSelection )
-{
-}
+{}
 
 int QgsGenericFeatureSelectionManager::selectedFeatureCount()
 {

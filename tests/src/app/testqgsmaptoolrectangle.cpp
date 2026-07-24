@@ -13,21 +13,23 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "qgstest.h"
-
 #include "qgisapp.h"
 #include "qgsgeometry.h"
-#include "qgsmapcanvas.h"
-#include "qgssettingsregistrycore.h"
-#include "qgsvectorlayer.h"
-#include "qgsmaptooladdfeature.h"
 #include "qgsgeometryutils.h"
-
-#include "testqgsmaptoolutils.h"
+#include "qgsmapcanvas.h"
+#include "qgsmaptooladdfeature.h"
+#include "qgsmaptoolshaperectangle3points.h"
 #include "qgsmaptoolshaperectanglecenter.h"
 #include "qgsmaptoolshaperectangleextent.h"
-#include "qgsmaptoolshaperectangle3points.h"
+#include "qgssettingsregistrycore.h"
+#include "qgstest.h"
+#include "qgsvectorlayer.h"
+#include "testqgsmaptoolutils.h"
 
+#include <QSignalSpy>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class TestQgsMapToolRectangle : public QObject
 {
@@ -53,14 +55,20 @@ class TestQgsMapToolRectangle : public QObject
     void testRectangleFrom3PointsProjected();
     void testRectangleFrom3PointsProjectedWithDeletedVertex();
     void testRectangleFrom3PointsProjectedNotEnoughPoints();
+    void testTransientGeometrySignalCenter();
+    void testTransientGeometrySignalCenterLine();
+    void testTransientGeometrySignalExtent();
+    void testTransientGeometrySignal3PointsDistance();
+    void testTransientGeometrySignal3PointsProjected();
 
   private:
-    void resetMapTool( QgsMapToolShapeMetadata *metadata );
+    void resetMapTool( QgsMapToolShapeMetadata *metadata, QgsMapToolCapture::CaptureMode mode );
 
     QgisApp *mQgisApp = nullptr;
     QgsMapToolCapture *mMapTool = nullptr;
     QgsMapCanvas *mCanvas = nullptr;
     QgsVectorLayer *mLayer = nullptr;
+    QgsVectorLayer *mPolygonLayer = nullptr;
 };
 
 TestQgsMapToolRectangle::TestQgsMapToolRectangle() = default;
@@ -75,15 +83,19 @@ void TestQgsMapToolRectangle::initTestCase()
   mQgisApp = new QgisApp();
 
   mCanvas = new QgsMapCanvas();
-  mCanvas->setDestinationCrs( QgsCoordinateReferenceSystem( QStringLiteral( "EPSG:27700" ) ) );
+  mCanvas->setDestinationCrs( QgsCoordinateReferenceSystem( u"EPSG:27700"_s ) );
 
   // make testing layers
-  mLayer = new QgsVectorLayer( QStringLiteral( "LineStringZ?crs=EPSG:27700" ), QStringLiteral( "layer line Z" ), QStringLiteral( "memory" ) );
+  mLayer = new QgsVectorLayer( u"LineStringZ?crs=EPSG:27700"_s, u"layer line Z"_s, u"memory"_s );
   QVERIFY( mLayer->isValid() );
   QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mLayer );
 
+  mPolygonLayer = new QgsVectorLayer( u"PolygonZ?crs=EPSG:27700"_s, u"layer polygon Z"_s, u"memory"_s );
+  QVERIFY( mPolygonLayer->isValid() );
+  QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mPolygonLayer );
+
   // set layers in canvas
-  mCanvas->setLayers( QList<QgsMapLayer *>() << mLayer );
+  mCanvas->setLayers( QList<QgsMapLayer *>() << mLayer << mPolygonLayer );
   mCanvas->setCurrentLayer( mLayer );
 
   mMapTool = new QgsMapToolAddFeature( mCanvas, QgisApp::instance()->cadDockWidget(), QgsMapToolCapture::CaptureLine );
@@ -102,8 +114,12 @@ void TestQgsMapToolRectangle::cleanup()
   mMapTool->clean();
 }
 
-void TestQgsMapToolRectangle::resetMapTool( QgsMapToolShapeMetadata *metadata )
+void TestQgsMapToolRectangle::resetMapTool( QgsMapToolShapeMetadata *metadata, QgsMapToolCapture::CaptureMode mode )
 {
+  delete mMapTool;
+  mMapTool = new QgsMapToolAddFeature( mCanvas, QgisApp::instance()->cadDockWidget(), mode );
+  mMapTool->setCurrentCaptureTechnique( Qgis::CaptureTechnique::Shape );
+  mCanvas->setMapTool( mMapTool );
   mMapTool->setCurrentShapeMapTool( metadata );
 }
 
@@ -113,7 +129,7 @@ void TestQgsMapToolRectangle::testRectangleFromCenter()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangleCenterMetadata md;
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::LeftButton );
@@ -139,7 +155,7 @@ void TestQgsMapToolRectangle::testRectangleFromCenterWithDeletedVertex()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangleCenterMetadata md;
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 4, 1, Qt::LeftButton );
@@ -167,7 +183,7 @@ void TestQgsMapToolRectangle::testRectangleFromCenterNotEnoughPoints()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangleCenterMetadata md;
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::RightButton );
@@ -188,7 +204,7 @@ void TestQgsMapToolRectangle::testRectangleFromExtent()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangleExtentMetadata md;
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::LeftButton );
@@ -213,7 +229,7 @@ void TestQgsMapToolRectangle::testRectangleFromExtentWithDeletedVertex()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangleExtentMetadata md;
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 4, 1, Qt::LeftButton );
@@ -241,7 +257,7 @@ void TestQgsMapToolRectangle::testRectangleFromExtentNotEnoughPoints()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangleExtentMetadata md;
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::RightButton );
@@ -263,7 +279,7 @@ void TestQgsMapToolRectangle::testRectangleFrom3PointsDistance()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Distance );
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::LeftButton );
@@ -290,7 +306,7 @@ void TestQgsMapToolRectangle::testRectangleFrom3PointsDistanceWithDeletedVertex(
   mLayer->startEditing();
 
   QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Distance );
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::LeftButton );
@@ -320,7 +336,7 @@ void TestQgsMapToolRectangle::testRectangleFrom3PointsDistanceNotEnoughPoints()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Distance );
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::RightButton );
@@ -349,7 +365,7 @@ void TestQgsMapToolRectangle::testRectangleFrom3PointsProjected()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Projected );
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::LeftButton );
@@ -376,7 +392,7 @@ void TestQgsMapToolRectangle::testRectangleFrom3PointsProjectedWithDeletedVertex
   mLayer->startEditing();
 
   QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Projected );
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::LeftButton );
@@ -406,7 +422,7 @@ void TestQgsMapToolRectangle::testRectangleFrom3PointsProjectedNotEnoughPoints()
   mLayer->startEditing();
 
   QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Projected );
-  resetMapTool( &md );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
 
   TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
   utils.mouseClick( 0, 0, Qt::RightButton );
@@ -428,5 +444,132 @@ void TestQgsMapToolRectangle::testRectangleFrom3PointsProjectedNotEnoughPoints()
 
   mLayer->rollBack();
 }
+
+void TestQgsMapToolRectangle::testTransientGeometrySignalCenter()
+{
+  mPolygonLayer->startEditing();
+  mCanvas->setCurrentLayer( mPolygonLayer );
+
+  QgsMapToolShapeRectangleCenterMetadata md;
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CapturePolygon );
+
+  TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
+  QSignalSpy spy( mMapTool, &QgsMapToolCapture::transientGeometryChanged );
+  utils.mouseClick( 0, 0, Qt::LeftButton );
+  utils.mouseMove( 2, 1 );
+
+  QCOMPARE( spy.count(), 1 );
+  QCOMPARE( spy.at( 0 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((-2 -1 0, -2 1 0, 2 1 0, 2 -1 0, -2 -1 0))"_s );
+
+  utils.mouseMove( 3, 2 );
+  QCOMPARE( spy.count(), 2 );
+  QCOMPARE( spy.at( 1 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((-3 -2 0, -3 2 0, 3 2 0, 3 -2 0, -3 -2 0))"_s );
+
+  utils.mouseClick( 2, 1, Qt::RightButton );
+  mPolygonLayer->rollBack();
+}
+
+void TestQgsMapToolRectangle::testTransientGeometrySignalCenterLine()
+{
+  mLayer->startEditing();
+  mCanvas->setCurrentLayer( mLayer );
+
+  QgsMapToolShapeRectangleCenterMetadata md;
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CaptureLine );
+
+  TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
+  QSignalSpy spy( mMapTool, &QgsMapToolCapture::transientGeometryChanged );
+  utils.mouseClick( 0, 0, Qt::LeftButton );
+  utils.mouseMove( 2, 1 );
+
+  QCOMPARE( spy.count(), 1 );
+  QCOMPARE( spy.at( 0 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"LineString Z (-2 -1 0, -2 1 0, 2 1 0, 2 -1 0, -2 -1 0)"_s );
+
+  utils.mouseMove( 3, 2 );
+  QCOMPARE( spy.count(), 2 );
+  QCOMPARE( spy.at( 1 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"LineString Z (-3 -2 0, -3 2 0, 3 2 0, 3 -2 0, -3 -2 0)"_s );
+
+  utils.mouseClick( 2, 1, Qt::RightButton );
+  mLayer->rollBack();
+}
+
+void TestQgsMapToolRectangle::testTransientGeometrySignalExtent()
+{
+  mPolygonLayer->startEditing();
+  mCanvas->setCurrentLayer( mPolygonLayer );
+
+  QgsMapToolShapeRectangleExtentMetadata md;
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CapturePolygon );
+
+  TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
+  QSignalSpy spy( mMapTool, &QgsMapToolCapture::transientGeometryChanged );
+  utils.mouseClick( 0, 0, Qt::LeftButton );
+  utils.mouseMove( 2, 1 );
+
+  QCOMPARE( spy.count(), 1 );
+  QCOMPARE( spy.at( 0 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((0 0 0, 0 1 0, 2 1 0, 2 0 0, 0 0 0))"_s );
+
+  utils.mouseMove( 3, 2 );
+  QCOMPARE( spy.count(), 2 );
+  QCOMPARE( spy.at( 1 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((0 0 0, 0 2 0, 3 2 0, 3 0 0, 0 0 0))"_s );
+
+  utils.mouseClick( 2, 1, Qt::RightButton );
+  mPolygonLayer->rollBack();
+}
+
+void TestQgsMapToolRectangle::testTransientGeometrySignal3PointsDistance()
+{
+  mPolygonLayer->startEditing();
+  mCanvas->setCurrentLayer( mPolygonLayer );
+
+  QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Distance );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CapturePolygon );
+
+  TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
+  QSignalSpy spy( mMapTool, &QgsMapToolCapture::transientGeometryChanged );
+  utils.mouseClick( 0, 0, Qt::LeftButton );
+  utils.mouseMove( 2, 0 );
+  QCOMPARE( spy.count(), 0 );
+  utils.mouseClick( 2, 0, Qt::LeftButton );
+  utils.mouseMove( 2, 1 );
+
+  QCOMPARE( spy.count(), 1 );
+  QCOMPARE( spy.at( 0 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((0 0 0, 2 0 0, 2 1 0, 0 1 0, 0 0 0))"_s );
+
+  utils.mouseMove( 3, 2 );
+  QCOMPARE( spy.count(), 2 );
+  QCOMPARE( spy.at( 1 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((0 0 0, 2 0 0, 2 2.2 0, 0 2.2 0, 0 0 0))"_s );
+
+  utils.mouseClick( 2, 1, Qt::RightButton );
+  mPolygonLayer->rollBack();
+}
+
+void TestQgsMapToolRectangle::testTransientGeometrySignal3PointsProjected()
+{
+  mPolygonLayer->startEditing();
+  mCanvas->setCurrentLayer( mPolygonLayer );
+
+  QgsMapToolShapeRectangle3PointsMetadata md( QgsMapToolShapeRectangle3PointsMetadata::CreateMode::Projected );
+  resetMapTool( &md, QgsMapToolCapture::CaptureMode::CapturePolygon );
+
+  TestQgsMapToolAdvancedDigitizingUtils utils( mMapTool );
+  QSignalSpy spy( mMapTool, &QgsMapToolCapture::transientGeometryChanged );
+  utils.mouseClick( 0, 0, Qt::LeftButton );
+  utils.mouseMove( 2, 0 );
+  QCOMPARE( spy.count(), 0 );
+  utils.mouseClick( 2, 0, Qt::LeftButton );
+  utils.mouseMove( 2, 1 );
+
+  QCOMPARE( spy.count(), 1 );
+  QCOMPARE( spy.at( 0 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((0 0 0, 2 0 0, 2 1 0, 0 1 0, 0 0 0))"_s );
+
+  utils.mouseMove( 3, 2 );
+  QCOMPARE( spy.count(), 2 );
+  QCOMPARE( spy.at( 1 ).at( 0 ).value< QgsReferencedGeometry >().asWkt( 1 ), u"Polygon Z ((0 0 0, 2 0 0, 2 2 0, 0 2 0, 0 0 0))"_s );
+
+  utils.mouseClick( 2, 1, Qt::RightButton );
+  mPolygonLayer->rollBack();
+}
+
 QGSTEST_MAIN( TestQgsMapToolRectangle )
 #include "testqgsmaptoolrectangle.moc"

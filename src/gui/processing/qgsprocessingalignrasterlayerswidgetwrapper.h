@@ -16,14 +16,15 @@
 #ifndef QGSPROCESSINGALIGNRASTERLAYERSWIDGETWRAPPER_H
 #define QGSPROCESSINGALIGNRASTERLAYERSWIDGETWRAPPER_H
 
-#define SIP_NO_FILE
-
-#include "qgsprocessingcontext.h"
-#include "qgsprocessingwidgetwrapper.h"
-#include "qgsprocessingmultipleselectiondialog.h"
-#include "qgsalignrasterdata.h"
 
 #include "ui_qgsprocessingalignrasterlayerdetailswidgetbase.h"
+
+#include "qgsalignrasterdata.h"
+#include "qgsprocessingcontext.h"
+#include "qgsprocessingmultipleselectiondialog.h"
+#include "qgsprocessingwidgetwrapper.h"
+
+#define SIP_NO_FILE
 
 class QLineEdit;
 class QToolButton;
@@ -54,11 +55,7 @@ class GUI_EXPORT QgsProcessingAlignRasterLayersPanelWidget : public QgsProcessin
     /**
      * Constructor for QgsProcessingAlignRasterLayersPanelWidget.
      */
-    QgsProcessingAlignRasterLayersPanelWidget(
-      const QVariant &value,
-      QgsProject *project,
-      QWidget *parent SIP_TRANSFERTHIS = nullptr
-    );
+    QgsProcessingAlignRasterLayersPanelWidget( const QVariant &value, QgsProject *project, QWidget *parent SIP_TRANSFERTHIS = nullptr );
 
   private slots:
 

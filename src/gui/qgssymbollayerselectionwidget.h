@@ -16,12 +16,14 @@
 #define QGSSYMBOLLAYERSELECTIONWIDGET_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
+
+#include "qgis_gui.h"
+#include "qgis_sip.h"
+#include "qgssymbollayerreference.h"
 
 #include <QWidget>
-#include "qgis_sip.h"
-#include "qgis_gui.h"
-#include "qgssymbollayerreference.h"
+
+#define SIP_NO_FILE
 
 class QTreeWidget;
 class QTreeWidgetItem;

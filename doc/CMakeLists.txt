@@ -2,14 +2,13 @@
 set (WITH_APIDOC FALSE CACHE BOOL "Determines whether the QGIS API doxygen documentation should be built")
 
 # include Qt documentation
-set (QT_DOC_URL "https://doc.qt.io/qt-5/" CACHE STRING "URL for Qt docs")
+set (QT_DOC_URL "https://doc.qt.io/qt-6/" CACHE STRING "URL for Qt docs")
 
 set(QGIS_DOC_FILES
   ../INSTALL.md
   ../NEWS.md
   NEWS.html
   index.html
-  developersmap.html
   nohelp.html
   favicon.ico
   style.css
@@ -51,6 +50,7 @@ if(WITH_APIDOC)
       ${CMAKE_SOURCE_DIR}/doc
       ${CMAKE_SOURCE_DIR}/src/core
       ${CMAKE_SOURCE_DIR}/src/core/3d
+      ${CMAKE_SOURCE_DIR}/src/core/3d/materials
       ${CMAKE_SOURCE_DIR}/src/core/actions
       ${CMAKE_SOURCE_DIR}/src/core/annotations
       ${CMAKE_SOURCE_DIR}/src/core/auth
@@ -76,6 +76,7 @@ if(WITH_APIDOC)
       ${CMAKE_SOURCE_DIR}/src/core/maprenderer
       ${CMAKE_SOURCE_DIR}/src/core/mesh
       ${CMAKE_SOURCE_DIR}/src/core/metadata
+      ${CMAKE_SOURCE_DIR}/src/core/multimedia
       ${CMAKE_SOURCE_DIR}/src/core/network
       ${CMAKE_SOURCE_DIR}/src/core/numericformats
       ${CMAKE_SOURCE_DIR}/src/core/painting
@@ -96,6 +97,7 @@ if(WITH_APIDOC)
       ${CMAKE_SOURCE_DIR}/src/core/sensor
       ${CMAKE_SOURCE_DIR}/src/core/settings
       ${CMAKE_SOURCE_DIR}/src/core/symbology
+      ${CMAKE_SOURCE_DIR}/src/core/symbology/converters
       ${CMAKE_SOURCE_DIR}/src/core/textrenderer
       ${CMAKE_SOURCE_DIR}/src/core/tiledscene
       ${CMAKE_SOURCE_DIR}/src/core/validity
@@ -103,6 +105,7 @@ if(WITH_APIDOC)
       ${CMAKE_SOURCE_DIR}/src/core/vectortile
       ${CMAKE_SOURCE_DIR}/src/core/web
       ${CMAKE_SOURCE_DIR}/src/gui
+      ${CMAKE_SOURCE_DIR}/src/gui/3d
       ${CMAKE_SOURCE_DIR}/src/gui/actions
       ${CMAKE_SOURCE_DIR}/src/gui/annotations
       ${CMAKE_SOURCE_DIR}/src/gui/attributetable

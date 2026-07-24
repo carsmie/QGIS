@@ -11,6 +11,8 @@
 
 
 
+
+
 class QgsMeshLayer : QgsMapLayer, QgsAbstractProfileSource
 {
 %Docstring(signature="appended")
@@ -78,11 +80,9 @@ provider.
 #include "qgsmeshlayer.h"
 %End
   public:
-
     struct LayerOptions
     {
-
-      explicit LayerOptions( const QgsCoordinateTransformContext &transformContext = QgsCoordinateTransformContext( ) );
+        explicit LayerOptions( const QgsCoordinateTransformContext &transformContext = QgsCoordinateTransformContext() );
 %Docstring
 Constructor for LayerOptions with optional ``transformContext``.
 
@@ -91,15 +91,16 @@ Constructor for LayerOptions with optional ``transformContext``.
    transformContext argument was added in QGIS 3.8
 %End
 
-      QgsCoordinateTransformContext transformContext;
+        QgsCoordinateTransformContext transformContext;
 
-      bool loadDefaultStyle;
+        bool loadDefaultStyle;
 
-      bool skipCrsValidation;
+        bool skipCrsValidation;
     };
 
-    explicit QgsMeshLayer( const QString &path = QString(), const QString &baseName = QString(), const QString &providerLib = QStringLiteral( "mesh_memory" ),
-                           const QgsMeshLayer::LayerOptions &options = QgsMeshLayer::LayerOptions() );
+    explicit QgsMeshLayer(
+      const QString &path = QString(), const QString &baseName = QString(), const QString &providerLib = QStringLiteral( "mesh_memory" ), const QgsMeshLayer::LayerOptions &options = QgsMeshLayer::LayerOptions()
+    );
 %Docstring
 Constructor - creates a mesh layer
 
@@ -124,7 +125,7 @@ connect to and access the data.
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
 %End
 
-    virtual QgsMeshDataProvider *dataProvider();
+      virtual QgsMeshDataProvider *dataProvider();
 
     virtual QgsMeshLayer *clone() const /Factory/;
 
@@ -133,12 +134,14 @@ connect to and access the data.
     virtual QgsMapLayerRenderer *createMapRenderer( QgsRenderContext &rendererContext ) /Factory/;
 
     virtual QgsAbstractProfileSource *profileSource();
+    virtual QString profileSourceId() const;
+    virtual QString profileSourceName() const;
     virtual QgsAbstractProfileGenerator *createProfileGenerator( const QgsProfileRequest &request ) /Factory/;
 
-     virtual bool readSymbology( const QDomNode &node, QString &errorMessage,
-                        QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories );
-     virtual bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage,
-                         const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const;
+    virtual bool readSymbology( const QDomNode &node, QString &errorMessage, QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories );
+
+    virtual bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const;
+
     virtual bool writeStyle( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, StyleCategories categories = AllStyleCategories ) const;
 
     virtual bool readStyle( const QDomNode &node, QString &errorMessage, QgsReadWriteContext &context, StyleCategories categories = AllStyleCategories );
@@ -165,12 +168,11 @@ connect to and access the data.
 
     virtual bool supportsEditing() const;
 
-    virtual QString loadDefaultStyle( bool &resultFlag /Out/ ) ${SIP_FINAL};
-
+    QString loadDefaultStyle( bool &resultFlag /Out/ ) final;
 
     bool addDatasets( const QString &path, const QDateTime &defaultReferenceTime = QDateTime() );
 %Docstring
-Adds datasets to the mesh from file with ``path``. Use the the time
+Adds datasets to the mesh from file with ``path``. Use the time
 ``defaultReferenceTime`` as reference time is not provided in the file
 
 :param path: the path to the datasets file
@@ -247,6 +249,14 @@ Sets new renderer settings
 :param settings: 
 :param repaint: should the update of renderer settings trigger repaint
                 and emit rendererChanged signal
+%End
+
+    void invalidateRendererCache();
+%Docstring
+Invalidates the cache used by the renderer to store the values of the
+active scalar and vector dataset groups.
+
+.. versionadded:: 4.4
 %End
 
     QgsMeshTimeSettings timeSettings() const;
@@ -1047,6 +1057,17 @@ Return ``True`` if the dataset path is not already added.
 
 .. versionadded:: 3.42
 %End
+
+    QStringList extraDatasetUris() const;
+%Docstring
+Returns the list of extra dataset URIs associated with this layer
+
+.. versionadded:: 4.0
+%End
+
+     virtual QString loadNamedStyle(
+      const QString &uri, bool &resultFlag /Out/, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories, Qgis::LoadStyleFlags flags = Qgis::LoadStyleFlags()
+    );
 
   public slots:
 

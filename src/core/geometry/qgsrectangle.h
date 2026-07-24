@@ -19,13 +19,16 @@
 #define QGSRECTANGLE_H
 
 #include <iosfwd>
-#include <QDomDocument>
-#include <QRectF>
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgspointxy.h"
 
+#include <QDomDocument>
+#include <QRectF>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QString;
 class QRectF;
@@ -55,12 +58,13 @@ class CORE_EXPORT QgsRectangle
     Q_PROPERTY( QgsPointXY center READ center )
     Q_PROPERTY( bool isEmpty READ isEmpty )
     Q_PROPERTY( bool isNull READ isNull )
+    Q_PROPERTY( bool isValid READ isValid )
 
   public:
-
     //! Constructor for a null rectangle
     QgsRectangle() = default; // optimised constructor for null rectangle - no need to call normalize here
 
+    // clang-format off
     /**
      * Constructs a QgsRectangle from a set of x and y minimum and maximum coordinates.
      *
@@ -68,6 +72,7 @@ class CORE_EXPORT QgsRectangle
      * the normalization step will not be applied automatically.
      */
     explicit QgsRectangle( double xMin, double yMin = 0, double xMax = 0, double yMax = 0, bool normalize = true ) SIP_HOLDGIL
+      // clang-format on
   : mXmin( xMin )
     , mYmin( yMin )
     , mXmax( xMax )
@@ -198,7 +203,7 @@ class CORE_EXPORT QgsRectangle
      * Set a rectangle so that min corner is at max
      * and max corner is at min. It is NOT normalized.
      *
-     * \deprecated QGIS 3.34. Will be removed in QGIS 4.0. Use setNull().
+     * \deprecated QGIS 3.34. Will be removed in QGIS 5.0. Use setNull().
      */
     Q_DECL_DEPRECATED void setMinimal() SIP_DEPRECATED
     {
@@ -517,7 +522,9 @@ class CORE_EXPORT QgsRectangle
     /**
      * Test if the rectangle is null (holding no spatial information).
      *
-     * A null rectangle is also an empty rectangle.
+     * A rectangle is considered null if all its coordinates are NaN,
+     * if it has not been defined yet, or if it has been explicitly initialized as null.
+     * A null rectangle is also an empty rectangle and an invalid rectangle.
      *
      * \see setNull()
      *
@@ -529,6 +536,24 @@ class CORE_EXPORT QgsRectangle
       return ( std::isnan( mXmin )  && std::isnan( mXmax ) && std::isnan( mYmin ) && std::isnan( mYmax ) ) ||
              ( qgsDoubleNear( mXmin, std::numeric_limits<double>::max() ) && qgsDoubleNear( mYmin, std::numeric_limits<double>::max() ) &&
                qgsDoubleNear( mXmax, -std::numeric_limits<double>::max() ) && qgsDoubleNear( mYmax, -std::numeric_limits<double>::max() ) );
+    }
+
+    /**
+     * Test if the rectangle is valid
+     *
+     * A rectangle is considered invalid if at least one of its coordinates is NaN or infinite,
+     * or if a maximum coordinate is less than or equal to the corresponding minimum coordinate.
+     *
+     * \see isNull()
+     * \since QGIS 4.0
+     */
+    bool isValid() const
+    {
+      if ( ( !isFinite() ) || ( mXmax <= mXmin ) || ( mYmax <= mYmin ) )
+      {
+        return false;
+      }
+      return true;
     }
 
     /**
@@ -571,7 +596,7 @@ class CORE_EXPORT QgsRectangle
 
     /**
      * Returns a string representation of form xmin,ymin : xmax,ymax
-     * Coordinates will be truncated to the specified precision.
+     * Coordinates will be rounded to the specified precision.
      * If the specified precision is less than 0, a suitable minimum precision is used.
      */
     Q_INVOKABLE QString toString( int precision = 16 ) const;
@@ -660,15 +685,17 @@ class CORE_EXPORT QgsRectangle
     QgsRectangle snappedToGrid( double spacing ) const;
 
 #ifdef SIP_RUN
+// clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
     QString str;
     if ( sipCpp->isNull() )
-      str = QStringLiteral( "<QgsRectangle()>" );
+      str = u"<QgsRectangle()>"_s;
     else
-      str = QStringLiteral( "<QgsRectangle: %1>" ).arg( sipCpp->asWktCoordinates() );
+      str = u"<QgsRectangle: %1>"_s.arg( sipCpp->asWktCoordinates() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
   private:

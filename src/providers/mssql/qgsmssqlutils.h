@@ -16,9 +16,10 @@
 #ifndef QGSMSSQLUTILS_H
 #define QGSMSSQLUTILS_H
 
+#include "qgis.h"
+
 #include <QString>
 #include <QVariant>
-#include "qgis.h"
 
 class QgsField;
 
@@ -52,6 +53,14 @@ class QgsMssqlUtils
      * Converts the string values from .STGeometryType() to a QGIS WKB type.
      */
     static Qgis::WkbType wkbTypeFromGeometryType( const QString &type );
+
+    /**
+     * Returns the Transect-SQL column definition for a QGIS \a field definition.
+     *
+     * If \a ignoreTypeString is TRUE then the native type string from \a field will be ignored, and
+     * only the QVariant metatype considered.
+     */
+    static QString columnDefinitionForField( const QgsField &field, bool ignoreTypeString = false );
 };
 
 

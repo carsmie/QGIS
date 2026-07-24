@@ -1,4 +1,6 @@
-"""QGIS Unit tests for QgsServer API.
+"""QGIS Unit tests for QgsServer API, includes initial tests for OGC API Features (AKA: OAPIF, WFS3).
+
+See also specific *ogcapi*.py tests for more OAPIF tests.
 
 From build dir, run: ctest -R PyQgsServerApi -V
 
@@ -21,18 +23,25 @@ import shutil
 # Deterministic XML
 os.environ["QT_HASH_SEED"] = "1"
 
+from contextlib import contextmanager
 from urllib import parse
 
 from qgis.core import (
+    Qgis,
+    QgsApplication,
     QgsFeature,
     QgsFeatureRequest,
+    QgsField,
+    QgsFields,
     QgsGeometry,
+    QgsMemoryProviderUtils,
     QgsProject,
     QgsVectorLayer,
     QgsVectorLayerServerProperties,
 )
 from qgis.PyQt import QtCore
 from qgis.server import (
+    QgsAccessControlFilter,
     QgsBufferServerRequest,
     QgsBufferServerResponse,
     QgsServer,
@@ -44,11 +53,10 @@ from qgis.server import (
     QgsServerOgcApiHandler,
     QgsServerQueryStringParameter,
     QgsServiceRegistry,
-    QgsAccessControlFilter,
 )
 from qgis.testing import unittest
 from test_qgsserver import QgsServerTestBase
-from utilities import unitTestDataPath
+from utilities import compareWkt, unitTestDataPath
 
 
 class QgsServerAPIUtilsTest(QgsServerTestBase):
@@ -196,7 +204,6 @@ class QgsServerAPIUtilsTest(QgsServerTestBase):
 
 
 class API(QgsServerApi):
-
     def __init__(self, iface, version="1.0"):
         super().__init__(iface)
         self._version = version
@@ -218,7 +225,7 @@ class QgsServerAPITestBase(QgsServerTestBase):
     """QGIS API server tests"""
 
     # Set to True in child classes to re-generate reference files for this class
-    regeregenerate_api_reference = False
+    regenerate_api_reference = False
 
     def assertEqualBrackets(self, actual, expected):
         """Also counts parenthesis"""
@@ -238,18 +245,23 @@ class QgsServerAPITestBase(QgsServerTestBase):
         result.append(bytes(response.body()).decode("utf8"))
         return "\n".join(result)
 
+    def assertEqualDropDecimals(self, first, second, message):
+        # Regexp to cut all decimals after second
+        pattern = r"(\.\d{2})\d+"
+        first_cleaned = re.sub(pattern, r"\1", first)
+        second_cleaned = re.sub(pattern, r"\1", second)
+        self.assertEqual(first_cleaned, second_cleaned, message)
+
     def assertLinesEqual(self, actual, expected, reference_file):
         """Break on first different line"""
 
         actual_lines = actual.split("\n")
         expected_lines = expected.split("\n")
         for i in range(len(actual_lines)):
-            self.assertEqual(
+            self.assertEqualDropDecimals(
                 actual_lines[i],
                 expected_lines[i],
-                "File: {}\nLine: {}\nActual  : {}\nExpected: {}".format(
-                    reference_file, i, actual_lines[i], expected_lines[i]
-                ),
+                f"File: {reference_file}\nLine: {i}\nActual  : {actual_lines[i]}\nExpected: {expected_lines[i]}",
             )
 
     def normalize_json(self, content):
@@ -283,7 +295,9 @@ class QgsServerAPITestBase(QgsServerTestBase):
         )
         return headers_content + "\n" + json_content
 
-    def compareApi(self, request, project, reference_file, subdir="api"):
+    def compareApi(
+        self, request, project, reference_file, subdir="api", replace_map=None
+    ):
         response = QgsBufferServerResponse()
         # Add json to accept it reference_file is JSON
         if reference_file.endswith(".json"):
@@ -294,8 +308,16 @@ class QgsServerAPITestBase(QgsServerTestBase):
             if reference_file.endswith("html")
             else self.dump(response)
         )
+
+        if replace_map:
+            for k, v in replace_map.items():
+                result = result.replace(k, v)
+
         path = os.path.join(self.temporary_path, "qgis_server", subdir, reference_file)
-        if self.regeregenerate_api_reference:
+        if self.regenerate_api_reference:
+            overwrite_path = os.path.join(
+                unitTestDataPath("qgis_server"), subdir, reference_file
+            )
             # Try to change timestamp
             try:
                 content = result.split("\n")
@@ -309,10 +331,10 @@ class QgsServerAPITestBase(QgsServerTestBase):
                 )
             except:
                 pass
-            f = open(path.encode("utf8"), "w+", encoding="utf8")
+            f = open(overwrite_path.encode("utf8"), "w+", encoding="utf8")
             f.write(result)
             f.close()
-            print(f"Reference file {path.encode('utf8')} regenerated!")
+            print(f"Reference file {overwrite_path.encode('utf8')} regenerated!")
 
         with open(path.encode("utf8"), encoding="utf8") as f:
             if reference_file.endswith("json"):
@@ -373,6 +395,39 @@ class RestrictedLayerAccessControl(QgsAccessControlFilter):
 
 class QgsServerAPITest(QgsServerAPITestBase):
     """QGIS API server tests"""
+
+    regenerate_api_reference = False
+
+    def setUp(self):
+        super().setUp()
+        # Default url has changed in QGIS 4 stick to /wfs3 for the tests
+        os.environ.update({"QGIS_SERVER_API_WFS3_ROOT_PATH": "/wfs3"})
+        iface = self.server.serverInterface()
+        iface.reloadSettings()
+        iface.serviceRegistry().cleanUp()
+        iface.serviceRegistry().init(QgsApplication.libexecPath() + "server", iface)
+
+    # Set env context manager
+    @contextmanager
+    def set_env(self, **environ):
+        """Context manager to set/unset environment variables"""
+
+        old_environ = dict(os.environ)
+        os.environ.update(environ)
+
+        iface = self.server.serverInterface()
+        iface.reloadSettings()
+        iface.serviceRegistry().cleanUp()
+        iface.serviceRegistry().init(QgsApplication.libexecPath() + "server", iface)
+
+        try:
+            yield
+        finally:
+            os.environ.clear()
+            os.environ.update(old_environ)
+            iface.reloadSettings()
+            iface.serviceRegistry().cleanUp()
+            iface.serviceRegistry().init(QgsApplication.libexecPath() + "server", iface)
 
     def test_api(self):
         """Test API registering"""
@@ -522,6 +577,13 @@ class QgsServerAPITest(QgsServerAPITestBase):
         )
         self.compareApi(request, project, "test_wfs3_api_project.json")
 
+        with self.set_env(QGIS_SERVER_API_WFS3_ROOT_PATH="/custom_rootpath"):
+            iface = self.server.serverInterface()
+            registry = iface.serviceRegistry()
+            api = registry.getApi("OAPIF")
+            self.assertIsNotNone(api)
+            self.assertEqual(api.rootPath(), "/custom_rootpath")
+
     def test_wfs3_api_permissions(self):
         """Test the API with different permissions on a layer"""
 
@@ -572,6 +634,73 @@ class QgsServerAPITest(QgsServerAPITestBase):
         self.assertNotIn(
             "post", jresult["paths"]["/wfs3/collections/testlayer èé/items"]
         )
+
+    def testCRUDOptions(self):
+
+        fields = QgsFields()
+        fields.append(QgsField("id", QtCore.QMetaType.Type.Int))
+        fields.append(QgsField("name", QtCore.QMetaType.Type.QString))
+        layer = QgsMemoryProviderUtils.createMemoryLayer(
+            "my_layer", fields, Qgis.WkbType.Point
+        )
+
+        provider = layer.dataProvider()
+        self.assertTrue(layer.isValid())
+        self.assertTrue(layer.isSpatial())
+
+        project = QgsProject()
+        project.addMapLayer(layer)
+        project.writeEntry("WFSLayers", "/", [layer.id()])
+        project.writeEntry("WFSTLayers", "Update", [layer.id()])
+        project.writeEntry("WFSTLayers", "Insert", [layer.id()])
+        project.writeEntry("WFSTLayers", "Delete", [layer.id()])
+
+        def _check_options(expected):
+            request = QgsBufferServerRequest(
+                "http://server.qgis.org/wfs3/collections/my_layer/items/",
+                method=QgsBufferServerRequest.OptionsMethod,
+            )
+            response = QgsBufferServerResponse()
+            server.handleRequest(request, response, project)
+            self.assertEqual(response.statusCode(), 200)
+            self.assertEqual(response.headers()["Allow"], expected)
+
+        # Check permissions
+        server = QgsServer()
+        request = QgsBufferServerRequest("http://server.qgis.org/wfs3/api.openapi3")
+        response = QgsBufferServerResponse()
+        server.handleRequest(request, response, project)
+        self.assertEqual(response.statusCode(), 200)
+        result = bytes(response.body()).decode("utf8")
+        jresult = json.loads(result)
+        paths = jresult["paths"]["/wfs3/collections/my_layer/items/{featureId}"]
+        operations = list(paths.keys())
+        self.assertEqual(set(operations), set(["get", "put", "delete", "patch"]))
+        _check_options("GET, OPTIONS, POST, DELETE, PUT, PATCH")
+
+        # Remove delete permission
+        project.writeEntry("WFSTLayers", "Delete", [])
+        response = QgsBufferServerResponse()
+        server.handleRequest(request, response, project)
+        self.assertEqual(response.statusCode(), 200)
+        result = bytes(response.body()).decode("utf8")
+        jresult = json.loads(result)
+        paths = jresult["paths"]["/wfs3/collections/my_layer/items/{featureId}"]
+        operations = list(
+            jresult["paths"]["/wfs3/collections/my_layer/items/{featureId}"].keys()
+        )
+        self.assertEqual(set(operations), set(["get", "put", "patch"]))
+        _check_options("GET, OPTIONS, POST, PUT, PATCH")
+
+        # Remove insert permission
+        project.writeEntry("WFSTLayers", "Insert", [])
+        response = QgsBufferServerResponse()
+        server.handleRequest(request, response, project)
+        self.assertEqual(response.statusCode(), 200)
+        result = bytes(response.body()).decode("utf8")
+        jresult = json.loads(result)
+        self.assertNotIn("post", jresult["paths"]["/wfs3/collections/my_layer/items"])
+        _check_options("GET, OPTIONS, PUT, PATCH")
 
     def test_wfs3_conformance(self):
         """Test WFS3 API"""
@@ -871,6 +1000,146 @@ class QgsServerAPITest(QgsServerAPITestBase):
             "test_wfs3_collections_items_as-areas-short-name_3857.json",
         )
 
+    def test_wfs3_collection_items_flatgeobuf(self):
+        """Test WFS3 API items"""
+        project = QgsProject()
+        project.read(
+            os.path.join(self.temporary_path, "qgis_server", "test_project_api.qgs")
+        )
+        request = QgsBufferServerRequest(
+            "http://server.qgis.org/wfs3/collections/testlayer%20èé/items.fgb?limit=1&foo=bar"
+        )
+        server = QgsServer()
+        response = QgsBufferServerResponse()
+        server.handleRequest(request, response, project)
+        body = response.body()
+
+        # Check headers
+        headers = response.fullHeaders()
+        self.assertEqual(headers["Content-Type"][0], "application/flatgeobuf")
+        self.assertEqual(headers["OGC-NumberReturned"][0], "1")
+        self.assertEqual(
+            headers["Content-Disposition"][0], 'inline; filename="testlayer èé.fgb"'
+        )
+        self.assertEqual(headers["OGC-NumberReturned"][0], "1")
+        self.assertEqual(
+            set(headers["Link"]),
+            set(
+                [
+                    '<http://server.qgis.org/wfs3/collections/testlayer%20%C3%A8%C3%A9/items.fgb?limit=1&foo=bar>; rel="self"; title="This document as FlatGeobuf"; type="application/flatgeobuf"',
+                    '<http://server.qgis.org/wfs3/collections/testlayer%20%C3%A8%C3%A9/items.geojson?limit=1&foo=bar>; rel="alternate"; title="This document as GEOJSON"; type="application/geo+json"; profile="json"',
+                    '<http://server.qgis.org/wfs3/collections/testlayer%20%C3%A8%C3%A9/items.html?limit=1&foo=bar>; rel="alternate"; title="This document as HTML"; type="text/html"',
+                    '<http://server.qgis.org/wfs3/collections/testlayer èé/items.fgb?foo=bar&offset=1&limit=1>; rel="next"; title="Next page"; type="application/flatgeobuf"',
+                ]
+            ),
+        )
+
+        def _get_layer():
+            # Save to temporary file .fgb
+            path = os.path.join(
+                self.temporary_path, "qgis_server", "api", "testlayer.fgb"
+            )
+            with open(path, "wb") as f:
+                f.write(bytes(response.body()))
+            # Open file with QgsVectorLayer and check features
+            layer = QgsVectorLayer(path, "testlayer", "ogr")
+            self.assertTrue(layer.isValid())
+            return layer
+
+        layer = _get_layer()
+        self.assertEqual(layer.getFeature(0).attributes(), [1, "one", "one èé"])
+        geom = layer.getFeature(0).geometry()
+        self.assertAlmostEqual(geom.asPoint().x(), 8.20349, 4)
+        self.assertAlmostEqual(geom.asPoint().y(), 44.90148, 4)
+
+        # Request 2 features from next page
+        request = QgsBufferServerRequest(
+            "http://server.qgis.org/wfs3/collections/testlayer%20èé/items.fgb?offset=1&limit=2"
+        )
+        response = QgsBufferServerResponse()
+        server.handleRequest(request, response, project)
+        # Check headers
+        headers = response.fullHeaders()
+        self.assertEqual(headers["OGC-NumberReturned"][0], "2")
+
+        layer = _get_layer()
+        self.assertEqual(layer.getFeature(0).attributes(), [2, "two", "two àò"])
+        geom = layer.getFeature(0).geometry()
+        self.assertAlmostEqual(geom.asPoint().x(), 8.20354, 4)
+        self.assertAlmostEqual(geom.asPoint().y(), 44.90148, 4)
+
+        self.assertEqual(layer.getFeature(1).attributes(), [3, "three", "three èé↓"])
+        geom = layer.getFeature(1).geometry()
+        self.assertAlmostEqual(geom.asPoint().x(), 8.20345, 4)
+        self.assertAlmostEqual(geom.asPoint().y(), 44.90139, 4)
+
+    def test_wfs3_collection_items_geobuf_qgsfid(self):
+
+        mem_layer = QgsVectorLayer(
+            "Point?crs=epsg:4326&field=id:integer&field=qgs_fid:integer",
+            "mem_layer",
+            "memory",
+        )
+        self.assertTrue(mem_layer.isValid())
+        f = QgsFeature(mem_layer.fields())
+        f.setAttributes([1, 123])
+        f.setGeometry(QgsGeometry.fromWkt("POINT(4 5)"))
+        self.assertTrue(mem_layer.dataProvider().addFeatures([f]))
+        project = QgsProject()
+        project.addMapLayer(mem_layer)
+        # Expose to WFS3 API
+        project.writeEntry("WFSLayers", "/", [mem_layer.id()])
+        request = QgsBufferServerRequest(
+            "http://server.qgis.org/wfs3/collections/mem_layer/items.fgb?limit=1"
+        )
+        response = QgsBufferServerResponse()
+        self.server.handleRequest(request, response, project)
+        # Open response body as FGB and check attributes
+        temp_dir = QtCore.QTemporaryDir()
+        temp_path = temp_dir.path()
+        path = os.path.join(temp_path, "mem_layer.fgb")
+        with open(path.encode("utf8"), "wb") as f:
+            f.write(response.body())
+        layer = QgsVectorLayer(path, "mem_layer", "ogr")
+        self.assertTrue(layer.isValid())
+        self.assertEqual(layer.getFeature(0).attributes(), [1, 123])
+        # Check geometry
+        geom = layer.getFeature(0).geometry()
+        self.assertTrue(compareWkt(geom.asWkt(), "POINT (4 5)"))
+
+    def test_wfs3_collection_items_aspatial_flatgeobuf(self):
+        """Test flatgeobuf output for non spatial layer"""
+
+        fields = QgsFields()
+        fields.append(QgsField("name", QtCore.QMetaType.Type.QString))
+        layer = QgsMemoryProviderUtils.createMemoryLayer("aspatial", fields)
+        self.assertTrue(layer.isValid())
+        self.assertFalse(layer.isSpatial())
+
+        f = QgsFeature(fields)
+        f.setAttribute("name", "feature 123")
+        layer.dataProvider().addFeatures([f])
+
+        p = QgsProject()
+        p.addMapLayer(layer)
+        p.writeEntry("WFSLayers", "/", [layer.id()])
+
+        request = QgsBufferServerRequest(
+            "http://server.qgis.org/wfs3/collections/aspatial/items.fgb?limit=1"
+        )
+        response = QgsBufferServerResponse()
+        self.server.handleRequest(request, response, p)
+
+        temp_dir = QtCore.QTemporaryDir()
+        temp_path = temp_dir.path()
+        path = os.path.join(temp_path, "aspatial.fgb")
+        with open(path.encode("utf8"), "wb") as f:
+            f.write(response.body())
+        v = QgsVectorLayer(path, "aspatial", "ogr")
+        self.assertTrue(v.isValid())
+        f = next(v.getFeatures())
+        self.assertEqual(f["name"], "feature 123")
+
     def test_invalid_args(self):
         """Test wrong args"""
         project = QgsProject()
@@ -1004,9 +1273,7 @@ class QgsServerAPITest(QgsServerAPITestBase):
         # Test with a different CRS
         encoded_crs = parse.quote("http://www.opengis.net/def/crs/EPSG/0/3857", safe="")
         request = QgsBufferServerRequest(
-            "http://server.qgis.org/wfs3/collections/testlayer%20èé/items?bbox=913191,5606014,913234,5606029&bbox-crs={}".format(
-                encoded_crs
-            )
+            f"http://server.qgis.org/wfs3/collections/testlayer%20èé/items?bbox=913191,5606014,913234,5606029&bbox-crs={encoded_crs}"
         )
         self.compareApi(
             request, project, "test_wfs3_collections_items_testlayer_èé_bbox_3857.json"
@@ -2612,7 +2879,6 @@ class QgsServerAPITest(QgsServerAPITestBase):
 
 
 class Handler1(QgsServerOgcApiHandler):
-
     def path(self):
         return QtCore.QRegularExpression("/handlerone")
 
@@ -2649,7 +2915,6 @@ class Handler1(QgsServerOgcApiHandler):
 
 
 class Handler2(QgsServerOgcApiHandler):
-
     def path(self):
         return QtCore.QRegularExpression(r"/handlertwo/(?P<code1>\d{2})/(\d{3})")
 
@@ -2742,7 +3007,6 @@ class Handler3(QgsServerOgcApiHandler):
 
 
 class Handler4(QgsServerOgcApiHandler):
-
     def path(self):
         return QtCore.QRegularExpression("/(?P<tilemapid>[^/]+)")
 
@@ -2772,7 +3036,6 @@ class Handler4(QgsServerOgcApiHandler):
 
 
 class HandlerException(QgsServerOgcApiHandler):
-
     def __init__(self):
         super().__init__()
         self.__exception = None
@@ -2815,6 +3078,32 @@ class HandlerException(QgsServerOgcApiHandler):
 
 class QgsServerOgcAPITest(QgsServerAPITestBase):
     """QGIS OGC API server tests"""
+
+    def testQgsServerOgcApiHandlerLink(self):
+        """Test OGC API handlers header link function"""
+
+        h = Handler1()
+        request = QgsBufferServerRequest(
+            "http://server.qgis.org/services/api1/handlerone?value1=42"
+        )
+        response = QgsBufferServerResponse()
+        project = QgsProject()
+        ctx = QgsServerApiContext(
+            "/services/api1", request, response, project, self.server.serverInterface()
+        )
+        title = 'a title with special chars: èé and "quotes" and back \\ slash'
+        hlink = h.headerLink(
+            ctx,
+            QgsServerOgcApi.Rel.alternate,
+            QgsServerOgcApi.ContentType.JSON,
+            QgsServerOgcApi.Profile.Unset,
+            title,
+        )
+
+        self.assertEqual(
+            hlink,
+            '<http://server.qgis.org/services/api1/handlerone.json?value1=42>; rel="alternate"; title="a title with special chars: èé and \\"quotes\\" and back \\\\ slash"; type="application/json"',
+        )
 
     def testOgcApi(self):
         """Test OGC API"""

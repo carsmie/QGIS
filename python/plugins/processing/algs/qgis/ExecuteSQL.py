@@ -21,29 +21,28 @@ __copyright__ = "(C) 2016, Hugo Mercier"
 
 from qgis.core import (
     Qgis,
-    QgsVirtualLayerDefinition,
-    QgsVectorLayer,
-    QgsWkbTypes,
-    QgsProcessingAlgorithm,
-    QgsProcessingParameterMultipleLayers,
-    QgsProcessingParameterDefinition,
     QgsExpression,
-    QgsProcessingUtils,
-    QgsProcessingParameterString,
-    QgsProcessingParameterEnum,
-    QgsProcessingParameterCrs,
-    QgsProcessingParameterFeatureSink,
     QgsFeatureSink,
+    QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsVectorFileWriter,
+    QgsProcessingParameterCrs,
+    QgsProcessingParameterDefinition,
+    QgsProcessingParameterEnum,
+    QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterMultipleLayers,
+    QgsProcessingParameterString,
+    QgsProcessingUtils,
     QgsProject,
+    QgsVectorFileWriter,
+    QgsVectorLayer,
+    QgsVirtualLayerDefinition,
+    QgsWkbTypes,
 )
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
 class ParameterExecuteSql(QgsProcessingParameterDefinition):
-
     def __init__(self, name="", description=""):
         super().__init__(name, description)
         self.setMetadata(
@@ -102,6 +101,7 @@ class ExecuteSQL(QgisAlgorithm):
                 description=self.tr(
                     "Input data sources (called input1, .., inputN in the query)"
                 ),
+                layerType=Qgis.ProcessingSourceType.Vector,
                 optional=True,
             )
         )
@@ -151,6 +151,17 @@ class ExecuteSQL(QgisAlgorithm):
     def displayName(self):
         return self.tr("Execute SQL")
 
+    def shortDescription(self):
+        return self.tr("Runs a query with SQL syntax.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm runs a query with SQL syntax.\n"
+            "Input data sources are identified with input1, input2, ..., inputN "
+            "and a simple query will look like: 'SELECT * FROM input1'.\n"
+            "The result of the query will be added as a new layer."
+        )
+
     def processAlgorithm(self, parameters, context, feedback):
         layers = self.parameterAsLayerList(parameters, self.INPUT_DATASOURCES, context)
         query = self.parameterAsString(parameters, self.INPUT_QUERY, context)
@@ -165,7 +176,6 @@ class ExecuteSQL(QgisAlgorithm):
 
         df = QgsVirtualLayerDefinition()
         for layerIdx, layer in enumerate(layers):
-
             # Issue https://github.com/qgis/QGIS/issues/24041
             # When using this algorithm from the graphic modeler, it may try to
             # access (thanks the QgsVirtualLayerProvider) to memory layer that
@@ -229,6 +239,8 @@ class ExecuteSQL(QgisAlgorithm):
                 break
 
             sink.addFeature(inFeat, QgsFeatureSink.Flag.FastInsert)
+            feedback.featureAddedToSink(self.OUTPUT)
             feedback.setProgress(int(current * total))
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}

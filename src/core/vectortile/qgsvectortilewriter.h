@@ -16,11 +16,12 @@
 #ifndef QGSVECTORTILEWRITER_H
 #define QGSVECTORTILEWRITER_H
 
-#include <QCoreApplication>
-#include "qgstiles.h"
-#include "qgsrectangle.h"
-#include "qgscoordinatetransformcontext.h"
 #include "qgscoordinatereferencesystem.h"
+#include "qgscoordinatetransformcontext.h"
+#include "qgsrectangle.h"
+#include "qgstiles.h"
+
+#include <QCoreApplication>
 
 class QgsFeedback;
 class QgsTileMatrix;
@@ -91,8 +92,7 @@ class CORE_EXPORT QgsVectorTileWriter
         //! Constructs an entry for a vector layer
         explicit Layer( QgsVectorLayer *layer )
           : mLayer( layer )
-        {
-        }
+        {}
 
         //! Returns vector layer of this entry
         QgsVectorLayer *layer() const { return mLayer; }
@@ -190,7 +190,7 @@ class CORE_EXPORT QgsVectorTileWriter
 
   private:
     bool writeTileFileXYZ( const QString &sourcePath, QgsTileXYZ tileID, const QgsTileMatrix &tileMatrix, const QByteArray &tileData );
-    QString mbtilesJsonSchema();
+    QString mbtilesJsonSchema() const;
 
   private:
     QgsTileMatrix mRootTileMatrix;

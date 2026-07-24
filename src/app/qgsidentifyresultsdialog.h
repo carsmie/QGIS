@@ -18,23 +18,25 @@
 #ifndef QGSIDENTIFYRESULTSDIALOG_H
 #define QGSIDENTIFYRESULTSDIALOG_H
 
-#include "qgis_app.h"
 #include "ui_qgsidentifyresultsbase.h"
-#include "qgshelp.h"
+
+#include "qgis_app.h"
+#include "qgscoordinatereferencesystem.h"
+#include "qgsexpressioncontext.h"
 #include "qgsfeature.h"
 #include "qgsfields.h"
-#include "qgscoordinatereferencesystem.h"
+#include "qgshelp.h"
 #include "qgsmaptoolidentify.h"
-#include "qgswebview.h"
-#include "qgsexpressioncontext.h"
 #include "qgsmaptoolselectionhandler.h"
+#include "qgsrasterlayer.h"
 #include "qgsrelation.h"
+#include "qgswebview.h"
 
-#include <QWidget>
 #include <QList>
-#include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QUrl>
+#include <QWidget>
 
 class QCloseEvent;
 class QToolButton;
@@ -44,7 +46,6 @@ class QMenu;
 
 class QgsFeatureStore;
 class QgsVectorLayer;
-class QgsRasterLayer;
 class QgsHighlight;
 class QgsMapCanvas;
 class QgsMeshLayer;
@@ -52,6 +53,7 @@ class QgsDockWidget;
 class QgsMapLayerAction;
 class QgsEditorWidgetSetup;
 class QgsSettingsEntryBool;
+class QgsSettingsEntryInteger;
 class QgsTiledSceneLayer;
 
 class QwtPlotCurve;
@@ -159,12 +161,25 @@ class APP_EXPORT QgsIdentifyResultsDialog : public QDialog, private Ui::QgsIdent
 
     static const QgsSettingsEntryBool *settingHideNullValues;
     static const QgsSettingsEntryBool *settingShowRelations;
+    static const QgsSettingsEntryBool *settingIdentifyExpand;
+    static const QgsSettingsEntryBool *settingIdentifyAutoFeatureForm;
+    static const QgsSettingsEntryBool *settingHideDerivedAttributes;
+    static const QgsSettingsEntryInteger *settingColumnWidth;
+    static const QgsSettingsEntryInteger *settingColumnWidthTable;
 
     //! Adds feature from vector layer
     void addFeature( QgsVectorLayer *layer, const QgsFeature &f, const QMap<QString, QString> &derivedAttributes );
 
     //! Adds feature from raster layer
-    void addFeature( QgsRasterLayer *layer, const QString &label, const QMap<QString, QString> &attributes, const QMap<QString, QString> &derivedAttributes, const QgsFields &fields = QgsFields(), const QgsFeature &feature = QgsFeature(), const QMap<QString, QVariant> &params = ( QMap<QString, QVariant>() ) );
+    void addFeature(
+      QgsRasterLayer *layer,
+      const QString &label,
+      const QMap<QString, QString> &attributes,
+      const QMap<QString, QString> &derivedAttributes,
+      const QgsFields &fields = QgsFields(),
+      const QgsFeature &feature = QgsFeature(),
+      const QMap<QString, QVariant> &params = ( QMap<QString, QVariant>() )
+    );
 
     /**
      * Adds results from mesh layer
@@ -252,7 +267,7 @@ class APP_EXPORT QgsIdentifyResultsDialog : public QDialog, private Ui::QgsIdent
     void featureForm();
     void zoomToFeature();
     void identifyFeature();
-    void copyAttributeValue();
+    void copyAttributeValue( const QString &value );
     void copyFeature();
     void toggleFeatureSelection();
     void copyFeatureAttributes();
@@ -274,7 +289,7 @@ class APP_EXPORT QgsIdentifyResultsDialog : public QDialog, private Ui::QgsIdent
     void itemExpanded( QTreeWidgetItem *item );
 
     QgsAttributeMap retrieveAttributes( QTreeWidgetItem *item );
-    QVariant retrieveAttribute( QTreeWidgetItem *item );
+    QVariant retrieveAttribute( QTreeWidgetItem *item, const bool raw = false );
 
     void cmbIdentifyMode_currentIndexChanged( int index );
 

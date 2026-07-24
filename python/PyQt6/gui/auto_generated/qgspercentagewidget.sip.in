@@ -9,6 +9,7 @@
 
 
 
+
 class QgsPercentageWidget : QWidget
 {
 %Docstring(signature="appended")
@@ -34,6 +35,13 @@ Returns the current percentage selected in the widget, as a factor from
 .. seealso:: :py:func:`setValue`
 
 .. seealso:: :py:func:`valueChanged`
+%End
+
+    QgsDoubleSpinBox *spinBox();
+%Docstring
+Returns the spin box part of the widget.
+
+.. versionadded:: 4.2
 %End
 
   public slots:

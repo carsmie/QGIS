@@ -18,17 +18,19 @@
 #ifndef QGSTILEDSCENELAYERRENDERER_H
 #define QGSTILEDSCENELAYERRENDERER_H
 
+#include <memory>
+
 #include "qgis_core.h"
-#include "qgsmaplayerrenderer.h"
+#include "qgscesiumutils.h"
 #include "qgscoordinatereferencesystem.h"
+#include "qgsmaplayerrenderer.h"
 #include "qgstiledsceneboundingvolume.h"
 #include "qgstiledsceneindex.h"
 
-#include <memory>
 #include <QElapsedTimer>
-#include <QSet>
-#include <QImage>
 #include <QHash>
+#include <QImage>
+#include <QSet>
 
 #define SIP_NO_FILE
 
@@ -45,7 +47,7 @@ namespace tinygltf
   class Node;
   class TinyGLTF;
   struct Primitive;
-}
+} //namespace tinygltf
 
 /**
  * \ingroup core
@@ -57,13 +59,12 @@ namespace tinygltf
  *
  * \since QGIS 3.34
  */
-class CORE_EXPORT QgsTiledSceneLayerRenderer: public QgsMapLayerRenderer
+class CORE_EXPORT QgsTiledSceneLayerRenderer : public QgsMapLayerRenderer
 {
   public:
-
     //! Ctor
     explicit QgsTiledSceneLayerRenderer( QgsTiledSceneLayer *layer, QgsRenderContext &context );
-    ~QgsTiledSceneLayerRenderer();
+    ~QgsTiledSceneLayerRenderer() override;
 
     bool render() override;
     Qgis::MapLayerRendererFlags flags() const override;
@@ -71,7 +72,6 @@ class CORE_EXPORT QgsTiledSceneLayerRenderer: public QgsMapLayerRenderer
     QgsFeedback *feedback() const override { return mFeedback.get(); }
 
   private:
-
     QgsTiledSceneRequest createBaseRequest();
 
     bool renderTiles( QgsTiledSceneRenderContext &context );
@@ -85,29 +85,42 @@ class CORE_EXPORT QgsTiledSceneLayerRenderer: public QgsMapLayerRenderer
      */
     bool renderTileContent( const QgsTiledSceneTile &tile, QgsTiledSceneRenderContext &context );
 
-    void renderPrimitive( const tinygltf::Model &model,
-                          const tinygltf::Primitive &primitive,
-                          const QgsTiledSceneTile &tile,
-                          const QgsVector3D &tileTranslationEcef,
-                          const QMatrix4x4 *gltfLocalTransform,
-                          const QString &contentUri,
-                          QgsTiledSceneRenderContext &context );
+    void renderModel(
+      tinygltf::Model &model, const QgsVector3D &centerOffset, const std::optional<QgsCesiumUtils::TileI3dmData> &tileInstancing, const QgsTiledSceneTile &tile, QgsTiledSceneRenderContext &context
+    );
 
-    void renderTrianglePrimitive( const tinygltf::Model &model,
-                                  const tinygltf::Primitive &primitive,
-                                  const QgsTiledSceneTile &tile,
-                                  const QgsVector3D &tileTranslationEcef,
-                                  const QMatrix4x4 *gltfLocalTransform,
-                                  const QString &contentUri,
-                                  QgsTiledSceneRenderContext &context );
+    void renderPrimitive(
+      const tinygltf::Model &model,
+      const tinygltf::Primitive &primitive,
+      const QgsTiledSceneTile &tile,
+      const QgsVector3D &tileTranslationEcef,
+      const QMatrix4x4 *gltfLocalTransform,
+      Qgis::Axis gltfUpAxis,
+      const QString &contentUri,
+      QgsTiledSceneRenderContext &context
+    );
 
-    void renderLinePrimitive( const tinygltf::Model &model,
-                              const tinygltf::Primitive &primitive,
-                              const QgsTiledSceneTile &tile,
-                              const QgsVector3D &tileTranslationEcef,
-                              const QMatrix4x4 *gltfLocalTransform,
-                              const QString &contentUri,
-                              QgsTiledSceneRenderContext &context );
+    void renderTrianglePrimitive(
+      const tinygltf::Model &model,
+      const tinygltf::Primitive &primitive,
+      const QgsTiledSceneTile &tile,
+      const QgsVector3D &tileTranslationEcef,
+      const QMatrix4x4 *gltfLocalTransform,
+      Qgis::Axis gltfUpAxis,
+      const QString &contentUri,
+      QgsTiledSceneRenderContext &context
+    );
+
+    void renderLinePrimitive(
+      const tinygltf::Model &model,
+      const tinygltf::Primitive &primitive,
+      const QgsTiledSceneTile &tile,
+      const QgsVector3D &tileTranslationEcef,
+      const QMatrix4x4 *gltfLocalTransform,
+      Qgis::Axis gltfUpAxis,
+      const QString &contentUri,
+      QgsTiledSceneRenderContext &context
+    );
 
     QString mLayerName;
 
@@ -117,6 +130,7 @@ class CORE_EXPORT QgsTiledSceneLayerRenderer: public QgsMapLayerRenderer
     QList< QgsMapClippingRegion > mClippingRegions;
 
     QgsCoordinateReferenceSystem mSceneCrs;
+    QgsCoordinateReferenceSystem mLayerCrs;
     QgsTiledSceneBoundingVolume mLayerBoundingVolume;
     QgsTiledSceneIndex mIndex;
 
@@ -130,11 +144,11 @@ class CORE_EXPORT QgsTiledSceneLayerRenderer: public QgsMapLayerRenderer
 
     struct PrimitiveData
     {
-      PrimitiveType type;
-      QPolygonF coordinates;
-      float z;
-      QPair< int, int > textureId { -1, -1 };
-      float textureCoords[6];
+        PrimitiveType type;
+        QPolygonF coordinates;
+        float z;
+        QPair< int, int > textureId { -1, -1 };
+        float textureCoords[6];
     };
 
     QVector< PrimitiveData > mPrimitiveData;
@@ -144,9 +158,9 @@ class CORE_EXPORT QgsTiledSceneLayerRenderer: public QgsMapLayerRenderer
 
     struct TileDetails
     {
-      QPolygonF boundary;
-      bool hasContent = false;
-      QString id;
+        QPolygonF boundary;
+        bool hasContent = false;
+        QString id;
     };
     QVector< TileDetails > mTileDetails;
 

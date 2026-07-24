@@ -18,11 +18,12 @@
 #ifndef QGSALGORITHMEXTRACTSPECIFICVERTICES_H
 #define QGSALGORITHMEXTRACTSPECIFICVERTICES_H
 
-#define SIP_NO_FILE
 
 #include "qgis_sip.h"
-#include "qgsprocessingalgorithm.h"
 #include "qgsapplication.h"
+#include "qgsprocessingalgorithm.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -56,7 +57,7 @@ class QgsExtractSpecificVerticesAlgorithm : public QgsProcessingFeatureBasedAlgo
     QgsFeatureList processFeature( const QgsFeature &feature, QgsProcessingContext &context, QgsProcessingFeedback *feedback ) override;
 
   private:
-    Qgis::GeometryType mGeometryType;
+    Qgis::GeometryType mGeometryType = Qgis::GeometryType::Unknown;
     QList<int> mIndices;
 };
 

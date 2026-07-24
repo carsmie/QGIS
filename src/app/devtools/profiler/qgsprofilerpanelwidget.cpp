@@ -14,12 +14,16 @@
  ***************************************************************************/
 
 #include "qgsprofilerpanelwidget.h"
-#include "moc_qgsprofilerpanelwidget.cpp"
-#include "qgsruntimeprofiler.h"
-#include "qgslogger.h"
-#include "qgis.h"
-#include <QPainter>
+
 #include <cmath>
+
+#include "qgis.h"
+#include "qgslogger.h"
+#include "qgsruntimeprofiler.h"
+
+#include <QPainter>
+
+#include "moc_qgsprofilerpanelwidget.cpp"
 
 //
 // QgsProfilerPanelWidget
@@ -50,9 +54,7 @@ QgsProfilerPanelWidget::QgsProfilerPanelWidget( QgsRuntimeProfiler *profiler, QW
     }
   } );
 
-  connect( mCategoryComboBox, qOverload<int>( &QComboBox::currentIndexChanged ), this, [this]( int ) {
-    mProxyModel->setGroup( mCategoryComboBox->currentData().toString() );
-  } );
+  connect( mCategoryComboBox, qOverload<int>( &QComboBox::currentIndexChanged ), this, [this]( int ) { mProxyModel->setGroup( mCategoryComboBox->currentData().toString() ); } );
 
   const QSet<QString> groups = mProfiler->groups();
   for ( const QString &group : groups )
@@ -100,8 +102,7 @@ CostDelegate::CostDelegate( quint32 sortRole, quint32 totalCostRole, QObject *pa
   : QStyledItemDelegate( parent )
   , m_sortRole( sortRole )
   , m_totalCostRole( totalCostRole )
-{
-}
+{}
 
 CostDelegate::~CostDelegate() = default;
 

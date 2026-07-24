@@ -71,6 +71,17 @@
     {
       "type": "Feature",
       "properties": {
+        "country": "IN",
+        "name": "QGIS India User Group",
+        "logo_url": "https://in.qgis.org/img/qgis_in.png",
+        "website": "https://in.qgis.org/",
+        "year": 2026
+      },
+      "geometry": null
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "country": "IT",
         "name": "Gruppo degli utenti italiani di QGIS (Italy)",
         "logo_url": "https:\/\/pbs.twimg.com\/profile_images\/1214617887761207301\/SRkxH22U_400x400.jpg",
@@ -307,6 +318,61 @@
         "logo_url": "https:\/\/pbs.twimg.com\/profile_images\/1320478408997036032\/f0KZMOOp_400x400.jpg",
         "website": "http:\/\/qgis.ar",
         "year": 2022
+      },
+      "geometry": null
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "MK",
+        "name": "QGIS User Group North Macedonia",
+        "logo_url": "https:\/\/bit.ly\/qgismk",
+        "website": "https:\/\/qgis-mk.blogspot.com",
+        "year": 2024
+      },
+      "geometry": null
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "AL",
+        "name": "QGIS User Group Albania",
+        "logo_url": "https:\/\/bit.ly\/qgisal",
+        "website": "https:\/\/qgis-al.blogspot.com",
+        "year": 2024
+      },
+      "geometry": null
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "XK",
+        "name": "QGIS User Group Kosova",
+        "logo_url": "https:\/\/bit.ly\/qgiskslogo",
+        "website": "https:\/\/www.facebook.com\/profile.php?id=100094072457586",
+        "year": 2024
+      },
+      "geometry": null
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "TZ",
+        "name": "QGIS Tanzania User Group",
+        "logo_url": "https:\/\/qgis.org\/img\/logosign.svg",
+        "website": "https:\/\/heed725.github.io\/qgistz",
+        "year": 2025
+      },
+      "geometry": null
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "DZ",
+        "name": "QGIS Algeria User Group",
+        "logo_url": "https:\/\/dz.qgis.org\/img\/QGIS_DZ.png",
+        "website": "https:\/\/dz.qgis.org",
+        "year": 2026
       },
       "geometry": null
     }

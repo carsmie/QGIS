@@ -16,21 +16,23 @@
 #ifndef QGSMODELVIEWTOOL_H
 #define QGSMODELVIEWTOOL_H
 
-#include "qgis_sip.h"
 #include "qgis_gui.h"
-#include <QCursor>
+#include "qgis_sip.h"
+#include "qgsmodelcomponentgraphicitem.h"
+
 #include <QAction>
+#include <QCursor>
 #include <QPointer>
+
+#define SIP_NO_FILE
 
 class QMouseEvent;
 class QWheelEvent;
 class QKeyEvent;
 class QgsModelGraphicsView;
 class QgsModelViewMouseEvent;
-class QgsModelComponentGraphicItem;
 class QgsModelGraphicsScene;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup gui

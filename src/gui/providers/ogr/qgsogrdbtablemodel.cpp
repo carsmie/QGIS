@@ -14,7 +14,9 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsogrdbtablemodel.h"
+
 #include "moc_qgsogrdbtablemodel.cpp"
+
 ///@cond PRIVATE
 
 #include "qgsapplication.h"
@@ -25,10 +27,7 @@
 QgsOgrDbTableModel::QgsOgrDbTableModel( QObject *parent )
   : QgsAbstractDbTableModel( parent )
 {
-  mColumns << tr( "Table" )
-           << tr( "Type" )
-           << tr( "Geometry column" )
-           << tr( "SQL" );
+  mColumns << tr( "Table" ) << tr( "Type" ) << tr( "Geometry column" ) << tr( "SQL" );
   setHorizontalHeaderLabels( mColumns );
 }
 

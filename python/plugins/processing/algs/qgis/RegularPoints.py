@@ -20,28 +20,28 @@ __date__ = "September 2014"
 __copyright__ = "(C) 2014, Alexander Bruy"
 
 import os
-from random import seed, uniform
 from math import sqrt
+from random import seed, uniform
 
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtCore import QMetaType
 from qgis.core import (
     QgsApplication,
-    QgsFields,
+    QgsFeature,
     QgsFeatureSink,
     QgsField,
-    QgsFeature,
-    QgsWkbTypes,
+    QgsFields,
     QgsGeometry,
     QgsPoint,
     QgsProcessing,
     QgsProcessingException,
-    QgsProcessingParameterDistance,
-    QgsProcessingParameterExtent,
     QgsProcessingParameterBoolean,
     QgsProcessingParameterCrs,
+    QgsProcessingParameterDistance,
+    QgsProcessingParameterExtent,
     QgsProcessingParameterFeatureSink,
+    QgsWkbTypes,
 )
+from qgis.PyQt.QtCore import QMetaType
+from qgis.PyQt.QtGui import QIcon
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
@@ -128,6 +128,16 @@ class RegularPoints(QgisAlgorithm):
     def displayName(self):
         return self.tr("Regular points")
 
+    def shortDescription(self):
+        return self.tr(
+            "Creates a point layer with a given number of regular points, all of them within a given extent."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a point layer with a given number of regular points, all of them within a given extent."
+        )
+
     def processAlgorithm(self, parameters, context, feedback):
         spacing = self.parameterAsDouble(parameters, self.SPACING, context)
         inset = self.parameterAsDouble(parameters, self.INSET, context)
@@ -187,6 +197,7 @@ class RegularPoints(QgisAlgorithm):
                     f.setAttributes([id])
                     f.setGeometry(geom)
                     sink.addFeature(f, QgsFeatureSink.Flag.FastInsert)
+                    feedback.featureAddedToSink(self.OUTPUT)
                     x += pSpacing
                     id += 1
 
@@ -196,4 +207,5 @@ class RegularPoints(QgisAlgorithm):
             y = y - pSpacing
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}

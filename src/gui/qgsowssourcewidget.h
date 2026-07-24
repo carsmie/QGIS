@@ -17,12 +17,15 @@
 #ifndef QGSOWSSOURCEWIDGET_H
 #define QGSOWSSOURCEWIDGET_H
 
-#define SIP_NO_FILE
+
+#include "ui_qgsowssourcewidgetbase.h"
 
 #include "qgsprovidersourcewidget.h"
 #include "qgsreadwritecontext.h"
-#include "ui_qgsowssourcewidgetbase.h"
+
 #include <QVariantMap>
+
+#define SIP_NO_FILE
 
 /**
  * \ingroup gui

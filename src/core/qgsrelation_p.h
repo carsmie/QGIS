@@ -17,7 +17,6 @@
 #ifndef QGSRELATION_P_H
 #define QGSRELATION_P_H
 
-#define SIP_NO_FILE
 
 /// @cond PRIVATE
 
@@ -32,8 +31,10 @@
 
 #include "qgsrelation.h"
 
-#include <QSharedData>
 #include <QPointer>
+#include <QSharedData>
+
+#define SIP_NO_FILE
 
 class QgsRelationPrivate : public QSharedData
 {

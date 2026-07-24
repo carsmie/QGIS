@@ -11,7 +11,6 @@
 
 
 
-
 class QgsVectorLayerUndoPassthroughCommand : QgsVectorLayerUndoCommand
 {
 %Docstring(signature="appended")
@@ -22,7 +21,6 @@ Undo command for vector layer in a transaction group mode.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommand( QgsVectorLayerEditBuffer *buffer, const QString &text, bool autocreate = true );
 %Docstring
 Constructor for QgsVectorLayerUndoPassthroughCommand
@@ -39,7 +37,6 @@ Returns error status
 %End
 
   protected:
-
     bool rollBackToSavePoint();
 %Docstring
 Rollback command, release savepoint or set error status save point must
@@ -83,7 +80,6 @@ group mode.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandAddFeatures( QgsVectorLayerEditBuffer *buffer /Transfer/, QgsFeatureList &features );
 %Docstring
 Constructor for QgsVectorLayerUndoPassthroughCommandAddFeatures
@@ -118,7 +114,6 @@ group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandDeleteFeatures( QgsVectorLayerEditBuffer *buffer /Transfer/, const QgsFeatureIds &fids );
 %Docstring
 Constructor for QgsVectorLayerUndoPassthroughCommandDeleteFeatures
@@ -146,7 +141,6 @@ transaction group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandChangeGeometry( QgsVectorLayerEditBuffer *buffer /Transfer/, QgsFeatureId fid, const QgsGeometry &geom );
 %Docstring
 Constructor for QgsVectorLayerUndoPassthroughCommandChangeGeometry
@@ -162,13 +156,13 @@ Constructor for QgsVectorLayerUndoPassthroughCommandChangeGeometry
 
 
     virtual int id() const;
-    virtual bool mergeWith( const QUndoCommand  *other );
+    virtual bool mergeWith( const QUndoCommand *other );
 
 
 };
 
 
-class QgsVectorLayerUndoPassthroughCommandChangeAttribute: QgsVectorLayerUndoPassthroughCommand
+class QgsVectorLayerUndoPassthroughCommandChangeAttribute : QgsVectorLayerUndoPassthroughCommand
 {
 %Docstring(signature="appended")
 Undo command for changing attr value from a vector layer in a
@@ -179,7 +173,6 @@ transaction group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandChangeAttribute( QgsVectorLayerEditBuffer *buffer /Transfer/, QgsFeatureId fid, int field, const QVariant &newValue );
 %Docstring
 Constructor for QgsVectorLayerUndoPassthroughCommandChangeAttribute
@@ -198,7 +191,7 @@ Constructor for QgsVectorLayerUndoPassthroughCommandChangeAttribute
 };
 
 
-class QgsVectorLayerUndoPassthroughCommandChangeAttributes: QgsVectorLayerUndoPassthroughCommand
+class QgsVectorLayerUndoPassthroughCommandChangeAttributes : QgsVectorLayerUndoPassthroughCommand
 {
 %Docstring(signature="appended")
 Undo command for changing attributes' values from a vector layer in a
@@ -209,8 +202,9 @@ transaction group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
-    QgsVectorLayerUndoPassthroughCommandChangeAttributes( QgsVectorLayerEditBuffer *buffer /Transfer/, QgsFeatureId fid, const QgsAttributeMap &newValues, const QgsAttributeMap &oldValues = QgsAttributeMap() );
+    QgsVectorLayerUndoPassthroughCommandChangeAttributes(
+      QgsVectorLayerEditBuffer *buffer /Transfer/, QgsFeatureId fid, const QgsAttributeMap &newValues, const QgsAttributeMap &oldValues = QgsAttributeMap()
+    );
 %Docstring
 Constructor for QgsVectorLayerUndoPassthroughCommandChangeAttributes
 
@@ -238,7 +232,6 @@ Undo command for adding attri to a vector layer in transaction group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandAddAttribute( QgsVectorLayerEditBuffer *buffer /Transfer/, const QgsField &field );
 %Docstring
 Constructor for QgsVectorLayerUndoPassthroughCommandAddAttribute
@@ -266,7 +259,6 @@ group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandDeleteAttribute( QgsVectorLayerEditBuffer *buffer /Transfer/, int attr );
 %Docstring
 Constructor for :py:class:`QgsVectorLayerUndoCommandDeleteAttribute`
@@ -294,7 +286,6 @@ group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandRenameAttribute( QgsVectorLayerEditBuffer *buffer /Transfer/, int attr, const QString &newName );
 %Docstring
 Constructor for :py:class:`QgsVectorLayerUndoCommandRenameAttribute`
@@ -322,7 +313,6 @@ Undo command for running a specific sql query in a transaction group.
 #include "qgsvectorlayerundopassthroughcommand.h"
 %End
   public:
-
     QgsVectorLayerUndoPassthroughCommandUpdate( QgsVectorLayerEditBuffer *buffer /Transfer/, QgsTransaction *transaction, const QString &sql, const QString &name );
 %Docstring
 Constructor for :py:class:`QgsVectorLayerUndoCommandUpdate`

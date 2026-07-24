@@ -17,10 +17,11 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgsfeature.h"
-#include "qgsfields.h"
-#include "qgsfeaturesink.h"
 #include "qgscoordinatereferencesystem.h"
+#include "qgsfeature.h"
+#include "qgsfeaturesink.h"
+#include "qgsfields.h"
+
 #include <QList>
 #include <QMetaType>
 #include <QVariant>
@@ -62,6 +63,8 @@ class CORE_EXPORT QgsFeatureStore : public QgsFeatureSink
     void setCrs( const QgsCoordinateReferenceSystem &crs ) { mCrs = crs; }
 
     bool addFeature( QgsFeature &feature, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) override;
+
+    using QgsFeatureSink::addFeatures;
     bool addFeatures( QgsFeatureList &features, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) override;
 
     /**
@@ -70,6 +73,7 @@ class CORE_EXPORT QgsFeatureStore : public QgsFeatureSink
     int count() const { return mFeatures.size(); }
 
 #ifdef SIP_RUN
+    // clang-format off
 
     /**
      * Returns the number of features contained in the store.
@@ -84,12 +88,16 @@ class CORE_EXPORT QgsFeatureStore : public QgsFeatureSink
     % MethodCode
     sipRes = true;
     % End
+// clang-format on
 #endif
 
-    /**
+        /**
      * Returns the list of features contained in the store.
      */
-    QgsFeatureList features() const { return mFeatures; }
+        QgsFeatureList features() const
+    {
+      return mFeatures;
+    }
 
     /**
      * Sets a map of optional \a parameters for the store.
@@ -117,6 +125,7 @@ class CORE_EXPORT QgsFeatureStore : public QgsFeatureSink
 #ifndef SIP_RUN
 typedef QVector<QgsFeatureStore> QgsFeatureStoreList;
 #else
+// clang-format off
 typedef QVector<QgsFeatureStore> QgsFeatureStoreList;
 
 % MappedType QgsFeatureStoreList
@@ -193,6 +202,7 @@ typedef QVector<QgsFeatureStore> QgsFeatureStoreList;
   return sipGetState( sipTransferObj );
   % End
 };
+// clang-format on
 #endif
 
 Q_DECLARE_METATYPE( QgsFeatureStore )

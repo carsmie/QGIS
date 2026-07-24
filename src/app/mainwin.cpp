@@ -12,24 +12,18 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <windows.h>
-#include <io.h>
-
-#include <sstream>
-#include <iostream>
 #include <fstream>
+#include <io.h>
+#include <iostream>
 #include <list>
 #include <memory>
+#include <sstream>
+#include <windows.h>
 
 void showError( std::string message, std::string title )
 {
   std::string newmessage = "Oops, looks like an error loading QGIS \n\n Details: \n\n" + message;
-  MessageBox(
-    NULL,
-    newmessage.c_str(),
-    title.c_str(),
-    MB_ICONERROR | MB_OK
-  );
+  MessageBox( NULL, newmessage.c_str(), title.c_str(), MB_ICONERROR | MB_OK );
   std::cerr << message << std::endl;
 }
 
@@ -179,18 +173,9 @@ int CALLBACK WinMain( HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPST
     DWORD error = GetLastError();
     LPTSTR errorText = NULL;
 
-    FormatMessage(
-      FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
-      NULL,
-      error,
-      MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-      ( LPTSTR ) &errorText,
-      0,
-      NULL
-    );
+    FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, error, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), ( LPTSTR ) &errorText, 0, NULL );
 
-    std::string message = "Could not load qgis_app.dll \n Windows Error: " + std::string( errorText )
-                          + "\n Help: \n\n Check " + basename + ".env for correct environment paths";
+    std::string message = "Could not load qgis_app.dll \n Windows Error: " + std::string( errorText ) + "\n Help: \n\n Check " + basename + ".env for correct environment paths";
     showError( message, "Error loading QGIS" );
 
     LocalFree( errorText );

@@ -16,15 +16,15 @@
 #ifndef QGSMDALPROVIDER_H
 #define QGSMDALPROVIDER_H
 
-#include <QString>
-#include <QVector>
-#include <QStringList>
-
 #include <mdal.h>
 
 #include "qgscoordinatereferencesystem.h"
 #include "qgsmeshdataprovider.h"
 #include "qgsprovidermetadata.h"
+
+#include <QString>
+#include <QStringList>
+#include <QVector>
 
 class QMutex;
 class QgsCoordinateTransform;
@@ -68,10 +68,10 @@ class QgsMdalProvider : public QgsMeshDataProvider
     QStringList extraDatasets() const override;
 
     int datasetGroupCount() const override;
-    int datasetCount( int groupIndex ) const override final;
+    int datasetCount( int groupIndex ) const final;
 
-    QgsMeshDatasetGroupMetadata datasetGroupMetadata( int groupIndex ) const override final;
-    QgsMeshDatasetMetadata datasetMetadata( QgsMeshDatasetIndex index ) const override final;
+    QgsMeshDatasetGroupMetadata datasetGroupMetadata( int groupIndex ) const final;
+    QgsMeshDatasetMetadata datasetMetadata( QgsMeshDatasetIndex index ) const final;
     QgsMeshDatasetValue datasetValue( QgsMeshDatasetIndex index, int valueIndex ) const override;
     QgsMeshDataBlock datasetValues( QgsMeshDatasetIndex index, int valueIndex, int count ) const override;
     QgsMesh3DDataBlock dataset3dValues( QgsMeshDatasetIndex index, int faceIndex, int count ) const override;
@@ -83,7 +83,15 @@ class QgsMdalProvider : public QgsMeshDataProvider
 
     QgsMeshDriverMetadata driverMetadata() const override;
 
-    bool persistDatasetGroup( const QString &outputFilePath, const QString &outputDriver, const QgsMeshDatasetGroupMetadata &meta, const QVector<QgsMeshDataBlock> &datasetValues, const QVector<QgsMeshDataBlock> &datasetActive, const QVector<double> &times ) override;
+    using QgsMeshDataProvider::persistDatasetGroup;
+    bool persistDatasetGroup(
+      const QString &outputFilePath,
+      const QString &outputDriver,
+      const QgsMeshDatasetGroupMetadata &meta,
+      const QVector<QgsMeshDataBlock> &datasetValues,
+      const QVector<QgsMeshDataBlock> &datasetActive,
+      const QVector<double> &times
+    ) override;
 
     bool persistDatasetGroup( const QString &outputFilePath, const QString &outputDriver, QgsMeshDatasetSourceInterface *source, int datasetGroupIndex ) override;
 
@@ -145,7 +153,9 @@ class QgsMdalProviderMetadata : public QgsProviderMetadata
     QString filters( Qgis::FileFilterType type ) override;
     QList<QgsMeshDriverMetadata> meshDriversMetadata() override;
     QgsMdalProvider *createProvider( const QString &uri, const QgsDataProvider::ProviderOptions &options, Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() ) override;
-    bool createMeshData( const QgsMesh &mesh, const QString &fileName, const QString &driverName, const QgsCoordinateReferenceSystem &crs, const QMap<QString, QString> &metadata = QMap<QString, QString>() ) const override;
+    bool createMeshData(
+      const QgsMesh &mesh, const QString &fileName, const QString &driverName, const QgsCoordinateReferenceSystem &crs, const QMap<QString, QString> &metadata = QMap<QString, QString>()
+    ) const override;
     bool createMeshData( const QgsMesh &mesh, const QString &uri, const QgsCoordinateReferenceSystem &crs, const QMap<QString, QString> &metadata = QMap<QString, QString>() ) const override;
     QVariantMap decodeUri( const QString &uri ) const override;
     QString encodeUri( const QVariantMap &parts ) const override;

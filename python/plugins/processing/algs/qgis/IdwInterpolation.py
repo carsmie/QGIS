@@ -19,21 +19,20 @@ __author__ = "Alexander Bruy"
 __date__ = "October 2016"
 __copyright__ = "(C) 2016, Alexander Bruy"
 
-import os
 import math
+import os
 
-from qgis.PyQt.QtGui import QIcon
-
+from qgis.analysis import QgsGridFileWriter, QgsIDWInterpolator, QgsInterpolator
 from qgis.core import (
-    QgsRectangle,
-    QgsProcessingUtils,
-    QgsProcessingParameterNumber,
-    QgsProcessingParameterExtent,
-    QgsProcessingParameterDefinition,
-    QgsProcessingParameterRasterDestination,
     QgsProcessingException,
+    QgsProcessingParameterDefinition,
+    QgsProcessingParameterExtent,
+    QgsProcessingParameterNumber,
+    QgsProcessingParameterRasterDestination,
+    QgsProcessingUtils,
+    QgsRectangle,
 )
-from qgis.analysis import QgsInterpolator, QgsIDWInterpolator, QgsGridFileWriter
+from qgis.PyQt.QtGui import QIcon
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.algs.qgis.ui.InterpolationWidgets import (
@@ -134,6 +133,13 @@ class IdwInterpolation(QgisAlgorithm):
     def shortDescription(self):
         return self.tr(
             "Generates an Inverse Distance Weighted (IDW) interpolation of a point vector layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm generates an Inverse Distance Weighted (IDW) interpolation of a point vector layer.\n"
+            "Sample points are weighted during interpolation such that the influence of one point relative "
+            "to another declines with distance from the unknown point you want to create."
         )
 
     def processAlgorithm(self, parameters, context, feedback):

@@ -14,12 +14,14 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsqueryresultmodel.h"
-#include "moc_qgsqueryresultmodel.cpp"
-#include "qgsexpression.h"
+
 #include "qgsapplication.h"
+#include "qgsexpression.h"
 #include "qgsfileutils.h"
 
 #include <QFont>
+
+#include "moc_qgsqueryresultmodel.cpp"
 
 const int QgsQueryResultModel::FETCH_MORE_ROWS_COUNT = 400;
 
@@ -44,7 +46,7 @@ QgsQueryResultModel::QgsQueryResultModel( const QgsAbstractDatabaseProviderConne
 
 void QgsQueryResultModel::rowsReady( const QList<QList<QVariant>> &rows )
 {
-  beginInsertRows( QModelIndex(), mRows.count( ), mRows.count( ) + rows.count() - 1 );
+  beginInsertRows( QModelIndex(), mRows.count(), mRows.count() + rows.count() - 1 );
   mRows.append( rows );
   endInsertRows();
 }
@@ -60,7 +62,7 @@ bool QgsQueryResultModel::canFetchMore( const QModelIndex &parent ) const
 
 void QgsQueryResultModel::fetchMore( const QModelIndex &parent )
 {
-  if ( ! parent.isValid() )
+  if ( !parent.isValid() )
   {
     emit fetchingStarted();
     emit fetchMoreRows( FETCH_MORE_ROWS_COUNT );
@@ -115,8 +117,7 @@ int QgsQueryResultModel::columnCount( const QModelIndex &parent ) const
 
 QVariant QgsQueryResultModel::data( const QModelIndex &index, int role ) const
 {
-  if ( !index.isValid() || index.row() < 0 || index.column() >= mColumns.count() ||
-       index.row() >= mRows.count( ) )
+  if ( !index.isValid() || index.row() < 0 || index.column() >= mColumns.count() || index.row() >= mRows.count() )
     return QVariant();
 
   switch ( role )
@@ -124,7 +125,7 @@ QVariant QgsQueryResultModel::data( const QModelIndex &index, int role ) const
     case Qt::DisplayRole:
     {
       const QList<QVariant> result = mRows.at( index.row() );
-      if ( index.column() < result.count( ) )
+      if ( index.column() < result.count() )
       {
         const QVariant value = result.at( index.column() );
 
@@ -147,7 +148,7 @@ QVariant QgsQueryResultModel::data( const QModelIndex &index, int role ) const
     case Qt::FontRole:
     {
       const QList<QVariant> result = mRows.at( index.row() );
-      if ( index.column() < result.count( ) )
+      if ( index.column() < result.count() )
       {
         const QVariant value = result.at( index.column() );
 
@@ -164,7 +165,7 @@ QVariant QgsQueryResultModel::data( const QModelIndex &index, int role ) const
     case Qt::ForegroundRole:
     {
       const QList<QVariant> result = mRows.at( index.row() );
-      if ( index.column() < result.count( ) )
+      if ( index.column() < result.count() )
       {
         const QVariant value = result.at( index.column() );
 
@@ -179,7 +180,7 @@ QVariant QgsQueryResultModel::data( const QModelIndex &index, int role ) const
     case Qt::ToolTipRole:
     {
       const QList<QVariant> result = mRows.at( index.row() );
-      if ( index.column() < result.count( ) )
+      if ( index.column() < result.count() )
       {
         const QVariant value = result.at( index.column() );
         if ( QgsVariantUtils::isNull( value ) )

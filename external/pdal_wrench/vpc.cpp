@@ -10,6 +10,8 @@
  *                                                                           *
  ****************************************************************************/
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <filesystem>
@@ -24,6 +26,7 @@ namespace fs = std::filesystem;
 #include <pdal/util/ProgramArgs.hpp>
 
 #include "nlohmann/json.hpp"
+#include <zip.h>
 
 
 using json = nlohmann::json;
@@ -37,6 +40,13 @@ using namespace pdal;
 void VirtualPointCloud::clear()
 {
     files.clear();
+
+    // remove the temporary local copy of a remote VPC, if one was downloaded
+    if (!downloadedFilename.empty()) {
+      std::error_code ec;
+      fs::remove(downloadedFilename, ec);
+      downloadedFilename.clear();
+    }
 }
 
 void VirtualPointCloud::dump()
@@ -54,24 +64,100 @@ bool VirtualPointCloud::read(std::string filename)
 {
     clear();
 
-    std::ifstream inputJson(filename);
-    if (!inputJson.good())
+    // this variable is necessary to resolve individual files relative to the VPC original location
+    std::string remoteBase;
+    if (pdal::Utils::isRemote(filename))
     {
-        std::cerr << "Failed to read input VPC file: " << filename << std::endl;
-        return false;
+        downloadedFilename = pdal::Utils::fetchRemote(filename);
+        size_t lastSlash = filename.rfind('/');
+        remoteBase = (lastSlash != std::string::npos)
+                         ? filename.substr(0, lastSlash + 1)
+                         : "";
     }
+    // if downloaded file is not empty, use it as the filename to read, otherwise use the original filename
+    filename = downloadedFilename.empty() ? filename : downloadedFilename;
 
     fs::path filenameParent = fs::path(filename).parent_path();
-
+    
     json data;
-    try
+
+    if (ends_with(filename, ".vpz"))
     {
-        data = json::parse(inputJson);
+        int err = 0;
+        zip_t *za = zip_open(filename.c_str(), ZIP_RDONLY, &err);
+        if (!za)
+        {
+            std::cerr << "Failed to open VPZ file: " << filename << std::endl;
+            return false;
+        }
+
+        // find the single .vpc entry
+        const zip_int64_t numEntries = zip_get_num_entries(za, 0);
+        zip_int64_t vpcIndex = -1;
+        for (zip_int64_t i = 0; i < numEntries; ++i)
+        {
+            const char *name = zip_get_name(za, i, 0);
+            if (name && ends_with(std::string(name), ".vpc"))
+            {
+                if (vpcIndex != -1)
+                {
+                    std::cerr << "VPZ file contains more than one .vpc entry: " << filename << std::endl;
+                    zip_close(za);
+                    return false;
+                }
+                vpcIndex = i;
+            }
+        }
+        if (vpcIndex == -1)
+        {
+            std::cerr << "VPZ file contains no .vpc entry: " << filename << std::endl;
+            zip_close(za);
+            return false;
+        }
+
+        zip_stat_t st;
+        zip_stat_index(za, vpcIndex, 0, &st);
+        zip_file_t *zf = zip_fopen_index(za, vpcIndex, 0);
+        if (!zf)
+        {
+            std::cerr << "Failed to open .vpc entry inside VPZ: " << filename << std::endl;
+            zip_close(za);
+            return false;
+        }
+
+        std::string content(st.size, '\0');
+        zip_fread(zf, &content[0], st.size);
+        zip_fclose(zf);
+        zip_close(za);
+
+        try
+        {
+            data = json::parse(content);
+        }
+        catch (std::exception &e)
+        {
+            std::cerr << "JSON parsing error: " << e.what() << std::endl;
+            return false;
+        }
     }
-    catch (std::exception &e)
+    else
     {
-        std::cerr << "JSON parsing error: " << e.what() << std::endl;
-        return false;
+        std::ifstream inputJson(filename);
+        if (!inputJson.good())
+        {
+            std::cerr << "Failed to read input VPC file: " << filename << std::endl;
+            return false;
+        }
+
+        try
+        {
+            data = json::parse(inputJson);
+        }
+        catch (std::exception &e)
+        {
+            std::cerr << "JSON parsing error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
     if (data["type"] != "FeatureCollection")
@@ -87,83 +173,109 @@ bool VirtualPointCloud::read(std::string filename)
 
     std::set<std::string> vpcCrsWkt;
 
-    for (auto& f : data["features"])
+    try
     {
-        if (!f.contains("type") || f["type"] != "Feature" ||
-            !f.contains("stac_version") ||
-            !f.contains("assets") || !f["assets"].is_object() ||
-            !f.contains("properties") || !f["properties"].is_object())
+        for (auto& f : data["features"])
         {
-            std::cerr << "Malformed STAC item: " << f << std::endl;
-            continue;
-        }
-
-        if (f["stac_version"] != "1.0.0")
-        {
-            std::cerr << "Unsupported STAC version: " << f["stac_version"] << std::endl;
-            continue;
-        }
-
-        nlohmann::json firstAsset = *f["assets"].begin();
-
-        File vpcf;
-        vpcf.filename = firstAsset["href"];
-        vpcf.count = f["properties"]["pc:count"];
-        vpcf.crsWkt = f["properties"]["proj:wkt2"];
-        vpcCrsWkt.insert(vpcf.crsWkt);
-
-        // read boundary geometry
-        nlohmann::json nativeGeometry = f["properties"]["proj:geometry"];
-        std::stringstream sstream;
-        sstream << std::setw(2) << nativeGeometry << std::endl;
-        std::string wkt = sstream.str();
-        pdal::Geometry nativeGeom(sstream.str());
-        vpcf.boundaryWkt = nativeGeom.wkt();
-
-        nlohmann::json nativeBbox = f["properties"]["proj:bbox"];
-        vpcf.bbox = BOX3D(
-            nativeBbox[0].get<double>(), nativeBbox[1].get<double>(), nativeBbox[2].get<double>(),
-            nativeBbox[3].get<double>(), nativeBbox[4].get<double>(), nativeBbox[5].get<double>() );
-
-        if (vpcf.filename.substr(0, 2) == "./")
-        {
-            // resolve relative path
-            vpcf.filename = fs::weakly_canonical(filenameParent / vpcf.filename).string();
-        }
-
-        for (auto &schemaItem : f["properties"]["pc:schemas"])
-        {
-            vpcf.schema.push_back(VirtualPointCloud::SchemaItem(schemaItem["name"], schemaItem["type"], schemaItem["size"].get<int>()));
-        }
-
-        // read stats
-        for (auto &statsItem : f["properties"]["pc:statistics"])
-        {
-            vpcf.stats.push_back(VirtualPointCloud::StatsItem(
-                                    statsItem["name"],
-                                    statsItem["position"],
-                                    statsItem["average"],
-                                    statsItem["count"],
-                                    statsItem["maximum"],
-                                    statsItem["minimum"],
-                                    statsItem["stddev"],
-                                    statsItem["variance"]));
-        }
-
-        // read overview file (if any, expecting at most one)
-        // this logic is very basic, we should be probably checking roles of assets
-        if (f["assets"].contains("overview"))
-        {
-            vpcf.overviewFilename = f["assets"]["overview"]["href"];
-
-            if (vpcf.overviewFilename.substr(0, 2) == "./")
+            if (!f.contains("type") || f["type"] != "Feature" ||
+                !f.contains("stac_version") ||
+                !f.contains("assets") || !f["assets"].is_object() ||
+                !f.contains("properties") || !f["properties"].is_object())
             {
-                // resolve relative path
-                vpcf.overviewFilename = fs::weakly_canonical(filenameParent / vpcf.overviewFilename).string();
+                std::cerr << "Malformed STAC item: " << f << std::endl;
+                continue;
             }
-        }
 
-        files.push_back(vpcf);
+            if (f["stac_version"] != "1.0.0")
+            {
+                std::cerr << "Unsupported STAC version: " << f["stac_version"] << std::endl;
+                continue;
+            }
+
+            nlohmann::json firstAsset = *f["assets"].begin();
+
+            File vpcf;
+            vpcf.filename = firstAsset["href"];
+            vpcf.count = f["properties"]["pc:count"];
+            vpcf.crsWkt = f["properties"]["proj:wkt2"];
+            vpcCrsWkt.insert(vpcf.crsWkt);
+
+            // read boundary geometry
+            nlohmann::json nativeGeometry = f["properties"]["proj:geometry"];
+            std::stringstream sstream;
+            sstream << std::setw(2) << nativeGeometry << std::endl;
+            std::string wkt = sstream.str();
+            pdal::Geometry nativeGeom(sstream.str());
+            vpcf.boundaryWkt = nativeGeom.wkt();
+
+            nlohmann::json nativeBbox = f["properties"]["proj:bbox"];
+            vpcf.bbox = BOX3D(
+                nativeBbox[0].get<double>(), nativeBbox[1].get<double>(), nativeBbox[2].get<double>(),
+                nativeBbox[3].get<double>(), nativeBbox[4].get<double>(), nativeBbox[5].get<double>() );
+
+            if (vpcf.filename.substr(0, 2) == "./")
+            {
+                if (downloadedFilename.empty())
+                {
+                    vpcf.filename = fs::weakly_canonical(filenameParent / vpcf.filename).string();
+                }
+                else
+                {
+                    vpcf.filename = remoteBase + vpcf.filename.substr(2); 
+                }
+            }
+
+            for (auto &schemaItem : f["properties"]["pc:schemas"])
+            {
+                vpcf.schema.push_back(VirtualPointCloud::SchemaItem(schemaItem["name"], schemaItem["type"], schemaItem["size"].get<int>()));
+            }
+
+            // read stats
+            for (auto &statsItem : f["properties"]["pc:statistics"])
+            {
+                vpcf.stats.push_back(VirtualPointCloud::StatsItem(
+                                        statsItem["name"],
+                                        statsItem["position"],
+                                        statsItem["average"],
+                                        statsItem["count"],
+                                        statsItem["maximum"],
+                                        statsItem["minimum"],
+                                        statsItem["stddev"],
+                                        statsItem["variance"]));
+            }
+
+            // read overview files (assets with "overview" role)
+            for (auto &asset : f["assets"])
+            {
+                if (!asset.contains("roles") || !asset["roles"].is_array())
+                    continue;
+
+                const auto roles = asset["roles"];
+                if (std::find(roles.cbegin(), roles.cend(), "overview") == roles.cend())
+                    continue;
+
+                std::string ovFilename = asset["href"];
+                if (ovFilename.substr(0, 2) == "./")
+                {
+                    if (downloadedFilename.empty())
+                    {
+                        ovFilename = fs::weakly_canonical(filenameParent / ovFilename).string();
+                    }
+                    else
+                    {
+                        ovFilename = remoteBase + ovFilename.substr(2);
+                    }
+                }
+                vpcf.overviewFilenames.push_back(ovFilename);
+            }
+
+            files.push_back(vpcf);
+        }
+    }
+    catch ( nlohmann::detail::invalid_iterator& e )
+    {
+        std::cerr << "Invalid 'features' value in a VPC file: " << e.what() << std::endl;
+        return false;
     }
 
     if (vpcCrsWkt.size() == 1)
@@ -196,34 +308,71 @@ void geometryToJson(const Geometry &geom, const BOX3D &bbox, nlohmann::json &jso
 
 bool VirtualPointCloud::write(std::string filename)
 {
+    if (!isVpcFilename(filename))
+        filename += ".vpz";
+
     std::string filenameAbsolute = filename;
     if (!fs::path(filename).is_absolute())
     {
         filenameAbsolute = fs::absolute(filename).string();
     }
 
-    std::ofstream outputJson(filenameAbsolute);
-    if (!outputJson.good())
-    {
-        std::cerr << "Failed to create file: " << filenameAbsolute << std::endl;
-        return false;
-    }
-
     fs::path outputPath = fs::path(filenameAbsolute).parent_path();
+
+    bool forceAbsolutePaths = false;
+    for (const File &f : files) 
+    {
+      fs::path fRelative = fs::relative(f.filename, outputPath);
+      if (fRelative.empty()) {
+        forceAbsolutePaths = true;
+        std::cerr << "Warning: failed to make filename relative to output path: "
+                  << f.filename 
+                  << " ; using absolute paths in the output VPC file"
+                  << std::endl;
+        break;
+      }
+
+      for (size_t i = 0; i < f.overviewFilenames.size(); ++i)
+      {
+        std::string ovFilename(f.overviewFilenames[i]);
+        if (!pdal::Utils::isRemote(ovFilename)) 
+        {
+            const fs::path fRelative = fs::relative(ovFilename, outputPath);
+            if (fRelative.empty()) 
+            {
+                forceAbsolutePaths = true;
+                std::cerr << "Warning: failed to make overview filename relative to output path: "
+                        << ovFilename
+                        << " ; using absolute paths in the output VPC file"
+                        << std::endl;
+                break;
+            }
+        }
+      }
+    }
 
     std::vector<nlohmann::ordered_json> jFiles;
     for ( const File &f : files )
     {
         std::string assetFilename;
-        if (pdal::Utils::isRemote(f.filename))
+        if (pdal::Utils::isRemote(f.filename) || forceAbsolutePaths)
         {
-            // keep remote URLs as they are
+            // keep remote URLs or absolute paths as they are
             assetFilename = f.filename;
         }
         else
         {
             // turn local paths to relative
             fs::path fRelative = fs::relative(f.filename, outputPath);
+
+            if (fRelative.empty()) {
+              std::cerr << "failed to make filename relative to output path: "
+                        << f.filename 
+                        << " consider using --use-absolute-paths"
+                        << std::endl;
+              return false;
+            }
+
             assetFilename = "./" + fRelative.string();
         }
         std::string fileId = fs::path(f.filename).stem().string();  // TODO: we should make sure the ID is unique
@@ -303,26 +452,30 @@ bool VirtualPointCloud::write(std::string filename)
         };
         nlohmann::json assets = { { "data", dataAsset } };
 
-        if (!f.overviewFilename.empty())
+        for (size_t i = 0; i < f.overviewFilenames.size(); ++i)
         {
-            std::string overviewFilename;
-            if (pdal::Utils::isRemote(f.overviewFilename))
+            std::string ovFilename(f.overviewFilenames[i]);
+            if (!pdal::Utils::isRemote(ovFilename) && !forceAbsolutePaths)
             {
-                // keep remote URLs as they are
-                overviewFilename = f.overviewFilename;
-            }
-            else
-            {
-                // turn local paths to relative
-                fs::path fRelative = fs::relative(f.overviewFilename, outputPath);
-                overviewFilename = "./" + fRelative.string();
-            }
+                const fs::path fRelative = fs::relative(ovFilename, outputPath);
+                
+                if (fRelative.empty())
+                {
+                  std::cerr << "failed to make overview filename relative to output path: "
+                            << ovFilename
+                            << " consider using --use-absolute-paths"
+                            << std::endl;
+                  return false;
+                }
 
+                ovFilename = "./" + fRelative.string();
+            }
+            const std::string key = f.overviewFilenames.size() > 1 ? ("overview-" + std::to_string(i + 1)) : "overview";
             nlohmann::json overviewAsset = {
-                { "href", overviewFilename },
+                { "href", ovFilename },
                 { "roles", json::array({"overview"}) },
             };
-            assets["overview"] = overviewAsset;
+            assets[key] = overviewAsset;
         }
 
         jFiles.push_back(
@@ -348,8 +501,53 @@ bool VirtualPointCloud::write(std::string filename)
 
     nlohmann::ordered_json j = { { "type", "FeatureCollection" }, { "features", jFiles } };
 
-    outputJson << std::setw(2) << j << std::endl;
-    outputJson.close();
+    if (ends_with(filenameAbsolute, ".vpz"))
+    {
+        const std::string content = j.dump() + "\n";
+        const std::string entryName = fs::path(filenameAbsolute).stem().string() + ".vpc";
+
+        int err = 0;
+        zip_t *za = zip_open(filenameAbsolute.c_str(), ZIP_CREATE | ZIP_TRUNCATE, &err);
+        if (!za)
+        {
+            std::cerr << "Failed to create VPZ file: " << filenameAbsolute << std::endl;
+            return false;
+        }
+
+        zip_source_t *source = zip_source_buffer(za, content.c_str(), content.size(), 0);
+        if (!source)
+        {
+            std::cerr << "Failed to create zip source buffer" << std::endl;
+            zip_discard(za);
+            return false;
+        }
+
+        if (zip_file_add(za, entryName.c_str(), source, ZIP_FL_OVERWRITE) < 0)
+        {
+            std::cerr << "Failed to add .vpc entry to VPZ: " << zip_strerror(za) << std::endl;
+            zip_source_free(source);
+            zip_discard(za);
+            return false;
+        }
+
+        if (zip_close(za) != 0)
+        {
+            std::cerr << "Failed to write VPZ file: " << filenameAbsolute << std::endl;
+            return false;
+        }
+    }
+    else
+    {
+        std::ofstream outputJson(filenameAbsolute);
+        if (!outputJson.good())
+        {
+            std::cerr << "Failed to create file: " << filenameAbsolute << std::endl;
+            return false;
+        }
+
+        outputJson << j << std::endl;
+        outputJson.close();
+    }
     return true;
 }
 
@@ -410,6 +608,7 @@ void buildVpc(std::vector<std::string> args)
     bool boundaries = false;
     bool stats = false;
     bool overview = false;
+    double overviewLength = 0.0;
     int max_threads = -1;
     bool verbose = false;
     bool help = false;
@@ -422,6 +621,9 @@ void buildVpc(std::vector<std::string> args)
     programArgs.add("boundary", "Calculate boundary polygons from data", boundaries);
     programArgs.add("stats", "Calculate statistics from data", stats);
     programArgs.add("overview", "Create overview point cloud from source data", overview);
+    programArgs.add("overview-length",
+        "Split overview into multiple tiles of specified maximum edge length in CRS units (implies --overview)",
+        overviewLength);
 
     pdal::Arg& argThreads = programArgs.add("threads", "Max number of concurrent threads for parallel runs", max_threads);
     programArgs.add("verbose", "Print extra debugging output", verbose);
@@ -496,7 +698,17 @@ void buildVpc(std::vector<std::string> args)
         }
 
         MetadataNode layout;
-        MetadataNode n = getReaderMetadata(inputFileAbsolute, &layout);
+        MetadataNode n;
+        try
+        {
+            n = getReaderMetadata(inputFileAbsolute, &layout);
+        }
+        catch (std::exception &e)
+        {
+            std::cerr << e.what() << std::endl;
+            return;
+        }
+
         point_count_t cnt = n.findChild("count").value<point_count_t>();
         BOX3D bbox(
                 n.findChild("minx").value<double>(),
@@ -532,16 +744,74 @@ void buildVpc(std::vector<std::string> args)
 
     //
 
-    std::string overviewFilenameBase, overviewFilenameCopc;
-    std::vector<std::string> overviewTempFiles;
-    int overviewCounter = 0;
+    if (overviewLength > 0.0)
+        overview = true;
+
+    std::string overviewFilenameBase;
     if (overview)
     {
-        // for /tmp/hello.vpc we will use /tmp/hello-overview.laz as overview file
-        fs::path outputParentDir = fs::path(outputFile).parent_path();
-        fs::path outputStem = outputParentDir / fs::path(outputFile).stem();
+        // for /tmp/hello.vpc we will use /tmp/hello-overview.copc.laz as overview file
+        // if multiple overview tiles are generated, we will use /tmp/hello-overview-1.copc.laz etc.
+        const fs::path outputParentDir = fs::path(outputFile).parent_path();
+        const fs::path outputStem = outputParentDir / fs::path(outputFile).stem();
         overviewFilenameBase = outputStem.string();
-        overviewFilenameCopc = outputStem.string() + "-overview.copc.laz";
+    }
+
+    // Compute overview tiling grid
+    int numOverviewX = 1, numOverviewY = 1;
+    const BOX2D totalBox = vpc.box3d().to2d();
+
+    if (overview && overviewLength > 0.0)
+    {
+        const double totalW = totalBox.maxx - totalBox.minx;
+        const double totalH = totalBox.maxy - totalBox.miny;
+        numOverviewX = (std::max)(1, static_cast<int>(std::ceil(totalW / overviewLength)));
+        numOverviewY = (std::max)(1, static_cast<int>(std::ceil(totalH / overviewLength)));
+    }
+
+    const int numOverviewTiles = numOverviewX * numOverviewY;
+    const bool multiOverview = numOverviewTiles > 1;
+
+    struct OverviewTile {
+        BOX2D bbox;
+        std::string copcFilename;
+        std::vector<std::string> tempFiles;
+    };
+    std::vector<OverviewTile> overviewTiles;
+
+    if (overview)
+    {
+        overviewTiles.reserve(numOverviewTiles);
+        int overviewCounter = 0;
+        for (int iy = 0; iy < numOverviewY; ++iy)
+        {
+            for (int ix = 0; ix < numOverviewX; ++ix)
+            {
+                if (multiOverview)
+                {
+                    OverviewTile ovTile;
+                    ovTile.bbox = BOX2D(totalBox.minx + ix * overviewLength,
+                                        totalBox.miny + iy * overviewLength,
+                                        totalBox.minx + (ix + 1) * overviewLength,
+                                        totalBox.miny + (iy + 1) * overviewLength);
+
+                    // overview tiles are on a grid, some might not overlap with vpc files
+                    // so we skip them to preserve continuous filename numbering
+                    if (vpc.overlappingBox2D(ovTile.bbox).empty())
+                        continue;
+
+                    ovTile.copcFilename = overviewFilenameBase + "-overview-" + std::to_string(++overviewCounter) + ".copc.laz";
+                    overviewTiles.push_back(ovTile);
+                }
+                else
+                {
+                    OverviewTile ovTile;
+                    ovTile.bbox = totalBox;
+                    ovTile.copcFilename = overviewFilenameBase + "-overview.copc.laz";
+                    overviewTiles.push_back(ovTile);
+                }
+            }
+        }
     }
 
     if (boundaries || stats || overview)
@@ -549,85 +819,140 @@ void buildVpc(std::vector<std::string> args)
         std::map<std::string, Stage*> hexbinFilters, statsFilters;
         std::vector<std::unique_ptr<PipelineManager>> pipelines;
 
+        int overviewCounter = 0;
         for (VirtualPointCloud::File &f : vpc.files)
         {
-            std::unique_ptr<PipelineManager> manager( new PipelineManager );
-
-            Stage* last = &manager->makeReader(f.filename, "");
-            if (boundaries)
+            if (overview && multiOverview)
             {
-                pdal::Options hexbin_opts;
-                // TODO: any options?
-                last = &manager->makeFilter( "filters.hexbin", *last, hexbin_opts );
-                hexbinFilters[f.filename] = last;
+                // For multi-tile overview: one pipeline per (source file, tile) combination
+                for (OverviewTile &tile : overviewTiles)
+                {
+                    if (!tile.bbox.overlaps(f.bbox.to2d()))
+                        continue;
+
+                    std::unique_ptr<PipelineManager> manager( new PipelineManager );
+                    Stage* last = &makeReader(manager.get(), f.filename);
+
+                    pdal::Options crop_opts;
+                    crop_opts.add(pdal::Option("bounds", box_to_pdal_bounds(tile.bbox)));
+                    last = &manager->makeFilter("filters.crop", *last, crop_opts);
+
+                    pdal::Options decim_opts;
+                    decim_opts.add(pdal::Option("step", 1000));
+                    last = &manager->makeFilter("filters.decimation", *last, decim_opts);
+
+                    const std::string overviewOutput = overviewFilenameBase + "-overview-tmp-" + std::to_string(++overviewCounter) + ".las";
+                    tile.tempFiles.push_back(overviewOutput);
+                    makeWriter(manager.get(), overviewOutput, last);
+                    pipelines.push_back(std::move(manager));
+                }
+
+                // Boundaries/stats for multi-overview still need a separate pipeline per file
+                if (boundaries || stats)
+                {
+                    std::unique_ptr<PipelineManager> manager( new PipelineManager );
+                    Stage* last = &makeReader(manager.get(), f.filename);
+                    if (boundaries)
+                    {
+                        pdal::Options hexbin_opts;
+                        last = &manager->makeFilter("filters.hexbin", *last, hexbin_opts);
+                        hexbinFilters[f.filename] = last;
+                    }
+                    if (stats)
+                    {
+                        pdal::Options stats_opts;
+                        last = &manager->makeFilter("filters.stats", *last, stats_opts);
+                        statsFilters[f.filename] = last;
+                    }
+                    pipelines.push_back(std::move(manager));
+                }
             }
-
-            if (stats)
+            else
             {
-                pdal::Options stats_opts;
-                // TODO: any options?
-                last = &manager->makeFilter( "filters.stats", *last, stats_opts );
-                statsFilters[f.filename] = last;
+                std::unique_ptr<PipelineManager> manager( new PipelineManager );
+
+                Stage* last = &makeReader(manager.get(), f.filename);
+                if (boundaries)
+                {
+                    pdal::Options hexbin_opts;
+                    // TODO: any options?
+                    last = &manager->makeFilter( "filters.hexbin", *last, hexbin_opts );
+                    hexbinFilters[f.filename] = last;
+                }
+
+                if (stats)
+                {
+                    pdal::Options stats_opts;
+                    // TODO: any options?
+                    last = &manager->makeFilter( "filters.stats", *last, stats_opts );
+                    statsFilters[f.filename] = last;
+                }
+
+                if (overview)
+                {
+                    // TODO: configurable method and step size?
+                    pdal::Options decim_opts;
+                    decim_opts.add(pdal::Option("step", 1000));
+                    last = &manager->makeFilter( "filters.decimation", *last, decim_opts );
+
+                    const std::string overviewOutput = overviewFilenameBase + "-overview-tmp-" + std::to_string(++overviewCounter) + ".las";
+                    overviewTiles[0].tempFiles.push_back(overviewOutput);
+
+                    makeWriter(manager.get(), overviewOutput, last);
+                }
+
+                pipelines.push_back(std::move(manager));
             }
-
-            if (overview)
-            {
-                // TODO: configurable method and step size?
-                pdal::Options decim_opts;
-                decim_opts.add(pdal::Option("step", 1000));
-                last = &manager->makeFilter( "filters.decimation", *last, decim_opts );
-
-                std::string overviewOutput = overviewFilenameBase + "-overview-tmp-" + std::to_string(++overviewCounter) + ".las";
-                overviewTempFiles.push_back(overviewOutput);
-
-                pdal::Options writer_opts;
-                writer_opts.add(pdal::Option("forward", "all"));  // TODO: maybe we could use lower scale than the original
-                manager->makeWriter(overviewOutput, "", *last, writer_opts);
-              }
-
-            pipelines.push_back(std::move(manager));
         }
 
         runPipelineParallel(vpc.totalPoints(), true, pipelines, max_threads, verbose);
 
         if (overview)
         {
-            // When doing overviews, this is the second stage where we index overview point cloud.
+            // When doing overviews, this is the second stage where we index overview point cloud(s).
             // We do it separately because writers.copc is not streamable. We could also use
             // untwine instead of writers.copc...
 
-            std::unique_ptr<PipelineManager> manager( new PipelineManager );
             std::vector<std::unique_ptr<PipelineManager>> pipelinesCopcOverview;
 
-            // TODO: I am not really sure why we need a merge filter, but without it
-            // I am only getting points in output COPC from the last reader. Example
-            // from the documentation suggests the merge filter should not be needed:
-            // https://pdal.io/en/latest/stages/writers.copc.html
-
-            Stage &merge = manager->makeFilter("filters.merge");
-
-            pdal::Options writer_opts;
-            //writer_opts.add(pdal::Option("forward", "all"));
-            Stage& writer = manager->makeWriter(overviewFilenameCopc, "writers.copc", merge, writer_opts);
-            (void)writer;
-
-            for (const std::string &overviewTempFile : overviewTempFiles)
+            for (const OverviewTile &tile : overviewTiles)
             {
-                Stage& reader = manager->makeReader(overviewTempFile, "");
-                merge.setInput(reader);
+                if (tile.tempFiles.empty())
+                    continue;
+
+                std::unique_ptr<PipelineManager> manager( new PipelineManager );
+
+                // TODO: I am not really sure why we need a merge filter, but without it
+                // I am only getting points in output COPC from the last reader. Example
+                // from the documentation suggests the merge filter should not be needed:
+                // https://pdal.io/en/latest/stages/writers.copc.html
+
+                Stage &merge = manager->makeFilter("filters.merge");
+
+                pdal::Options writer_opts;
+                Stage& writer = manager->makeWriter(tile.copcFilename, "writers.copc", merge, writer_opts);
+                (void)writer;
+
+                for (const std::string &tempFile : tile.tempFiles)
+                {
+                    Stage& reader = makeReader(manager.get(), tempFile);
+                    merge.setInput(reader);
+                }
+
+                pipelinesCopcOverview.push_back(std::move(manager));
             }
 
             if (verbose)
             {
-                std::cout << "Indexing overview point cloud..." << std::endl;
+                std::cout << "Indexing overview point cloud(s)..." << std::endl;
             }
-            pipelinesCopcOverview.push_back(std::move(manager));
             runPipelineParallel(vpc.totalPoints()/1000, false, pipelinesCopcOverview, max_threads, verbose);
 
             // delete tmp overviews
-            for (const std::string &overviewTempFile : overviewTempFiles)
+            for (const OverviewTile &tile : overviewTiles)
             {
-                std::filesystem::remove(overviewTempFile);
+                for (const std::string &tempFile : tile.tempFiles)
+                    std::filesystem::remove(tempFile);
             }
         }
 
@@ -660,18 +985,22 @@ void buildVpc(std::vector<std::string> args)
             }
             if (overview)
             {
-                f.overviewFilename = overviewFilenameCopc;
+                for (const OverviewTile &tile : overviewTiles)
+                {
+                    if (tile.tempFiles.empty())
+                        continue; // empty tile (no source files)
+                    // we can't use overlaps() here as we don't want to include bboxes that only touch
+                    if (tile.bbox.minx < f.bbox.maxx &&
+                            tile.bbox.maxx > f.bbox.minx &&
+                            tile.bbox.miny < f.bbox.maxy &&
+                            tile.bbox.maxy > f.bbox.miny)
+                        f.overviewFilenames.push_back(tile.copcFilename);
+                }
             }
         }
     }
 
-    //
-
-    vpc.dump();
-
     vpc.write(outputFile);
-
-    vpc.read(outputFile);
 
     // TODO: for now hoping that all files have the same file type + CRS + point format + scaling
     // "dataformat_id"
@@ -721,3 +1050,5 @@ std::vector<VirtualPointCloud::File> VirtualPointCloud::overlappingBox2D(const B
     }
     return overlaps;
 }
+
+VirtualPointCloud::~VirtualPointCloud() { clear(); }

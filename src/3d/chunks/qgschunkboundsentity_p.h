@@ -27,14 +27,14 @@
 // version without notice, or even be removed.
 //
 
+#include "qgsvector3d.h"
+
 #include <Qt3DCore/QEntity>
 
-#include "qgsvector3d.h"
+#define SIP_NO_FILE
 
 class QgsBox3D;
 class Qgs3DWiredMesh;
-
-#define SIP_NO_FILE
 
 
 /**

@@ -16,14 +16,17 @@
 #ifndef QGSSETTINGSENTRY_H
 #define QGSSETTINGSENTRY_H
 
-#include <QString>
-#include <QColor>
 #include <limits>
 
 #include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
 
+#include <QColor>
+#include <QSettings>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsSettingsTreeNode;
 
@@ -37,14 +40,13 @@ static const inline QMetaEnum sSettingsTypeMetaEnum = QMetaEnum::fromType<Qgis::
  *
  * \brief Represents a settings entry and provides methods for reading and writing settings values.
  *
- * Different subclasses are provided for different settings types with metainformations
+ * Different subclasses are provided for different settings types with metainformation
  * to validate set values and provide more accurate settings description for the gui.
  *
  * \since QGIS 3.20
  */
 class CORE_EXPORT QgsSettingsEntryBase
 {
-
 #ifdef SIP_RUN
     SIP_CONVERT_TO_SUBCLASS_CODE
     if ( dynamic_cast< QgsSettingsEntryVariant * >( sipCpp ) )
@@ -67,10 +69,40 @@ class CORE_EXPORT QgsSettingsEntryBase
       sipType = sipType_QgsSettingsEntryBase;
     else
       sipType = NULL;
-    SIP_END
+  SIP_END
 #endif
 
   public:
+
+    /**
+     * Configures QSettings to use IniFormat at the given \a profilePath
+     * so that each thread's QSettings instance is recreated on next access
+     * with the correct format and path.
+     *
+     * This is a convenience wrapper around QSettings::setDefaultFormat()
+     * and QSettings::setPath().
+     *
+     * It should be called once at application startup,
+     * before QgsApplication initialization,
+     * and only from the main thread.
+     *
+     * If called a second time, it will have no effect.
+     *
+     * \since QGIS 4.2
+     */
+    static void setupUserSettings( const QString &profilePath ) SIP_SKIP;
+
+    /**
+     * Returns a reference to the thread-local QSettings instance used
+     * internally by all QgsSettingsEntry operations.
+     *
+     * \note This is intended for internal use by the settings framework
+     * (e.g. QgsSettingsTreeNamedListNode). Prefer using QgsSettingsEntry
+     * accessors instead.
+     *
+     * \since QGIS 4.2
+     */
+    static QSettings &userSettings() SIP_SKIP;
 
     /**
      * Transforms a dynamic key part string to list
@@ -87,13 +119,11 @@ class CORE_EXPORT QgsSettingsEntryBase
      * \param description specifies a description for the settings entry.
      * \param options specifies the options for the settings entry.
      */
-    QgsSettingsEntryBase( const QString &key,
-                          const QString &section,
-                          const QVariant &defaultValue = QVariant(),
-                          const QString &description = QString(),
-                          Qgis::SettingsOptions options = Qgis::SettingsOptions() )
+    QgsSettingsEntryBase(
+      const QString &key, const QString &section, const QVariant &defaultValue = QVariant(), const QString &description = QString(), Qgis::SettingsOptions options = Qgis::SettingsOptions()
+    )
       : mName( key )
-      , mKey( QStringLiteral( "%1/%2" ).arg( section, key ) )
+      , mKey( u"%1/%2"_s.arg( section, key ) )
       , mDefaultValue( defaultValue )
       , mDescription( description )
       , mOptions( options )
@@ -111,11 +141,9 @@ class CORE_EXPORT QgsSettingsEntryBase
      *
      * \since QGIS 3.30
      */
-    QgsSettingsEntryBase( const QString &name,
-                          QgsSettingsTreeNode *parent,
-                          const QVariant &defaultValue = QVariant(),
-                          const QString &description = QString(),
-                          Qgis::SettingsOptions options = Qgis::SettingsOptions() ) SIP_THROW( QgsSettingsException );
+    QgsSettingsEntryBase(
+      const QString &name, QgsSettingsTreeNode *parent, const QVariant &defaultValue = QVariant(), const QString &description = QString(), Qgis::SettingsOptions options = Qgis::SettingsOptions()
+    ) SIP_THROW( QgsSettingsException );
 
     virtual ~QgsSettingsEntryBase();
 
@@ -130,7 +158,7 @@ class CORE_EXPORT QgsSettingsEntryBase
      * Returns the name of the settings
      * \since QGIS 3.30
      */
-    QString name() const {return mName;}
+    QString name() const { return mName; }
 
     /**
      * Returns settings entry key.
@@ -173,7 +201,7 @@ class CORE_EXPORT QgsSettingsEntryBase
      * Returns the settings options
      * \since QGIS 3.26
      */
-    Qgis::SettingsOptions options() const {return mOptions;}
+    Qgis::SettingsOptions options() const { return mOptions; }
 
     /**
      * Returns TRUE if the settings is contained in the underlying QSettings.
@@ -274,7 +302,7 @@ class CORE_EXPORT QgsSettingsEntryBase
     /**
      * Returns the settings entry type.
      */
-    virtual Qgis::SettingsType settingsType() const {return Qgis::SettingsType::Custom;}
+    virtual Qgis::SettingsType settingsType() const { return Qgis::SettingsType::Custom; }
     // This cannot be pure virtual otherwise SIP is failing
 
     /**
@@ -303,7 +331,7 @@ class CORE_EXPORT QgsSettingsEntryBase
      * \returns TRUE if the key exists and the setting value could be copied.
      * \since QGIS 3.30
      */
-    bool copyValueFromKey( const QString &key, bool removeSettingAtKey = false ) const {return copyValueFromKey( key, {}, removeSettingAtKey );}
+    bool copyValueFromKey( const QString &key, bool removeSettingAtKey = false ) const { return copyValueFromKey( key, {}, removeSettingAtKey ); }
 
     /**
      * Copies the value from a given key if it exists.
@@ -337,7 +365,7 @@ class CORE_EXPORT QgsSettingsEntryBase
     * Returns the parent tree element
     * \since QGIS 3.30
     */
-    QgsSettingsTreeNode *parent() const {return mParentTreeElement;}
+    QgsSettingsTreeNode *parent() const { return mParentTreeElement; }
 
     //! Returns TRUE if the given \a value is valid towards the setting definition
     virtual bool checkValueVariant( const QVariant &value ) const
@@ -376,11 +404,9 @@ class CORE_EXPORT QgsSettingsEntryBase
  *
  * \since QGIS 3.32
  */
-template<class T>
-class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
+template<class T> class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
 {
   public:
-
     /**
      * Constructor for QgsSettingsEntryByReference.
      *
@@ -393,11 +419,9 @@ class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
      *
      * \since QGIS 3.30
      */
-    QgsSettingsEntryBaseTemplate( const QString &name,
-                                  QgsSettingsTreeNode *parent,
-                                  const QVariant &defaultValue,
-                                  const QString &description = QString(),
-                                  Qgis::SettingsOptions options = Qgis::SettingsOptions() )
+    QgsSettingsEntryBaseTemplate(
+      const QString &name, QgsSettingsTreeNode *parent, const QVariant &defaultValue, const QString &description = QString(), Qgis::SettingsOptions options = Qgis::SettingsOptions()
+    )
       : QgsSettingsEntryBase( name, parent, defaultValue, description, options )
     {}
 
@@ -410,30 +434,26 @@ class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
      * \param description specifies a description for the settings entry.
      * \param options specifies the options for the settings entry.
      */
-    QgsSettingsEntryBaseTemplate( const QString &key,
-                                  const QString &section,
-                                  const QVariant &defaultValue,
-                                  const QString &description = QString(),
-                                  Qgis::SettingsOptions options = Qgis::SettingsOptions() )
+    QgsSettingsEntryBaseTemplate( const QString &key, const QString &section, const QVariant &defaultValue, const QString &description = QString(), Qgis::SettingsOptions options = Qgis::SettingsOptions() )
       : QgsSettingsEntryBase( key, section, defaultValue, description, options )
     {}
 
 
-    virtual Qgis::SettingsType settingsType() const override = 0;
+    Qgis::SettingsType settingsType() const override = 0;
 
     /**
      * Returns settings value.
      *
      * \param dynamicKeyPart specifies the dynamic part of the settings key.
      */
-    T value( const QString &dynamicKeyPart = QString() ) const { return this->convertFromVariant( valueAsVariant( dynamicKeyPart ) );}
+    T value( const QString &dynamicKeyPart = QString() ) const { return this->convertFromVariant( valueAsVariant( dynamicKeyPart ) ); }
 
     /**
      * Returns settings value.
      *
      * \param dynamicKeyPartList specifies the list of dynamic parts of the settings key.
      */
-    T value( const QStringList &dynamicKeyPartList )  const { return this->convertFromVariant( valueAsVariant( dynamicKeyPartList ) );}
+    T value( const QStringList &dynamicKeyPartList ) const { return this->convertFromVariant( valueAsVariant( dynamicKeyPartList ) ); }
 
 
     //! Returns the settings value with a \a defaultValueOverride and with an optional \a dynamicKeyPart
@@ -454,10 +474,7 @@ class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
      * \param value specifies the value to set.
      * \param dynamicKeyPart specifies the dynamic part of the settings key.
      */
-    bool setValue( const T &value, const QString &dynamicKeyPart = QString() ) const
-    {
-      return setValuePrivate( value, dynamicKeyPartToList( dynamicKeyPart ) );
-    }
+    bool setValue( const T &value, const QString &dynamicKeyPart = QString() ) const { return setValuePrivate( value, dynamicKeyPartToList( dynamicKeyPart ) ); }
 
     /**
      * Set settings value.
@@ -465,30 +482,24 @@ class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
      * \param value specifies the value to set.
      * \param dynamicKeyPartList specifies the list of dynamic parts of the settings key.
      */
-    bool setValue( const T &value, const QStringList &dynamicKeyPartList ) const
-    {
-      return setValuePrivate( value, dynamicKeyPartList );
-    }
+    bool setValue( const T &value, const QStringList &dynamicKeyPartList ) const { return setValuePrivate( value, dynamicKeyPartList ); }
 
     //! Returns settings default value.
-    T defaultValue() const {return convertFromVariant( defaultValueAsVariant() );}
+    T defaultValue() const { return convertFromVariant( defaultValueAsVariant() ); }
 
     /**
      * Returns the former value.
      * Returns the current value (or default) if there is no former value.
      */
-    T formerValue( const QString &dynamicKeyPart = QString() ) const {return convertFromVariant( formerValueAsVariant( dynamicKeyPart ) );}
+    T formerValue( const QString &dynamicKeyPart = QString() ) const { return convertFromVariant( formerValueAsVariant( dynamicKeyPart ) ); }
 
     /**
      * Returns the former value
      * Returns the current value (or default) if there is no former value.
      */
-    T formerValue( const QStringList &dynamicKeyPartList ) const {return convertFromVariant( formerValueAsVariant( dynamicKeyPartList ) );}
+    T formerValue( const QStringList &dynamicKeyPartList ) const { return convertFromVariant( formerValueAsVariant( dynamicKeyPartList ) ); }
 
-    bool checkValueVariant( const QVariant &value ) const override
-    {
-      return checkValuePrivate( convertFromVariant( value ) );
-    }
+    bool checkValueVariant( const QVariant &value ) const override { return checkValuePrivate( convertFromVariant( value ) ); }
 
     //! Converts the variant value to the value type of the setting
     virtual T convertFromVariant( const QVariant &value ) const = 0;
@@ -504,10 +515,7 @@ class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
     }
 
     //! Converts the value to a variant
-    virtual QVariant convertToVariant( const T &value ) const
-    {
-      return QVariant::fromValue( value );
-    }
+    virtual QVariant convertToVariant( const T &value ) const { return QVariant::fromValue( value ); }
 
     //! Check if the value is valid
     virtual bool checkValuePrivate( const T &value ) const
@@ -516,8 +524,6 @@ class QgsSettingsEntryBaseTemplate : public QgsSettingsEntryBase
       return true;
     }
 };
-
-
 
 
 #endif // QGSSETTINGSENTRY_H

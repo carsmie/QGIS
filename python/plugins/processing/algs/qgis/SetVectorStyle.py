@@ -21,10 +21,11 @@ __copyright__ = "(C) 2012, Victor Olaya"
 
 from qgis.core import (
     QgsProcessingAlgorithm,
+    QgsProcessingOutputVectorLayer,
     QgsProcessingParameterFile,
     QgsProcessingParameterVectorLayer,
-    QgsProcessingOutputVectorLayer,
 )
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
@@ -66,6 +67,14 @@ class SetVectorStyle(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Set style for vector layer")
+
+    def shortDescription(self):
+        return self.tr("Applies the style from a QML file to a vector layer.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm sets the style of a vector layer. The style must be defined in a QML file."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         layer = self.parameterAsVectorLayer(parameters, self.INPUT, context)

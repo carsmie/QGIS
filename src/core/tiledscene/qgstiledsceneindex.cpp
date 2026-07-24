@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "qgstiledsceneindex.h"
+
 #include "qgsfeedback.h"
 #include "qgstiledscenetile.h"
 
@@ -54,17 +55,17 @@ QByteArray QgsAbstractTiledSceneIndex::retrieveContent( const QString &uri, QgsF
 
 QgsTiledSceneIndex::QgsTiledSceneIndex( QgsAbstractTiledSceneIndex *index )
   : mIndex( index )
-{
-
-}
+{}
 
 QgsTiledSceneIndex::~QgsTiledSceneIndex() = default;
 
 QgsTiledSceneIndex::QgsTiledSceneIndex( const QgsTiledSceneIndex &other )
   : mIndex( other.mIndex )
-{
+{}
 
-}
+QgsTiledSceneIndex::QgsTiledSceneIndex( QgsTiledSceneIndex &&other )
+  : mIndex( std::move( other.mIndex ) )
+{}
 
 QgsTiledSceneIndex &QgsTiledSceneIndex::operator=( const QgsTiledSceneIndex &other )
 {
@@ -72,6 +73,15 @@ QgsTiledSceneIndex &QgsTiledSceneIndex::operator=( const QgsTiledSceneIndex &oth
     return *this;
 
   mIndex = other.mIndex;
+  return *this;
+}
+
+QgsTiledSceneIndex &QgsTiledSceneIndex::operator=( QgsTiledSceneIndex &&other )
+{
+  if ( this == &other )
+    return *this;
+
+  mIndex = std::move( other.mIndex );
   return *this;
 }
 
@@ -143,4 +153,3 @@ QByteArray QgsTiledSceneIndex::retrieveContent( const QString &uri, QgsFeedback 
 
   return mIndex->retrieveContent( uri, feedback );
 }
-

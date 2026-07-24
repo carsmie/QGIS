@@ -10,7 +10,6 @@
 
 
 
-
 class QgsMapLayerStyle
 {
 %Docstring(signature="appended")
@@ -85,7 +84,6 @@ Restore overridden layer style on destruction.
 #include "qgsmaplayerstyle.h"
 %End
   public:
-
     QgsMapLayerStyleOverride( QgsMapLayer *layer );
 %Docstring
 Construct a style override object associated with a map layer. The

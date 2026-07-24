@@ -19,18 +19,19 @@
 #ifndef QGSSERVICENATIVELOADER_H
 #define QGSSERVICENATIVELOADER_H
 
-#define SIP_NO_FILE
-
 
 class QgsServiceModule;
 class QgsServiceRegistry;
 class QgsServiceNativeModuleEntry;
 class QgsServerInterface;
 
+#include <memory>
+
 #include "qgis_server.h"
 
 #include <QHash>
-#include <memory>
+
+#define SIP_NO_FILE
 
 /**
  * \ingroup server

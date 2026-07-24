@@ -18,15 +18,18 @@
 #ifndef QGSGROUPLAYERRENDERER_H
 #define QGSGROUPLAYERRENDERER_H
 
-#define SIP_NO_FILE
+
+#include <memory>
+#include <tuple>
+#include <vector>
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsmaplayerrenderer.h"
+
 #include <QPainter>
-#include <tuple>
-#include <vector>
-#include <memory>
+
+#define SIP_NO_FILE
 
 class QgsGroupLayer;
 class QgsFeedback;
@@ -43,7 +46,6 @@ class QgsCoordinateTransform;
 class CORE_EXPORT QgsGroupLayerRenderer : public QgsMapLayerRenderer
 {
   public:
-
     /**
      * Constructor for a QgsGroupLayerRenderer, for the specified \a layer.
      */
@@ -62,7 +64,6 @@ class CORE_EXPORT QgsGroupLayerRenderer : public QgsMapLayerRenderer
     std::vector< QgsCoordinateTransform > mTransforms;
     double mLayerOpacity = 1.0;
     std::unique_ptr< QgsPaintEffect > mPaintEffect;
-
 };
 
 #endif // QGSGROUPLAYERRENDERER_H

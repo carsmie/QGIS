@@ -19,19 +19,21 @@
 #define QGSTRIANGULARMESH_H
 
 
-#define SIP_NO_FILE
-
-#include <QVector>
-#include <QVector3D>
-#include <QSet>
-#include <QList>
 #include <memory>
+
 #include "qgis_core.h"
-#include "qgsmeshdataprovider.h"
+#include "qgscoordinatetransform.h"
 #include "qgsgeometry.h"
+#include "qgsmeshdataprovider.h"
 #include "qgsmeshspatialindex.h"
 #include "qgstopologicalmesh.h"
-#include "qgscoordinatetransform.h"
+
+#include <QList>
+#include <QSet>
+#include <QVector>
+#include <QVector3D>
+
+#define SIP_NO_FILE
 
 class QgsRenderContext;
 class QgsRectangle;
@@ -48,10 +50,9 @@ class QgsRectangle;
  *
  * \since QGIS 3.2
  */
-class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
+class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 5
 {
   public:
-
     QgsTriangularMesh();
     ~QgsTriangularMesh();
 
@@ -81,38 +82,38 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
      * The list of consist of vertices from native mesh (0-N) and
      * extra vertices needed to create triangles (N+1 - len)
      */
-    const QVector<QgsMeshVertex> &vertices() const ;
+    const QVector<QgsMeshVertex> &vertices() const;
 
     //! Returns triangles
-    const QVector<QgsMeshFace> &triangles() const ;
+    const QVector<QgsMeshFace> &triangles() const;
 
     //! Returns edges
-    const QVector<QgsMeshEdge> &edges() const ;
+    const QVector<QgsMeshEdge> &edges() const;
 
     /**
      * Returns centroids of the native faces in map CRS
      *
      * \deprecated QGIS 3.14. Use faceCentroids() instead.
      */
-    Q_DECL_DEPRECATED const QVector<QgsMeshVertex> &centroids() const ;
+    Q_DECL_DEPRECATED const QVector<QgsMeshVertex> &centroids() const;
 
     /**
      * Returns centroids of the native faces in map CRS
      * \since QGIS 3.14
      */
-    const QVector<QgsMeshVertex> &faceCentroids() const ;
+    const QVector<QgsMeshVertex> &faceCentroids() const;
 
     /**
      * Returns centroids of the native edges in map CRS
      * \since QGIS 3.14
      */
-    const QVector<QgsMeshVertex> &edgeCentroids() const ;
+    const QVector<QgsMeshVertex> &edgeCentroids() const;
 
     //! Returns mapping between triangles and original faces
-    const QVector<int> &trianglesToNativeFaces() const ;
+    const QVector<int> &trianglesToNativeFaces() const;
 
     //! Returns mapping between edges and original edges
-    const QVector<int> &edgesToNativeEdges() const ;
+    const QVector<int> &edgesToNativeEdges() const;
 
     /**
      * Transforms a point from layer coordinates system to triangular Mesh coordinates system.
@@ -133,7 +134,7 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
      *
      * \since QGIS 3.4
      */
-    int faceIndexForPoint( const QgsPointXY &point ) const ;
+    int faceIndexForPoint( const QgsPointXY &point ) const;
 
     /**
      * Finds index of triangle at given point
@@ -155,7 +156,7 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
      *
      * \since QGIS 3.22
      */
-    int nativeFaceIndexForPoint( const QgsPointXY &point ) const ;
+    int nativeFaceIndexForPoint( const QgsPointXY &point ) const;
 
     /**
      * Finds indexes of native faces which bounding boxes intersect given bounding box
@@ -166,7 +167,7 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
      *
      * \since QGIS 3.22
      */
-    QList<int> nativeFaceIndexForRectangle( const QgsRectangle &rectangle ) const ;
+    QList<int> nativeFaceIndexForRectangle( const QgsRectangle &rectangle ) const;
 
     /**
      * Finds indexes of triangles intersecting given bounding box
@@ -177,7 +178,7 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
      *
      * \since QGIS 3.4
      */
-    QList<int> faceIndexesForRectangle( const QgsRectangle &rectangle ) const ;
+    QList<int> faceIndexesForRectangle( const QgsRectangle &rectangle ) const;
 
     /**
      * Finds indexes of edges intersecting given bounding box
@@ -186,7 +187,7 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
      * \param rectangle bounding box in map coordinate system
      * \returns edges indexes that intersect the rectangle
      */
-    QList<int> edgeIndexesForRectangle( const QgsRectangle &rectangle ) const ;
+    QList<int> edgeIndexesForRectangle( const QgsRectangle &rectangle ) const;
 
     /**
      * Calculates and returns normal vector on each vertex that is part of any face
@@ -263,7 +264,6 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
     class Changes
     {
       public:
-
         //! Default constructor, no changes
         Changes() = default;
 
@@ -334,7 +334,6 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
     QgsRectangle nativeExtent();
 
   private:
-
     /**
      * Triangulates native face to triangles
      *
@@ -361,7 +360,7 @@ class CORE_EXPORT QgsTriangularMesh // TODO rename to QgsRendererMesh in QGIS 4
     // faces are derived triangles
     QgsMesh mTriangularMesh;
     QVector<int> mTrianglesToNativeFaces; //len(mTrianglesToNativeFaces) == len(mTriangles). Mapping derived -> native
-    QVector<int> mEdgesToNativeEdges; //len(mEdgesToNativeEdges) == len(mEdges). Mapping derived -> native
+    QVector<int> mEdgesToNativeEdges;     //len(mEdgesToNativeEdges) == len(mEdges). Mapping derived -> native
 
     // centroids of the native faces in map CRS
     QVector<QgsMeshVertex> mNativeMeshFaceCentroids;

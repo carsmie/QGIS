@@ -19,12 +19,12 @@ Base class for paint effects which render offset, blurred shadows.
 #include "qgsshadoweffect.h"
 %End
   public:
-
     QgsShadowEffect();
 
     virtual Qgis::PaintEffectFlags flags() const;
 
     virtual QVariantMap properties() const;
+
 
     virtual void readProperties( const QVariantMap &props );
 
@@ -276,7 +276,6 @@ Returns the blend mode for the effect
 %End
 
   protected:
-
     virtual QRectF boundingRect( const QRectF &rect, const QgsRenderContext &context ) const;
 
     virtual void draw( QgsRenderContext &context );
@@ -291,7 +290,6 @@ picture.
          ``False`` to draw shadow within the picture
 %End
 
-
 };
 
 
@@ -305,7 +303,6 @@ A paint effect which draws an offset and optionally blurred drop shadow.
 #include "qgsshadoweffect.h"
 %End
   public:
-
     static QgsPaintEffect *create( const QVariantMap &map ) /Factory/;
 %Docstring
 Creates a new QgsDropShadowEffect effect from a properties string map.
@@ -323,9 +320,7 @@ Creates a new QgsDropShadowEffect effect from a properties string map.
 
 
   protected:
-
     virtual bool exteriorShadow() const;
-
 
 };
 
@@ -340,7 +335,6 @@ within a picture.
 #include "qgsshadoweffect.h"
 %End
   public:
-
     static QgsPaintEffect *create( const QVariantMap &map ) /Factory/;
 %Docstring
 Creates a new QgsInnerShadowEffect effect from a properties string map.
@@ -358,12 +352,9 @@ Creates a new QgsInnerShadowEffect effect from a properties string map.
 
 
   protected:
-
     virtual bool exteriorShadow() const;
 
-
 };
-
 
 /************************************************************************
  * This file has been generated automatically from                      *

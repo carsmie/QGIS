@@ -11,13 +11,9 @@ __author__ = "elpaso@itopen.it"
 __date__ = "2018-09-19"
 __copyright__ = "Copyright 2018, GISCE-TI S.L."
 
-import os
-
 from pathlib import Path
 
-from qgis.PyQt import uic
-from qgis.PyQt import QtWidgets, QtCore
-from qgis.utils import iface
+from qgis.PyQt import QtCore, QtWidgets, uic
 
 Ui_QgsPluginDependenciesDialogBase, _ = uic.loadUiType(
     Path(__file__).parent / "qgsplugindependenciesdialogbase.ui"
@@ -80,13 +76,22 @@ class QgsPluginDependenciesDialog(
             self.pluginList.setCellWidget(i, 0, widget)
             self.pluginList.resizeColumnToContents(0)
             widget = QtWidgets.QTableWidgetItem(_display(data["version_installed"]))
-            widget.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+            widget.setTextAlignment(
+                QtCore.Qt.AlignmentFlag.AlignHCenter
+                | QtCore.Qt.AlignmentFlag.AlignVCenter
+            )
             self.pluginList.setItem(i, 1, widget)
             widget = QtWidgets.QTableWidgetItem(_display(data["version_required"]))
-            widget.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+            widget.setTextAlignment(
+                QtCore.Qt.AlignmentFlag.AlignHCenter
+                | QtCore.Qt.AlignmentFlag.AlignVCenter
+            )
             self.pluginList.setItem(i, 2, widget)
             widget = QtWidgets.QTableWidgetItem(_display(data["version_available"]))
-            widget.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+            widget.setTextAlignment(
+                QtCore.Qt.AlignmentFlag.AlignHCenter
+                | QtCore.Qt.AlignmentFlag.AlignVCenter
+            )
             self.pluginList.setItem(i, 3, widget)
 
         i = 0

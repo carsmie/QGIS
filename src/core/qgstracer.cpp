@@ -14,33 +14,35 @@
  ***************************************************************************/
 
 #include "qgstracer.h"
-#include "moc_qgstracer.cpp"
 
+#include <memory>
+#include <vector>
 
+#include "qgsexpressioncontextutils.h"
 #include "qgsfeatureiterator.h"
 #include "qgsgeometry.h"
 #include "qgsgeometryutils.h"
 #include "qgsgeos.h"
 #include "qgslogger.h"
-#include "qgsvectorlayer.h"
-#include "qgsrenderer.h"
-#include "qgssettingsregistrycore.h"
-#include "qgsexpressioncontextutils.h"
 #include "qgsrendercontext.h"
+#include "qgsrenderer.h"
 #include "qgssettingsentryimpl.h"
+#include "qgssettingsregistrycore.h"
+#include "qgsvectorlayer.h"
 
+#include <QString>
 #include <queue>
-#include <vector>
+
+#include "moc_qgstracer.cpp"
+
+using namespace Qt::StringLiterals;
 
 typedef std::pair<int, double> DijkstraQueueItem; // first = vertex index, second = distance
 
 // utility comparator for queue items based on distance
 struct comp
 {
-  bool operator()( DijkstraQueueItem a, DijkstraQueueItem b ) const
-  {
-    return a.second > b.second;
-  }
+    bool operator()( DijkstraQueueItem a, DijkstraQueueItem b ) const { return a.second > b.second; }
 };
 
 
@@ -95,36 +97,36 @@ double closestSegment( const QgsPolylineXY &pl, const QgsPointXY &pt, int &verte
 //! Simple graph structure for shortest path search
 struct QgsTracerGraph
 {
-  QgsTracerGraph()  = default;
+    QgsTracerGraph() = default;
 
-  struct E  // bidirectional edge
-  {
-    //! vertices that the edge connects
-    int v1, v2;
-    //! coordinates of the edge (including endpoints)
-    QVector<QgsPointXY> coords;
+    struct E // bidirectional edge
+    {
+        //! vertices that the edge connects
+        int v1, v2;
+        //! coordinates of the edge (including endpoints)
+        QVector<QgsPointXY> coords;
 
-    int otherVertex( int v0 ) const { return v1 == v0 ? v2 : v1; }
-    double weight() const { return distance2D( coords ); }
-  };
+        int otherVertex( int v0 ) const { return v1 == v0 ? v2 : v1; }
+        double weight() const { return distance2D( coords ); }
+    };
 
-  struct V
-  {
-    //! location of the vertex
-    QgsPointXY pt;
-    //! indices of adjacent edges (used in Dijkstra algorithm)
-    QVector<int> edges;
-  };
+    struct V
+    {
+        //! location of the vertex
+        QgsPointXY pt;
+        //! indices of adjacent edges (used in Dijkstra algorithm)
+        QVector<int> edges;
+    };
 
-  //! Vertices of the graph
-  QVector<V> v;
-  //! Edges of the graph
-  QVector<E> e;
+    //! Vertices of the graph
+    QVector<V> v;
+    //! Edges of the graph
+    QVector<E> e;
 
-  //! Temporarily removed edges
-  QSet<int> inactiveEdges;
-  //! Temporarily added vertices (for each there are two extra edges)
-  int joinedVertices{ 0 };
+    //! Temporarily removed edges
+    QSet<int> inactiveEdges;
+    //! Temporarily added vertices (for each there are two extra edges)
+    int joinedVertices { 0 };
 };
 
 
@@ -213,14 +215,14 @@ QVector<QgsPointXY> shortestPath( const QgsTracerGraph &g, int v1, int v2 )
       break; // we can stop now, there won't be a shorter path
 
     if ( F[u] )
-      continue;  // ignore previously added path which is actually longer
+      continue; // ignore previously added path which is actually longer
 
     const QgsTracerGraph::V &vu = g.v[u];
     const int *vuEdges = vu.edges.constData();
     int count = vu.edges.count();
     for ( int i = 0; i < count; ++i )
     {
-      const QgsTracerGraph::E &edge = g.e[ vuEdges[i] ];
+      const QgsTracerGraph::E &edge = g.e[vuEdges[i]];
       int v = edge.otherVertex( u );
       double w = edge.weight();
       if ( !F[v] && D[u] + w < D[v] )
@@ -249,7 +251,7 @@ QVector<QgsPointXY> shortestPath( const QgsTracerGraph &g, int v1, int v2 )
     if ( edgePoints[0] != g.v[u].pt )
       std::reverse( edgePoints.begin(), edgePoints.end() );
     if ( !points.isEmpty() )
-      points.remove( points.count() - 1 );  // chop last one (will be used from next edge)
+      points.remove( points.count() - 1 ); // chop last one (will be used from next edge)
     points << edgePoints;
     u = e.otherVertex( u );
   }
@@ -280,7 +282,7 @@ int point2edge( const QgsTracerGraph &g, const QgsPointXY &pt, int &lineVertexAf
   for ( int i = 0; i < g.e.count(); ++i )
   {
     if ( g.inactiveEdges.contains( i ) )
-      continue;  // ignore temporarily disabled edges
+      continue; // ignore temporarily disabled edges
 
     const QgsTracerGraph::E &e = g.e.at( i );
     int vertexAfter = -1;
@@ -303,10 +305,10 @@ void splitLinestring( const QgsPolylineXY &points, const QgsPointXY &pt, int lin
   for ( int i = 0; i < count1; ++i )
     pts1 << points[i];
   if ( points[lineVertexAfter - 1] != pt )
-    pts1 << pt;  // repeat if not split exactly at that point
+    pts1 << pt; // repeat if not split exactly at that point
 
   if ( pt != points[lineVertexAfter] )
-    pts2 << pt;  // repeat if not split exactly at that point
+    pts2 << pt; // repeat if not split exactly at that point
   for ( int i = 0; i < count2; ++i )
     pts2 << points[i + lineVertexAfter];
 }
@@ -459,7 +461,7 @@ void extractLinework( const QgsGeometry &g, QgsMultiPolylineXY &mpl )
     break;
 
     default:
-      break;  // unknown type - do nothing
+      break; // unknown type - do nothing
   }
 }
 
@@ -497,7 +499,7 @@ bool QgsTracer::initGraph()
     if ( !enableInvisibleFeature && mRenderContext && vl->renderer() )
     {
       renderer.reset( vl->renderer()->clone() );
-      ctx.reset( new QgsRenderContext( *mRenderContext.get() ) );
+      ctx = std::make_unique<QgsRenderContext>( *mRenderContext.get() );
       ctx->expressionContext() << QgsExpressionContextUtils::layerScope( vl );
 
       // setup scale for scale dependent visibility (rule based)
@@ -586,7 +588,7 @@ bool QgsTracer::initGraph()
 
     mHasTopologyProblem = true;
 
-    QgsDebugError( QStringLiteral( "Tracer Noding Exception: %1" ).arg( e.what() ) );
+    QgsDebugError( u"Tracer Noding Exception: %1"_s.arg( e.what() ) );
   }
 #endif
 
@@ -602,8 +604,7 @@ bool QgsTracer::initGraph()
   Q_UNUSED( timeNoding )
   Q_UNUSED( timeNodingCall )
   Q_UNUSED( timeMake )
-  QgsDebugMsgLevel( QStringLiteral( "tracer extract %1 ms, noding %2 ms (call %3 ms), make %4 ms" )
-                    .arg( timeExtract ).arg( timeNoding ).arg( timeNodingCall ).arg( timeMake ), 2 );
+  QgsDebugMsgLevel( u"tracer extract %1 ms, noding %2 ms (call %3 ms), make %4 ms"_s.arg( timeExtract ).arg( timeNoding ).arg( timeNodingCall ).arg( timeMake ), 2 );
 
   return true;
 }
@@ -654,7 +655,7 @@ void QgsTracer::setDestinationCrs( const QgsCoordinateReferenceSystem &crs, cons
 
 void QgsTracer::setRenderContext( const QgsRenderContext *renderContext )
 {
-  mRenderContext.reset( new QgsRenderContext( *renderContext ) );
+  mRenderContext = std::make_unique<QgsRenderContext>( *renderContext );
   invalidateGraph();
 }
 
@@ -730,12 +731,12 @@ void QgsTracer::onAttributeValueChanged( QgsFeatureId fid, int idx, const QVaria
   invalidateGraph();
 }
 
-void QgsTracer::onDataChanged( )
+void QgsTracer::onDataChanged()
 {
   invalidateGraph();
 }
 
-void QgsTracer::onStyleChanged( )
+void QgsTracer::onStyleChanged()
 {
   invalidateGraph();
 }
@@ -749,10 +750,11 @@ void QgsTracer::onLayerDestroyed( QObject *obj )
 
 QVector<QgsPointXY> QgsTracer::findShortestPath( const QgsPointXY &p1, const QgsPointXY &p2, PathError *error )
 {
-  init();  // does nothing if the graph exists already
+  init(); // does nothing if the graph exists already
   if ( !mGraph )
   {
-    if ( error ) *error = ErrTooManyFeatures;
+    if ( error )
+      *error = ErrTooManyFeatures;
     return QVector<QgsPointXY>();
   }
 
@@ -764,12 +766,14 @@ QVector<QgsPointXY> QgsTracer::findShortestPath( const QgsPointXY &p1, const Qgs
 
   if ( v1 == -1 )
   {
-    if ( error ) *error = ErrPoint1;
+    if ( error )
+      *error = ErrPoint1;
     return QVector<QgsPointXY>();
   }
   if ( v2 == -1 )
   {
-    if ( error ) *error = ErrPoint2;
+    if ( error )
+      *error = ErrPoint2;
     return QVector<QgsPointXY>();
   }
 
@@ -780,7 +784,7 @@ QVector<QgsPointXY> QgsTracer::findShortestPath( const QgsPointXY &p1, const Qgs
 
   Q_UNUSED( tPrep )
   Q_UNUSED( tPath )
-  QgsDebugMsgLevel( QStringLiteral( "path timing: prep %1 ms, path %2 ms" ).arg( tPrep ).arg( tPath ), 2 );
+  QgsDebugMsgLevel( u"path timing: prep %1 ms, path %2 ms"_s.arg( tPrep ).arg( tPath ), 2 );
 
   if ( points.size() > 2 && !mIntersections.isEmpty() )
   {
@@ -793,11 +797,7 @@ QVector<QgsPointXY> QgsTracer::findShortestPath( const QgsPointXY &p1, const Qgs
       {
         // we skip points that are on a straight segment and were not on the original geometries
         QgsPointXY nearest;
-        if ( 0 == it->sqrDistToSegment( std::prev( it )->x(),
-                                        std::prev( it )->y(),
-                                        std::next( it )->x(),
-                                        std::next( it )->y(),
-                                        nearest, 1E-12 ) )
+        if ( 0 == it->sqrDistToSegment( std::prev( it )->x(), std::prev( it )->y(), std::next( it )->x(), std::next( it )->y(), nearest, 1E-12 ) )
         {
           continue;
         }
@@ -806,7 +806,7 @@ QVector<QgsPointXY> QgsTracer::findShortestPath( const QgsPointXY &p1, const Qgs
     }
     noInts.append( points.last() );
     points = noInts;
-    QgsDebugMsgLevel( QStringLiteral( "intersection point removal timing: %1 ms" ).arg( t2.elapsed() - tPath ), 2 );
+    QgsDebugMsgLevel( u"intersection point removal timing: %1 ms"_s.arg( t2.elapsed() - tPath ), 2 );
   }
 
   resetGraph( *mGraph );
@@ -843,7 +843,7 @@ QVector<QgsPointXY> QgsTracer::findShortestPath( const QgsPointXY &p1, const Qgs
 
 bool QgsTracer::isPointSnapped( const QgsPointXY &pt )
 {
-  init();  // does nothing if the graph exists already
+  init(); // does nothing if the graph exists already
   if ( !mGraph )
     return false;
 

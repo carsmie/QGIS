@@ -24,9 +24,9 @@ __date__ = "December 2015"
 __copyright__ = "(C) 2015, Médéric Ribreux"
 
 import os
-from qgis.core import QgsProcessingException
-from processing.tools.system import getTempFilename
 
+from processing.tools.system import getTempFilename
+from qgis.core import QgsProcessingException
 from qgis.PyQt.QtCore import QCoreApplication
 
 
@@ -57,16 +57,14 @@ def incorporatePoints(
         else:
             raise QgsProcessingException(
                 QCoreApplication.translate(
-                    "GrassAlgorithmExt", "GRASS GIS v.net requires a lines layer!"
+                    "GrassAlgorithmExt", "GRASS v.net requires a lines layer!"
                 )
             )
 
         threshold = alg.parameterAsDouble(parameters, "threshold", context)
 
         # Create the v.net connect command for point layer integration
-        command = "v.net -s input={} points={} output={} operation=connect threshold={}".format(
-            lineLayer, pointLayer, intLayer, threshold
-        )
+        command = f"v.net -s input={lineLayer} points={pointLayer} output={intLayer} operation=connect threshold={threshold}"
         alg.commands.append(command)
 
         # Connect the point layer database to the layer 2 of the network

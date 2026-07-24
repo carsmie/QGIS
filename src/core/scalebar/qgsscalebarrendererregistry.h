@@ -16,8 +16,8 @@
 #ifndef QGSSCALEBARRENDERERREGISTRY_H
 #define QGSSCALEBARRENDERERREGISTRY_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 
 class QgsScaleBarRenderer;
 
@@ -32,9 +32,7 @@ class QgsScaleBarRenderer;
  */
 class CORE_EXPORT QgsScaleBarRendererRegistry
 {
-
   public:
-
     /**
      * You should not normally need to create your own scalebar renderer registry.
      *

@@ -10,7 +10,8 @@
 
 
 
-class QgsPolyhedralSurface: QgsSurface
+
+class QgsPolyhedralSurface : QgsSurface
 {
 %Docstring(signature="appended")
 Polyhedral surface geometry type.
@@ -79,6 +80,8 @@ Creates a polyhedral surface from a multiPolygon.
 
     virtual double area() const /HoldGIL/;
 
+    virtual double area3D() const /HoldGIL/;
+
     virtual double perimeter() const /HoldGIL/;
 
     virtual QgsAbstractGeometry *boundary() const /Factory/;
@@ -88,6 +91,7 @@ Creates a polyhedral surface from a multiPolygon.
     virtual QgsPolyhedralSurface *simplifyByDistance( double tolerance ) const /Factory/;
 
     virtual bool removeDuplicateNodes( double epsilon = 4 * DBL_EPSILON, bool useZValues = false );
+
 
     virtual bool boundingBoxIntersects( const QgsBox3D &box3d ) const /HoldGIL/;
 
@@ -167,6 +171,10 @@ deleted.
     virtual bool moveVertex( QgsVertexId position, const QgsPoint &newPos );
 
     virtual bool deleteVertex( QgsVertexId position );
+
+    virtual bool deleteVertices( const QSet<QgsVertexId> &positions );
+
+    virtual bool hasVertex( QgsVertexId position ) const;
 
 
     virtual QgsCoordinateSequence coordinateSequence() const;

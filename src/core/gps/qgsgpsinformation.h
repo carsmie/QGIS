@@ -26,7 +26,6 @@
 #include <QObject>
 #include <QString>
 
-
 /**
  * \ingroup core
  * \class QgsGpsInformation
@@ -35,7 +34,6 @@
 class CORE_EXPORT QgsGpsInformation
 {
   public:
-
     /**
      * Latitude in decimal degrees, using the WGS84 datum. A positive value indicates the Northern Hemisphere, and
      * a negative value indicates the Southern Hemisphere.
@@ -60,8 +58,10 @@ class CORE_EXPORT QgsGpsInformation
      *
      * Negative values indicate that mean sea level is below the ellipsoid.
      *
-     * This value can be added to the elevation value to obtain the geoidal elevation.
-     *
+     * This value can be added to the (geoid) elevation value to obtain the ellipsoid elevation.
+     * \code{.unparsed}
+     * ellipsoid_elevation = geoid_elevation + geoid_separation
+     * \endcode
      * \since QGIS 3.18
      */
     double elevation_diff = 0;
@@ -246,13 +246,11 @@ class CORE_EXPORT QgsGpsInformation
     QVariant componentValue( Qgis::GpsInformationComponent component ) const;
 
   private:
-
     QMap< Qgis::GnssConstellation, Qgis::GpsFixStatus > mConstellationFixStatus;
     Qgis::GpsNavigationStatus mNavigationStatus = Qgis::GpsNavigationStatus::NotValid;
 
     friend class QgsNmeaConnection;
     friend class QgsQtLocationConnection;
-
 };
 
 Q_DECLARE_METATYPE( QgsGpsInformation )

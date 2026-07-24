@@ -13,10 +13,14 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgstest.h"
-#include <QObject>
-#include <QStringList>
+
 #include <QApplication>
 #include <QFileInfo>
+#include <QObject>
+#include <QString>
+#include <QStringList>
+
+using namespace Qt::StringLiterals;
 
 //qgis includes...
 #include "qgssqliteutils.h"
@@ -64,11 +68,6 @@ void TestQgsSqliteUtils::initTestCase()
 
   // output test environment
   QgsApplication::showSettings();
-
-  // Set up the QgsSettings environment
-  QCoreApplication::setOrganizationName( QStringLiteral( "QGIS" ) );
-  QCoreApplication::setOrganizationDomain( QStringLiteral( "qgis.org" ) );
-  QCoreApplication::setApplicationName( QStringLiteral( "QGIS-TEST" ) );
 }
 
 void TestQgsSqliteUtils::cleanupTestCase()

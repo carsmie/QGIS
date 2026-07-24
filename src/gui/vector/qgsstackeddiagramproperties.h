@@ -19,16 +19,18 @@
 #define QGSSTACKEDDIAGRAMPROPERTIES_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
+
+#include "ui_qgsstackeddiagrampropertiesbase.h"
 
 #include "qgis_gui.h"
 #include "qgsdiagramrenderer.h"
-#include "ui_qgsstackeddiagrampropertiesbase.h"
 #include "qgsproxystyle.h"
 
-#include <QWidget>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QWidget>
+
+#define SIP_NO_FILE
 
 class QgsVectorLayer;
 class QgsMapCanvas;

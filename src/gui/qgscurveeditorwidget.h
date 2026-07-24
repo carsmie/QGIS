@@ -16,17 +16,18 @@
 #ifndef QGSCURVEEDITORWIDGET_H
 #define QGSCURVEEDITORWIDGET_H
 
-#include <QWidget>
+#include "qgis_gui.h"
 #include "qgis_sip.h"
-#include <QThread>
+#include "qgshistogram.h"
+#include "qgspropertytransformer.h"
+#include "qgsvectorlayer.h"
+
 #include <QMutex>
 #include <QPen>
 #include <QPointer>
+#include <QThread>
+#include <QWidget>
 #include <qwt_global.h>
-#include "qgis_gui.h"
-#include "qgspropertytransformer.h"
-#include "qgshistogram.h"
-#include "qgsvectorlayer.h"
 
 class QwtPlot;
 class QwtPlotCurve;
@@ -95,23 +96,11 @@ class QgsHistogramValuesGatherer : public QThread
 
     const QgsHistogram &histogram() const { return mHistogram; }
 
-    const QgsVectorLayer *layer() const
-    {
-      return mLayer;
-    }
-    void setLayer( const QgsVectorLayer *layer )
-    {
-      mLayer = const_cast<QgsVectorLayer *>( layer );
-    }
+    const QgsVectorLayer *layer() const { return mLayer; }
+    void setLayer( const QgsVectorLayer *layer ) { mLayer = const_cast<QgsVectorLayer *>( layer ); }
 
-    QString expression() const
-    {
-      return mExpression;
-    }
-    void setExpression( const QString &expression )
-    {
-      mExpression = expression;
-    }
+    QString expression() const { return mExpression; }
+    void setExpression( const QString &expression ) { mExpression = expression; }
 
   signals:
 

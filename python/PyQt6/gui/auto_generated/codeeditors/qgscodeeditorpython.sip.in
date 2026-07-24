@@ -11,6 +11,8 @@
 
 
 
+
+
 class QgsCodeEditorPython : QgsCodeEditor
 {
 %Docstring(signature="appended")
@@ -28,7 +30,12 @@ Adds syntax highlighting and code autocompletion.
 %End
   public:
 
-    QgsCodeEditorPython( QWidget *parent /TransferThis/ = 0, const QList<QString> &filenames = QList<QString>(), QgsCodeEditor::Mode mode = QgsCodeEditor::Mode::ScriptEditor, QgsCodeEditor::Flags flags = QgsCodeEditor::Flag::CodeFolding );
+    QgsCodeEditorPython(
+      QWidget *parent /TransferThis/ = 0,
+      const QList<QString> &filenames = QList<QString>(),
+      QgsCodeEditor::Mode mode = QgsCodeEditor::Mode::ScriptEditor,
+      QgsCodeEditor::Flags flags = QgsCodeEditor::Flag::CodeFolding
+    );
 %Docstring
 Construct a new Python editor.
 
@@ -118,6 +125,9 @@ Toggle comment for the selected text.
     virtual void initializeLexer();
 
     virtual void keyPressEvent( QKeyEvent *event );
+
+    virtual void showEvent( QShowEvent *event );
+
     virtual QString reformatCodeString( const QString &string );
 
     virtual void populateContextMenu( QMenu *menu );

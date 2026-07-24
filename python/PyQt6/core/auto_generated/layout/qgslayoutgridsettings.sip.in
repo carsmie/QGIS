@@ -8,6 +8,8 @@
 
 
 
+
+
 class QgsLayoutGridSettings : QgsLayoutSerializableObject
 {
 %Docstring(signature="appended")
@@ -19,7 +21,6 @@ layout grids.
 #include "qgslayoutgridsettings.h"
 %End
   public:
-
     enum Style /BaseType=IntEnum/
     {
       StyleLines,
@@ -131,6 +132,7 @@ corresponding to the grid.
 .. seealso:: :py:func:`writeXml`
 %End
 
+  public:
 };
 
 /************************************************************************

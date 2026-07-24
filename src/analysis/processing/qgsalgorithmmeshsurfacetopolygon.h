@@ -18,11 +18,12 @@
 #ifndef QGSALGORITHMMESHCONVEXHULL_H
 #define QGSALGORITHMMESHCONVEXHULL_H
 
-#define SIP_NO_FILE
 
-#include "qgsprocessingalgorithm.h"
 #include "qgsmeshdataprovider.h"
+#include "qgsprocessingalgorithm.h"
 #include "qgstriangularmesh.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 

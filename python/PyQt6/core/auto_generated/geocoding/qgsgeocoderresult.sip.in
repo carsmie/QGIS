@@ -8,8 +8,6 @@
 
 
 
-
-
 class QgsGeocoderResult
 {
 %Docstring(signature="appended")
@@ -33,7 +31,6 @@ the accuracy of the geocoding result.
 #include "qgsgeocoderresult.h"
 %End
   public:
-
     static QgsGeocoderResult errorResult( const QString &errorMessage );
 %Docstring
 Creates an invalid error result, with the specified ``errorMessage``

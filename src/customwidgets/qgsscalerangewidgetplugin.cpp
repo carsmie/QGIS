@@ -13,17 +13,17 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "qgiscustomwidgets.h"
 #include "qgsscalerangewidgetplugin.h"
-#include "moc_qgsscalerangewidgetplugin.cpp"
+
+#include "qgiscustomwidgets.h"
 #include "qgsscalerangewidget.h"
 
+#include "moc_qgsscalerangewidgetplugin.cpp"
 
 QgsScaleRangeWidgetPlugin::QgsScaleRangeWidgetPlugin( QObject *parent )
   : QObject( parent )
   , mInitialized( false )
-{
-}
+{}
 
 
 QString QgsScaleRangeWidgetPlugin::name() const
@@ -82,17 +82,19 @@ QString QgsScaleRangeWidgetPlugin::whatsThis() const
 
 QString QgsScaleRangeWidgetPlugin::domXml() const
 {
-  return QString( "<ui language=\"c++\">\n"
-                  " <widget class=\"%1\" name=\"mScaleRangeWidget\">\n"
-                  "  <property name=\"geometry\">\n"
-                  "   <rect>\n"
-                  "    <x>0</x>\n"
-                  "    <y>0</y>\n"
-                  "    <width>400</width>\n"
-                  "    <height>100</height>\n"
-                  "   </rect>\n"
-                  "  </property>\n"
-                  " </widget>\n"
-                  "</ui>\n" )
+  return QString(
+           "<ui language=\"c++\">\n"
+           " <widget class=\"%1\" name=\"mScaleRangeWidget\">\n"
+           "  <property name=\"geometry\">\n"
+           "   <rect>\n"
+           "    <x>0</x>\n"
+           "    <y>0</y>\n"
+           "    <width>400</width>\n"
+           "    <height>100</height>\n"
+           "   </rect>\n"
+           "  </property>\n"
+           " </widget>\n"
+           "</ui>\n"
+  )
     .arg( name() );
 }

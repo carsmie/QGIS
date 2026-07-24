@@ -18,11 +18,12 @@
 #ifndef QGSOGRGUIPROVIDER_H
 #define QGSOGRGUIPROVIDER_H
 
-#include "qgsproviderguimetadata.h"
 #include "qgis_sip.h"
+#include "qgsproviderguimetadata.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 class QgsOgrGuiProviderMetadata : public QgsProviderGuiMetadata
 {

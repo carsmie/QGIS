@@ -16,14 +16,19 @@
  ***************************************************************************/
 
 #include "qgsalgorithmremovepartsbyarea.h"
+
 #include "qgsgeometrycollection.h"
 #include "qgssurface.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
 QString QgsRemovePartsByAreaAlgorithm::name() const
 {
-  return QStringLiteral( "removepartsbyarea" );
+  return u"removepartsbyarea"_s;
 }
 
 QString QgsRemovePartsByAreaAlgorithm::displayName() const
@@ -43,7 +48,7 @@ QString QgsRemovePartsByAreaAlgorithm::group() const
 
 QString QgsRemovePartsByAreaAlgorithm::groupId() const
 {
-  return QStringLiteral( "vectorgeometry" );
+  return u"vectorgeometry"_s;
 }
 
 QString QgsRemovePartsByAreaAlgorithm::outputName() const
@@ -68,13 +73,15 @@ QString QgsRemovePartsByAreaAlgorithm::shortDescription() const
 
 QString QgsRemovePartsByAreaAlgorithm::shortHelpString() const
 {
-  return QObject::tr( "This algorithm takes a polygon layer and removes polygons which are smaller than a specified area.\n\n"
-                      "If the input geometry is a multipart geometry, then the parts will be filtered by their individual areas. If no parts match the "
-                      "required minimum area, then the feature will be skipped and omitted from the output layer.\n\n"
-                      "If the input geometry is a singlepart geometry, then the feature will be skipped if the geometry's "
-                      "area is below the required size and omitted from the output layer.\n\n"
-                      "The area will be calculated using Cartesian calculations in the source layer's coordinate reference system.\n\n"
-                      "Attributes are not modified." );
+  return QObject::tr(
+    "This algorithm takes a polygon layer and removes polygons which are smaller than a specified area.\n\n"
+    "If the input geometry is a multipart geometry, then the parts will be filtered by their individual areas. If no parts match the "
+    "required minimum area, then the feature will be skipped and omitted from the output layer.\n\n"
+    "If the input geometry is a singlepart geometry, then the feature will be skipped if the geometry's "
+    "area is below the required size and omitted from the output layer.\n\n"
+    "The area will be calculated using Cartesian calculations in the source layer's coordinate reference system.\n\n"
+    "Attributes are not modified."
+  );
 }
 
 QgsRemovePartsByAreaAlgorithm *QgsRemovePartsByAreaAlgorithm::createInstance() const
@@ -90,19 +97,19 @@ Qgis::ProcessingFeatureSourceFlags QgsRemovePartsByAreaAlgorithm::sourceFlags() 
 
 void QgsRemovePartsByAreaAlgorithm::initParameters( const QVariantMap & )
 {
-  std::unique_ptr< QgsProcessingParameterArea > minArea = std::make_unique< QgsProcessingParameterArea >( QStringLiteral( "MIN_AREA" ), QObject::tr( "Remove parts with area less than" ), 0.0, QStringLiteral( "INPUT" ), false, 0 );
+  auto minArea = std::make_unique< QgsProcessingParameterArea >( u"MIN_AREA"_s, QObject::tr( "Remove parts with area less than" ), 0.0, u"INPUT"_s, false, 0 );
   minArea->setIsDynamic( true );
-  minArea->setDynamicPropertyDefinition( QgsPropertyDefinition( QStringLiteral( "MIN_AREA" ), QObject::tr( "Remove parts with area less than" ), QgsPropertyDefinition::DoublePositive ) );
-  minArea->setDynamicLayerParameterName( QStringLiteral( "INPUT" ) );
+  minArea->setDynamicPropertyDefinition( QgsPropertyDefinition( u"MIN_AREA"_s, QObject::tr( "Remove parts with area less than" ), QgsPropertyDefinition::DoublePositive ) );
+  minArea->setDynamicLayerParameterName( u"INPUT"_s );
   addParameter( minArea.release() );
 }
 
 bool QgsRemovePartsByAreaAlgorithm::prepareAlgorithm( const QVariantMap &parameters, QgsProcessingContext &context, QgsProcessingFeedback * )
 {
-  mMinArea = parameterAsDouble( parameters, QStringLiteral( "MIN_AREA" ), context );
-  mDynamicMinArea = QgsProcessingParameters::isDynamic( parameters, QStringLiteral( "MIN_AREA" ) );
+  mMinArea = parameterAsDouble( parameters, u"MIN_AREA"_s, context );
+  mDynamicMinArea = QgsProcessingParameters::isDynamic( parameters, u"MIN_AREA"_s );
   if ( mDynamicMinArea )
-    mMinAreaProperty = parameters.value( QStringLiteral( "MIN_AREA" ) ).value< QgsProperty >();
+    mMinAreaProperty = parameters.value( u"MIN_AREA"_s ).value< QgsProperty >();
 
   return true;
 }
@@ -120,21 +127,20 @@ QgsFeatureList QgsRemovePartsByAreaAlgorithm::processFeature( const QgsFeature &
     QgsGeometry outputGeometry;
     if ( const QgsGeometryCollection *inputCollection = qgsgeometry_cast< const QgsGeometryCollection * >( geometry.constGet() ) )
     {
-      std::unique_ptr< QgsAbstractGeometry> filteredGeometry( geometry.constGet()->createEmptyWithSameType() );
-      QgsGeometryCollection *collection = qgsgeometry_cast< QgsGeometryCollection * >( filteredGeometry.get() );
+      std::unique_ptr< QgsGeometryCollection> filteredGeometry( inputCollection->createEmptyWithSameType() );
       const int size = inputCollection->numGeometries();
-      collection->reserve( size );
+      filteredGeometry->reserve( size );
       for ( int i = 0; i < size; ++i )
       {
         if ( const QgsSurface *surface = qgsgeometry_cast< const QgsSurface * >( inputCollection->geometryN( i ) ) )
         {
           if ( surface->area() >= minArea )
           {
-            collection->addGeometry( surface->clone() );
+            filteredGeometry->addGeometry( surface->clone() );
           }
         }
       }
-      if ( collection->numGeometries() == 0 )
+      if ( filteredGeometry->numGeometries() == 0 )
       {
         // skip empty features
         return {};

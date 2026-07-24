@@ -16,25 +16,28 @@
  ***************************************************************************/
 
 #include "qgsannotationmarkeritem.h"
+
+#include "qgsannotationitemeditoperation.h"
+#include "qgsannotationitemnode.h"
+#include "qgsmarkersymbol.h"
 #include "qgssymbol.h"
 #include "qgssymbollayerutils.h"
-#include "qgsmarkersymbol.h"
-#include "qgsannotationitemnode.h"
-#include "qgsannotationitemeditoperation.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsAnnotationMarkerItem::QgsAnnotationMarkerItem( const QgsPoint &point )
   : QgsAnnotationItem()
   , mPoint( point )
   , mSymbol( std::make_unique< QgsMarkerSymbol >() )
-{
-
-}
+{}
 
 QgsAnnotationMarkerItem::~QgsAnnotationMarkerItem() = default;
 
 QString QgsAnnotationMarkerItem::type() const
 {
-  return QStringLiteral( "marker" );
+  return u"marker"_s;
 }
 
 void QgsAnnotationMarkerItem::render( QgsRenderContext &context, QgsFeedback * )
@@ -60,9 +63,9 @@ void QgsAnnotationMarkerItem::render( QgsRenderContext &context, QgsFeedback * )
 
 bool QgsAnnotationMarkerItem::writeXml( QDomElement &element, QDomDocument &document, const QgsReadWriteContext &context ) const
 {
-  element.setAttribute( QStringLiteral( "x" ), qgsDoubleToString( mPoint.x() ) );
-  element.setAttribute( QStringLiteral( "y" ), qgsDoubleToString( mPoint.y() ) );
-  element.appendChild( QgsSymbolLayerUtils::saveSymbol( QStringLiteral( "markerSymbol" ), mSymbol.get(), document, context ) );
+  element.setAttribute( u"x"_s, qgsDoubleToString( mPoint.x() ) );
+  element.setAttribute( u"y"_s, qgsDoubleToString( mPoint.y() ) );
+  element.appendChild( QgsSymbolLayerUtils::saveSymbol( u"markerSymbol"_s, mSymbol.get(), document, context ) );
 
   writeCommonProperties( element, document, context );
 
@@ -72,13 +75,12 @@ bool QgsAnnotationMarkerItem::writeXml( QDomElement &element, QDomDocument &docu
 Qgis::AnnotationItemFlags QgsAnnotationMarkerItem::flags() const
 {
   // in truth this should depend on whether the marker symbol is scale dependent or not!
-  return Qgis::AnnotationItemFlag::ScaleDependentBoundingBox
-         | Qgis::AnnotationItemFlag::SupportsReferenceScale;
+  return Qgis::AnnotationItemFlag::ScaleDependentBoundingBox | Qgis::AnnotationItemFlag::SupportsReferenceScale;
 }
 
 QList<QgsAnnotationItemNode> QgsAnnotationMarkerItem::nodesV2( const QgsAnnotationItemEditContext & ) const
 {
-  return { QgsAnnotationItemNode( QgsVertexId( 0, 0, 0 ), mPoint, Qgis::AnnotationItemNodeType::VertexHandle )};
+  return { QgsAnnotationItemNode( QgsVertexId( 0, 0, 0 ), mPoint, Qgis::AnnotationItemNodeType::VertexHandle ) };
 }
 
 Qgis::AnnotationItemEditOperationResult QgsAnnotationMarkerItem::applyEditV2( QgsAbstractAnnotationItemEditOperation *operation, const QgsAnnotationItemEditContext & )
@@ -105,6 +107,17 @@ Qgis::AnnotationItemEditOperationResult QgsAnnotationMarkerItem::applyEditV2( Qg
       return Qgis::AnnotationItemEditOperationResult::Success;
     }
 
+    case QgsAbstractAnnotationItemEditOperation::Type::RotateItem:
+    {
+      QgsAnnotationItemEditOperationRotateItem *rotateOperation = qgis::down_cast< QgsAnnotationItemEditOperationRotateItem * >( operation );
+      if ( mSymbol )
+      {
+        mSymbol->setAngle( std::fmod( mSymbol->angle() + rotateOperation->angle(), 360.0 ) );
+        return Qgis::AnnotationItemEditOperationResult::Success;
+      }
+      break;
+    }
+
     case QgsAbstractAnnotationItemEditOperation::Type::AddNode:
       break;
   }
@@ -118,7 +131,7 @@ QgsAnnotationItemEditOperationTransientResults *QgsAnnotationMarkerItem::transie
   {
     case QgsAbstractAnnotationItemEditOperation::Type::MoveNode:
     {
-      QgsAnnotationItemEditOperationMoveNode *moveOperation = dynamic_cast< QgsAnnotationItemEditOperationMoveNode * >( operation );
+      QgsAnnotationItemEditOperationMoveNode *moveOperation = qgis::down_cast< QgsAnnotationItemEditOperationMoveNode * >( operation );
       return new QgsAnnotationItemEditOperationTransientResults( QgsGeometry( moveOperation->after().clone() ) );
     }
 
@@ -128,6 +141,7 @@ QgsAnnotationItemEditOperationTransientResults *QgsAnnotationMarkerItem::transie
       return new QgsAnnotationItemEditOperationTransientResults( QgsGeometry( new QgsPoint( mPoint.x() + moveOperation->translationX(), mPoint.y() + moveOperation->translationY() ) ) );
     }
 
+    case QgsAbstractAnnotationItemEditOperation::Type::RotateItem:
     case QgsAbstractAnnotationItemEditOperation::Type::DeleteNode:
     case QgsAbstractAnnotationItemEditOperation::Type::AddNode:
       break;
@@ -142,11 +156,11 @@ QgsAnnotationMarkerItem *QgsAnnotationMarkerItem::create()
 
 bool QgsAnnotationMarkerItem::readXml( const QDomElement &element, const QgsReadWriteContext &context )
 {
-  const double x = element.attribute( QStringLiteral( "x" ) ).toDouble();
-  const double y = element.attribute( QStringLiteral( "y" ) ).toDouble();
+  const double x = element.attribute( u"x"_s ).toDouble();
+  const double y = element.attribute( u"y"_s ).toDouble();
   mPoint = QgsPoint( x, y );
 
-  const QDomElement symbolElem = element.firstChildElement( QStringLiteral( "symbol" ) );
+  const QDomElement symbolElem = element.firstChildElement( u"symbol"_s );
   if ( !symbolElem.isNull() )
     setSymbol( QgsSymbolLayerUtils::loadSymbol< QgsMarkerSymbol >( symbolElem, context ).release() );
 

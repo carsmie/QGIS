@@ -14,16 +14,17 @@
  ***************************************************************************/
 
 #include "qgsmeshrendererscalarsettingswidget.h"
-#include "moc_qgsmeshrendererscalarsettingswidget.cpp"
-
-#include "QDialogButtonBox"
 
 #include "qgis.h"
+#include "qgsmapcanvas.h"
 #include "qgsmeshlayer.h"
 #include "qgsmeshvariablestrokewidthwidget.h"
-#include "qgsmapcanvas.h"
-#include <QPointer>
 #include "qgsmessagelog.h"
+
+#include <QDialogButtonBox>
+#include <QPointer>
+
+#include "moc_qgsmeshrendererscalarsettingswidget.cpp"
 
 QgsMeshRendererScalarSettingsWidget::QgsMeshRendererScalarSettingsWidget( QWidget *parent )
   : QWidget( parent )
@@ -52,14 +53,12 @@ QgsMeshRendererScalarSettingsWidget::QgsMeshRendererScalarSettingsWidget( QWidge
   mUserDefinedRadioButton->setChecked( true );
   mMinMaxValueTypeComboBox->setEnabled( false );
 
-  mScalarEdgeStrokeWidthUnitSelectionWidget->setUnits(
-    {
-      Qgis::RenderUnit::Millimeters,
-      Qgis::RenderUnit::MetersInMapUnits,
-      Qgis::RenderUnit::Pixels,
-      Qgis::RenderUnit::Points,
-    }
-  );
+  mScalarEdgeStrokeWidthUnitSelectionWidget->setUnits( {
+    Qgis::RenderUnit::Millimeters,
+    Qgis::RenderUnit::MetersInMapUnits,
+    Qgis::RenderUnit::Pixels,
+    Qgis::RenderUnit::Points,
+  } );
 
   // connect
   connect( mScalarRecalculateMinMaxButton, &QPushButton::clicked, this, &QgsMeshRendererScalarSettingsWidget::recalculateMinMaxButtonClicked );

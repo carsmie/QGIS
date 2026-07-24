@@ -21,12 +21,13 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include <QList>
-#include <QVector>
-#include "qgslabelposition.h"
 #include "qgscalloutposition.h"
 #include "qgsgenericspatialindex.h"
+#include "qgslabelposition.h"
 #include "qgsmapsettings.h"
+
+#include <QList>
+#include <QVector>
 
 class QgsPointXY;
 
@@ -37,7 +38,7 @@ namespace pal
 }
 #endif
 
-// TODO QGIS 4.0 - this should be private, not exposed to SIP
+// TODO QGIS 5.0 - this should be private, not exposed to SIP
 
 /**
  * \ingroup core
@@ -48,7 +49,6 @@ namespace pal
 class CORE_EXPORT QgsLabelSearchTree
 {
   public:
-
     QgsLabelSearchTree();
     ~QgsLabelSearchTree();
 
@@ -89,7 +89,18 @@ class CORE_EXPORT QgsLabelSearchTree
      * \returns TRUE in case of success
      * \note not available in Python bindings
      */
-    bool insertLabel( pal::LabelPosition *labelPos, QgsFeatureId featureId, const QString &layerName, const QString &labeltext, const QFont &labelfont, bool diagram = false, bool pinned = false, const QString &providerId = QString(), bool isUnplaced = false, long long linkedId = 0 ) SIP_SKIP;
+    bool insertLabel(
+      pal::LabelPosition *labelPos,
+      QgsFeatureId featureId,
+      const QString &layerName,
+      const QString &labeltext,
+      const QFont &labelfont,
+      bool diagram = false,
+      bool pinned = false,
+      const QString &providerId = QString(),
+      bool isUnplaced = false,
+      long long linkedId = 0
+    ) SIP_SKIP;
 
     /**
      * Inserts a rendered callout position.

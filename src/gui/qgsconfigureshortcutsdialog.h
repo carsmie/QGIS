@@ -16,12 +16,13 @@
 #ifndef QGSCONFIGURESHORTCUTSDIALOG_H
 #define QGSCONFIGURESHORTCUTSDIALOG_H
 
-#include <QDialog>
-#include "qgis_sip.h"
-
 #include "ui_qgsconfigureshortcutsdialog.h"
-#include "qgshelp.h"
+
 #include "qgis_gui.h"
+#include "qgis_sip.h"
+#include "qgshelp.h"
+
+#include <QDialog>
 
 class QShortcut;
 class QgsShortcutsManager;
@@ -44,6 +45,17 @@ class GUI_EXPORT QgsConfigureShortcutsDialog : public QDialog, private Ui::QgsCo
      * singleton QgsShortcutsManager instance.
      */
     QgsConfigureShortcutsDialog( QWidget *parent SIP_TRANSFERTHIS = nullptr, QgsShortcutsManager *manager = nullptr );
+
+  public slots:
+
+    /**
+     * Sets the text for the filter line edit.
+     *
+     * This will immediately filter the shortcuts list to only matching items.
+     *
+     * \since QGIS 4.2
+     */
+    void setFilter( const QString &filterText );
 
   protected:
     void keyPressEvent( QKeyEvent *event ) override;
@@ -96,7 +108,8 @@ class GUI_EXPORT QgsConfigureShortcutsDialog : public QDialog, private Ui::QgsCo
     QAction *mSaveAsPdf = nullptr;
 
     bool mGettingShortcut = false;
-    int mModifiers = 0, mKey = 0;
+    Qt::KeyboardModifiers mModifiers = Qt::KeyboardModifiers();
+    int mKey = 0;
 };
 
 #endif //QGSCONFIGURESHORTCUTSDIALOG_H

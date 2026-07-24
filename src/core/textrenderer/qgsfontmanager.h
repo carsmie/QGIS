@@ -20,8 +20,9 @@
 #include "qgis_sip.h"
 #include "qgssettingsentryimpl.h"
 #include "qgstaskmanager.h"
-#include <QObject>
+
 #include <QMap>
+#include <QObject>
 #include <QReadWriteLock>
 #include <QSet>
 
@@ -36,7 +37,6 @@
 class CORE_EXPORT QgsFontDownloadDetails
 {
   public:
-
     /**
      * Constructor for an invalid QgsFontDownloadDetails.
      */
@@ -84,7 +84,6 @@ class CORE_EXPORT QgsFontDownloadDetails
     QString licenseUrl() const { return mLicenseUrl; }
 
   private:
-
     QString mFamily;
     QString mStandardizedFamily;
     QStringList mFontUrls;
@@ -98,7 +97,6 @@ class CORE_EXPORT QgsFontDownloadTask : public QgsTask
     Q_OBJECT
 
   public:
-
     QgsFontDownloadTask( const QString &description, const QgsFontDownloadDetails &details );
 
     bool run() override;
@@ -108,8 +106,8 @@ class CORE_EXPORT QgsFontDownloadTask : public QgsTask
     QList< QByteArray > fontData() const { return mFontData; }
     QByteArray licenseData() const { return mLicenseData; }
     QStringList contentDispositionFilenames() const { return mContentDispositionFilenames; }
-  private:
 
+  private:
     QgsFontDownloadDetails mDetails;
     std::unique_ptr< QgsFeedback > mFeedback;
     bool mResult = false;
@@ -118,7 +116,6 @@ class CORE_EXPORT QgsFontDownloadTask : public QgsTask
     QList< QByteArray > mFontData;
     QStringList mContentDispositionFilenames;
     QByteArray mLicenseData;
-
 };
 ///@endcond PRIVATE
 #endif
@@ -138,7 +135,6 @@ class CORE_EXPORT QgsFontManager : public QObject
     Q_OBJECT
 
   public:
-
 #ifndef SIP_RUN
     //! Settings entry for font family replacements
     static const QgsSettingsEntryStringList *settingsFontFamilyReplacements;
@@ -248,7 +244,7 @@ class CORE_EXPORT QgsFontManager : public QObject
     bool tryToDownloadFontFamily( const QString &family, QString &matchedFamily SIP_OUT );
 
     /**
-     * Enables font downloads the the current QGIS session.
+     * Enables font downloads the current QGIS session.
      *
      * \warning Ensure that the QgsApplication is fully initialized before calling this method.
      */
@@ -332,7 +328,9 @@ class CORE_EXPORT QgsFontManager : public QObject
      *
      * \returns TRUE if installation was successful.
      */
-    bool installFontsFromData( const QByteArray &data, QString &errorMessage SIP_OUT, QStringList &families SIP_OUT, QString &licenseDetails SIP_OUT, const QString &filename = QString(), const QString &extension = QString() );
+    bool installFontsFromData(
+      const QByteArray &data, QString &errorMessage SIP_OUT, QStringList &families SIP_OUT, QString &licenseDetails SIP_OUT, const QString &filename = QString(), const QString &extension = QString()
+    );
 
     /**
      * Adds a \a directory to use for user fonts.
@@ -380,7 +378,6 @@ class CORE_EXPORT QgsFontManager : public QObject
     void fontDownloadErrorOccurred( const QUrl &url, const QString &identifier, const QString &error );
 
   private:
-
     QMap< QString, QString > mFamilyReplacements;
     QMap< QString, QString > mLowerCaseFamilyReplacements;
     QMap< QString, QStringList > mUserFontToFamilyMap;

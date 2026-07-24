@@ -21,10 +21,12 @@
 #define QGSDOUBLEVALIDATOR_H
 
 #include <limits>
-#include <QRegularExpressionValidator>
-#include <QLocale>
+
 #include "qgis_gui.h"
 #include "qgis_sip.h"
+
+#include <QLocale>
+#include <QRegularExpressionValidator>
 
 class QRegularExpression;
 
@@ -167,6 +169,11 @@ class GUI_EXPORT QgsDoubleValidator : public QRegularExpressionValidator
      * Top range limit
      */
     double mMaximum;
+
+    /**
+     * Creates the expression with given max \a decimals
+     */
+    static QRegularExpression createExpression( int decimals );
 };
 
 #endif // QGSDOUBLEVALIDATOR_H

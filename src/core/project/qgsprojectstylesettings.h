@@ -15,16 +15,17 @@
 #ifndef QGSPROJECTSTYLESETTINGS_H
 #define QGSPROJECTSTYLESETTINGS_H
 
+#include <memory.h>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgstextformat.h"
 #include "qgswkbtypes.h"
 
-#include <memory.h>
 #include <QAbstractListModel>
 #include <QColorSpace>
-#include <QSortFilterProxyModel>
 #include <QPointer>
+#include <QSortFilterProxyModel>
 
 class QDomElement;
 class QgsReadWriteContext;
@@ -47,7 +48,6 @@ class CORE_EXPORT QgsProjectStyleSettings : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsProjectStyleSettings for the specified \a project.
      *
@@ -330,7 +330,6 @@ class CORE_EXPORT QgsProjectStyleSettings : public QObject
 
 #endif
   private:
-
     QgsProject *mProject = nullptr;
 
     std::unique_ptr< QgsSymbol > mDefaultMarkerSymbol;
@@ -373,7 +372,6 @@ class CORE_EXPORT QgsProjectStyleDatabaseModel : public QAbstractListModel
     Q_OBJECT
 
   public:
-
     // *INDENT-OFF*
 
     /**
@@ -385,7 +383,7 @@ class CORE_EXPORT QgsProjectStyleDatabaseModel : public QAbstractListModel
     enum class CustomRole SIP_MONKEYPATCH_SCOPEENUM_UNNEST( QgsProjectStyleDatabaseModel, Role ) : int
     {
       Style SIP_MONKEYPATCH_COMPAT_NAME( StyleRole ) = Qt::UserRole + 1, //!< Style object
-      Path SIP_MONKEYPATCH_COMPAT_NAME(PathRole) //!< Style path
+      Path SIP_MONKEYPATCH_COMPAT_NAME( PathRole )                       //!< Style path
     };
     Q_ENUM( CustomRole )
     // *INDENT-ON*
@@ -454,7 +452,6 @@ class CORE_EXPORT QgsProjectStyleDatabaseProxyModel : public QSortFilterProxyMod
     Q_OBJECT
 
   public:
-
     //! Available filter flags for filtering the model
     enum class Filter : int SIP_ENUM_BASETYPE( IntFlag )
     {
@@ -487,9 +484,7 @@ class CORE_EXPORT QgsProjectStyleDatabaseProxyModel : public QSortFilterProxyMod
     void setFilters( QgsProjectStyleDatabaseProxyModel::Filters filters );
 
   private:
-
     QgsProjectStyleDatabaseProxyModel::Filters mFilters;
-
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( QgsProjectStyleDatabaseProxyModel::Filters )
 

@@ -18,12 +18,13 @@
 #ifndef QGSOGRTRANSACTION_H
 #define QGSOGRTRANSACTION_H
 
-#include "qgstransaction.h"
-#include "qgsogrprovider.h"
 #include "qgis_sip.h"
+#include "qgsogrprovider.h"
+#include "qgstransaction.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 class QgsOgrTransaction : public QgsTransaction
 {
@@ -45,13 +46,11 @@ class QgsOgrTransaction : public QgsTransaction
     QgsOgrDatasetSharedPtr sharedDS() const { return mSharedDS; }
 
   private:
-
     QgsOgrDatasetSharedPtr mSharedDS = nullptr;
 
     bool beginTransaction( QString &error, int statementTimeout ) override;
     bool commitTransaction( QString &error ) override;
     bool rollbackTransaction( QString &error ) override;
-
 };
 
 ///@endcond

@@ -17,15 +17,16 @@
 #define QGSMAPTOOL_H
 
 #include "qgsconfig.h"
+
 #include "qgis.h"
+#include "qgis_gui.h"
+#include "qgspropertycollection.h"
 
 #include <QCursor>
-#include <QString>
+#include <QGestureEvent>
 #include <QObject>
 #include <QPointer>
-#include <QGestureEvent>
-#include "qgis_gui.h"
-
+#include <QString>
 
 class QgsMapLayer;
 class QgsMapCanvas;
@@ -41,6 +42,7 @@ class QAction;
 class QAbstractButton;
 class QgsMapMouseEvent;
 class QMenu;
+class QgsSettingsEntryDouble;
 
 #ifdef SIP_RUN
 //%ModuleHeaderCode
@@ -107,7 +109,7 @@ class GUI_EXPORT QgsMapTool : public QObject
      */
     enum Flag SIP_ENUM_BASETYPE( IntFlag )
     {
-      Transient = 1 << 1,       //!< Deprecated since QGIS 3.36 -- no longer used by QGIS and will be removed in QGIS 4.0
+      Transient = 1 << 1,       //!< Deprecated since QGIS 3.36 -- no longer used by QGIS and will be removed in QGIS 5.0
       EditTool = 1 << 2,        //!< Map tool is an edit tool, which can only be used when layer is editable
       AllowZoomRect = 1 << 3,   //!< Allow zooming by rectangle (by holding shift and dragging) while the tool is active
       ShowContextMenu = 1 << 4, //!< Show a context menu when right-clicking with the tool (since QGIS 3.14). See populateContextMenu().
@@ -151,6 +153,15 @@ class GUI_EXPORT QgsMapTool : public QObject
      * \since QGIS 3.22
      */
     virtual bool canvasToolTipEvent( QHelpEvent *e );
+
+    /**
+     * Shortcut events coming from the application for overriding. The default
+     * implementation does nothing. Returns whether the event was handled by
+     * the tool and should not be propagated further.
+     *
+     * \since QGIS 4.0
+     */
+    virtual bool shortcutEvent( QKeyEvent *e );
 
     /**
      * Use this to associate a QAction to this maptool. Then when the setMapTool
@@ -214,6 +225,16 @@ class GUI_EXPORT QgsMapTool : public QObject
     */
     static double searchRadiusMM();
 
+#ifndef SIP_RUN
+
+    /**
+     * Settings entry for the search/identify radius in mm.
+     * \since QGIS 4.0.1
+     */
+    static const QgsSettingsEntryDouble *settingSearchRadiusMM;
+
+#endif
+
     /**
      * Gets search radius in map units for given context. Used by identify, tip etc.
      *  The values is calculated from searchRadiusMM().
@@ -264,6 +285,28 @@ class GUI_EXPORT QgsMapTool : public QObject
 
     //! Transforms a \a point from screen coordinates to map coordinates.
     QgsPointXY toMapCoordinates( QPoint point );
+
+    /**
+     * Property status used in method dealing with property
+     */
+    enum class PropertyStatus
+    {
+      Valid,                   //!< Property is valid
+      DoesNotExist,            //!< Property does not exist
+      CurrentExpressionInvalid //!< Property is an invalid expression
+    };
+
+    /**
+     * Returns data defined property column name for the \a propertyKey from \a properties associated to the \a layer
+     * \a status is updated with current property status
+     */
+    QString dataDefinedColumnName( int propertyKey, const QgsPropertyCollection &properties, const QgsVectorLayer *layer, PropertyStatus &status ) const;
+
+    /**
+     * Returns data defined property column index for the \a propertyKey from \a properties associated to the \a layer
+     */
+    int dataDefinedColumnIndex( int propertyKey, const QgsPropertyCollection &properties, const QgsVectorLayer *vlayer ) const;
+
 
   signals:
 

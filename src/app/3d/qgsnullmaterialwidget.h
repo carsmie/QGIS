@@ -16,9 +16,9 @@
 #ifndef QGSNULLMATERIALWIDGET_H
 #define QGSNULLMATERIALWIDGET_H
 
-#include "qgsmaterialsettingswidget.h"
+#include "ui_nullmaterialwidget.h"
 
-#include <ui_nullmaterialwidget.h>
+#include "qgsmaterialsettingswidget.h"
 
 class QgsNullMaterialSettings;
 
@@ -31,8 +31,10 @@ class QgsNullMaterialWidget : public QgsMaterialSettingsWidget, private Ui::Null
     explicit QgsNullMaterialWidget( QWidget *parent = nullptr );
 
     static QgsMaterialSettingsWidget *create();
-    void setSettings( const QgsAbstractMaterialSettings *settings, QgsVectorLayer *layer ) override;
-    QgsAbstractMaterialSettings *settings() override;
+    void setSettings( const QgsAbstractMaterialSettings *settings, QgsVectorLayer *layer ) final;
+    std::unique_ptr< QgsAbstractMaterialSettings > settings() final;
+  public slots:
+    void setPreviewVisible( bool visible ) final;
 };
 
 #endif // QGSNULLMATERIALWIDGET_H

@@ -22,14 +22,15 @@
 #define QGSSERVERAPIUTILS_H
 
 #include "qgis_server.h"
-#include <QString>
+#include "qgsjsonutils.h"
+#include "qgsmaplayerserverproperties.h"
 #include "qgsproject.h"
-#include "qgsserverprojectutils.h"
+#include "qgsrange.h"
 #include "qgsserverapicontext.h"
 #include "qgsserverexception.h"
-#include "qgsmaplayerserverproperties.h"
-#include "qgsrange.h"
-#include "qgsjsonutils.h"
+#include "qgsserverprojectutils.h"
+
+#include <QString>
 
 #ifdef HAVE_SERVER_PYTHON_PLUGINS
 #include "qgsaccesscontrol.h"
@@ -152,6 +153,7 @@ class SERVER_EXPORT QgsServerApiUtils
      */
     static QVariantList temporalExtentList( const QgsVectorLayer *layer ) SIP_PYNAME( temporalExtent );
 
+
     /**
      * Parses the CRS URI \a bboxCrs (example: "http://www.opengis.net/def/crs/OGC/1.3/CRS84") into a QGIS CRS object
      */
@@ -175,8 +177,7 @@ class SERVER_EXPORT QgsServerApiUtils
      *
      * \note not available in Python bindings
      */
-    template<typename T>
-    static const QVector<T> publishedWfsLayers( const QgsServerApiContext &context )
+    template<typename T> static const QVector<T> publishedWfsLayers( const QgsServerApiContext &context )
     {
 #ifdef HAVE_SERVER_PYTHON_PLUGINS
       QgsAccessControl *accessControl = context.serverInterface()->accessControls();

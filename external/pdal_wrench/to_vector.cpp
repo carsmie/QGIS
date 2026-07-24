@@ -53,7 +53,7 @@ static std::unique_ptr<PipelineManager> pipeline(ParallelJobInfo *tile, const st
 {
     std::unique_ptr<PipelineManager> manager( new PipelineManager );
 
-    Stage& r = manager->makeReader( tile->inputFilenames[0], "");
+    Stage& r = makeReader(manager.get(), tile->inputFilenames[0]);
 
     Stage *last = &r;
 
@@ -93,7 +93,7 @@ static std::unique_ptr<PipelineManager> pipeline(ParallelJobInfo *tile, const st
 
 void ToVector::preparePipelines(std::vector<std::unique_ptr<PipelineManager>>& pipelines)
 {
-    if (ends_with(inputFile, ".vpc"))
+    if (isVpcFilename(inputFile))
     {
         // for /tmp/hello.vpc we will use /tmp/hello dir for all results
         fs::path outputParentDir = fs::path(outputFile).parent_path();
@@ -134,7 +134,7 @@ void ToVector::finalize(std::vector<std::unique_ptr<PipelineManager>>&)
     if (tileOutputFiles.empty())
         return;
 
-    if (ends_with(inputFile, ".vpc"))
+    if (isVpcFilename(inputFile))
     {
         // for /tmp/hello.vpc we will use /tmp/hello dir for all results
         fs::path outputParentDir = fs::path(outputFile).parent_path();

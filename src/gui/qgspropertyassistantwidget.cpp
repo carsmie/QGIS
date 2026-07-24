@@ -17,19 +17,27 @@
  ***************************************************************************/
 
 #include "qgspropertyassistantwidget.h"
-#include "moc_qgspropertyassistantwidget.cpp"
+
+#include <memory>
+
+#include "qgsexpressioncontextutils.h"
+#include "qgsgui.h"
+#include "qgslayertreelayer.h"
+#include "qgslinesymbol.h"
+#include "qgsmapsettings.h"
+#include "qgsmarkersymbol.h"
 #include "qgsproject.h"
 #include "qgsprojectstylesettings.h"
-#include "qgsmapsettings.h"
-#include "qgsvectorlayer.h"
-#include "qgslayertreelayer.h"
-#include "qgssymbollayerutils.h"
-#include "qgsexpressioncontextutils.h"
-#include "qgsstyle.h"
-#include "qgsmarkersymbol.h"
-#include "qgslinesymbol.h"
 #include "qgsstringutils.h"
-#include "qgsgui.h"
+#include "qgsstyle.h"
+#include "qgssymbollayerutils.h"
+#include "qgsvectorlayer.h"
+
+#include <QString>
+
+#include "moc_qgspropertyassistantwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsPropertyAssistantWidget::QgsPropertyAssistantWidget( QWidget *parent, const QgsPropertyDefinition &definition, const QgsProperty &initialState, const QgsVectorLayer *layer )
   : QgsPanelWidget( parent )
@@ -219,7 +227,8 @@ void QgsPropertyAssistantWidget::updatePreview()
   QList<double> breaks = QgsSymbolLayerUtils::prettyBreaks( minValueSpinBox->value(), maxValueSpinBox->value(), 8 );
 
   QgsCurveTransform curve = mCurveEditor->curve();
-  const QList<QgsSymbolLegendNode *> nodes = mTransformerWidget->generatePreviews( breaks, mLayerTreeLayer, mSymbol.get(), minValueSpinBox->value(), maxValueSpinBox->value(), mTransformCurveCheckBox->isChecked() ? &curve : nullptr );
+  const QList<QgsSymbolLegendNode *> nodes
+    = mTransformerWidget->generatePreviews( breaks, mLayerTreeLayer, mSymbol.get(), minValueSpinBox->value(), maxValueSpinBox->value(), mTransformCurveCheckBox->isChecked() ? &curve : nullptr );
 
   int widthMax = 0;
   int i = 0;
@@ -261,9 +270,7 @@ bool QgsPropertyAssistantWidget::computeValuesFromExpression( const QString &exp
   }
   else
   {
-    context << QgsExpressionContextUtils::globalScope()
-            << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
-            << QgsExpressionContextUtils::layerScope( mLayer );
+    context << QgsExpressionContextUtils::globalScope() << QgsExpressionContextUtils::projectScope( QgsProject::instance() ) << QgsExpressionContextUtils::layerScope( mLayer );
   }
 
   if ( !e.prepare( &context ) )
@@ -391,7 +398,9 @@ QgsSizeScaleTransformer *QgsPropertySizeAssistantWidget::createTransformer( doub
   return transformer;
 }
 
-QList<QgsSymbolLegendNode *> QgsPropertySizeAssistantWidget::generatePreviews( const QList<double> &breaks, QgsLayerTreeLayer *parent, const QgsSymbol *symbol, double minValue, double maxValue, QgsCurveTransform *curve ) const
+QList<QgsSymbolLegendNode *> QgsPropertySizeAssistantWidget::generatePreviews(
+  const QList<double> &breaks, QgsLayerTreeLayer *parent, const QgsSymbol *symbol, double minValue, double maxValue, QgsCurveTransform *curve
+) const
 {
   QList<QgsSymbolLegendNode *> nodes;
 
@@ -426,14 +435,14 @@ QList<QgsSymbolLegendNode *> QgsPropertySizeAssistantWidget::generatePreviews( c
       symbolClone->setDataDefinedSize( QgsProperty() );
       symbolClone->setDataDefinedAngle( QgsProperty() ); // to avoid symbol not being drawn
       symbolClone->setSize( t->size( breaks[i] ) );
-      node.reset( new QgsSymbolLegendNode( parent, QgsLegendSymbolItem( symbolClone.get(), QString::number( i ), QString() ) ) );
+      node = std::make_unique<QgsSymbolLegendNode>( parent, QgsLegendSymbolItem( symbolClone.get(), QString::number( i ), QString() ) );
     }
     else if ( dynamic_cast<const QgsLineSymbol *>( legendSymbol ) )
     {
       std::unique_ptr<QgsLineSymbol> symbolClone( static_cast<QgsLineSymbol *>( legendSymbol->clone() ) );
       symbolClone->setDataDefinedWidth( QgsProperty() );
       symbolClone->setWidth( t->size( breaks[i] ) );
-      node.reset( new QgsSymbolLegendNode( parent, QgsLegendSymbolItem( symbolClone.get(), QString::number( i ), QString() ) ) );
+      node = std::make_unique<QgsSymbolLegendNode>( parent, QgsLegendSymbolItem( symbolClone.get(), QString::number( i ), QString() ) );
     }
     if ( node )
       nodes << node.release();
@@ -457,7 +466,7 @@ QgsPropertyColorAssistantWidget::QgsPropertyColorAssistantWidget( QWidget *paren
   mNullColorButton->setAllowOpacity( supportsAlpha );
   mNullColorButton->setShowNoColor( true );
   mNullColorButton->setColorDialogTitle( tr( "Color For Null Values" ) );
-  mNullColorButton->setContext( QStringLiteral( "symbology" ) );
+  mNullColorButton->setContext( u"symbology"_s );
   mNullColorButton->setNoColorString( tr( "Transparent" ) );
 
   if ( const QgsColorRampTransformer *colorTransform = dynamic_cast<const QgsColorRampTransformer *>( initialState.transformer() ) )
@@ -476,7 +485,7 @@ QgsPropertyColorAssistantWidget::QgsPropertyColorAssistantWidget( QWidget *paren
     std::unique_ptr<QgsColorRamp> colorRamp( QgsProject::instance()->styleSettings()->defaultColorRamp() );
     if ( !colorRamp )
     {
-      colorRamp.reset( QgsStyle::defaultStyle()->colorRamp( QStringLiteral( "Blues" ) ) );
+      colorRamp.reset( QgsStyle::defaultStyle()->colorRamp( u"Blues"_s ) );
     }
     if ( colorRamp )
       mColorRampButton->setColorRamp( colorRamp.get() );
@@ -485,17 +494,13 @@ QgsPropertyColorAssistantWidget::QgsPropertyColorAssistantWidget( QWidget *paren
 
 QgsColorRampTransformer *QgsPropertyColorAssistantWidget::createTransformer( double minValue, double maxValue ) const
 {
-  QgsColorRampTransformer *transformer = new QgsColorRampTransformer(
-    minValue,
-    maxValue,
-    mColorRampButton->colorRamp(),
-    mNullColorButton->color(),
-    mColorRampButton->colorRampName()
-  );
+  QgsColorRampTransformer *transformer = new QgsColorRampTransformer( minValue, maxValue, mColorRampButton->colorRamp(), mNullColorButton->color(), mColorRampButton->colorRampName() );
   return transformer;
 }
 
-QList<QgsSymbolLegendNode *> QgsPropertyColorAssistantWidget::generatePreviews( const QList<double> &breaks, QgsLayerTreeLayer *parent, const QgsSymbol *symbol, double minValue, double maxValue, QgsCurveTransform *curve ) const
+QList<QgsSymbolLegendNode *> QgsPropertyColorAssistantWidget::generatePreviews(
+  const QList<double> &breaks, QgsLayerTreeLayer *parent, const QgsSymbol *symbol, double minValue, double maxValue, QgsCurveTransform *curve
+) const
 {
   QList<QgsSymbolLegendNode *> nodes;
 
@@ -519,7 +524,7 @@ QList<QgsSymbolLegendNode *> QgsPropertyColorAssistantWidget::generatePreviews( 
     std::unique_ptr<QgsSymbolLegendNode> node;
     std::unique_ptr<QgsMarkerSymbol> symbolClone( static_cast<QgsMarkerSymbol *>( legendSymbol->clone() ) );
     symbolClone->setColor( t->color( breaks[i] ) );
-    node.reset( new QgsSymbolLegendNode( parent, QgsLegendSymbolItem( symbolClone.get(), QString::number( i ), QString() ) ) );
+    node = std::make_unique<QgsSymbolLegendNode>( parent, QgsLegendSymbolItem( symbolClone.get(), QString::number( i ), QString() ) );
     if ( node )
       nodes << node.release();
   }
@@ -632,14 +637,8 @@ QgsPropertyGenericNumericAssistantWidget::QgsPropertyGenericNumericAssistantWidg
 
 QgsGenericNumericTransformer *QgsPropertyGenericNumericAssistantWidget::createTransformer( double minValue, double maxValue ) const
 {
-  QgsGenericNumericTransformer *transformer = new QgsGenericNumericTransformer(
-    minValue,
-    maxValue,
-    minOutputSpinBox->value(),
-    maxOutputSpinBox->value(),
-    nullOutputSpinBox->value(),
-    exponentSpinBox->value()
-  );
+  QgsGenericNumericTransformer *transformer
+    = new QgsGenericNumericTransformer( minValue, maxValue, minOutputSpinBox->value(), maxOutputSpinBox->value(), nullOutputSpinBox->value(), exponentSpinBox->value() );
   return transformer;
 }
 

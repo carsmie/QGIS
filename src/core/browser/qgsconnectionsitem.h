@@ -17,9 +17,13 @@
 #ifndef QGSCONNECTIONSITEM_H
 #define QGSCONNECTIONSITEM_H
 
-#include "qgis_sip.h"
 #include "qgis_core.h"
+#include "qgis_sip.h"
 #include "qgsdatacollectionitem.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup core
@@ -30,7 +34,6 @@ class CORE_EXPORT QgsConnectionsRootItem : public QgsDataCollectionItem
 {
     Q_OBJECT
   public:
-
     /**
      * Constructor for QgsConnectionsRootItem, with the specified \a parent item.
      *
@@ -47,14 +50,14 @@ class CORE_EXPORT QgsConnectionsRootItem : public QgsDataCollectionItem
     ~QgsConnectionsRootItem() override = default;
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsConnectionsRootItem: \"%1\" %2>" ).arg( sipCpp->name(), sipCpp->path() );
+    QString str = u"<QgsConnectionsRootItem: \"%1\" %2>"_s.arg( sipCpp->name(), sipCpp->path() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 };
 
 #endif // QGSCONNECTIONSITEM_H
-
-

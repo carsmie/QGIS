@@ -16,16 +16,15 @@
 #ifndef QGSFIELDMAPPINGMODEL_H
 #define QGSFIELDMAPPINGMODEL_H
 
-#include <QAbstractTableModel>
-#include <QStyledItemDelegate>
-
-#include "qgsfields.h"
+#include "qgis_gui.h"
 #include "qgsexpressioncontextgenerator.h"
 #include "qgsfieldconstraints.h"
+#include "qgsfields.h"
 #include "qgsproperty.h"
 #include "qgsvectordataprovider.h"
-#include "qgis_gui.h"
 
+#include <QAbstractTableModel>
+#include <QStyledItemDelegate>
 
 /**
  * \ingroup gui
@@ -81,7 +80,9 @@ class GUI_EXPORT QgsFieldMappingModel : public QAbstractTableModel
      * field name to the corresponding expression. A \a parent object
      * can be also specified.
      */
-    QgsFieldMappingModel( const QgsFields &sourceFields = QgsFields(), const QgsFields &destinationFields = QgsFields(), const QMap<QString, QString> &expressions = QMap<QString, QString>(), QObject *parent = nullptr );
+    QgsFieldMappingModel(
+      const QgsFields &sourceFields = QgsFields(), const QgsFields &destinationFields = QgsFields(), const QMap<QString, QString> &expressions = QMap<QString, QString>(), QObject *parent = nullptr
+    );
 
     /**
      * Sets the list of \a nativeTypes supported by a data provider.

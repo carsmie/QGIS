@@ -19,15 +19,19 @@
 #define QGSAUXILIARYSTORAGE_H
 
 #include "qgis_core.h"
+#include "qgscallout.h"
 #include "qgsdatasourceuri.h"
-#include "qgspallabeling.h"
 #include "qgsdiagramrenderer.h"
-#include "qgsvectorlayerjoininfo.h"
+#include "qgspallabeling.h"
 #include "qgsproperty.h"
 #include "qgssqliteutils.h"
+#include "qgssymbollayer.h"
 #include "qgsvectorlayer.h"
-#include "qgscallout.h"
+#include "qgsvectorlayerjoininfo.h"
+
 #include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsProject;
 
@@ -62,7 +66,6 @@ class CORE_EXPORT QgsAuxiliaryLayer : public QgsVectorLayer
     Q_OBJECT
 
   public:
-
     /**
      * Constructor
      *
@@ -78,15 +81,17 @@ class CORE_EXPORT QgsAuxiliaryLayer : public QgsVectorLayer
     QgsAuxiliaryLayer &operator=( QgsAuxiliaryLayer const &rhs ) = delete;
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsAuxiliaryLayer: '%1'>" ).arg( sipCpp->name() );
+    QString str = u"<QgsAuxiliaryLayer: '%1'>"_s.arg( sipCpp->name() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
 #ifndef SIP_RUN
-    using QgsVectorLayer::clone;
+      using QgsVectorLayer::clone;
 #endif
 
     /**
@@ -235,6 +240,20 @@ class CORE_EXPORT QgsAuxiliaryLayer : public QgsVectorLayer
     static int createProperty( QgsCallout::Property property, QgsVectorLayer *vlayer, bool overwriteExisting = true );
 
     /**
+     * Creates if necessary a new auxiliary field for a symbol layer 's property and
+     * activates this property in settings.
+     *
+     * \param propertyKey The property to create
+     * \param layer The vector layer
+     * \param symbolLayer the symbol layer to create the property on
+     * \param overwriteExisting controls whether an existing property should be completely overwritten or upgraded to a coalesce("new aux field", 'existing' || 'property' || 'expression') type property
+     *
+     * \returns The index of the auxiliary field or -1
+     * \since QGIS 4.2
+     */
+    static int createProperty( QgsSymbolLayer::Property propertyKey, QgsVectorLayer *layer, QgsSymbolLayer *symbolLayer, bool overwriteExisting = true );
+
+    /**
      * Creates a new auxiliary field from a property definition.
      *
      * \param definition The property definition of the auxiliary field to create
@@ -282,7 +301,6 @@ class CORE_EXPORT QgsAuxiliaryLayer : public QgsVectorLayer
 class CORE_EXPORT QgsAuxiliaryStorage
 {
   public:
-
     /**
      * Constructor.
      *
@@ -433,7 +451,7 @@ class CORE_EXPORT QgsAuxiliaryStorage
     static QgsDataSourceUri parseOgrUri( const QgsDataSourceUri &uri );
 
     bool mValid = false;
-    QString mFileName; // original filename
+    QString mFileName;    // original filename
     QString mTmpFileName; // temporary filename used in copy mode
     bool mCopy = false;
     mutable QString mErrorString;

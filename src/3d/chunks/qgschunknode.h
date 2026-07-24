@@ -27,13 +27,16 @@
 // version without notice, or even be removed.
 //
 
-#include "qgsaabb.h"
+#include "qgis.h"
 #include "qgsbox3d.h"
 
-#include "qgis.h"
+#include <QString>
 #include <QTime>
 
 #define SIP_NO_FILE
+
+using namespace Qt::StringLiterals;
+
 
 namespace Qt3DCore
 {
@@ -64,7 +67,11 @@ struct QgsChunkNodeId
    * Constructs node ID from depth, x, y and z.
    */
     QgsChunkNodeId( int _d = -1, int _x = -1, int _y = -1, int _z = -1 )
-      : d( _d ), x( _x ), y( _y ), z( _z ) {}
+      : d( _d )
+      , x( _x )
+      , y( _y )
+      , z( _z )
+    {}
 
     /**
    * Constructs node ID from a unique integer ID.
@@ -87,21 +94,17 @@ struct QgsChunkNodeId
       if ( uniqueId != -1 )
         return QString::number( uniqueId );
       else if ( z == -1 )
-        return QStringLiteral( "%1/%2/%3" ).arg( d ).arg( x ).arg( y ); // quadtree
+        return u"%1/%2/%3"_s.arg( d ).arg( x ).arg( y ); // quadtree
       else
-        return QStringLiteral( "%1/%2/%3/%4" ).arg( d ).arg( x ).arg( y ).arg( z ); // octree
+        return u"%1/%2/%3/%4"_s.arg( d ).arg( x ).arg( y ).arg( z ); // octree
     }
 
     bool operator==( const QgsChunkNodeId &other ) const
     {
-      return ( uniqueId == -1 && other.uniqueId == -1 && d == other.d && x == other.x && y == other.y && z == other.z )
-             || ( uniqueId != -1 && uniqueId == other.uniqueId );
+      return ( uniqueId == -1 && other.uniqueId == -1 && d == other.d && x == other.x && y == other.y && z == other.z ) || ( uniqueId != -1 && uniqueId == other.uniqueId );
     }
 
-    bool operator!=( const QgsChunkNodeId &other ) const
-    {
-      return !( *this == other );
-    }
+    bool operator!=( const QgsChunkNodeId &other ) const { return !( *this == other ); }
 };
 
 /**
@@ -269,18 +272,18 @@ class QgsChunkNode
     QVector<QgsChunkNode *> mChildren; //!< Child nodes of this node. Initially children are not be populated
     bool mChildrenPopulated = false;   //!< Whether the child nodes (if any) have been already created
 
-    State mState; //!< State of the node
+    State mState = Skeleton; //!< State of the node
 
     Qgis::TileRefinementProcess mRefinementProcess = Qgis::TileRefinementProcess::Replacement; //!< How to handle display of the node when children get activated
 
-    QgsChunkListEntry *mLoaderQueueEntry;      //!< Not null <=> QueuedForLoad or QueuedForUpdate state
-    QgsChunkListEntry *mReplacementQueueEntry; //!< Not null <=> has non-null entity (Loaded or QueuedForUpdate or Updating state)
+    QgsChunkListEntry *mLoaderQueueEntry = nullptr;      //!< Not null <=> QueuedForLoad or QueuedForUpdate state
+    QgsChunkListEntry *mReplacementQueueEntry = nullptr; //!< Not null <=> has non-null entity (Loaded or QueuedForUpdate or Updating state)
 
-    QgsChunkLoader *mLoader;    //!< Contains extra data necessary for entity creation (not null <=> Loading state)
-    Qt3DCore::QEntity *mEntity; //!< Contains everything to display chunk as 3D object (not null <=> Loaded or QueuedForUpdate or Updating state)
+    QgsChunkLoader *mLoader = nullptr;    //!< Contains extra data necessary for entity creation (not null <=> Loading state)
+    Qt3DCore::QEntity *mEntity = nullptr; //!< Contains everything to display chunk as 3D object (not null <=> Loaded or QueuedForUpdate or Updating state)
 
-    QgsChunkQueueJobFactory *mUpdaterFactory; //!< Object that creates updater (not null <=> QueuedForUpdate state)
-    QgsChunkQueueJob *mUpdater;               //!< Object that does update of the chunk (not null <=> Updating state)
+    QgsChunkQueueJobFactory *mUpdaterFactory = nullptr; //!< Object that creates updater (not null <=> QueuedForUpdate state)
+    QgsChunkQueueJob *mUpdater = nullptr;               //!< Object that does update of the chunk (not null <=> Updating state)
 
     QTime mEntityCreatedTime;
     bool mHasData = true; //!< Whether there are (will be) any data in this node and so whether it makes sense to load this node

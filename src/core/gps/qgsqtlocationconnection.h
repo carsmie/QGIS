@@ -23,7 +23,6 @@
 #include "qgsgpsconnection.h"
 
 #include <QtCore/QPointer>
-
 #include <QtPositioning/QGeoPositionInfoSource>
 #include <QtPositioning/QGeoSatelliteInfo>
 #include <QtPositioning/QGeoSatelliteInfoSource>
@@ -34,7 +33,7 @@
  * \brief A GPS connection subclass based on the Qt Location libraries.
  * \note may not be available in Python bindings on all platforms
 */
-class CORE_EXPORT QgsQtLocationConnection: public QgsGpsConnection
+class CORE_EXPORT QgsQtLocationConnection : public QgsGpsConnection
 {
     Q_OBJECT
   public:
@@ -72,7 +71,6 @@ class CORE_EXPORT QgsQtLocationConnection: public QgsGpsConnection
     QGeoPositionInfo mInfo;
     QPointer<QGeoPositionInfoSource> locationDataSource;
     QPointer<QGeoSatelliteInfoSource> satelliteInfoSource;
-
 };
 
 #endif // QGSQTLOCATIONCONNECTION_H

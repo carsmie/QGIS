@@ -14,8 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <memory>
 #include <iostream>
+#include <memory>
+
 #include <QFile>
 
 #define _NO_CVCONST_H
@@ -32,15 +33,17 @@ int main( int argc, char *argv[] )
 {
   if ( argc < 2 )
   {
-    std::cout << "QGIS Crash Handler Usage: \n"
-              << "qgiscrashhandler {infofile}" << std::endl;
+    std::cout
+      << "QGIS Crash Handler Usage: \n"
+      << "qgiscrashhandler {infofile}"
+      << std::endl;
     return -1;
   }
 
   QApplication app( argc, argv );
   QApplication::setQuitOnLastWindowClosed( true );
   QCoreApplication::setOrganizationName( "QGIS" );
-  QCoreApplication::setApplicationName( "QGIS3" );
+  QCoreApplication::setApplicationName( "QGIS4" );
 
   QString extraInfoFile = QString( argv[1] );
   std::cout << "Extra Info File: " << extraInfoFile.toUtf8().constData() << std::endl;

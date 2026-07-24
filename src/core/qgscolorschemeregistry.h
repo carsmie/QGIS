@@ -20,6 +20,7 @@
 
 #include "qgis_core.h"
 #include "qgscolorscheme.h"
+
 #include <QList>
 
 /**
@@ -32,9 +33,7 @@
  */
 class CORE_EXPORT QgsColorSchemeRegistry
 {
-
   public:
-
     /**
      * Constructor for an empty color scheme registry
      */
@@ -178,7 +177,6 @@ class CORE_EXPORT QgsColorSchemeRegistry
     QColor fetchRandomStyleColor() const;
 
   private:
-
     QList< QgsColorScheme * > mColorSchemeList;
 
     QgsColorScheme *mRandomStyleColorScheme = nullptr;
@@ -187,9 +185,7 @@ class CORE_EXPORT QgsColorSchemeRegistry
     mutable int mNextRandomStyleColorIndex = 0;
 
     int mNextRandomStyleColorDirection = 1;
-
 };
-
 
 
 #endif

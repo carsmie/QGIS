@@ -18,9 +18,8 @@
 #ifndef QGSPROCESSINGBATCH_H
 #define QGSPROCESSINGBATCH_H
 
-#include "qgis_core.h"
 #include "qgis.h"
-
+#include "qgis_core.h"
 #include "qgsprocessingfeedback.h"
 
 /**
@@ -34,7 +33,6 @@ class CORE_EXPORT QgsProcessingBatchFeedback : public QgsProcessingMultiStepFeed
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsProcessingBatchFeedback, for a process with the specified
      * number of \a tasks. This feedback object will proxy calls
@@ -50,11 +48,8 @@ class CORE_EXPORT QgsProcessingBatchFeedback : public QgsProcessingMultiStepFeed
     QStringList popErrors();
 
   private:
-
     QStringList mErrors;
 };
 
 
 #endif // QGSPROCESSINGBATCH_H
-
-

@@ -16,21 +16,22 @@
  ***************************************************************************/
 
 #include "qgsmapcanvasannotationitem.h"
-#include "moc_qgsmapcanvasannotationitem.cpp"
+
 #include "qgsannotation.h"
+#include "qgsannotationmanager.h"
+#include "qgsexception.h"
+#include "qgsfeatureiterator.h"
+#include "qgsfillsymbol.h"
 #include "qgsmapcanvas.h"
 #include "qgsmaptool.h"
-#include "qgsvectorlayer.h"
-#include "qgsfeatureiterator.h"
-#include "qgsexception.h"
-#include "qgssymbollayerutils.h"
-#include "qgsproject.h"
-#include "qgsannotationmanager.h"
-#include "qgsfillsymbol.h"
 #include "qgsmarkersymbol.h"
+#include "qgsproject.h"
+#include "qgssymbollayerutils.h"
+#include "qgsvectorlayer.h"
 
 #include <QPainter>
 
+#include "moc_qgsmapcanvasannotationitem.cpp"
 
 QgsMapCanvasAnnotationItem::QgsMapCanvasAnnotationItem( QgsAnnotation *annotation, QgsMapCanvas *mapCanvas )
   : QgsMapCanvasItem( mapCanvas )
@@ -101,7 +102,8 @@ void QgsMapCanvasAnnotationItem::updateBoundingRect()
 
   if ( mAnnotation && !mAnnotation->hasFixedMapPosition() )
   {
-    mBoundingRect = QRectF( -fillSymbolBleed, -fillSymbolBleed, mmToPixelScale * mAnnotation->frameSizeMm().width() + fillSymbolBleed * 2, mmToPixelScale * mAnnotation->frameSizeMm().height() + fillSymbolBleed * 2 );
+    mBoundingRect
+      = QRectF( -fillSymbolBleed, -fillSymbolBleed, mmToPixelScale * mAnnotation->frameSizeMm().width() + fillSymbolBleed * 2, mmToPixelScale * mAnnotation->frameSizeMm().height() + fillSymbolBleed * 2 );
   }
   else
   {
@@ -111,7 +113,8 @@ void QgsMapCanvasAnnotationItem::updateBoundingRect()
       halfSymbolSize = scaledSymbolSize() / 2.0;
     }
 
-    const QPointF offset = mAnnotation ? QPointF( mAnnotation->frameOffsetFromReferencePointMm().x() * mmToPixelScale, mAnnotation->frameOffsetFromReferencePointMm().y() * mmToPixelScale ) : QPointF( 0, 0 );
+    const QPointF offset = mAnnotation ? QPointF( mAnnotation->frameOffsetFromReferencePointMm().x() * mmToPixelScale, mAnnotation->frameOffsetFromReferencePointMm().y() * mmToPixelScale )
+                                       : QPointF( 0, 0 );
 
     const QSizeF frameSize = mAnnotation ? QSizeF( mAnnotation->frameSizeMm().width() * mmToPixelScale, mAnnotation->frameSizeMm().height() * mmToPixelScale ) : QSizeF( 0.0, 0.0 );
 
@@ -160,8 +163,7 @@ void QgsMapCanvasAnnotationItem::setFeatureForMapPosition()
       mapPosition = ct.transform( mapPosition );
   }
   catch ( QgsCsException & )
-  {
-  }
+  {}
 
   QgsRectangle searchRect( mapPosition.x() - halfIdentifyWidth, mapPosition.y() - halfIdentifyWidth, mapPosition.x() + halfIdentifyWidth, mapPosition.y() + halfIdentifyWidth );
 

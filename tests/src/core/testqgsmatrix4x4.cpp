@@ -13,8 +13,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgstest.h"
 #include "qgsmatrix4x4.h"
+#include "qgstest.h"
 
 /**
  * \ingroup UnitTests
@@ -40,13 +40,11 @@ class TestQgsMatrix4x4 : public QObject
 
 //runs before all tests
 void TestQgsMatrix4x4::initTestCase()
-{
-}
+{}
 
 //runs after all tests
 void TestQgsMatrix4x4::cleanupTestCase()
-{
-}
+{}
 
 void TestQgsMatrix4x4::testData()
 {

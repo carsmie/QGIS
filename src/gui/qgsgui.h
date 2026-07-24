@@ -18,12 +18,17 @@
 #ifndef QGSGUI_H
 #define QGSGUI_H
 
+#include <memory>
+
 #include "qgis.h"
 #include "qgis_gui.h"
-#include "qgssettingstree.h"
 #include "qgis_sip.h"
+#include "qgssettingstree.h"
+
+#include <QString>
 #include <QWidget>
-#include <memory>
+
+using namespace Qt::StringLiterals;
 
 class QgsSettingsRegistryGui;
 class QgsEditorWidgetRegistry;
@@ -42,6 +47,7 @@ class QgsProcessingRecentAlgorithmLog;
 class QgsWindowManagerInterface;
 class QgsDataItemGuiProviderRegistry;
 class QgsProviderGuiRegistry;
+class QgsProject;
 class QgsProjectStorageGuiRegistry;
 class QgsNumericFormatGuiRegistry;
 class QgsCodeEditorColorSchemeRegistry;
@@ -66,8 +72,8 @@ class GUI_EXPORT QgsGui : public QObject
     Q_OBJECT
 
   public:
-    static inline QgsSettingsTreeNode *sTtreeWidgetGeometry = QgsSettingsTree::sTreeApp->createChildNode( QStringLiteral( "widget-geometry" ) ) SIP_SKIP;
-    static inline QgsSettingsTreeNode *sTtreeWidgetLastUsedValues = QgsSettingsTree::sTreeApp->createChildNode( QStringLiteral( "widget-last-used-values" ) ) SIP_SKIP;
+    static inline QgsSettingsTreeNode *sTtreeWidgetGeometry = QgsSettingsTree::sTreeApp->createChildNode( u"widget-geometry"_s ) SIP_SKIP;
+    static inline QgsSettingsTreeNode *sTtreeWidgetLastUsedValues = QgsSettingsTree::sTreeApp->createChildNode( u"widget-last-used-values"_s ) SIP_SKIP;
 
     /**
      * Defines the behavior to use when setting the CRS for a newly created project.
@@ -285,7 +291,7 @@ class GUI_EXPORT QgsGui : public QObject
     */
     static QgsGui::HigFlags higFlags();
 
-    ~QgsGui();
+    ~QgsGui() override;
 
     /**
      * Samples the color on screen at the specified global \a point (pixel).
@@ -303,19 +309,14 @@ class GUI_EXPORT QgsGui : public QObject
 
     /**
      * Returns TRUE if python embedded in a project is currently allowed to be loaded.
-     * If the global option is to ask user, a modal dialog will be shown for macros
-     * or a button to enable Python expressions will be shown in a message bar.
-     * \param lambda a pointer to a lambda method. If specified, the dialog is not modal,
-     * a message is shown with a button to enable macro.
-     * The lambda will be run either if macros are currently allowed or if the user accepts the message.
-     * The \a messageBar must be given in such case.
+     * If the global option is to ask user, a modal dialog will be shown.
+     * \param  project  a pointer to the project.
      * \param messageBar the message bar must be provided if a lambda method is used.
-     * \param embeddedType enum value to identify if macros or expression functions should be checked.
      *
      * \note Not available in Python bindings
      * \since QGIS 3.40
      */
-    static bool pythonEmbeddedInProjectAllowed( void ( *lambda )() = nullptr, QgsMessageBar *messageBar = nullptr, Qgis::PythonEmbeddedType embeddedType = Qgis::PythonEmbeddedType::Macro ) SIP_SKIP;
+    static bool allowExecutionOfEmbeddedScripts( QgsProject *project, QgsMessageBar *messageBar = nullptr ) SIP_SKIP;
 
     /**
      * Initializes callout widgets.
@@ -324,6 +325,14 @@ class GUI_EXPORT QgsGui : public QObject
      * \since QGIS 3.40
      */
     static void initCalloutWidgets() SIP_SKIP;
+
+    /**
+     * Initializes plot widgets.
+     *
+     * \note Not available in Python bindings
+     * \since QGIS 4.0
+     */
+    static void initPlotWidgets() SIP_SKIP;
 
     /**
      *  Checks whether QWebEngineView is available to display HTML content.
@@ -353,34 +362,34 @@ class GUI_EXPORT QgsGui : public QObject
   private:
     QgsGui();
 
-    QgsSettingsRegistryGui *mSettingsRegistryGui = nullptr;
-    QgsProviderGuiRegistry *mProviderGuiRegistry = nullptr;
-    QgsWidgetStateHelper *mWidgetStateHelper = nullptr;
-    QgsNative *mNative = nullptr;
-    QgsEditorWidgetRegistry *mEditorWidgetRegistry = nullptr;
-    QgsSourceSelectProviderRegistry *mSourceSelectProviderRegistry = nullptr;
-    QgsShortcutsManager *mShortcutsManager = nullptr;
-    QgsLayerTreeEmbeddedWidgetRegistry *mLayerTreeEmbeddedWidgetRegistry = nullptr;
-    QgsMapLayerActionRegistry *mMapLayerActionRegistry = nullptr;
-    QgsLayoutItemGuiRegistry *mLayoutItemGuiRegistry = nullptr;
-    QgsAnnotationItemGuiRegistry *mAnnotationItemGuiRegistry = nullptr;
-    QgsAdvancedDigitizingToolsRegistry *mAdvancedDigitizingToolsRegistry = nullptr;
-    QgsProcessingGuiRegistry *mProcessingGuiRegistry = nullptr;
-    QgsProcessingFavoriteAlgorithmManager *mProcessingFavoriteAlgorithmManager = nullptr;
-    QgsProcessingRecentAlgorithmLog *mProcessingRecentAlgorithmLog = nullptr;
-    QgsNumericFormatGuiRegistry *mNumericFormatGuiRegistry = nullptr;
-    QgsDataItemGuiProviderRegistry *mDataItemGuiProviderRegistry = nullptr;
-    QgsCodeEditorColorSchemeRegistry *mCodeEditorColorSchemeRegistry = nullptr;
-    QgsProjectStorageGuiRegistry *mProjectStorageGuiRegistry = nullptr;
-    QgsSubsetStringEditorProviderRegistry *mSubsetStringEditorProviderRegistry = nullptr;
-    QgsProviderSourceWidgetProviderRegistry *mProviderSourceWidgetProviderRegistry = nullptr;
-    QgsRelationWidgetRegistry *mRelationEditorRegistry = nullptr;
-    QgsMapToolShapeRegistry *mShapeMapToolRegistry = nullptr;
-    QgsHistoryProviderRegistry *mHistoryProviderRegistry = nullptr;
-    QgsSensorGuiRegistry *mSensorGuiRegistry = nullptr;
-    QgsSettingsEditorWidgetRegistry *mSettingsEditorRegistry = nullptr;
-    QgsInputControllerManager *mInputControllerManager = nullptr;
-    QgsStoredQueryManager *mStoredQueryManager = nullptr;
+    std::unique_ptr<QgsSettingsRegistryGui> mSettingsRegistryGui;
+    std::unique_ptr<QgsProviderGuiRegistry> mProviderGuiRegistry;
+    std::unique_ptr<QgsWidgetStateHelper> mWidgetStateHelper;
+    std::unique_ptr<QgsNative> mNative;
+    std::unique_ptr<QgsEditorWidgetRegistry> mEditorWidgetRegistry;
+    std::unique_ptr<QgsSourceSelectProviderRegistry> mSourceSelectProviderRegistry;
+    std::unique_ptr<QgsShortcutsManager> mShortcutsManager;
+    std::unique_ptr<QgsLayerTreeEmbeddedWidgetRegistry> mLayerTreeEmbeddedWidgetRegistry;
+    std::unique_ptr<QgsMapLayerActionRegistry> mMapLayerActionRegistry;
+    std::unique_ptr<QgsLayoutItemGuiRegistry> mLayoutItemGuiRegistry;
+    std::unique_ptr<QgsAnnotationItemGuiRegistry> mAnnotationItemGuiRegistry;
+    std::unique_ptr<QgsAdvancedDigitizingToolsRegistry> mAdvancedDigitizingToolsRegistry;
+    std::unique_ptr<QgsProcessingGuiRegistry> mProcessingGuiRegistry;
+    std::unique_ptr<QgsProcessingFavoriteAlgorithmManager> mProcessingFavoriteAlgorithmManager;
+    std::unique_ptr<QgsProcessingRecentAlgorithmLog> mProcessingRecentAlgorithmLog;
+    std::unique_ptr<QgsNumericFormatGuiRegistry> mNumericFormatGuiRegistry;
+    std::unique_ptr<QgsDataItemGuiProviderRegistry> mDataItemGuiProviderRegistry;
+    std::unique_ptr<QgsCodeEditorColorSchemeRegistry> mCodeEditorColorSchemeRegistry;
+    std::unique_ptr<QgsProjectStorageGuiRegistry> mProjectStorageGuiRegistry;
+    std::unique_ptr<QgsSubsetStringEditorProviderRegistry> mSubsetStringEditorProviderRegistry;
+    std::unique_ptr<QgsProviderSourceWidgetProviderRegistry> mProviderSourceWidgetProviderRegistry;
+    std::unique_ptr<QgsRelationWidgetRegistry> mRelationEditorRegistry;
+    std::unique_ptr<QgsMapToolShapeRegistry> mShapeMapToolRegistry;
+    std::unique_ptr<QgsHistoryProviderRegistry> mHistoryProviderRegistry;
+    std::unique_ptr<QgsSensorGuiRegistry> mSensorGuiRegistry;
+    std::unique_ptr<QgsSettingsEditorWidgetRegistry> mSettingsEditorRegistry;
+    std::unique_ptr<QgsInputControllerManager> mInputControllerManager;
+    std::unique_ptr<QgsStoredQueryManager> mStoredQueryManager;
     std::unique_ptr<QgsWindowManagerInterface> mWindowManager;
 
 #ifdef SIP_RUN

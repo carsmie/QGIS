@@ -14,23 +14,26 @@
  ***************************************************************************/
 
 #include "qgslayoutunitscombobox.h"
-#include "moc_qgslayoutunitscombobox.cpp"
+
+#include "qgis.h"
 #include "qgslayoutmeasurementconverter.h"
 #include "qgsunittypes.h"
-#include "qgis.h"
+
+#include "moc_qgslayoutunitscombobox.cpp"
 
 QgsLayoutUnitsComboBox::QgsLayoutUnitsComboBox( QWidget *parent )
   : QComboBox( parent )
 {
   QList<Qgis::LayoutUnit> units;
-  units << Qgis::LayoutUnit::Millimeters
-        << Qgis::LayoutUnit::Centimeters
-        << Qgis::LayoutUnit::Meters
-        << Qgis::LayoutUnit::Inches
-        << Qgis::LayoutUnit::Feet
-        << Qgis::LayoutUnit::Points
-        << Qgis::LayoutUnit::Picas
-        << Qgis::LayoutUnit::Pixels;
+  units
+    << Qgis::LayoutUnit::Millimeters
+    << Qgis::LayoutUnit::Centimeters
+    << Qgis::LayoutUnit::Meters
+    << Qgis::LayoutUnit::Inches
+    << Qgis::LayoutUnit::Feet
+    << Qgis::LayoutUnit::Points
+    << Qgis::LayoutUnit::Picas
+    << Qgis::LayoutUnit::Pixels;
 
   const auto constUnits = units;
   for ( const Qgis::LayoutUnit u : constUnits )

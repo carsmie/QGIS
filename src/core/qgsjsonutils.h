@@ -17,13 +17,13 @@
 #define QGSJSONUTILS_H
 
 #include "qgis_core.h"
-#include "qgsfeature.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgscoordinatetransform.h"
+#include "qgsfeature.h"
 #include "qgsfields.h"
 
-#include <QPointer>
 #include <QJsonObject>
+#include <QPointer>
 
 #ifndef SIP_RUN
 #include <nlohmann/json_fwd.hpp>
@@ -44,7 +44,6 @@ class QTextCodec;
 class CORE_EXPORT QgsJsonExporter
 {
   public:
-
     /**
      * Constructor for QgsJsonExporter.
      * \param vectorLayer associated vector layer (required for related attribute export)
@@ -220,28 +219,27 @@ class CORE_EXPORT QgsJsonExporter
      * \param id optional ID to use as GeoJSON feature's ID instead of input feature's ID. If omitted, feature's
      * ID is used.
      * \param indent number of indentation spaces for generated JSON (defaults to none)
+     * \param extraMembers are optional foreign members as e.g. the layer name to pass as featureType. If omitted, it is not written (since QGIS 4.2)
      * \returns GeoJSON string
      * \see exportFeatures()
      * \see exportFeatureToJsonObject()
      */
-    QString exportFeature( const QgsFeature &feature,
-                           const QVariantMap &extraProperties = QVariantMap(),
-                           const QVariant &id = QVariant(),
-                           int indent = -1 ) const;
+    QString exportFeature(
+      const QgsFeature &feature, const QVariantMap &extraProperties = QVariantMap(), const QVariant &id = QVariant(), int indent = -1, const QVariantMap &extraMembers = QVariantMap()
+    ) const;
 
     /**
-     * Returns a QJsonObject representation of a feature.
+     * Returns a GeoJson representation of a feature.
      * \param feature feature to convert
      * \param extraProperties map of extra attributes to include in feature's properties
      * \param id optional ID to use as GeoJSON feature's ID instead of input feature's ID. If omitted, feature's
      * ID is used.
+     * \param extraMembers are optional foreign members as e.g. the layer name to pass as featureType. If omitted, it is not written (since QGIS 4.2)
      * \returns json object
      * \see exportFeatures()
      */
-    json exportFeatureToJsonObject( const QgsFeature &feature,
-                                    const QVariantMap &extraProperties = QVariantMap(),
-                                    const QVariant &id = QVariant() ) const SIP_SKIP;
-
+    json exportFeatureToJsonObject( const QgsFeature &feature, const QVariantMap &extraProperties = QVariantMap(), const QVariant &id = QVariant(), const QVariantMap &extraMembers = QVariantMap() ) const
+      SIP_SKIP;
 
     /**
      * Returns a GeoJSON string representation of a list of features (feature collection).
@@ -253,7 +251,7 @@ class CORE_EXPORT QgsJsonExporter
     QString exportFeatures( const QgsFeatureList &features, int indent = -1 ) const;
 
     /**
-     * Returns a JSON object representation of a list of features (feature collection).
+     * Returns a GeoJSON object representation of a list of features (feature collection).
      * \param features features to convert
      * \returns json object
      * \see exportFeatures()
@@ -272,8 +270,19 @@ class CORE_EXPORT QgsJsonExporter
      */
     void setDestinationCrs( const QgsCoordinateReferenceSystem &destinationCrs );
 
-  private:
+    /**
+     * Returns the GeoJSON profile to use for export.
+     * \since QGIS 4.4
+     */
+    Qgis::GeoJsonProfile geoJsonProfile() const;
 
+    /**
+     * Sets the GeoJSON profile to use for export. Default profile is RFC7946.
+     * \since QGIS 4.4
+     */
+    void setGeoJsonProfile( Qgis::GeoJsonProfile profile );
+
+  private:
     //! Maximum number of decimal places for geometry coordinates
     int mPrecision;
 
@@ -309,6 +318,11 @@ class CORE_EXPORT QgsJsonExporter
     QgsCoordinateReferenceSystem mDestinationCrs;
 
     bool mUseFieldFormatters = true;
+
+    //! Whether to omit collection level information (e.g. "measures": "coordRefSys") when exporting a list of features. Default is false.
+    mutable bool mOmitCollectionLevelInformation = false;
+
+    Qgis::GeoJsonProfile mGeoJsonProfile = Qgis::GeoJsonProfile::Legacy;
 };
 
 /**
@@ -322,7 +336,6 @@ class CORE_EXPORT QgsJsonUtils
     Q_GADGET
 
   public:
-
     /**
      * Attempts to parse a GeoJSON \a string to a collection of features.
      * It is possible to specify \a fields to parse specific fields, if not provided, no fields will be included.
@@ -358,8 +371,7 @@ class CORE_EXPORT QgsJsonUtils
      * \param attributeWidgetCaches optional widget configuration cache. Can be used
      * to speed up exporting the attributes for multiple features from the same layer.
      */
-    static QString exportAttributes( const QgsFeature &feature, QgsVectorLayer *layer = nullptr,
-                                     const QVector<QVariant> &attributeWidgetCaches = QVector<QVariant>() );
+    static QString exportAttributes( const QgsFeature &feature, QgsVectorLayer *layer = nullptr, const QVector<QVariant> &attributeWidgetCaches = QVector<QVariant>() );
 
     /**
      * Exports all attributes from a QgsFeature as a json object.
@@ -372,8 +384,8 @@ class CORE_EXPORT QgsJsonUtils
      * \note Not available in Python bindings
      * \since QGIS 3.8
      */
-    static json exportAttributesToJsonObject( const QgsFeature &feature, QgsVectorLayer *layer = nullptr,
-        const QVector<QVariant> &attributeWidgetCaches = QVector<QVariant>(), bool useFieldFormatters = true ) SIP_SKIP;
+    static json exportAttributesToJsonObject( const QgsFeature &feature, QgsVectorLayer *layer = nullptr, const QVector<QVariant> &attributeWidgetCaches = QVector<QVariant>(), bool useFieldFormatters = true )
+      SIP_SKIP;
 
     /**
      * Parse a simple array (depth=1)
@@ -412,6 +424,13 @@ class CORE_EXPORT QgsJsonUtils
      * \since QGIS 3.36
      */
     static QgsGeometry geometryFromGeoJson( const QString &geometry );
+
+    /**
+     * Converts a \a geometry to a GeoJSON compatible variant.
+     *
+     * \since QGIS 4.4
+     */
+    static QVariant geometryToGeoJsonVariant( const QgsGeometry &geometry );
 
     /**
      * Converts a QVariant \a v to a json object
@@ -459,8 +478,7 @@ class CORE_EXPORT QgsJsonUtils
      * is assumed to be OGC:CRS84 but when user specifically request a different CRS, this method
      * adds this information in the JSON output
      */
-    static void addCrsInfo( json &value, const QgsCoordinateReferenceSystem &crs ) SIP_SKIP;
-
+    static void addCrsInfo( json &value, const QgsCoordinateReferenceSystem &crs, Qgis::GeoJsonProfile profile = Qgis::GeoJsonProfile::Legacy ) SIP_SKIP;
 };
 
 #endif // QGSJSONUTILS_H

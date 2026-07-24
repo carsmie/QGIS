@@ -14,13 +14,16 @@ class QgsFeaturePickerModel : QgsFeaturePickerModelBase
 Provides a list of features based on filter conditions.
 
 Features are fetched asynchronously.
+
+Entries are identified by their feature id. To identify features by
+attribute values (e.g. a foreign key) instead, use
+:py:class:`QgsFeatureFilterModel`.
 %End
 
 %TypeHeaderCode
 #include "qgsfeaturepickermodel.h"
 %End
   public:
-
     explicit QgsFeaturePickerModel( QObject *parent = 0 );
 %Docstring
 Create a new QgsFeaturePickerModel, optionally specifying a ``parent``.

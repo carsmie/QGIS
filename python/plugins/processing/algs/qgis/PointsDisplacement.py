@@ -20,19 +20,21 @@ __date__ = "July 2013"
 __copyright__ = "(C) 2013, Alexander Bruy"
 
 import math
+
 from qgis.core import (
     QgsFeatureSink,
     QgsGeometry,
     QgsPointXY,
-    QgsSpatialIndex,
-    QgsRectangle,
     QgsProcessing,
     QgsProcessingException,
-    QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterDistance,
     QgsProcessingParameterBoolean,
+    QgsProcessingParameterDistance,
     QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsRectangle,
+    QgsSpatialIndex,
 )
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
@@ -98,6 +100,18 @@ class PointsDisplacement(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Points displacement")
+
+    def shortDescription(self):
+        return self.tr(
+            "Offsets point features by moving nearby points "
+            "by a preset amount to minimize overlapping features."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm offsets point features by moving nearby points "
+            "by a preset amount to minimize overlapping features."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -196,6 +210,7 @@ class PointsDisplacement(QgisAlgorithm):
             count = len(group)
             if count == 1:
                 sink.addFeature(group[0], QgsFeatureSink.Flag.FastInsert)
+                feedback.featureAddedToSink(self.OUTPUT)
             else:
                 angleStep = fullPerimeter / count
                 if count == 2 and horizontal:
@@ -221,10 +236,12 @@ class PointsDisplacement(QgisAlgorithm):
                     f.setGeometry(QgsGeometry(point))
 
                     sink.addFeature(f, QgsFeatureSink.Flag.FastInsert)
+                    feedback.featureAddedToSink(self.OUTPUT)
                     currentAngle += angleStep
 
             current += 1
             feedback.setProgress(int(current * total))
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}

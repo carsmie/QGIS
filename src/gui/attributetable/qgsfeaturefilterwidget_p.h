@@ -16,7 +16,6 @@
 #ifndef QGSFEATUREFILTERWIDGET_P_H
 #define QGSFEATUREFILTERWIDGET_P_H
 
-#define SIP_NO_FILE
 
 /// @cond PRIVATE
 
@@ -31,10 +30,12 @@
 
 #include "ui_qgsfeaturefilterwidget.h"
 
+#include "qgis_gui.h"
 #include "qgsattributeform.h"
 
-#include "qgis_gui.h"
 #include <QTimer>
+
+#define SIP_NO_FILE
 
 class QgsVectorLayer;
 class QgsAttributeEditorContext;

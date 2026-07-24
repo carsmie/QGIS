@@ -16,11 +16,12 @@
 #ifndef QGSRELATIONREFERENCECONFIGDLGBASE_H
 #define QGSRELATIONREFERENCECONFIGDLGBASE_H
 
-#include <QListWidget>
-
 #include "ui_qgsrelationreferenceconfigdlgbase.h"
-#include "qgseditorconfigwidget.h"
+
 #include "qgis_gui.h"
+#include "qgseditorconfigwidget.h"
+
+#include <QListWidget>
 
 SIP_NO_FILE
 
@@ -31,7 +32,8 @@ SIP_NO_FILE
  * \brief Configuration widget for relation reference widgets.
  * \note not available in Python bindings
  */
-class GUI_EXPORT QgsRelationReferenceConfigDlg : public QgsEditorConfigWidget, private Ui::QgsRelReferenceConfigDlgBase
+class GUI_EXPORT QgsRelationReferenceConfigDlg : public QgsEditorConfigWidget,
+                                                 private Ui::QgsRelReferenceConfigDlgBase
 {
     Q_OBJECT
 

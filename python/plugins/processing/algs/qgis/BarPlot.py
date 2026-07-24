@@ -23,16 +23,16 @@ import warnings
 
 from qgis.core import (
     QgsFeatureRequest,
+    QgsProcessingException,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
-    QgsProcessingException,
     QgsProcessingParameterFileDestination,
     QgsProcessingParameterString,
 )
+from qgis.PyQt.QtCore import QCoreApplication
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import vector
-
-from qgis.PyQt.QtCore import QCoreApplication
 
 
 class BarPlot(QgisAlgorithm):
@@ -106,6 +106,11 @@ class BarPlot(QgisAlgorithm):
 
     def shortDescription(self):
         return self.tr("Creates a bar plot from a category and a layer field.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a bar plot from a category and a layer field."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         try:

@@ -16,14 +16,14 @@
 #ifndef QGSLAYERTREEREGISTRYBRIDGE_H
 #define QGSLAYERTREEREGISTRYBRIDGE_H
 
-#include <QObject>
-#include <QStringList>
-#include <QPointer>
-
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgslayertreegroup.h"
+
+#include <QObject>
+#include <QPointer>
+#include <QStringList>
 
 class QgsLayerTreeNode;
 class QgsMapLayer;
@@ -46,7 +46,6 @@ class CORE_EXPORT QgsLayerTreeRegistryBridge : public QObject
 {
     Q_OBJECT
   public:
-
     /**
      * A structure to define the insertion point to the layer tree.
      * This represents the current layer tree group and index where newly added map layers should be inserted into.
@@ -54,12 +53,14 @@ class CORE_EXPORT QgsLayerTreeRegistryBridge : public QObject
      */
     struct InsertionPoint
     {
-      //! Constructs an insertion point as layer tree group with its corresponding position.
-      InsertionPoint( QgsLayerTreeGroup *group, int position )
-        : group( group ), position( position ) {}
+        //! Constructs an insertion point as layer tree group with its corresponding position.
+        InsertionPoint( QgsLayerTreeGroup *group, int position )
+          : group( group )
+          , position( position )
+        {}
 
-      QgsLayerTreeGroup *group;
-      int position = 0;
+        QgsLayerTreeGroup *group;
+        int position = 0;
     };
 
     //! Create the instance that synchronizes given project with a layer tree root
@@ -123,9 +124,9 @@ class CORE_EXPORT QgsLayerTreeRegistryBridge : public QObject
     QgsLayerTreeGroup *mRoot = nullptr;
     QgsProject *mProject = nullptr;
     QStringList mLayerIdsForRemoval;
-    bool mRegistryRemovingLayers;
-    bool mEnabled;
-    bool mNewLayersVisible;
+    bool mRegistryRemovingLayers = false;
+    bool mEnabled = true;
+    bool mNewLayersVisible = true;
 
     QPointer< QgsLayerTreeGroup > mInsertionPointGroup;
     int mInsertionPointPosition = 0;

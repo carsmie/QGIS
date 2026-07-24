@@ -16,21 +16,20 @@
 #ifndef QGSMASKPAINTDEVICE_H
 #define QGSMASKPAINTDEVICE_H
 
+#include <memory>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 
-#include <QPainterPath>
 #include <QPaintDevice>
 #include <QPaintEngine>
-#include <memory>
+#include <QPainterPath>
 
 #ifndef SIP_RUN
 ///@cond PRIVATE
-class QgsMaskPaintEngine: public QPaintEngine
+class QgsMaskPaintEngine : public QPaintEngine
 {
-
   public:
-
     QgsMaskPaintEngine( bool usePathStroker = false );
 
     bool begin( QPaintDevice * ) override { return true; };
@@ -45,10 +44,8 @@ class QgsMaskPaintEngine: public QPaintEngine
     QPainterPath maskPainterPath() const;
 
   private:
-
     bool mUsePathStroker = false;
     QPainterPath mMaskPainterPath;
-
 };
 ///@endcond
 #endif
@@ -60,11 +57,9 @@ class QgsMaskPaintEngine: public QPaintEngine
  * used later as clip path.
  * \deprecated QGIS 3.38. Use QgsGeometryPaintDevice instead.
  */
-class CORE_EXPORT QgsMaskPaintDevice: public QPaintDevice
+class CORE_EXPORT QgsMaskPaintDevice : public QPaintDevice
 {
-
   public:
-
     /*!
      * Constructor
      * If \a usePathStroker is TRUE, path will be considered with a stroke regarding QPainter
@@ -85,11 +80,9 @@ class CORE_EXPORT QgsMaskPaintDevice: public QPaintDevice
     Q_DECL_DEPRECATED QPainterPath maskPainterPath() const SIP_DEPRECATED;
 
   private:
-
     std::unique_ptr<QgsMaskPaintEngine> mPaintEngine;
 
     QSize mSize;
-
 };
 
 

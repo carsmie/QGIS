@@ -16,13 +16,13 @@
 #ifndef QGSAUTHORIZATIONSETTINGS_H
 #define QGSAUTHORIZATIONSETTINGS_H
 
-#include "qgsauthmanager.h"
 #include "qgsapplication.h"
+#include "qgsauthmanager.h"
 #include "qgshttpheaders.h"
 
-#include <QString>
-#include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QString>
 
 #define SIP_NO_FILE
 
@@ -35,7 +35,6 @@
 class CORE_EXPORT QgsAuthorizationSettings
 {
   public:
-
     //! Constructor for QgsAuthorizationSettings.
     QgsAuthorizationSettings( const QString &userName = QString(), const QString &password = QString(), const QgsHttpHeaders &httpHeaders = QgsHttpHeaders(), const QString &authcfg = QString() );
 

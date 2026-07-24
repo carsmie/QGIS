@@ -18,11 +18,11 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include <QObject>
-#include <QAbstractListModel>
-#include <QSortFilterProxyModel>
 #include "qgsprojectstoredobjectmanagermodel.h"
 
+#include <QAbstractListModel>
+#include <QObject>
+#include <QSortFilterProxyModel>
 
 class QgsProject;
 class QgsElevationProfile;
@@ -48,7 +48,6 @@ class CORE_EXPORT QgsElevationProfileManagerModel : public QgsProjectStoredObjec
     Q_OBJECT
 
   public:
-
     // *INDENT-OFF*
 
     /**
@@ -77,7 +76,6 @@ class CORE_EXPORT QgsElevationProfileManagerModel : public QgsProjectStoredObjec
      * \see profileFromIndex()
      */
     QModelIndex indexFromProfile( QgsElevationProfile *profile ) const;
-
 };
 
 
@@ -98,12 +96,10 @@ class CORE_EXPORT QgsElevationProfileManagerProxyModel : public QgsProjectStored
 #endif
     Q_OBJECT
   public:
-
     /**
      * Constructor for QgsElevationProfileManagerProxyModel.
      */
     explicit QgsElevationProfileManagerProxyModel( QObject *parent SIP_TRANSFERTHIS = nullptr );
-
 };
 
 #endif // QGSELEVATIONPROFILEMANAGERMODEL_H

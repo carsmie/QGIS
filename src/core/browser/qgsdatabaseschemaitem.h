@@ -17,9 +17,13 @@
 #ifndef QGSDATABASESCHEMAITEM_H
 #define QGSDATABASESCHEMAITEM_H
 
-#include "qgis_sip.h"
 #include "qgis_core.h"
+#include "qgis_sip.h"
 #include "qgsdatacollectionitem.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup core
@@ -30,7 +34,6 @@ class CORE_EXPORT QgsDatabaseSchemaItem : public QgsDataCollectionItem
 {
     Q_OBJECT
   public:
-
     /**
      * Constructor for QgsDatabaseSchemaItem, with the specified \a parent item.
      *
@@ -47,17 +50,16 @@ class CORE_EXPORT QgsDatabaseSchemaItem : public QgsDataCollectionItem
     ~QgsDatabaseSchemaItem() override;
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsDatabaseSchemaItem: \"%1\" %2>" ).arg( sipCpp->name(), sipCpp->path() );
+    QString str = u"<QgsDatabaseSchemaItem: \"%1\" %2>"_s.arg( sipCpp->name(), sipCpp->path() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
-    QgsAbstractDatabaseProviderConnection *databaseConnection() const override;
-
+      QgsAbstractDatabaseProviderConnection *databaseConnection() const override;
 };
 
 #endif // QGSDATABASESCHEMAITEM_H
-
-

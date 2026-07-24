@@ -18,16 +18,16 @@
 #ifndef QGSOPTIONS_H
 #define QGSOPTIONS_H
 
-#include "qgsoptionsdialogbase.h"
 #include "ui_qgsoptionsbase.h"
-#include "qgsguiutils.h"
-#include "qgisapp.h"
-#include "qgshelp.h"
 
+#include "qgis_app.h"
+#include "qgisapp.h"
 #include "qgscoordinatereferencesystem.h"
+#include "qgsguiutils.h"
+#include "qgshelp.h"
+#include "qgsoptionsdialogbase.h"
 
 #include <QList>
-#include "qgis_app.h"
 
 class QgsExpressionContext;
 class QgsOptionsPageWidget;
@@ -45,20 +45,6 @@ class APP_EXPORT QgsOptions : public QgsOptionsDialogBase, private Ui::QgsOption
 {
     Q_OBJECT
   public:
-    /**
-     * Behavior to use when encountering a layer with an unknown CRS
-     * \since QGIS 3.10
-     */
-    enum UnknownLayerCrsBehavior
-    {
-      NoAction = 0,         //!< Take no action and leave as unknown CRS
-      PromptUserForCrs = 1, //!< User is prompted for a CRS choice
-      UseProjectCrs = 2,    //!< Copy the current project's CRS
-      UseDefaultCrs = 3,    //!< Use the default layer CRS set via QGIS options
-    };
-    Q_ENUM( UnknownLayerCrsBehavior )
-
-
     /**
      * Constructor
      * \param parent Parent widget (usually a QgisApp)
@@ -251,6 +237,10 @@ class APP_EXPORT QgsOptions : public QgsOptionsDialogBase, private Ui::QgsOption
     void moveLocalizedDataPathUp();
     void moveLocalizedDataPathDown();
     void alwaysUseDecimalPointChanged( bool checked );
+    void addTrustedProject();
+    void removeTrustedProject();
+    void addUntrustedProject();
+    void removeUntrustedProject();
 
   private:
     QgsSettings *mSettings = nullptr;

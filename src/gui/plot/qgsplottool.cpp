@@ -16,21 +16,21 @@
  ***************************************************************************/
 
 #include "qgsplottool.h"
-#include "moc_qgsplottool.cpp"
+
 #include "qgsplotcanvas.h"
 #include "qgsplotmouseevent.h"
 
-#include <QWheelEvent>
 #include <QAction>
+#include <QWheelEvent>
+
+#include "moc_qgsplottool.cpp"
 
 QgsPlotTool::QgsPlotTool( QgsPlotCanvas *canvas, const QString &name )
   : QObject( canvas )
   , mCanvas( canvas )
   , mToolName( name )
 {
-  connect( mCanvas, &QgsPlotCanvas::willBeDeleted, this, [this] {
-    mCanvas = nullptr;
-  } );
+  connect( mCanvas, &QgsPlotCanvas::willBeDeleted, this, [this] { mCanvas = nullptr; } );
 }
 
 QgsPoint QgsPlotTool::toMapCoordinates( const QgsPointXY &point ) const

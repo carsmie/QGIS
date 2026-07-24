@@ -18,10 +18,11 @@
 #ifndef QGSALGORITHMSINGLESIDEDBUFFER_H
 #define QGSALGORITHMSINGLESIDEDBUFFER_H
 
-#define SIP_NO_FILE
 
 #include "qgis_sip.h"
 #include "qgsprocessingalgorithm.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -56,8 +57,8 @@ class QgsSingleSidedBufferAlgorithm : public QgsProcessingFeatureBasedAlgorithm
     QgsProperty mDistanceProperty;
 
     int mSegments = 0;
-    Qgis::BufferSide mSide;
-    Qgis::JoinStyle mJoinStyle;
+    Qgis::BufferSide mSide = Qgis::BufferSide::Left;
+    Qgis::JoinStyle mJoinStyle = Qgis::JoinStyle::Round;
     double mMiterLimit = 0.0;
 };
 

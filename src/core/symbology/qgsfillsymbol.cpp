@@ -14,6 +14,7 @@
  ***************************************************************************/
 
 #include "qgsfillsymbol.h"
+
 #include "qgsfillsymbollayer.h"
 #include "qgspainteffect.h"
 
@@ -39,7 +40,7 @@ QgsFillSymbol::QgsFillSymbol( const QgsSymbolLayerList &layers )
 void QgsFillSymbol::renderPolygon( const QPolygonF &points, const QVector<QPolygonF> *rings, const QgsFeature *f, QgsRenderContext &context, int layerIdx, bool selected )
 {
   const double opacity = dataDefinedProperties().hasActiveProperties() ? dataDefinedProperties().valueAsDouble( QgsSymbol::Property::Opacity, context.expressionContext(), mOpacity * 100 ) * 0.01
-                         : mOpacity;
+                                                                       : mOpacity;
 
   QgsSymbolRenderContext symbolContext( context, Qgis::RenderUnit::Unknown, opacity, selected, renderHints(), f );
   symbolContext.setOriginalGeometryType( Qgis::GeometryType::Polygon );

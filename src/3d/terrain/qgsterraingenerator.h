@@ -17,9 +17,10 @@
 #define QGSTERRAINGENERATOR_H
 
 #include "qgis_3d.h"
-
-#include "qgstilingscheme.h"
 #include "qgschunkloader.h"
+#include "qgstilingscheme.h"
+
+#define SIP_NO_FILE
 
 class QgsAABB;
 class Qgs3DMapSettings;
@@ -32,7 +33,6 @@ class QDomElement;
 class QDomDocument;
 class QgsProject;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup qgis_3d
@@ -60,6 +60,28 @@ class _3D_EXPORT QgsTerrainGenerator : public QgsQuadtreeChunkLoaderFactory
       QuantizedMesh, //!< Terrain is built from quantized mesh tiles
     };
 
+    /**
+     * Specific capabilities of the terrain generator
+     *
+     * \since QGIS 4.0
+     */
+    enum class Capability : int
+    {
+      NoCapabilities = 1 << 0,         //!< No specific capabilities
+      SupportsTileResolution = 1 << 1, //!< Supports tile resolution
+    };
+
+    Q_ENUM( Capability )
+    Q_DECLARE_FLAGS( Capabilities, Capability )
+    Q_FLAG( Capabilities )
+
+    /**
+     * Returns flags containing the supported capabilities
+     *
+     * \since QGIS.4.0
+     */
+    virtual QgsTerrainGenerator::Capabilities capabilities() const;
+
     //! Sets terrain entity for the generator (does not transfer ownership)
     virtual void setTerrain( QgsTerrainEntity *t ) { mTerrain = t; }
 
@@ -85,7 +107,7 @@ class _3D_EXPORT QgsTerrainGenerator : public QgsQuadtreeChunkLoaderFactory
     virtual void rootChunkHeightRange( float &hMin, float &hMax ) const;
 
     //! Returns height at (x,y) in map's CRS
-    virtual float heightAt( double x, double y, const Qgs3DRenderContext &context ) const;
+    virtual float heightAt( double x, double y, const Qgs3DRenderContext &context ) const = 0;
 
     //! Converts terrain generator type enumeration into a string
     static QString typeToString( Type type );

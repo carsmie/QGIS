@@ -27,10 +27,12 @@
  *
  */
 
+#include "priorityqueue.h"
+
 #include <cstdio>
+#include <memory>
 
 #include "internalexception.h"
-#include "priorityqueue.h"
 
 using namespace pal;
 
@@ -46,8 +48,7 @@ bool bigger( double l, double r )
 
 // O (size log size)
 PriorityQueue::PriorityQueue( int n, int maxId, bool min )
-  : size( 0 )
-  , maxsize( n )
+  : maxsize( n )
   , maxId( maxId )
 {
   heap = std::make_unique<int[]>( maxsize );
@@ -67,8 +68,7 @@ PriorityQueue::PriorityQueue( int n, int maxId, bool min )
 }
 
 PriorityQueue::~PriorityQueue()
-{
-}
+{}
 
 int PriorityQueue::getSize() const
 {
@@ -141,7 +141,7 @@ void PriorityQueue::remove( int key )
     pos[key] = -1;
 
     heap[i] = heap[size];
-    p[i]    = p[size];
+    p[i] = p[size];
 
     downheap( i );
   }
@@ -152,13 +152,13 @@ void PriorityQueue::sort()
 {
   int i;
   int pi = 2;
-  while ( size > pi ) pi *= 2;
+  while ( size > pi )
+    pi *= 2;
 
   i = pi / 2 - 2;
 
   for ( i = size - 1; i >= 0; i-- )
     downheap( i );
-
 }
 
 
@@ -191,10 +191,10 @@ void PriorityQueue::upheap( int key )
         tmpP = p[i];
 
         heap[i] = heap[i2];
-        p[i]    = p[i2];
+        p[i] = p[i2];
 
         heap[i2] = tmpT;
-        p[i2]    = tmpP;
+        p[i2] = tmpP;
 
         i = i2;
       }
@@ -234,10 +234,10 @@ void PriorityQueue::downheap( int id )
       tmpP = p[id];
 
       heap[id] = heap[min_child];
-      p[id]    = p[min_child];
+      p[id] = p[min_child];
 
       heap[min_child] = tmpT;
-      p[min_child]    = tmpP;
+      p[min_child] = tmpP;
 
       id = min_child;
     }
@@ -248,7 +248,6 @@ void PriorityQueue::downheap( int id )
 
 void PriorityQueue::setPriority( int key, double new_p )
 {
-
   if ( key < 0 || key > maxId )
     return;
 
@@ -269,7 +268,6 @@ void PriorityQueue::setPriority( int key, double new_p )
 
 void PriorityQueue::decreaseKey( int key )
 {
-
   if ( key < 0 || key > maxId )
     return;
 
@@ -297,7 +295,6 @@ void PriorityQueue::print()
     fprintf( stderr, "id: %7d  ->  key: %7d -> id: %7d   p: %7f\n", i, heap[i], pos[heap[i]], p[i] );
   }
   fprintf( stderr, "\n" );
-
 }
 
 

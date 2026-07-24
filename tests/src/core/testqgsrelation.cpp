@@ -12,17 +12,18 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <QObject>
-
-
-#include "qgsproject.h"
-#include "qgsattributeeditorelement.h"
 #include "qgsattributeeditorcontainer.h"
+#include "qgsattributeeditorelement.h"
 #include "qgsattributeeditorrelation.h"
 #include "qgsmaplayerstylemanager.h"
+#include "qgsproject.h"
 #include "qgstest.h"
 #include "qgsvectorlayer.h"
 
+#include <QObject>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup UnitTests
@@ -40,13 +41,6 @@ class TestQgsRelation : public QObject
 
 void TestQgsRelation::initTestCase()
 {
-  // Runs once before any tests are run
-
-  // Set up the QgsSettings environment
-  QCoreApplication::setOrganizationName( QStringLiteral( "QGIS" ) );
-  QCoreApplication::setOrganizationDomain( QStringLiteral( "qgis.org" ) );
-  QCoreApplication::setApplicationName( QStringLiteral( "QGIS-TEST" ) );
-
   QgsApplication::init();
   QgsApplication::initQgis();
   QgsSettings().clear();

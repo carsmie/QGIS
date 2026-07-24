@@ -14,32 +14,29 @@
  ***************************************************************************/
 
 #include "qgsshadowrenderview.h"
-#include "qgsdirectionallightsettings.h"
-#include "qgsshadowsettings.h"
 
 #include <Qt3DRender/QCamera>
-#include <Qt3DRender/QRenderSurfaceSelector>
-#include <Qt3DRender/QViewport>
 #include <Qt3DRender/QCameraSelector>
-#include <Qt3DRender/QLayerFilter>
-#include <Qt3DRender/QLayer>
-#include <Qt3DRender/QRenderTargetSelector>
-#include <Qt3DRender/QRenderTarget>
-#include <Qt3DRender/QTexture>
 #include <Qt3DRender/QClearBuffers>
-#include <Qt3DRender/QParameter>
-#include <Qt3DRender/QFrustumCulling>
-#include <Qt3DRender/QRenderStateSet>
-#include <Qt3DRender/QDepthTest>
 #include <Qt3DRender/QCullFace>
+#include <Qt3DRender/QDepthTest>
+#include <Qt3DRender/QFrustumCulling>
+#include <Qt3DRender/QLayer>
+#include <Qt3DRender/QLayerFilter>
+#include <Qt3DRender/QParameter>
 #include <Qt3DRender/QPolygonOffset>
+#include <Qt3DRender/QRenderStateSet>
+#include <Qt3DRender/QRenderSurfaceSelector>
+#include <Qt3DRender/QRenderTarget>
+#include <Qt3DRender/QRenderTargetSelector>
+#include <Qt3DRender/QTexture>
+#include <Qt3DRender/QViewport>
 #include <Qt3DRender/qsubtreeenabler.h>
 
-QgsShadowRenderView::QgsShadowRenderView( const QString &viewName )
+QgsShadowRenderView::QgsShadowRenderView( const QString &viewName, Qt3DCore::QEntity *rootEntity )
   : QgsAbstractRenderView( viewName )
+  , mRootEntity( rootEntity )
 {
-  mLightCamera = new Qt3DRender::QCamera;
-  mLightCamera->setObjectName( mViewName + "::LightCamera" );
   mEntityCastingShadowsLayer = new Qt3DRender::QLayer;
   mEntityCastingShadowsLayer->setRecursive( true );
   mEntityCastingShadowsLayer->setObjectName( mViewName + "::Layer" );
@@ -54,45 +51,30 @@ void QgsShadowRenderView::setEnabled( bool enable )
   mLayerFilter->setEnabled( enable );
 }
 
-Qt3DRender::QRenderTarget *QgsShadowRenderView::buildTextures()
+Qt3DRender::QCamera *QgsShadowRenderView::lightCamera( int index )
 {
-  mMapTexture = new Qt3DRender::QTexture2D;
-  mMapTexture->setWidth( mDefaultMapResolution );
-  mMapTexture->setHeight( mDefaultMapResolution );
-  mMapTexture->setFormat( Qt3DRender::QTexture2D::TextureFormat::DepthFormat );
-  mMapTexture->setGenerateMipMaps( false );
-  mMapTexture->setMagnificationFilter( Qt3DRender::QTexture2D::Linear );
-  mMapTexture->setMinificationFilter( Qt3DRender::QTexture2D::Linear );
-  mMapTexture->wrapMode()->setX( Qt3DRender::QTextureWrapMode::ClampToEdge );
-  mMapTexture->wrapMode()->setY( Qt3DRender::QTextureWrapMode::ClampToEdge );
-  mMapTexture->setObjectName( mViewName + "::MapTexture" );
-
-  Qt3DRender::QRenderTargetOutput *renderTargetOutput = new Qt3DRender::QRenderTargetOutput;
-  renderTargetOutput->setAttachmentPoint( Qt3DRender::QRenderTargetOutput::Depth );
-  renderTargetOutput->setTexture( mMapTexture );
-
-  Qt3DRender::QRenderTarget *renderTarget = new Qt3DRender::QRenderTarget;
-  renderTarget->setObjectName( mViewName + "::RenderTarget" );
-  renderTarget->addOutput( renderTargetOutput );
-
-  return renderTarget;
+  return mLightCameras[index];
 }
 
 void QgsShadowRenderView::buildRenderPass()
 {
-  // build render pass
-  Qt3DRender::QCameraSelector *lightCameraSelector = new Qt3DRender::QCameraSelector( mRendererEnabler );
-  lightCameraSelector->setObjectName( mViewName + "::CameraSelector" );
-  lightCameraSelector->setCamera( mLightCamera );
+  mMapTextureArray = new Qt3DRender::QTexture2DArray;
+  mMapTextureArray->setWidth( mDefaultMapResolution );
+  mMapTextureArray->setHeight( mDefaultMapResolution );
+  mMapTextureArray->setLayers( Qgs3D::NUM_SHADOW_CASCADES );
+  mMapTextureArray->setFormat( Qt3DRender::QAbstractTexture::TextureFormat::DepthFormat );
+  mMapTextureArray->setGenerateMipMaps( false );
+  mMapTextureArray->setMagnificationFilter( Qt3DRender::QAbstractTexture::Linear );
+  mMapTextureArray->setMinificationFilter( Qt3DRender::QAbstractTexture::Linear );
+  mMapTextureArray->wrapMode()->setX( Qt3DRender::QTextureWrapMode::ClampToEdge );
+  mMapTextureArray->wrapMode()->setY( Qt3DRender::QTextureWrapMode::ClampToEdge );
+  mMapTextureArray->setObjectName( mViewName + "::MapTextureArray" );
 
-  mLayerFilter = new Qt3DRender::QLayerFilter( lightCameraSelector );
+  mLayerFilter = new Qt3DRender::QLayerFilter( mRendererEnabler );
   mLayerFilter->addLayer( mEntityCastingShadowsLayer );
 
-  Qt3DRender::QRenderTargetSelector *renderTargetSelector = new Qt3DRender::QRenderTargetSelector( mLayerFilter );
-
-  Qt3DRender::QClearBuffers *clearBuffers = new Qt3DRender::QClearBuffers( renderTargetSelector );
-  clearBuffers->setBuffers( Qt3DRender::QClearBuffers::BufferType::ColorDepthBuffer );
-  clearBuffers->setClearColor( QColor::fromRgbF( 0.0f, 1.0f, 0.0f ) );
+  Qt3DRender::QClearBuffers *clearBuffers = new Qt3DRender::QClearBuffers( mLayerFilter );
+  clearBuffers->setBuffers( Qt3DRender::QClearBuffers::BufferType::DepthBuffer );
 
   Qt3DRender::QRenderStateSet *renderStateSet = new Qt3DRender::QRenderStateSet( clearBuffers );
 
@@ -109,10 +91,36 @@ void QgsShadowRenderView::buildRenderPass()
   polygonOffset->setScaleFactor( 1.1 );
   renderStateSet->addRenderState( polygonOffset );
 
-  // build texture part
-  Qt3DRender::QRenderTarget *renderTarget = buildTextures();
+  // We are using "Cascading Shadow Maps" technique.
+  // Reading/watching which was useful during development:
+  // https://learnopengl.com/Guest-Articles/2021/CSM
+  // https://developer.download.nvidia.com/SDK/10.5/opengl/src/cascaded_shadow_maps/doc/cascaded_shadow_maps.pdf
+  // https://www.youtube.com/watch?v=Jhopq2lkzMQ
+  // https://www.youtube.com/watch?v=qbDrqARX07o
+  // https://web.archive.org/web/20170710150304/https://cesiumjs.org/presentations/ShadowsAndCesiumImplementation.pdf
+  for ( int i = 0; i < Qgs3D::NUM_SHADOW_CASCADES; ++i )
+  {
+    mLightCameras[i] = new Qt3DRender::QCamera( mRootEntity );
+    mLightCameras[i]->setObjectName( mViewName + QString( "::LightCamera_%1" ).arg( i ) );
+    mLightCameras[i]->setProjectionType( Qt3DRender::QCameraLens::ProjectionType::OrthographicProjection );
 
-  renderTargetSelector->setTarget( renderTarget );
+    Qt3DRender::QCameraSelector *lightCameraSelector = new Qt3DRender::QCameraSelector( renderStateSet );
+    lightCameraSelector->setObjectName( mViewName + QString( "::CameraSelector_%1" ).arg( i ) );
+    lightCameraSelector->setCamera( mLightCameras[i] );
+
+    Qt3DRender::QRenderTargetSelector *renderTargetSelector = new Qt3DRender::QRenderTargetSelector( lightCameraSelector );
+
+    Qt3DRender::QRenderTargetOutput *output = new Qt3DRender::QRenderTargetOutput;
+    output->setAttachmentPoint( Qt3DRender::QRenderTargetOutput::Depth );
+    output->setTexture( mMapTextureArray );
+    output->setLayer( i );
+
+    Qt3DRender::QRenderTarget *renderTarget = new Qt3DRender::QRenderTarget;
+    renderTarget->setObjectName( mViewName + QString( "::RenderTarget_%1" ).arg( i ) );
+    renderTarget->addOutput( output );
+
+    renderTargetSelector->setTarget( renderTarget );
+  }
 }
 
 Qt3DRender::QLayer *QgsShadowRenderView::entityCastingShadowsLayer() const
@@ -120,13 +128,12 @@ Qt3DRender::QLayer *QgsShadowRenderView::entityCastingShadowsLayer() const
   return mEntityCastingShadowsLayer;
 }
 
-
 void QgsShadowRenderView::setMapSize( int width, int height )
 {
-  mMapTexture->setSize( width, height );
+  mMapTextureArray->setSize( width, height );
 }
 
-Qt3DRender::QTexture2D *QgsShadowRenderView::mapTexture() const
+Qt3DRender::QTexture2DArray *QgsShadowRenderView::mapTextureArray() const
 {
-  return mMapTexture;
+  return mMapTextureArray;
 }

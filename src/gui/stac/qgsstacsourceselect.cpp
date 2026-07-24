@@ -14,36 +14,41 @@
  ***************************************************************************/
 
 #include "qgsstacsourceselect.h"
-#include "moc_qgsstacsourceselect.cpp"
+
 #include "qgsdatasourcemanagerdialog.h"
 #include "qgsgui.h"
+#include "qgshelp.h"
+#include "qgsmanageconnectionsdialog.h"
 #include "qgsmapcanvas.h"
-#include "qgsstaccontroller.h"
 #include "qgsstaccatalog.h"
 #include "qgsstaccollection.h"
 #include "qgsstaccollectionlist.h"
 #include "qgsstacconnection.h"
 #include "qgsstacconnectiondialog.h"
-#include "qgsmanageconnectionsdialog.h"
-#include "qgshelp.h"
+#include "qgsstaccontroller.h"
 #include "qgsstacdownloadassetsdialog.h"
 #include "qgsstacitem.h"
 #include "qgsstacitemcollection.h"
-#include "qgsstacsearchparametersdialog.h"
-#include "qgsstacobjectdetailsdialog.h"
 #include "qgsstacitemlistmodel.h"
+#include "qgsstacobjectdetailsdialog.h"
+#include "qgsstacsearchparametersdialog.h"
 
-#include <QScrollBar>
-#include <QUrlQuery>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QMenu>
+#include <QMessageBox>
+#include <QScrollBar>
+#include <QString>
+#include <QUrlQuery>
+
+#include "moc_qgsstacsourceselect.cpp"
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
 QgsStacSourceSelect::QgsStacSourceSelect( QWidget *parent, Qt::WindowFlags fl, QgsProviderRegistry::WidgetMode theWidgetMode )
   : QgsAbstractDataSourceWidget( parent, fl, theWidgetMode )
-  , mStac( new QgsStacController )
+  , mStac( std::make_unique<QgsStacController>() )
   , mItemsModel( new QgsStacItemListModel( this ) )
 {
   setupUi( this );
@@ -63,9 +68,9 @@ QgsStacSourceSelect::QgsStacSourceSelect( QWidget *parent, Qt::WindowFlags fl, Q
 
   populateConnectionList();
 
-  connect( mStac, &QgsStacController::finishedStacObjectRequest, this, &QgsStacSourceSelect::onStacObjectRequestFinished );
-  connect( mStac, &QgsStacController::finishedItemCollectionRequest, this, &QgsStacSourceSelect::onItemCollectionRequestFinished );
-  connect( mStac, &QgsStacController::finishedCollectionsRequest, this, &QgsStacSourceSelect::onCollectionsRequestFinished );
+  connect( mStac.get(), &QgsStacController::finishedStacObjectRequest, this, &QgsStacSourceSelect::onStacObjectRequestFinished );
+  connect( mStac.get(), &QgsStacController::finishedItemCollectionRequest, this, &QgsStacSourceSelect::onItemCollectionRequestFinished );
+  connect( mStac.get(), &QgsStacController::finishedCollectionsRequest, this, &QgsStacSourceSelect::onCollectionsRequestFinished );
 
   mItemsView->setModel( mItemsModel );
   mItemsView->setItemDelegate( new QgsStacItemDelegate( this ) );
@@ -73,13 +78,13 @@ QgsStacSourceSelect::QgsStacSourceSelect( QWidget *parent, Qt::WindowFlags fl, Q
   mItemsView->setContextMenuPolicy( Qt::CustomContextMenu );
 
   connect( mItemsView, &QListView::customContextMenuRequested, this, &QgsStacSourceSelect::showItemsContextMenu );
-  connect( mItemsView, &QListView::doubleClicked, this, &QgsStacSourceSelect::onItemDoubleClicked );
+  connect( mItemsView, &QListView::doubleClicked, this, &QgsStacSourceSelect::showItemDetails );
   connect( mItemsView->selectionModel(), &QItemSelectionModel::currentChanged, this, &QgsStacSourceSelect::onCurrentItemChanged );
   connect( mItemsView->verticalScrollBar(), &QScrollBar::valueChanged, this, &QgsStacSourceSelect::onItemsViewScroll );
 
   connect( mFootprintsCheckBox, &QCheckBox::clicked, this, &QgsStacSourceSelect::showFootprints );
 
-  mParametersDialog = new QgsStacSearchParametersDialog( mStac, mapCanvas(), this );
+  mParametersDialog = new QgsStacSearchParametersDialog( mStac.get(), mapCanvas(), this );
 
   connect( mFiltersButton, &QToolButton::clicked, mParametersDialog, &QgsStacSearchParametersDialog::open );
   connect( mParametersDialog, &QgsStacSearchParametersDialog::finished, this, &QgsStacSourceSelect::onSearchParametersDialogClosed );
@@ -88,9 +93,7 @@ QgsStacSourceSelect::QgsStacSourceSelect( QWidget *parent, Qt::WindowFlags fl, Q
 }
 
 QgsStacSourceSelect::~QgsStacSourceSelect()
-{
-  delete mStac;
-}
+{}
 
 void QgsStacSourceSelect::hideEvent( QHideEvent *e )
 {
@@ -133,15 +136,16 @@ void QgsStacSourceSelect::onItemsViewScroll( int value )
 {
   if ( !mNextPageUrl.isEmpty() && value == mItemsView->verticalScrollBar()->maximum() )
   {
-    QgsDebugMsgLevel( QStringLiteral( "Scrolled to end, fetching next page" ), 3 );
+    QgsDebugMsgLevel( u"Scrolled to end, fetching next page"_s, 3 );
     fetchNextResultPage();
   }
 }
 
-void QgsStacSourceSelect::onItemDoubleClicked( const QModelIndex &index )
+void QgsStacSourceSelect::showItemDetails( const QModelIndex &index )
 {
   QgsStacObjectDetailsDialog details( this );
-  details.setStacObject( index.data( QgsStacItemListModel::Role::StacObject ).value<QgsStacObject *>() );
+  details.setAuthcfg( mStac->authCfg() );
+  details.setContentFromStacObject( index.data( QgsStacItemListModel::Role::StacObject ).value<QgsStacObject *>() );
   details.exec();
 }
 
@@ -210,8 +214,7 @@ void QgsStacSourceSelect::btnEdit_clicked()
 
 void QgsStacSourceSelect::btnDelete_clicked()
 {
-  const QString msg = tr( "Are you sure you want to remove the %1 connection and all associated settings?" )
-                        .arg( cmbConnections->currentText() );
+  const QString msg = tr( "Are you sure you want to remove the %1 connection and all associated settings?" ).arg( cmbConnections->currentText() );
   if ( QMessageBox::Yes != QMessageBox::question( this, tr( "Confirm Delete" ), msg, QMessageBox::Yes | QMessageBox::No ) )
     return;
 
@@ -278,7 +281,7 @@ void QgsStacSourceSelect::cmbConnections_currentTextChanged( const QString &text
 
 void QgsStacSourceSelect::onStacObjectRequestFinished( int requestId, QString error )
 {
-  QgsDebugMsgLevel( QStringLiteral( "Finished object request %1" ).arg( requestId ), 2 );
+  QgsDebugMsgLevel( u"Finished object request %1"_s.arg( requestId ), 2 );
   std::unique_ptr<QgsStacCatalog> cat( mStac->takeStacObject< QgsStacCatalog >( requestId ) );
 
   if ( !cat )
@@ -287,9 +290,9 @@ void QgsStacSourceSelect::onStacObjectRequestFinished( int requestId, QString er
     return;
   }
 
-  const bool supportsCollections = cat->conformsTo( QStringLiteral( "https://api.stacspec.org/v1.0.0/collections" ) );
-  const bool supportsSearch = cat->conformsTo( QStringLiteral( "https://api.stacspec.org/v1.0.0/item-search" ) );
-  QgsDebugMsgLevel( QStringLiteral( "STAC catalog supports API: %1" ).arg( supportsCollections && supportsSearch ), 2 );
+  const bool supportsCollections = cat->conformsTo( u"https://api.stacspec.org/v1.0.0/collections"_s );
+  const bool supportsSearch = cat->conformsTo( u"https://api.stacspec.org/v1.0.0/item-search"_s );
+  QgsDebugMsgLevel( u"STAC catalog supports API: %1"_s.arg( supportsCollections && supportsSearch ), 2 );
   QString collectionsUrl;
 
   if ( supportsCollections && supportsSearch )
@@ -298,15 +301,19 @@ void QgsStacSourceSelect::onStacObjectRequestFinished( int requestId, QString er
     {
       // collections endpoint should have a "data" relation according to spec but some servers don't
       // so let's be less strict and only check the href and optionally the media type
-      if ( QUrl( l.href() ).path().endsWith( "/collections" ) &&     // allow query parameters in the url
-           ( l.mediaType().isEmpty() ||                              // media type is optional
-             l.mediaType() == QLatin1String( "application/json" ) || // but if it's there it should be json or geojson
-             l.mediaType() == QLatin1String( "application/geo+json" ) ) )
+      if ( QUrl( l.href() ).path().endsWith( "/collections" ) && // allow query parameters in the url
+           ( l.mediaType().isEmpty()
+             || // media type is optional
+             l.mediaType() == "application/json"_L1
+             || // but if it's there it should be json or geojson
+             l.mediaType() == "application/geo+json"_L1 ) )
         collectionsUrl = l.href();
-      else if ( l.relation() == "search" &&                               // relation needs to be "search" according to spec
-                ( l.mediaType().isEmpty() ||                              // media type is optional
-                  l.mediaType() == QLatin1String( "application/json" ) || // but if it's there it should be json or geojson
-                  l.mediaType() == QLatin1String( "application/geo+json" ) ) )
+      else if ( l.relation() == "search" && // relation needs to be "search" according to spec
+                ( l.mediaType().isEmpty()
+                  || // media type is optional
+                  l.mediaType() == "application/json"_L1
+                  || // but if it's there it should be json or geojson
+                  l.mediaType() == "application/geo+json"_L1 ) )
         mSearchUrl = l.href();
 
       if ( !collectionsUrl.isEmpty() && !mSearchUrl.isEmpty() )
@@ -328,7 +335,7 @@ void QgsStacSourceSelect::onStacObjectRequestFinished( int requestId, QString er
 
 void QgsStacSourceSelect::onCollectionsRequestFinished( int requestId, QString error )
 {
-  QgsDebugMsgLevel( QStringLiteral( "Finished collections request %1" ).arg( requestId ), 2 );
+  QgsDebugMsgLevel( u"Finished collections request %1"_s.arg( requestId ), 2 );
   std::unique_ptr<QgsStacCollectionList> cols( mStac->takeCollections( requestId ) );
 
   if ( !cols )
@@ -360,7 +367,7 @@ void QgsStacSourceSelect::onCollectionsRequestFinished( int requestId, QString e
 
 void QgsStacSourceSelect::onItemCollectionRequestFinished( int requestId, QString error )
 {
-  QgsDebugMsgLevel( QStringLiteral( "Finished item collection request %1" ).arg( requestId ), 2 );
+  QgsDebugMsgLevel( u"Finished item collection request %1"_s.arg( requestId ), 2 );
   std::unique_ptr<QgsStacItemCollection> col( mStac->takeItemCollection( requestId ) );
 
   if ( !col )
@@ -372,7 +379,7 @@ void QgsStacSourceSelect::onItemCollectionRequestFinished( int requestId, QStrin
   mNextPageUrl = col->nextUrl();
 
   const QVector<QgsStacItem *> items = col->takeItems();
-  mItemsModel->addItems( items );
+  mItemsModel->addItems( items, mStac->authCfg() );
 
   for ( QgsStacItem *i : items )
   {
@@ -418,7 +425,7 @@ void QgsStacSourceSelect::search()
   {
     const QSet<QString> collectionsSet = mParametersDialog->selectedCollections();
     collections = QStringList( collectionsSet.constBegin(), collectionsSet.constEnd() );
-    const QList<QPair<QString, QString>> collectionsParameters = { qMakePair( QStringLiteral( "collections" ), collections.join( "," ) ) };
+    const QList<QPair<QString, QString>> collectionsParameters = { qMakePair( u"collections"_s, collections.join( "," ) ) };
     q.setQueryItems( collectionsParameters );
   }
 
@@ -428,11 +435,11 @@ void QgsStacSourceSelect::search()
     const QgsRectangle bbox = geom.boundingBox();
     if ( bbox == QgsGeometry::fromRect( bbox ).boundingBox() )
     {
-      q.addQueryItem( QStringLiteral( "bbox" ), QStringLiteral( "%1,%2,%3,%4" ).arg( bbox.xMinimum() ).arg( bbox.yMinimum() ).arg( bbox.xMaximum() ).arg( bbox.yMaximum() ) );
+      q.addQueryItem( u"bbox"_s, u"%1,%2,%3,%4"_s.arg( bbox.xMinimum() ).arg( bbox.yMinimum() ).arg( bbox.xMaximum() ).arg( bbox.yMaximum() ) );
     }
     else
     {
-      q.addQueryItem( QStringLiteral( "intersects" ), geom.asJson() );
+      q.addQueryItem( u"intersects"_s, geom.asJson() );
     }
   }
 
@@ -449,12 +456,9 @@ void QgsStacSourceSelect::search()
     }
     else
     {
-      dateString = QStringLiteral( "%1/%2" ).arg(
-        fromDate.isNull() ? QStringLiteral( ".." ) : fromDate.toString( Qt::ISODateWithMs ),
-        toDate.isNull() ? QStringLiteral( ".." ) : toDate.toString( Qt::ISODateWithMs )
-      );
+      dateString = u"%1/%2"_s.arg( fromDate.isNull() ? u".."_s : fromDate.toString( Qt::ISODateWithMs ), toDate.isNull() ? u".."_s : toDate.toString( Qt::ISODateWithMs ) );
     }
-    q.addQueryItem( QStringLiteral( "datetime" ), dateString );
+    q.addQueryItem( u"datetime"_s, dateString );
   }
 
   QUrl searchUrl( mSearchUrl );
@@ -480,7 +484,7 @@ void QgsStacSourceSelect::onSearchParametersDialogClosed( int result )
 
 void QgsStacSourceSelect::showHelp()
 {
-  QgsHelp::openHelp( QStringLiteral( "managing_data_source/opening_data.html" ) );
+  QgsHelp::openHelp( u"managing_data_source/opening_data.html"_s );
 }
 
 void QgsStacSourceSelect::updateFilterPreview()
@@ -520,7 +524,7 @@ void QgsStacSourceSelect::showItemsContextMenu( QPoint point )
     {
       if ( asset.isCloudOptimized() )
       {
-        QAction *loadAssetAction = new QAction( asset.title(), assetsMenu );
+        QAction *loadAssetAction = new QAction( asset.title().isEmpty() ? QUrl( asset.href() ).fileName() : asset.title(), assetsMenu );
         connect( loadAssetAction, &QAction::triggered, this, [this, uri = asset.uri()] {
           QgsTemporaryCursorOverride cursorOverride( Qt::WaitCursor );
           loadUri( uri );
@@ -564,11 +568,7 @@ void QgsStacSourceSelect::showItemsContextMenu( QPoint point )
   } );
 
   QAction *detailsAction = new QAction( tr( "Details…" ), menu );
-  connect( detailsAction, &QAction::triggered, this, [this, index] {
-    QgsStacObjectDetailsDialog details( this );
-    details.setStacObject( index.data( QgsStacItemListModel::Role::StacObject ).value<QgsStacObject *>() );
-    details.exec();
-  } );
+  connect( detailsAction, &QAction::triggered, this, [this, index] { showItemDetails( index ); } );
 
 
   if ( mapCanvas() )
@@ -590,7 +590,7 @@ void QgsStacSourceSelect::highlightFootprint( const QModelIndex &index )
   QgsGeometry geom = index.data( QgsStacItemListModel::Role::Geometry ).value<QgsGeometry>();
   if ( QgsMapCanvas *map = mapCanvas() )
   {
-    mCurrentItemBand.reset( new QgsRubberBand( map, Qgis::GeometryType::Polygon ) );
+    mCurrentItemBand = make_qobject_unique<QgsRubberBand>( map, Qgis::GeometryType::Polygon );
     mCurrentItemBand->setFillColor( QColor::fromRgb( 255, 0, 0, 128 ) );
     mCurrentItemBand->setToGeometry( geom, QgsCoordinateReferenceSystem::fromEpsgId( 4326 ) );
   }
@@ -623,19 +623,33 @@ void QgsStacSourceSelect::showFootprints( bool enable )
 
 void QgsStacSourceSelect::loadUri( const QgsMimeDataUtils::Uri &uri )
 {
-  if ( uri.layerType == QLatin1String( "raster" ) )
+  QString layerUri = uri.uri;
+  const QString authcfg = mStac->authCfg();
+  if ( !authcfg.isEmpty() )
   {
-    Q_NOWARN_DEPRECATED_PUSH
-    emit addRasterLayer( uri.uri, uri.name, uri.providerKey );
-    Q_NOWARN_DEPRECATED_POP
-    emit addLayer( Qgis::LayerType::Raster, uri.uri, uri.name, uri.providerKey );
+    layerUri += u" authcfg='%1'"_s.arg( authcfg );
   }
-  else if ( uri.layerType == QLatin1String( "pointcloud" ) )
+
+  if ( uri.layerType == "raster"_L1 )
   {
     Q_NOWARN_DEPRECATED_PUSH
-    emit addPointCloudLayer( uri.uri, uri.name, uri.providerKey );
+    emit addRasterLayer( layerUri, uri.name, uri.providerKey );
     Q_NOWARN_DEPRECATED_POP
-    emit addLayer( Qgis::LayerType::PointCloud, uri.uri, uri.name, uri.providerKey );
+    emit addLayer( Qgis::LayerType::Raster, layerUri, uri.name, uri.providerKey );
+  }
+  else if ( uri.layerType == "pointcloud"_L1 )
+  {
+    Q_NOWARN_DEPRECATED_PUSH
+    emit addPointCloudLayer( layerUri, uri.name, uri.providerKey );
+    Q_NOWARN_DEPRECATED_POP
+    emit addLayer( Qgis::LayerType::PointCloud, layerUri, uri.name, uri.providerKey );
+  }
+  else if ( uri.layerType == "vector"_L1 )
+  {
+    Q_NOWARN_DEPRECATED_PUSH
+    emit addVectorLayer( layerUri, uri.name, uri.providerKey );
+    Q_NOWARN_DEPRECATED_POP
+    emit addLayer( Qgis::LayerType::Vector, layerUri, uri.name, uri.providerKey );
   }
 }
 ///@endcond

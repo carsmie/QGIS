@@ -16,22 +16,22 @@
  ***************************************************************************/
 
 #include "qgsmaptoolshowhidelabels.h"
-#include "moc_qgsmaptoolshowhidelabels.cpp"
 
 #include "qgsexception.h"
 #include "qgsfeatureiterator.h"
+#include "qgslabelingresults.h"
+#include "qgslogger.h"
 #include "qgsmapcanvas.h"
-#include "qgsvectorlayer.h"
 #include "qgsmapmouseevent.h"
 #include "qgsmaptoolselectutils.h"
-#include "qgsrubberband.h"
-#include "qgslogger.h"
-#include "qgslabelingresults.h"
 #include "qgsnewauxiliarylayerdialog.h"
+#include "qgsrubberband.h"
+#include "qgsvectorlayer.h"
+
+#include "moc_qgsmaptoolshowhidelabels.cpp"
 
 QgsMapToolShowHideLabels::QgsMapToolShowHideLabels( QgsMapCanvas *canvas, QgsAdvancedDigitizingDockWidget *cadDock )
   : QgsMapToolLabel( canvas, cadDock )
-  , mDragging( false )
 {
   mToolName = tr( "Show/hide labels" );
   mRubberBand = nullptr;
@@ -57,8 +57,7 @@ void QgsMapToolShowHideLabels::canvasPressEvent( QgsMapMouseEvent *e )
     return;
 
   int showCol;
-  if ( ( vlayer->labelsEnabled() && !labelCanShowHide( vlayer, showCol ) )
-       || ( vlayer->diagramsEnabled() && !diagramCanShowHide( vlayer, showCol ) ) )
+  if ( ( vlayer->labelsEnabled() && !labelCanShowHide( vlayer, showCol ) ) || ( vlayer->diagramsEnabled() && !diagramCanShowHide( vlayer, showCol ) ) )
   {
     if ( !vlayer->auxiliaryLayer() )
     {
@@ -262,10 +261,9 @@ bool QgsMapToolShowHideLabels::selectedFeatures( QgsVectorLayer *vlayer, QgsFeat
   QgsDebugMsgLevel( "Selection layer: " + vlayer->name(), 2 );
   QgsDebugMsgLevel( "Selection polygon: " + selectGeomTrans.asWkt(), 2 );
 
-  QgsFeatureIterator fit = vlayer->getFeatures( QgsFeatureRequest()
-                                                  .setFilterRect( selectGeomTrans.boundingBox() )
-                                                  .setFlags( Qgis::FeatureRequestFlag::NoGeometry | Qgis::FeatureRequestFlag::ExactIntersect )
-                                                  .setNoAttributes() );
+  QgsFeatureIterator fit = vlayer->getFeatures(
+    QgsFeatureRequest().setFilterRect( selectGeomTrans.boundingBox() ).setFlags( Qgis::FeatureRequestFlag::NoGeometry | Qgis::FeatureRequestFlag::ExactIntersect ).setNoAttributes()
+  );
 
   QgsFeature f;
   while ( fit.nextFeature( f ) )

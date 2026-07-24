@@ -13,18 +13,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgstest.h"
+#include <memory>
 
 #include "qgisapp.h"
 #include "qgsgeometry.h"
 #include "qgsmapcanvas.h"
+#include "qgsmapmouseevent.h"
 #include "qgsmaptooladdring.h"
 #include "qgsproject.h"
 #include "qgssettingsregistrycore.h"
+#include "qgstest.h"
 #include "qgsvectorlayer.h"
-#include "qgsmapmouseevent.h"
 #include "testqgsmaptoolutils.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup UnitTests
@@ -62,16 +66,11 @@ void TestQgsMapToolAddRing::initTestCase()
   QgsApplication::init();
   QgsApplication::initQgis();
 
-  // Set up the QSettings environment
-  QCoreApplication::setOrganizationName( QStringLiteral( "QGIS" ) );
-  QCoreApplication::setOrganizationDomain( QStringLiteral( "qgis.org" ) );
-  QCoreApplication::setApplicationName( QStringLiteral( "QGIS-TEST" ) );
-
   mQgisApp = new QgisApp();
 
   mCanvas = new QgsMapCanvas();
 
-  mCanvas->setDestinationCrs( QgsCoordinateReferenceSystem( QStringLiteral( "EPSG:3946" ) ) );
+  mCanvas->setDestinationCrs( QgsCoordinateReferenceSystem( u"EPSG:3946"_s ) );
 
   mCanvas->setFrameStyle( QFrame::NoFrame );
   mCanvas->resize( 512, 512 );
@@ -80,7 +79,7 @@ void TestQgsMapToolAddRing::initTestCase()
   mCanvas->hide();
 
   // make testing layers
-  mLayerMultiPolygon = new QgsVectorLayer( QStringLiteral( "MultiPolygon?crs=EPSG:3946" ), QStringLiteral( "multipolygon" ), QStringLiteral( "memory" ) );
+  mLayerMultiPolygon = new QgsVectorLayer( u"MultiPolygon?crs=EPSG:3946"_s, u"multipolygon"_s, u"memory"_s );
   QVERIFY( mLayerMultiPolygon->isValid() );
   QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mLayerMultiPolygon );
 
@@ -121,44 +120,19 @@ void TestQgsMapToolAddRing::testAddRing()
 {
   mLayerMultiPolygon->select( 1 );
 
-  std::unique_ptr<QgsMapMouseEvent> event( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 1, 1 ),
-    Qt::LeftButton
-  ) );
+  auto event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 1, 1 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 1, 2 ),
-    Qt::LeftButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 1, 2 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 2, 2 ),
-    Qt::LeftButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 2, 2 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 2, 1 ),
-    Qt::LeftButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 2, 1 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 1, 1 ),
-    Qt::RightButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 1, 1 ), Qt::RightButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
   const QString wkt = "MultiPolygon (((0 0, 5 0, 5 5, 0 5, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1)))";
@@ -170,44 +144,19 @@ void TestQgsMapToolAddRing::testAddRingClockWise()
   mLayerMultiPolygon->select( 1 );
 
   // Draw in clockwise
-  std::unique_ptr<QgsMapMouseEvent> event( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 3, 3 ),
-    Qt::LeftButton
-  ) );
+  auto event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 3, 3 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 4, 3 ),
-    Qt::LeftButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 4, 3 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 4, 4 ),
-    Qt::LeftButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 4, 4 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 3, 4 ),
-    Qt::LeftButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 3, 4 ), Qt::LeftButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
-  event.reset( new QgsMapMouseEvent(
-    mCanvas,
-    QEvent::MouseButtonRelease,
-    mapToPoint( 3, 3 ),
-    Qt::RightButton
-  ) );
+  event = std::make_unique<QgsMapMouseEvent>( mCanvas, QEvent::MouseButtonRelease, mapToPoint( 3, 3 ), Qt::RightButton );
   mCaptureTool->cadCanvasReleaseEvent( event.get() );
 
   const QString wkt = "MultiPolygon (((0 0, 5 0, 5 5, 0 5, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1),(3 3, 3 4, 4 4, 4 3, 3 3)))";

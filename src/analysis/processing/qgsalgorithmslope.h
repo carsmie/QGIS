@@ -18,10 +18,11 @@
 #ifndef QGSALGORITHMSLOPE_H
 #define QGSALGORITHMSLOPE_H
 
-#define SIP_NO_FILE
 
 #include "qgis_sip.h"
 #include "qgsprocessingalgorithm.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -43,7 +44,11 @@ class QgsSlopeAlgorithm : public QgsProcessingAlgorithm
     QgsSlopeAlgorithm *createInstance() const override SIP_FACTORY;
 
   protected:
+    bool prepareAlgorithm( const QVariantMap &parameters, QgsProcessingContext &context, QgsProcessingFeedback *feedback ) override;
     QVariantMap processAlgorithm( const QVariantMap &parameters, QgsProcessingContext &context, QgsProcessingFeedback *feedback ) override;
+
+  private:
+    QString mLayerSource;
 };
 
 ///@endcond PRIVATE

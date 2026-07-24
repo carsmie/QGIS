@@ -7,6 +7,8 @@
  ************************************************************************/
 
 
+class QgsPlotWidget /External/;
+
 class QgsPlotAbstractMetadata
 {
 %Docstring(signature="appended")
@@ -23,7 +25,6 @@ Stores metadata about a plot class.
 #include "qgsplotregistry.h"
 %End
   public:
-
     QgsPlotAbstractMetadata( const QString &type, const QString &visibleName );
 %Docstring
 Constructor for QgsPlotAbstractMetadata with the specified class
@@ -48,6 +49,19 @@ Returns a translated, user visible name for the plot class.
 Creates a plot of this class.
 %End
 
+    virtual QgsVectorLayerAbstractPlotDataGatherer *createPlotDataGatherer( QgsPlot *plot = 0 ) = 0 /TransferBack/;
+%Docstring
+Creates a plot data gatherer of this class.
+%End
+
+    virtual QgsPlotWidget *createPlotWidget( QWidget *parent = 0 ) = 0 /TransferBack/;
+%Docstring
+Creates a widget for configuring plot of this type. Can return ``None``
+if there's no GUI registered.
+
+Ownership of the widget is transferred to the caller.
+%End
+
 };
 
 
@@ -67,7 +81,6 @@ accessed through :py:func:`QgsApplication.plotRegistry()`.
 #include "qgsplotregistry.h"
 %End
   public:
-
     QgsPlotRegistry( QObject *parent = 0 );
 %Docstring
 Creates a new empty plot registry.
@@ -135,9 +148,6 @@ with the specified ``type`` and visible ``name``.
   private:
     QgsPlotRegistry( const QgsPlotRegistry &rh );
 };
-
-
-
 
 /************************************************************************
  * This file has been generated automatically from                      *

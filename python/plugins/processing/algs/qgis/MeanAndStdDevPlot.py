@@ -22,16 +22,15 @@ __copyright__ = "(C) 2013, Victor Olaya"
 import warnings
 
 from qgis.core import (
+    QgsProcessingException,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
-    QgsProcessingException,
     QgsProcessingParameterFileDestination,
 )
-from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
-
-from processing.tools import vector
-
 from qgis.PyQt.QtCore import QCoreApplication
+
+from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
+from processing.tools import vector
 
 
 class MeanAndStdDevPlot(QgisAlgorithm):
@@ -84,6 +83,11 @@ class MeanAndStdDevPlot(QgisAlgorithm):
 
     def shortDescription(self):
         return self.tr("Creates a box plot with mean and standard deviation values.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a box plot with mean and standard deviation values."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         try:

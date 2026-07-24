@@ -15,35 +15,54 @@
  ***************************************************************************/
 
 #include "qgsserverquerystringparameter.h"
-#include "moc_qgsserverquerystringparameter.cpp"
-#include "qgsserverrequest.h"
+
+#include <nlohmann/json.hpp>
+
 #include "qgsserverexception.h"
-#include "nlohmann/json.hpp"
+#include "qgsserverrequest.h"
+
+#include <QString>
+
+#include "moc_qgsserverquerystringparameter.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsServerQueryStringParameter::QgsServerQueryStringParameter( const QString name, bool required, QgsServerQueryStringParameter::Type type, const QString &description, const QVariant &defaultValue )
-  : mName( name ), mRequired( required ), mType( type ), mDescription( description ), mDefaultValue( defaultValue )
-{
-}
+  : mName( name )
+  , mRequired( required )
+  , mType( type )
+  , mDescription( description )
+  , mDefaultValue( defaultValue )
+{}
 
 QgsServerQueryStringParameter::~QgsServerQueryStringParameter()
-{
-}
+{}
 
 QVariant QgsServerQueryStringParameter::value( const QgsServerApiContext &context ) const
 {
-  // 1: check required
-  if ( mRequired && !QUrlQuery( context.request()->url() ).hasQueryItem( mName ) )
+  // Case insensitive check
+  const QUrlQuery urlQuery( context.request()->url() );
+  const QList<std::pair<QString, QString>> items = urlQuery.queryItems( QUrl::FullyDecoded );
+  QString nameInQueryString;
+  QVariant value;
+  for ( const auto &pair : std::as_const( items ) )
   {
-    throw QgsServerApiBadRequestException( QStringLiteral( "Missing required argument: '%1'" ).arg( mName ) );
+    if ( pair.first.compare( mName, Qt::CaseInsensitive ) == 0 )
+    {
+      nameInQueryString = pair.first;
+      value = pair.second;
+      break;
+    }
+  }
+
+  // 1: check required
+  if ( mRequired && nameInQueryString.isEmpty() )
+  {
+    throw QgsServerApiBadRequestException( u"Missing required argument: '%1'"_s.arg( mName ) );
   }
 
   // 2: get value from query string or set it to the default
-  QVariant value;
-  if ( QUrlQuery( context.request()->url() ).hasQueryItem( mName ) )
-  {
-    value = QUrlQuery( context.request()->url() ).queryItemValue( mName, QUrl::FullyDecoded );
-  }
-  else if ( mDefaultValue.isValid() )
+  if ( nameInQueryString.isEmpty() && mDefaultValue.isValid() )
   {
     value = mDefaultValue;
   }
@@ -85,14 +104,14 @@ QVariant QgsServerQueryStringParameter::value( const QgsServerApiContext &contex
 
       if ( !ok )
       {
-        throw QgsServerApiBadRequestException( QStringLiteral( "Argument '%1' could not be converted to %2" ).arg( mName, typeName( mType ) ) );
+        throw QgsServerApiBadRequestException( u"Argument '%1' could not be converted to %2"_s.arg( mName, typeName( mType ) ) );
       }
     }
 
     // 4: check custom validation
     if ( mCustomValidator && !mCustomValidator( context, value ) )
     {
-      throw QgsServerApiBadRequestException( QStringLiteral( "Argument '%1' is not valid. %2" ).arg( name(), description() ) );
+      throw QgsServerApiBadRequestException( u"Argument '%1' is not valid. %2"_s.arg( name(), description() ) );
     }
   }
   return value;

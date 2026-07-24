@@ -17,10 +17,11 @@
 #define QGSLAYOUTATLAS_H
 
 #include "qgis_core.h"
-#include "qgsvectorlayerref.h"
-#include "qgslayoutserializableobject.h"
 #include "qgsabstractlayoutiterator.h"
 #include "qgsexpressioncontextgenerator.h"
+#include "qgslayoutserializableobject.h"
+#include "qgsvectorlayerref.h"
+
 #include <QObject>
 
 class QgsLayout;
@@ -41,7 +42,6 @@ class CORE_EXPORT QgsLayoutAtlas : public QObject, public QgsAbstractLayoutItera
 {
     Q_OBJECT
   public:
-
     /**
      * Constructor for new QgsLayoutAtlas.
      */
@@ -54,7 +54,7 @@ class CORE_EXPORT QgsLayoutAtlas : public QObject, public QgsAbstractLayoutItera
      * Returns the atlas' layout.
      * \note Not available in Python bindings.
      */
-    const QgsLayout *layout() const SIP_SKIP;  // cppcheck-suppress duplInheritedMember
+    const QgsLayout *layout() const SIP_SKIP; // cppcheck-suppress duplInheritedMember
 
     bool writeXml( QDomElement &parentElement, QDomDocument &document, const QgsReadWriteContext &context ) const override;
     bool readXml( const QDomElement &element, const QDomDocument &document, const QgsReadWriteContext &context ) override;
@@ -356,7 +356,6 @@ class CORE_EXPORT QgsLayoutAtlas : public QObject, public QgsAbstractLayoutItera
     void removeLayers( const QStringList &layers );
 
   private:
-
     /**
      * Updates the filename expression.
      * \returns TRUE if expression was successfully parsed, FALSE if expression is invalid
@@ -414,6 +413,3 @@ class CORE_EXPORT QgsLayoutAtlas : public QObject, public QgsAbstractLayoutItera
 };
 
 #endif //QGSLAYOUTATLAS_H
-
-
-

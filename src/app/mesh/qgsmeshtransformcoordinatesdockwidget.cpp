@@ -15,20 +15,21 @@
  ***************************************************************************/
 
 #include "qgsmeshtransformcoordinatesdockwidget.h"
-#include "moc_qgsmeshtransformcoordinatesdockwidget.cpp"
 
-#include "qgsgui.h"
+#include "qgsapplication.h"
+#include "qgscoordinateutils.h"
 #include "qgsexpressioncontextutils.h"
-#include "qgsmesheditor.h"
-#include "qgsmeshlayer.h"
-#include "qgsmeshadvancedediting.h"
-#include "qgsproject.h"
+#include "qgsgui.h"
 #include "qgsguiutils.h"
 #include "qgshelp.h"
-#include "qgscoordinateutils.h"
-#include "qgsapplication.h"
-#include "qgsterrainprovider.h"
+#include "qgsmeshadvancedediting.h"
+#include "qgsmesheditor.h"
+#include "qgsmeshlayer.h"
+#include "qgsproject.h"
 #include "qgsprojectelevationproperties.h"
+#include "qgsterrainprovider.h"
+
+#include "moc_qgsmeshtransformcoordinatesdockwidget.cpp"
 
 QgsMeshTransformCoordinatesDockWidget::QgsMeshTransformCoordinatesDockWidget( QWidget *parent )
   : QgsDockWidget( parent )
@@ -108,8 +109,7 @@ void QgsMeshTransformCoordinatesDockWidget::setInput( QgsMeshLayer *layer, const
       if ( mInputVertices.count() == 0 )
         mLabelInformation->setText( tr( "No vertex selected for mesh \"%1\"" ).arg( mInputLayer->name() ) );
       else
-        mLabelInformation->setText( tr( "%n vertices of mesh layer \"%1\" to transform", nullptr, mInputVertices.count() )
-                                      .arg( mInputLayer->name() ) );
+        mLabelInformation->setText( tr( "%n vertices of mesh layer \"%1\" to transform", nullptr, mInputVertices.count() ).arg( mInputLayer->name() ) );
     }
   }
 
@@ -126,7 +126,11 @@ void QgsMeshTransformCoordinatesDockWidget::calculate()
   QgsTemporaryCursorOverride busyCursor( Qt::WaitCursor );
   mTransformVertices.clear();
   mTransformVertices.setInputVertices( mInputVertices );
-  mTransformVertices.setExpressions( mCheckBoxX->isChecked() ? mExpressionEditX->expression() : QString(), mCheckBoxY->isChecked() ? mExpressionEditY->expression() : QString(), mCheckBoxZ->isChecked() ? mExpressionEditZ->expression() : QString() );
+  mTransformVertices.setExpressions(
+    mCheckBoxX->isChecked() ? mExpressionEditX->expression() : QString(),
+    mCheckBoxY->isChecked() ? mExpressionEditY->expression() : QString(),
+    mCheckBoxZ->isChecked() ? mExpressionEditZ->expression() : QString()
+  );
 
   mTransformVertices.setZFromTerrain( mCheckBoxZFromProjectTerrain->isChecked() );
 

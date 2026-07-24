@@ -17,9 +17,6 @@ endif()
 
 # a simple app for testing GUI of renderers
 # These tests are old and are never run so removed for now.
-#set(rendererv2gui_SRCS testrenderergui.cpp)
-#set(rendererv2gui_HDRS testrenderergui.h)
-#add_executable(qgis_rendererv2gui ${rendererv2gui_SRCS} ${rendererv2gui_MOC_SRCS})
 
 #ADD_QGIS_TEST(histogramtest testqgsrasterhistogram.cpp)
 
@@ -27,10 +24,13 @@ set(TESTS
   testqgsadvanceddigitizingdockwidget.cpp
   testqgsadvanceddigitizingtoolsregistry.cpp
   testqgsannotationitemguiregistry.cpp
+  testqgsbezierdata.cpp
   testqgsmaptoolzoom.cpp
   testqgsmaptooledit.cpp
   testqgscategorizedrendererwidget.cpp
   testqgsdatumtransformdialog.cpp
+  testqgsdiagramproperties.cpp
+  testqgsdockablewidgethelper.cpp
   testqgsdoublespinbox.cpp
   testqgsdualview.cpp
   testqgsattributeform.cpp
@@ -60,8 +60,11 @@ set(TESTS
   testqgseditorwidgetregistry.cpp
   testqgskeyvaluewidget.cpp
   testqgsfiledownloader.cpp
+  testqgsfileuploader.cpp
   testqgslayoutgui.cpp
   testqgslayoutview.cpp
+  testqgsmaptooleditblanksegments.cpp
+  testqgsmaptoolextraitem.cpp
   testqgsvaluemapwidgetwrapper.cpp
   testqgsvaluemapconfigdlg.cpp
   testqgsvaluerelationwidgetwrapper.cpp

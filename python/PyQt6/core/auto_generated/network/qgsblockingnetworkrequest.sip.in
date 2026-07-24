@@ -8,6 +8,8 @@
 
 
 
+
+
 class QgsBlockingNetworkRequest : QObject
 {
 %Docstring(signature="appended")
@@ -34,7 +36,6 @@ copy and pass between threads without issue.
 #include "qgsblockingnetworkrequest.h"
 %End
   public:
-
     enum ErrorCode /BaseType=IntEnum/
     {
       NoError,
@@ -50,12 +51,21 @@ copy and pass between threads without issue.
     typedef QFlags<QgsBlockingNetworkRequest::RequestFlag> RequestFlags;
 
 
-    explicit QgsBlockingNetworkRequest();
+    explicit QgsBlockingNetworkRequest( Qgis::NetworkRequestFlags flags = Qgis::NetworkRequestFlags() );
 %Docstring
-Constructor for QgsBlockingNetworkRequest
+Constructor for QgsBlockingNetworkRequest.
+
+The ``flags`` argument was added in QGIS 4.0
 %End
 
     ~QgsBlockingNetworkRequest();
+
+    Qgis::NetworkRequestFlags flags() const;
+%Docstring
+Returns the network request flags.
+
+.. versionadded:: 4.0
+%End
 
     ErrorCode get( QNetworkRequest &request, bool forceRefresh = false, QgsFeedback *feedback = 0, RequestFlags requestFlags = QgsBlockingNetworkRequest::RequestFlags() );
 %Docstring
@@ -123,6 +133,16 @@ This is an overloaded function.
 
 Performs a "post" operation on the specified ``request``, using the
 given ``data``.
+%End
+
+    ErrorCode post( QNetworkRequest &request, QHttpMultiPart *data, bool forceRefresh = false, QgsFeedback *feedback = 0 );
+%Docstring
+This is an overloaded function.
+
+Performs a "post" operation on the specified ``request``, using the
+given ``data``.
+
+.. versionadded:: 4.2
 %End
 
     ErrorCode head( QNetworkRequest &request, bool forceRefresh = false, QgsFeedback *feedback = 0 );

@@ -15,9 +15,9 @@
 #ifndef QGSPROJECTGPSSETTINGS_H
 #define QGSPROJECTGPSSETTINGS_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgsvectorlayerref.h"
 
 #include <QObject>
@@ -38,7 +38,6 @@ class CORE_EXPORT QgsProjectGpsSettings : public QObject
     Q_OBJECT
 
   public:
-
     Q_PROPERTY( bool automaticallyAddTrackVertices READ automaticallyAddTrackVertices WRITE setAutomaticallyAddTrackVertices NOTIFY automaticallyAddTrackVerticesChanged )
     Q_PROPERTY( bool automaticallyCommitFeatures READ automaticallyCommitFeatures WRITE setAutomaticallyCommitFeatures NOTIFY automaticallyCommitFeaturesChanged )
     Q_PROPERTY( QgsVectorLayer *destinationLayer READ destinationLayer WRITE setDestinationLayer NOTIFY destinationLayerChanged )
@@ -234,7 +233,6 @@ class CORE_EXPORT QgsProjectGpsSettings : public QObject
     void destinationTimeStampFieldChanged( const QString &field );
 
   private:
-
     bool mAutoAddTrackVertices = false;
     bool mAutoCommitFeatures = false;
 
@@ -242,7 +240,6 @@ class CORE_EXPORT QgsProjectGpsSettings : public QObject
     QgsVectorLayerRef mDestinationLayer;
 
     QMap<QString, QString> mDestinationTimestampFields;
-
 };
 
 #endif // QGSPROJECTGPSSETTINGS_H

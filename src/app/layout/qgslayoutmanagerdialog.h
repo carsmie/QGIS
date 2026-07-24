@@ -17,10 +17,10 @@
 #ifndef QGSLAYOUTMANAGERDIALOG_H
 #define QGSLAYOUTMANAGERDIALOG_H
 
+#include "ui_qgslayoutmanagerbase.h"
+
 #include <QItemDelegate>
 #include <QSortFilterProxyModel>
-
-#include "ui_qgslayoutmanagerbase.h"
 
 class QListWidgetItem;
 class QgsLayoutDesignerDialog;
@@ -67,8 +67,8 @@ class QgsLayoutManagerDialog : public QDialog, private Ui::QgsLayoutManagerBase
     QgsLayoutManagerProxyModel *mProxyModel = nullptr;
 
 #ifdef Q_OS_MAC
-    void showEvent( QShowEvent *event );
-    void changeEvent( QEvent * );
+    void showEvent( QShowEvent *event ) override;
+    void changeEvent( QEvent * ) override;
 
     QAction *mWindowAction = nullptr;
 #endif

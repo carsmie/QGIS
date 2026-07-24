@@ -18,13 +18,15 @@
 #define QGSLAYOUTMOUSEHANDLES_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
 
-#include "qgsgraphicsviewmousehandles.h"
-#include <QPointer>
 #include <memory>
 
 #include "qgis_gui.h"
+#include "qgsgraphicsviewmousehandles.h"
+
+#include <QPointer>
+
+#define SIP_NO_FILE
 
 class QgsLayout;
 class QGraphicsView;

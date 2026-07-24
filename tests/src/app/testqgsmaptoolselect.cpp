@@ -13,21 +13,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgstest.h"
+#include <cpl_conv.h>
+
 #include "qgsapplication.h"
-#include "qgsvectorlayer.h"
-#include "qgsrasterlayer.h"
 #include "qgsfeature.h"
 #include "qgsgeometry.h"
-#include "qgsvectordataprovider.h"
-#include "qgsproject.h"
 #include "qgsmapcanvas.h"
-#include "qgsunittypes.h"
+#include "qgsmapmouseevent.h"
 #include "qgsmaptoolselect.h"
 #include "qgsmaptoolselectutils.h"
-#include "qgsmapmouseevent.h"
+#include "qgsproject.h"
+#include "qgsrasterlayer.h"
+#include "qgstest.h"
+#include "qgsunittypes.h"
+#include "qgsvectordataprovider.h"
+#include "qgsvectorlayer.h"
 
-#include "cpl_conv.h"
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class TestQgsMapToolSelect : public QObject
 {
@@ -49,8 +53,7 @@ class TestQgsMapToolSelect : public QObject
     QgsFeatureList testSelectVector( QgsVectorLayer *layer, double xGeoref, double yGeoref );
 
     // Release return with delete []
-    unsigned char *
-      hex2bytes( const char *hex, int *size )
+    unsigned char *hex2bytes( const char *hex, int *size )
     {
       QByteArray ba = QByteArray::fromHex( hex );
       unsigned char *out = new unsigned char[ba.size()];
@@ -75,10 +78,6 @@ void TestQgsMapToolSelect::initTestCase()
 {
   QgsApplication::init();
   QgsApplication::initQgis();
-  // Set up the QgsSettings environment
-  QCoreApplication::setOrganizationName( QStringLiteral( "QGIS" ) );
-  QCoreApplication::setOrganizationDomain( QStringLiteral( "qgis.org" ) );
-  QCoreApplication::setApplicationName( QStringLiteral( "QGIS-TEST" ) );
 
   QgsApplication::showSettings();
 
@@ -103,8 +102,7 @@ void TestQgsMapToolSelect::cleanup()
 }
 
 // private
-QgsFeatureList
-  TestQgsMapToolSelect::testSelectVector( QgsVectorLayer *layer, double xGeoref, double yGeoref )
+QgsFeatureList TestQgsMapToolSelect::testSelectVector( QgsVectorLayer *layer, double xGeoref, double yGeoref )
 {
   auto tool = std::make_unique<QgsMapToolSelect>( canvas );
   const QgsPointXY mapPoint = canvas->getCoordinateTransform()->transform( xGeoref, yGeoref );
@@ -112,11 +110,7 @@ QgsFeatureList
   // make given vector layer current
   canvas->setCurrentLayer( layer );
 
-  const std::unique_ptr<QgsMapMouseEvent> event( new QgsMapMouseEvent(
-    canvas,
-    QEvent::MouseButtonRelease,
-    QPoint( mapPoint.x(), mapPoint.y() )
-  ) );
+  const std::unique_ptr<QgsMapMouseEvent> event( new QgsMapMouseEvent( canvas, QEvent::MouseButtonRelease, QPoint( mapPoint.x(), mapPoint.y() ) ) );
 
   // trigger mouseRelease handler
   tool->canvasReleaseEvent( event.get() );
@@ -128,15 +122,13 @@ QgsFeatureList
 void TestQgsMapToolSelect::selectInvalidPolygons()
 {
   //create a temporary layer
-  auto memoryLayer = std::make_unique<QgsVectorLayer>( QStringLiteral( "Polygon?field=pk:int" ), QStringLiteral( "vl" ), QStringLiteral( "memory" ) );
+  auto memoryLayer = std::make_unique<QgsVectorLayer>( u"Polygon?field=pk:int"_s, u"vl"_s, u"memory"_s );
   QVERIFY( memoryLayer->isValid() );
   QgsFeature f1( memoryLayer->dataProvider()->fields(), 1 );
-  f1.setAttribute( QStringLiteral( "pk" ), 1 );
+  f1.setAttribute( u"pk"_s, 1 );
   // This geometry is an invalid polygon (3 distinct vertices).
   // GEOS reported invalidity: Points of LinearRing do not form a closed linestring
-  f1.setGeometry( geomFromHexWKB(
-    "010300000001000000030000000000000000000000000000000000000000000000000024400000000000000000000000000000244000000000000024400000000000000000"
-  ) );
+  f1.setGeometry( geomFromHexWKB( "010300000001000000030000000000000000000000000000000000000000000000000024400000000000000000000000000000244000000000000024400000000000000000" ) );
   memoryLayer->dataProvider()->addFeatures( QgsFeatureList() << f1 );
 
   canvas->setExtent( QgsRectangle( 0, 0, 10, 10 ) );

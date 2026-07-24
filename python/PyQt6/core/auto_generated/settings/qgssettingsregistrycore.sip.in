@@ -10,7 +10,6 @@
 
 
 
-
 class QgsSettingsRegistryCore : QgsSettingsRegistry
 {
 %Docstring(signature="appended")
@@ -24,9 +23,8 @@ Used for settings introspection and collects all
 #include "qgssettingsregistrycore.h"
 %End
   public:
-
     QgsSettingsRegistryCore();
-    virtual ~QgsSettingsRegistryCore();
+    ~QgsSettingsRegistryCore();
 
 };
 

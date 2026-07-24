@@ -25,11 +25,10 @@
  * \ingroup core
  * \brief Evaluates NMEA sentences coming from a GPS device.
  */
-class CORE_EXPORT QgsNmeaConnection: public QgsGpsConnection
+class CORE_EXPORT QgsNmeaConnection : public QgsGpsConnection
 {
     Q_OBJECT
   public:
-
     /**
      * Constructs a QgsNmeaConnection with given \a device.
      *
@@ -63,6 +62,9 @@ class CORE_EXPORT QgsNmeaConnection: public QgsGpsConnection
     void processHdtSentence( const char *data, int len );
     //! process HCHDG sentence
     void processHchdgSentence( const char *data, int len );
+
+  private:
+    Qgis::GpsQualityIndicator mLastGGAQualityIndicator = Qgis::GpsQualityIndicator::Invalid;
 };
 
 #endif // QGSNMEACONNECTION_H

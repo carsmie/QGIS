@@ -70,8 +70,8 @@ if(QGISPOSTFIX)
 endif()
 set_property(TARGET qgis_native PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-# require c++17
-target_compile_features(qgis_native PRIVATE cxx_std_17)
+# require c++20
+target_compile_features(qgis_native PRIVATE cxx_std_20)
 
 target_include_directories(qgis_native PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -106,14 +106,6 @@ if (UNIX AND NOT APPLE AND NOT ANDROID)
   target_link_libraries(qgis_native ${QT_VERSION_BASE}::DBus)
 endif()
 
-if (MSVC AND NOT BUILD_WITH_QT6)
-  find_package(${QT_VERSION_BASE}WinExtras)
-
-  target_link_libraries(qgis_native shell32)
-  target_link_libraries(qgis_native ${QT_VERSION_BASE}::Widgets ${QT_QTMAIN_LIBRARY})
-  target_link_libraries(qgis_native ${QT_VERSION_BASE}::WinExtras)
-
-endif()
 # install
 if(NOT QGIS_MAC_BUNDLE)
   install(FILES ${QGIS_NATIVE_HDRS} DESTINATION ${QGIS_INCLUDE_DIR})

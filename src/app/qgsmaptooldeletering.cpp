@@ -14,23 +14,20 @@
  ***************************************************************************/
 
 #include "qgsmaptooldeletering.h"
-#include "moc_qgsmaptooldeletering.cpp"
-
-#include "qgsmapcanvas.h"
-#include "qgsfeatureiterator.h"
-#include "qgsgeometry.h"
-#include "qgsvectorlayer.h"
-#include "qgsrubberband.h"
-#include "qgsmapmouseevent.h"
 
 #include <limits>
 
+#include "qgsfeatureiterator.h"
+#include "qgsgeometry.h"
+#include "qgsmapcanvas.h"
+#include "qgsmapmouseevent.h"
+#include "qgsrubberband.h"
+#include "qgsvectorlayer.h"
+
+#include "moc_qgsmaptooldeletering.cpp"
 
 QgsMapToolDeleteRing::QgsMapToolDeleteRing( QgsMapCanvas *canvas )
   : QgsMapToolEdit( canvas )
-  , mPressedFid( 0 )
-  , mPressedPartNum( 0 )
-  , mPressedRingNum( 0 )
 {
   mToolName = tr( "Delete ring" );
 }
@@ -92,10 +89,7 @@ void QgsMapToolDeleteRing::canvasPressEvent( QgsMapMouseEvent *e )
   }
   else if ( vlayer->selectedFeatureCount() > 0 )
   {
-    emit messageEmitted(
-      tr( "If there are selected features, the delete ring tool only applies to those. Clear the selection and try again." ),
-      Qgis::MessageLevel::Warning
-    );
+    emit messageEmitted( tr( "If there are selected features, the delete ring tool only applies to those. Clear the selection and try again." ), Qgis::MessageLevel::Warning );
   }
 }
 

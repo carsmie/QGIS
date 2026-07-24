@@ -14,19 +14,20 @@
  ***************************************************************************/
 
 #include "qgsmaplayeraction.h"
+
 #include "qgsgui.h"
-#include "qgsmaplayeractionregistry.h"
 #include "qgsmaplayer.h"
-#include "qgsvectorlayer.h"
 #include "qgsmaplayeractioncontext.h"
+#include "qgsmaplayeractionregistry.h"
+#include "qgsvectorlayer.h"
+
 #include "moc_qgsmaplayeraction.cpp"
 
 QgsMapLayerAction::QgsMapLayerAction( const QString &name, QObject *parent, Qgis::MapLayerActionTargets targets, const QIcon &icon, Qgis::MapLayerActionFlags flags )
   : QAction( icon, name, parent )
   , mTargets( targets )
   , mFlags( flags )
-{
-}
+{}
 
 QgsMapLayerAction::QgsMapLayerAction( const QString &name, QObject *parent, QgsMapLayer *layer, Qgis::MapLayerActionTargets targets, const QIcon &icon, Qgis::MapLayerActionFlags flags )
   : QAction( icon, name, parent )
@@ -34,8 +35,7 @@ QgsMapLayerAction::QgsMapLayerAction( const QString &name, QObject *parent, QgsM
   , mActionLayer( layer )
   , mTargets( targets )
   , mFlags( flags )
-{
-}
+{}
 
 QgsMapLayerAction::QgsMapLayerAction( const QString &name, QObject *parent, Qgis::LayerType layerType, Qgis::MapLayerActionTargets targets, const QIcon &icon, Qgis::MapLayerActionFlags flags )
   : QAction( icon, name, parent )
@@ -43,8 +43,7 @@ QgsMapLayerAction::QgsMapLayerAction( const QString &name, QObject *parent, Qgis
   , mLayerType( layerType )
   , mTargets( targets )
   , mFlags( flags )
-{
-}
+{}
 
 QgsMapLayerAction::~QgsMapLayerAction()
 {

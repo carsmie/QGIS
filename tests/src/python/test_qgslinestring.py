@@ -10,17 +10,16 @@ __author__ = "Loïc Bartoletti"
 __date__ = "12/09/2023"
 __copyright__ = "Copyright 2023, The QGIS Project"
 
-import unittest
 import math
+import unittest
 
-from qgis.core import Qgis, QgsLineString, QgsPoint
-from qgis.testing import start_app, QgisTestCase
+from qgis.core import Qgis, QgsCircularString, QgsLineString, QgsPoint, QgsVertexId
+from qgis.testing import QgisTestCase, start_app
 
 start_app()
 
 
 class TestQgsLineString(QgisTestCase):
-
     def testConstruct(self):
         # With points
         line = QgsLineString(QgsPoint(1, 2), QgsPoint(3, 4))
@@ -593,6 +592,171 @@ class TestQgsLineString(QgisTestCase):
         self.assertEqual(geom.asWkt(), "LineString (1 1, 2 1, 2 2, 1 2, 1 1)")
         self.assertEqual(geom.sumUpArea(), 1.0)
         self.assertEqual(geom.orientation(), Qgis.AngularDirection.CounterClockwise)
+
+    def test_distance_between_vertices(self):
+        """
+        Test distanceBetweenVertices method for QgsLineString
+        """
+        # Test case 1: LineString(0 0, 3 7, 10 10)
+        line1 = QgsLineString()
+        line1.fromWkt("LineString(0 0, 3 7, 10 10)")
+
+        # Calculate expected distances
+        # Point 0 to 1: sqrt((3-0)² + (7-0)²) = sqrt(9 + 49) = sqrt(58) ≈ 7.616
+        expected_0_to_1 = math.sqrt(9 + 49)
+        # Point 1 to 2: sqrt((10-3)² + (10-7)²) = sqrt(49 + 9) = sqrt(58) ≈ 7.616
+        expected_1_to_2 = math.sqrt(49 + 9)
+        # Point 0 to 2: 7.616 + 7.616 = 15.232
+        expected_0_to_2 = expected_0_to_1 + expected_1_to_2
+
+        self.assertAlmostEqual(
+            line1.distanceBetweenVertices(QgsVertexId(0, 0, 0), QgsVertexId(0, 0, 1)),
+            expected_0_to_1,
+            places=6,
+        )
+        self.assertAlmostEqual(
+            line1.distanceBetweenVertices(QgsVertexId(0, 0, 1), QgsVertexId(0, 0, 2)),
+            expected_1_to_2,
+            places=6,
+        )
+        self.assertAlmostEqual(
+            line1.distanceBetweenVertices(QgsVertexId(0, 0, 0), QgsVertexId(0, 0, 2)),
+            expected_0_to_2,
+            places=6,
+        )
+
+        # Test case 2: LineString(-10 0, -3 -7, 0 0, 3 7, 10 10)
+        line2 = QgsLineString()
+        line2.fromWkt("LineString(-10 0, -3 -7, 0 0, 3 7, 10 10)")
+
+        # Calculate expected distances
+        # Point 0 to 1: sqrt((-3-(-10))² + (-7-0)²) = sqrt(49 + 49) = sqrt(98) ≈ 9.899
+        expected_0_to_1_line2 = math.sqrt(49 + 49)
+        # Point 1 to 2: sqrt((0-(-3))² + (0-(-7))²) = sqrt(9 + 49) = sqrt(58) ≈ 7.616
+        expected_1_to_2_line2 = math.sqrt(9 + 49)
+        # Point 2 to 3: sqrt((3-0)² + (7-0)²) = sqrt(9 + 49) = sqrt(58) ≈ 7.616
+        expected_2_to_3_line2 = math.sqrt(9 + 49)
+        # Point 3 to 4: sqrt((10-3)² + (10-7)²) = sqrt(49 + 9) = sqrt(58) ≈ 7.616
+        expected_3_to_4_line2 = math.sqrt(49 + 9)
+
+        self.assertAlmostEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 0), QgsVertexId(0, 0, 1)),
+            expected_0_to_1_line2,
+            places=6,
+        )
+        self.assertAlmostEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 1), QgsVertexId(0, 0, 2)),
+            expected_1_to_2_line2,
+            places=6,
+        )
+        self.assertAlmostEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 2), QgsVertexId(0, 0, 3)),
+            expected_2_to_3_line2,
+            places=6,
+        )
+        self.assertAlmostEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 3), QgsVertexId(0, 0, 4)),
+            expected_3_to_4_line2,
+            places=6,
+        )
+
+        # Test total distance from point 0 to point 4
+        expected_total = (
+            expected_0_to_1_line2
+            + expected_1_to_2_line2
+            + expected_2_to_3_line2
+            + expected_3_to_4_line2
+        )
+        self.assertAlmostEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 0), QgsVertexId(0, 0, 4)),
+            expected_total,
+            places=6,
+        )
+
+        # Test edge cases
+        self.assertEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 2), QgsVertexId(0, 0, 2)),
+            0.0,
+        )  # Same vertex
+        self.assertEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 0), QgsVertexId(0, 0, 10)),
+            -1.0,
+        )  # Invalid vertex index
+
+        # Test reverse direction (should give same result)
+        self.assertAlmostEqual(
+            line2.distanceBetweenVertices(QgsVertexId(0, 0, 4), QgsVertexId(0, 0, 0)),
+            expected_total,
+            places=6,
+        )
+
+    def testAppendExceptions(self):
+        ls = QgsLineString()
+        ls.fromWkt("LineString (-10 -10, 0 0)")
+
+        cs = QgsCircularString()
+        cs.fromWkt("CircularString (0 0, 1 1, 0 2)")
+
+        with self.assertRaises(ValueError):
+            ls.append(cs)
+
+        self.assertEqual(ls.numPoints(), 2)
+
+        # working append
+        ls2 = QgsLineString()
+        ls2.fromWkt("LineString (0 0, 10 12)")
+        ls.append(ls2)
+        self.assertEqual(ls.numPoints(), 3)
+
+    def test_extension(self):
+        # zero distances means no change
+        line = QgsLineString([QgsPoint(0, 0), QgsPoint(10, 0)])
+
+        line.extend(0.0, 0.0, 45.0, 45.0)
+        self.assertEqual(line.asWkt(), "LineString (0 0, 10 0)")
+
+        # if fewer than 2 vertices we don't want a crash
+        single_point_line = QgsLineString([QgsPoint(5, 5)])
+        single_point_line.extend(5.0, 5.0, 45.0, 45.0)
+        self.assertEqual(single_point_line.asWkt(), "LineString (5 5)")
+
+        # straight extension at the start modifies the point in-place, not adding an extra vertex
+        line = QgsLineString([QgsPoint(0, 0), QgsPoint(10, 0)])
+        line.extend(5.0, 0.0, 0.0, 0.0)
+        self.assertEqual(line.asWkt(), "LineString (-5 0, 10 0)")
+
+        # straight extension at the end modifies the point in-place, no extra vertices
+        line = QgsLineString([QgsPoint(0, 0), QgsPoint(10, 0)])
+        line.extend(0.0, 5.0, 0.0, 0.0)
+        self.assertEqual(line.asWkt(), "LineString (0 0, 15 0)")
+
+        # 90-degree clockwise deflection at the end. This should append a new vertex.
+        line = QgsLineString([QgsPoint(0, 0), QgsPoint(10, 0)])
+        line.extend(0.0, 5.0, 0.0, 90.0)
+        self.assertEqual(line.asWkt(), "LineString (0 0, 10 0, 10 -5)")
+
+        # 90-degree clockwise deflection at the start. Should insert a new vertex.
+        line = QgsLineString([QgsPoint(0, 0), QgsPoint(10, 0)])
+        line.extend(5.0, 0.0, 90.0, 0.0)
+        self.assertEqual(line.asWkt(5), "LineString (0 5, 0 0, 10 0)")
+
+        # non-orthogonal deflection angle
+        line = QgsLineString([QgsPoint(0, 0), QgsPoint(10, 0)])
+        line.extend(0.0, 10.0, 0.0, 45.0)
+        self.assertEqual(line.asWkt(5), "LineString (0 0, 10 0, 17.07107 -7.07107)")
+
+        # both start and end deflected extension
+        line = QgsLineString([QgsPoint(0, 0), QgsPoint(10, 0)])
+        line.extend(5.0, 5.0, 90.0, 90.0)
+        self.assertEqual(line.asWkt(5), "LineString (0 5, 0 0, 10 0, 10 -5)")
+
+        # Z and M values should also be extended when adding vertices
+        line_3d = QgsLineString([0, 10], [0, 0], [1, 2], [10, 20])
+        line_3d.extend(5.0, 5.0, 90.0, 90.0)
+        self.assertEqual(
+            line_3d.asWkt(5),
+            "LineString ZM (0 5 1 10, 0 0 1 10, 10 0 2 20, 10 -5 2 20)",
+        )
 
 
 if __name__ == "__main__":

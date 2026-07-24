@@ -8,6 +8,7 @@
 
 
 
+
 class QgsProjectViewSettings : QObject
 {
 %Docstring(signature="appended")
@@ -22,7 +23,6 @@ scales and default view extent for the project.
 #include "qgsprojectviewsettings.h"
 %End
   public:
-
     QgsProjectViewSettings( QgsProject *project = 0 );
 %Docstring
 Constructor for QgsProjectViewSettings for the specified ``project``.
@@ -95,6 +95,22 @@ should be calculated based on the layers in the project.
 .. seealso:: :py:func:`fullExtent`
 
 .. versionadded:: 3.18
+%End
+
+    void setRestoreProjectExtentOnProjectLoad( bool state );
+%Docstring
+Sets whether the project's preset full extent should be restored when
+the project is loaded.
+
+.. versionadded:: 4.0
+%End
+
+    bool restoreProjectExtentOnProjectLoad();
+%Docstring
+Returns whether the project's preset full extent should be restored when
+the project is loaded.
+
+.. versionadded:: 4.0
 %End
 
     QgsReferencedRectangle fullExtent() const;

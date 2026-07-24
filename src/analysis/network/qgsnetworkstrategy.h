@@ -16,10 +16,10 @@
 #ifndef QGSNETWORKSTRATERGY_H
 #define QGSNETWORKSTRATERGY_H
 
-#include <QVariant>
-
-#include "qgsfeature.h"
 #include "qgis_analysis.h"
+#include "qgsfeature.h"
+
+#include <QVariant>
 
 #ifdef SIP_RUN
 //%ModuleHeaderCode
@@ -48,7 +48,7 @@ class ANALYSIS_EXPORT QgsNetworkStrategy
       sipType = sipType_QgsNetworkSpeedStrategy;
     else
       sipType = NULL;
-    SIP_END
+  SIP_END
 #endif
 
   public:

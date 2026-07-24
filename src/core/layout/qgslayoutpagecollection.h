@@ -17,15 +17,20 @@
 #ifndef QGSLAYOUTPAGECOLLECTION_H
 #define QGSLAYOUTPAGECOLLECTION_H
 
+#include <memory>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgslayout.h"
-#include "qgslayoutitempage.h"
 #include "qgslayoutitem.h"
-#include "qgslayoutserializableobject.h"
+#include "qgslayoutitempage.h"
 #include "qgslayoutpoint.h"
+#include "qgslayoutserializableobject.h"
+
 #include <QObject>
-#include <memory>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsLayout;
 class QgsLayoutGuideCollection;
@@ -38,11 +43,9 @@ class QgsMargins;
  */
 class CORE_EXPORT QgsLayoutPageCollection : public QObject, public QgsLayoutSerializableObject
 {
-
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsLayoutItemPage, with the specified parent \a layout.
      */
@@ -50,7 +53,7 @@ class CORE_EXPORT QgsLayoutPageCollection : public QObject, public QgsLayoutSeri
 
     ~QgsLayoutPageCollection() override;
 
-    QString stringType() const override { return QStringLiteral( "LayoutPageCollection" ); }
+    QString stringType() const override { return u"LayoutPageCollection"_s; }
     QgsLayout *layout() override;
 
     /**
@@ -418,7 +421,6 @@ class CORE_EXPORT QgsLayoutPageCollection : public QObject, public QgsLayoutSeri
     void pageAboutToBeRemoved( int pageNumber );
 
   private:
-
     QgsLayout *mLayout = nullptr;
 
     std::unique_ptr< QgsLayoutGuideCollection > mGuideCollection;

@@ -34,15 +34,14 @@ import difflib
 import email
 import re
 import tempfile
+import unittest
 import urllib.error
 import urllib.parse
 import urllib.request
-
 from io import StringIO
 from shutil import copytree
 
 import osgeo.gdal  # NOQA
-
 from qgis.core import (
     QgsFontUtils,
     QgsMultiRenderChecker,
@@ -56,8 +55,7 @@ from qgis.server import (
     QgsServerParameterDefinition,
     QgsServerRequest,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 start_app()
@@ -307,18 +305,18 @@ class QgsServerTestBase(QgisTestCase):
         else:
             raise RuntimeError("Yeah, new format implemented")
 
-        temp_image = os.path.join(
-            tempfile.gettempdir(), f"{control_image}_result.{extFile}"
-        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_image = os.path.join(temp_dir, f"{control_image}_result.{extFile}")
 
-        with open(temp_image, "wb") as f:
-            f.write(image)
+            with open(temp_image, "wb") as f:
+                f.write(image)
 
-        if outputFormat != "PNG":
-            # TODO fix this, it's not actually testing anything..!
-            return True
+            if outputFormat != "PNG":
+                # TODO fix this, it's not actually testing anything..!
+                return True
 
-        rendered_image = QImage(temp_image)
+            rendered_image = QImage(temp_image)
+
         if rendered_image.format() not in (
             QImage.Format.Format_RGB32,
             QImage.Format.Format_ARGB32,
@@ -424,9 +422,9 @@ class QgsServerTestBase(QgisTestCase):
         request = QgsBufferServerRequest(qs, requestMethod, {}, data)
         response = QgsBufferServerResponse()
         self.server.handleRequest(request, response, project)
-        assert (
-            response.statusCode() == status_code
-        ), f"{response.statusCode()} != {status_code}"
+        assert response.statusCode() == status_code, (
+            f"{response.statusCode()} != {status_code}"
+        )
 
     def _assertRed(self, color: QColor):
         self.assertEqual(color.red(), 255)
@@ -455,7 +453,6 @@ class QgsServerTestBase(QgisTestCase):
 
 
 class TestQgsServerTestBase(QgisTestCase):
-
     def test_assert_xml_equal(self):
         engine = QgsServerTestBase()
 
@@ -740,7 +737,6 @@ class TestQgsServer(QgsServerTestBase):
 
 
 class TestQgsServerParameter(QgisTestCase):
-
     def test_filter(self):
         # empty filter
         param = QgsServerParameterDefinition()

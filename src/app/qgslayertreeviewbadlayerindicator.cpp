@@ -15,28 +15,33 @@
  ***************************************************************************/
 
 #include "qgslayertreeviewbadlayerindicator.h"
-#include "moc_qgslayertreeviewbadlayerindicator.cpp"
-#include "qgslayertree.h"
-#include "qgslayertreeview.h"
-#include "qgslayertreeutils.h"
-#include "qgslayertreemodel.h"
-#include "qgsvectorlayer.h"
-#include "qgsrasterlayer.h"
-#include "qgisapp.h"
-#include "qgsbrowsermodel.h"
-#include "qgsbrowsertreeview.h"
-#include "qgsbrowserproxymodel.h"
-#include "qgsmessageviewer.h"
 
 #include <functional>
+
+#include "qgisapp.h"
+#include "qgsbrowsermodel.h"
+#include "qgsbrowserproxymodel.h"
+#include "qgsbrowsertreeview.h"
+#include "qgslayertree.h"
+#include "qgslayertreemodel.h"
+#include "qgslayertreeutils.h"
+#include "qgslayertreeview.h"
+#include "qgsmessageviewer.h"
+#include "qgsrasterlayer.h"
+#include "qgsvectorlayer.h"
+
 #include <QDialog>
-#include <QVBoxLayout>
 #include <QDialogButtonBox>
+#include <QString>
+#include <QVBoxLayout>
+
+#include "moc_qgslayertreeviewbadlayerindicator.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayerTreeViewBadLayerIndicatorProvider::QgsLayerTreeViewBadLayerIndicatorProvider( QgsLayerTreeView *view )
   : QgsLayerTreeViewIndicatorProvider( view )
-{
-}
+{}
 
 void QgsLayerTreeViewBadLayerIndicatorProvider::reportLayerError( const QString &error, QgsMapLayer *layer )
 {
@@ -86,10 +91,10 @@ void QgsLayerTreeViewBadLayerIndicatorProvider::onIndicatorClicked( const QModel
         m->setMessageAsPlainText( thisLayerErrors.at( 0 ) );
       else
       {
-        QString message = QStringLiteral( "<ul>" );
+        QString message = u"<ul>"_s;
         for ( const QString &e : thisLayerErrors )
-          message += QStringLiteral( "<li>%1</li>" ).arg( e );
-        message += QLatin1String( "</ul>" );
+          message += u"<li>%1</li>"_s.arg( e );
+        message += "</ul>"_L1;
         m->setMessageAsHtml( message );
       }
       m->exec();
@@ -100,9 +105,9 @@ void QgsLayerTreeViewBadLayerIndicatorProvider::onIndicatorClicked( const QModel
 QString QgsLayerTreeViewBadLayerIndicatorProvider::iconName( QgsMapLayer *layer )
 {
   if ( !layer->isValid() )
-    return QStringLiteral( "/mIndicatorBadLayer.svg" );
+    return u"/mIndicatorBadLayer.svg"_s;
   else
-    return QStringLiteral( "/mIndicatorLayerError.svg" );
+    return u"/mIndicatorLayerError.svg"_s;
 }
 
 QString QgsLayerTreeViewBadLayerIndicatorProvider::tooltipText( QgsMapLayer *layer )

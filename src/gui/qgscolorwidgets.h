@@ -16,15 +16,17 @@
 #ifndef QGSCOLORWIDGETS_H
 #define QGSCOLORWIDGETS_H
 
-#include <QWidgetAction>
-#include <QWidget>
 #include "qgis_gui.h"
 #include "qgis_sip.h"
+
+#include <QWidget>
+#include <QWidgetAction>
 
 class QColor;
 class QLineEdit;
 class QToolButton;
 class QgsDoubleSpinBox;
+template<class T> class QgsSettingsEntryEnumFlag;
 
 /**
  * \ingroup gui
@@ -346,9 +348,9 @@ class GUI_EXPORT QgsColorWidgetAction : public QWidgetAction
     QgsColorWidget *mColorWidget = nullptr;
 
     //used to suppress recursion with hover events
-    bool mSuppressRecurse;
+    bool mSuppressRecurse = false;
 
-    bool mDismissOnColorSelection;
+    bool mDismissOnColorSelection = true;
 
   private slots:
 
@@ -398,6 +400,10 @@ class GUI_EXPORT QgsColorWheel : public QgsColorWidget
     void mouseMoveEvent( QMouseEvent *event ) override;
     void mousePressEvent( QMouseEvent *event ) override;
     void mouseReleaseEvent( QMouseEvent *event ) override;
+
+  private slots:
+
+    void invalidateImages();
 
   private:
     enum ControlPart
@@ -503,7 +509,7 @@ class GUI_EXPORT QgsColorBox : public QgsColorWidget
     static constexpr float mMargin = 2.;
 
     /*Cached image for color box*/
-    QImage *mBoxImage = nullptr;
+    std::unique_ptr<QImage> mBoxImage;
 
     /*Whether the cached image requires redrawing*/
     bool mDirty = true;
@@ -776,6 +782,8 @@ class GUI_EXPORT QgsColorTextWidget : public QgsColorWidget
       Rgba        //!< Rgba( r, g, b, a ) format, with alpha
     };
     Q_ENUM( ColorTextFormat )
+
+    static const QgsSettingsEntryEnumFlag<ColorTextFormat> *settingsTextFormat SIP_SKIP;
 
     /**
      * Construct a new color line edit widget.

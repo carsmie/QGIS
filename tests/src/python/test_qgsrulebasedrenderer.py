@@ -6,11 +6,12 @@ the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 """
 
+import unittest
+
+from qgis.core import QgsFillSymbol, QgsMarkerSymbol, QgsRuleBasedRenderer
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtXml import QDomDocument
-from qgis.core import QgsMarkerSymbol, QgsFillSymbol, QgsRuleBasedRenderer
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.testing import QgisTestCase, start_app
 
 start_app()
 
@@ -32,7 +33,6 @@ def createFillSymbol():
 
 
 class TestQgsRuleBasedSymbolRenderer(QgisTestCase):
-
     def test_to_sld(self):
         root_rule = QgsRuleBasedRenderer.Rule(None)
         symbol_a = createMarkerSymbol()
@@ -135,6 +135,41 @@ class TestQgsRuleBasedSymbolRenderer(QgisTestCase):
 </FakeRoot>
 """
         self.assertEqual(dom.toString(), expected)
+
+    def testSetLegendSymbolItemLabel(self):
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        symbol = QgsMarkerSymbol.createSimple({})
+        rule1 = QgsRuleBasedRenderer.Rule(symbol.clone(), label="rule 1")
+        rule2 = QgsRuleBasedRenderer.Rule(symbol.clone(), label="rule 2")
+        rule3 = QgsRuleBasedRenderer.Rule(symbol.clone(), label="rule 3")
+        root_rule.appendChild(rule1)
+        root_rule.appendChild(rule2)
+        root_rule.appendChild(rule3)
+        renderer = QgsRuleBasedRenderer(root_rule)
+
+        # verify initial labels
+        self.assertEqual(rule1.label(), "rule 1")
+        self.assertEqual(rule2.label(), "rule 2")
+        self.assertEqual(rule3.label(), "rule 3")
+
+        # change label for second rule using its key
+        renderer.setLegendSymbolItemLabel(rule2.ruleKey(), "updated rule 2")
+
+        self.assertEqual(rule1.label(), "rule 1")
+        self.assertEqual(rule2.label(), "updated rule 2")
+        self.assertEqual(rule3.label(), "rule 3")
+
+        # change label via legendSymbolItems key
+        items = renderer.legendSymbolItems()
+        self.assertEqual(len(items), 3)
+        renderer.setLegendSymbolItemLabel(items[0].ruleKey(), "new rule 1")
+        self.assertEqual(rule1.label(), "new rule 1")
+
+        # non-existent key should not change anything
+        renderer.setLegendSymbolItemLabel("nonexistent", "nonexistent_label")
+        self.assertEqual(rule1.label(), "new rule 1")
+        self.assertEqual(rule2.label(), "updated rule 2")
+        self.assertEqual(rule3.label(), "rule 3")
 
 
 if __name__ == "__main__":

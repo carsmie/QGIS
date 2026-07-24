@@ -19,12 +19,14 @@ email                : marco.hugentobler at sourcepole dot com
 #include <array>
 #include <functional>
 #include <type_traits>
-#include <QString>
 
-#include "qgis_core.h"
 #include "qgis.h"
-#include "qgswkbtypes.h"
+#include "qgis_core.h"
 #include "qgswkbptr.h"
+#include "qgswkbtypes.h"
+
+#include <QSet>
+#include <QString>
 
 #ifndef SIP_RUN
 #include <nlohmann/json_fwd.hpp>
@@ -78,6 +80,7 @@ typedef QVector< QVector< QVector< QgsPoint > > > QgsCoordinateSequence;
  */
 class CORE_EXPORT QgsAbstractGeometry
 {
+    // clang-format off
 
 #ifdef SIP_RUN
     SIP_CONVERT_TO_SUBCLASS_CODE
@@ -89,6 +92,8 @@ class CORE_EXPORT QgsAbstractGeometry
       sipType = sipType_QgsCircularString;
     else if ( qgsgeometry_cast<QgsCompoundCurve *>( sipCpp ) != nullptr )
       sipType = sipType_QgsCompoundCurve;
+    else if ( qgsgeometry_cast<QgsNurbsCurve *>( sipCpp ) != nullptr )
+      sipType = sipType_QgsNurbsCurve;
     else if ( qgsgeometry_cast<QgsTriangle *>( sipCpp ) != nullptr )
       sipType = sipType_QgsTriangle;
     else if ( qgsgeometry_cast<QgsPolygon *>( sipCpp ) != nullptr )
@@ -156,11 +161,15 @@ class CORE_EXPORT QgsAbstractGeometry
     };
     Q_ENUM( QgsAbstractGeometry::AxisOrder )
 
+    // clang-format on
+
     QgsAbstractGeometry() = default;
     virtual ~QgsAbstractGeometry() = default;
     QgsAbstractGeometry( const QgsAbstractGeometry &geom );
     QgsAbstractGeometry &operator=( const QgsAbstractGeometry &geom );
 
+    // === WARNING ===
+    // implementation of `QgsAbstractGeometry::operator==` are mainly delegated to `fuzzyEquals` functions if the default tolerance/epsilon value is changed, documentation must be updaded accordingly and also changed in expression helper files (resources/function_help/json)
     virtual bool operator==( const QgsAbstractGeometry &other ) const = 0;
     virtual bool operator!=( const QgsAbstractGeometry &other ) const = 0;
 
@@ -235,12 +244,14 @@ class CORE_EXPORT QgsAbstractGeometry
      */
     virtual QString geometryType() const = 0;
 
+    // clang-format off
     /**
      * Returns the WKB type of the geometry.
      * \see geometryType
      * \see wktTypeStr
      */
     inline Qgis::WkbType wkbType() const SIP_HOLDGIL { return mWkbType; }
+    // clang-format on
 
     /**
      * Returns the WKT type string of the geometry.
@@ -382,7 +393,14 @@ class CORE_EXPORT QgsAbstractGeometry
     QString asJson( int precision = 17 );
 
     /**
-     * Returns a json object representation of the geometry.
+      * Export the geometry to a GeoJSON string, with the given \a precision and following the specified GeoJSON \a profile.
+      * Note: this is identical to asJson() when using the Legacy profile, but differs when using other profiles.
+      * \since QGIS 4.4
+      */
+    QString asGeoJson(int precision = 17, Qgis::GeoJsonProfile profile = Qgis::GeoJsonProfile::Legacy );
+
+    /**
+     * Returns a json object representation of the geometry with the given \a precision and \a profile.
      * \see asWkb()
      * \see asWkt()
      * \see asGml2()
@@ -391,7 +409,7 @@ class CORE_EXPORT QgsAbstractGeometry
      * \note not available in Python bindings
      * \since QGIS 3.10
      */
-    virtual json asJsonObject( int precision = 17 ) SIP_SKIP const;
+    virtual json asJsonObject( int precision = 17, Qgis::GeoJsonProfile profile = Qgis::GeoJsonProfile::Legacy ) SIP_SKIP const;
 
     /**
      * Returns a KML representation of the geometry.
@@ -528,6 +546,23 @@ class CORE_EXPORT QgsAbstractGeometry
     virtual bool deleteVertex( QgsVertexId position ) = 0;
 
     /**
+     * Deletes vertices within the geometry.
+     * If \a positions contains vertices not belonging to the geometry, FALSE is returned and the geometry is not modified.
+     * If a vertex cannot be deleted, the method returns FALSE and the geometry may be left in a partially modified and invalid state.
+     * \param positions set of vertex ids to delete
+     * \returns TRUE if all requested vertices were deleted, FALSE if at least one vertex could not be deleted
+     * \see deleteVertex
+     * \since QGIS 4.2
+     */
+    virtual bool deleteVertices( const QSet<QgsVertexId> &positions ) = 0;
+
+    /**
+     * Returns TRUE if the geometry contains a vertex matching the given \a position.
+     * \since QGIS 4.2
+     */
+    virtual bool hasVertex( QgsVertexId position ) const = 0;
+
+    /**
      * Returns the planar, 2-dimensional length of the geometry.
      *
      * \warning QgsAbstractGeometry objects are inherently Cartesian/planar geometries, and the length
@@ -566,8 +601,21 @@ class CORE_EXPORT QgsAbstractGeometry
      *
      * \see length()
      * \see perimeter()
+     * \see area()
      */
     virtual double area() const;
+
+    /**
+     * Returns the 3-dimensional surface area of the geometry.
+     *
+     * \warning QgsAbstractGeometry objects are inherently Cartesian/planar geometries, and the area
+     * returned by this method is calculated using strictly Cartesian mathematics.
+     *
+     * \see area()
+     *
+     * \since QGIS 4.0
+     */
+    virtual double area3D() const;
 
     /**
      * Returns the length of the segment of the geometry which begins at \a startVertex.
@@ -1052,22 +1100,22 @@ class CORE_EXPORT QgsAbstractGeometry
      *
      * \code{.py}
      *   # print the WKT representation of each part in a multi-point geometry
-     *   geometry = QgsMultiPoint.fromWkt( 'MultiPoint( 0 0, 1 1, 2 2)' )
+     *   geometry = QgsGeometry.fromWkt( 'MultiPoint( 0 0, 1 1, 2 2)' )
      *   for part in geometry.parts():
      *       print(part.asWkt())
      *
      *   # single part geometries only have one part - this loop will iterate once only
-     *   geometry = QgsLineString.fromWkt( 'LineString( 0 0, 10 10 )' )
+     *   geometry = QgsGeometry.fromWkt( 'LineString( 0 0, 10 10 )' )
      *   for part in geometry.parts():
      *       print(part.asWkt())
      *
      *   # parts can be modified during the iteration
-     *   geometry = QgsMultiPoint.fromWkt( 'MultiPoint( 0 0, 1 1, 2 2)' )
+     *   geometry = QgsGeometry.fromWkt( 'MultiPoint( 0 0, 1 1, 2 2)' )
      *   for part in geometry.parts():
-     *       part.transform(ct)
+     *       part.transform(ct=QgsCoordinateTransform()) # Dummy transform
      *
      *   # part iteration can also be combined with vertex iteration
-     *   geometry = QgsMultiPolygon.fromWkt( 'MultiPolygon((( 0 0, 0 10, 10 10, 10 0, 0 0 ),( 5 5, 5 6, 6 6, 6 5, 5 5)),((20 2, 22 2, 22 4, 20 4, 20 2)))' )
+     *   geometry = QgsGeometry.fromWkt( 'MultiPolygon((( 0 0, 0 10, 10 10, 10 0, 0 0 ),( 5 5, 5 6, 6 6, 6 5, 5 5)),((20 2, 22 2, 22 4, 20 4, 20 2)))' )
      *   for part in geometry.parts():
      *       for v in part.vertices():
      *           print(v.x(), v.y())
@@ -1090,12 +1138,12 @@ class CORE_EXPORT QgsAbstractGeometry
      *
      * \code{.py}
      *   # print the x and y coordinate for each vertex in a LineString
-     *   geometry = QgsLineString.fromWkt( 'LineString( 0 0, 1 1, 2 2)' )
+     *   geometry = QgsGeometry.fromWkt( 'LineString( 0 0, 1 1, 2 2)' )
      *   for v in geometry.vertices():
      *       print(v.x(), v.y())
      *
      *   # vertex iteration includes all parts and rings
-     *   geometry = QgsMultiPolygon.fromWkt( 'MultiPolygon((( 0 0, 0 10, 10 10, 10 0, 0 0 ),( 5 5, 5 6, 6 6, 6 5, 5 5)),((20 2, 22 2, 22 4, 20 4, 20 2)))' )
+     *   geometry = QgsGeometry.fromWkt( 'MultiPolygon((( 0 0, 0 10, 10 10, 10 0, 0 0 ),( 5 5, 5 6, 6 6, 6 5, 5 5)),((20 2, 22 2, 22 4, 20 4, 20 2)))' )
      *   for v in geometry.vertices():
      *       print(v.x(), v.y())
      * \endcode
@@ -1234,6 +1282,7 @@ class CORE_EXPORT QgsVertexIterator
     QgsPoint next();
 
 #ifdef SIP_RUN
+// clang-format off
     QgsVertexIterator *__iter__();
     % MethodCode
     sipRes = sipCpp;
@@ -1246,6 +1295,7 @@ class CORE_EXPORT QgsVertexIterator
     else
       PyErr_SetString( PyExc_StopIteration, "" );
     % End
+// clang-format on
 #endif
 
   private:
@@ -1283,6 +1333,7 @@ class CORE_EXPORT QgsGeometryPartIterator
     QgsAbstractGeometry *next();
 
 #ifdef SIP_RUN
+// clang-format off
     QgsGeometryPartIterator *__iter__();
     % MethodCode
     sipRes = sipCpp;
@@ -1295,6 +1346,7 @@ class CORE_EXPORT QgsGeometryPartIterator
     else
       PyErr_SetString( PyExc_StopIteration, "" );
     % End
+// clang-format on
 #endif
 
   private:
@@ -1333,6 +1385,7 @@ class CORE_EXPORT QgsGeometryConstPartIterator
     const QgsAbstractGeometry *next();
 
 #ifdef SIP_RUN
+// clang-format off
     QgsGeometryConstPartIterator *__iter__();
     % MethodCode
     sipRes = sipCpp;
@@ -1345,6 +1398,7 @@ class CORE_EXPORT QgsGeometryConstPartIterator
     else
       PyErr_SetString( PyExc_StopIteration, "" );
     % End
+// clang-format on
 #endif
 
   private:

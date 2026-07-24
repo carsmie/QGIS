@@ -19,14 +19,16 @@
 #define QGSLAYOUTMAPWIDGET_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
+
+#include "ui_qgslayoutmapclippingwidgetbase.h"
+#include "ui_qgslayoutmaplabelingwidgetbase.h"
+#include "ui_qgslayoutmapwidgetbase.h"
 
 #include "qgis_gui.h"
-#include "ui_qgslayoutmapwidgetbase.h"
-#include "ui_qgslayoutmaplabelingwidgetbase.h"
-#include "ui_qgslayoutmapclippingwidgetbase.h"
-#include "qgslayoutitemwidget.h"
 #include "qgslayoutitemmapgrid.h"
+#include "qgslayoutitemwidget.h"
+
+#define SIP_NO_FILE
 
 class QgsMapLayer;
 class QgsLayoutItemMap;

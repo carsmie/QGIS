@@ -16,26 +16,25 @@ test_vectortile.py
 
 import shutil
 import tempfile
+import unittest
 from pathlib import Path
 
-from qgis.PyQt.QtTest import QSignalSpy
-from qgis.PyQt.QtGui import QPainter
 from qgis.core import (
     Qgis,
     QgsDataSourceUri,
     QgsGeometry,
+    QgsMapSettings,
     QgsProviderRegistry,
+    QgsRenderContext,
     QgsSelectionContext,
     QgsTileXYZ,
     QgsVectorLayer,
     QgsVectorTileLayer,
     QgsVectorTileWriter,
-    QgsMapSettings,
-    QgsRenderContext,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtGui import QPainter
+from qgis.PyQt.QtTest import QSignalSpy
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 TEST_DATA_PATH = Path(unitTestDataPath())
@@ -44,7 +43,6 @@ start_app()
 
 
 class TestVectorTile(QgisTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -105,7 +103,7 @@ class TestVectorTile(QgisTestCase):
 
         parts["path"] = "/my/new/file.mbtiles"
         uri = md.encodeUri(parts)
-        self.assertEqual(uri, "type=mbtiles&url=/my/new/file.mbtiles")
+        self.assertEqual(uri, "type=mbtiles&url=%2Fmy%2Fnew%2Ffile.mbtiles")
 
         uri = (
             "type=xyz&url=https://fake.server/%7Bx%7D/%7By%7D/%7Bz%7D.png&zmin=0&zmax=2"
@@ -125,7 +123,7 @@ class TestVectorTile(QgisTestCase):
         uri = md.encodeUri(parts)
         self.assertEqual(
             uri,
-            "type=xyz&url=https://fake.new.server/%7Bx%7D/%7By%7D/%7Bz%7D.png&zmax=2&zmin=0",
+            "type=xyz&url=https%3A%2F%2Ffake.new.server%2F%7Bx%7D%2F%7By%7D%2F%7Bz%7D.png&zmax=2&zmin=0",
         )
 
         uri = "type=xyz&serviceType=arcgis&url=https://fake.server/%7Bx%7D/%7By%7D/%7Bz%7D.png&zmax=2&http-header:referer=https://qgis.org/&styleUrl=https://qgis.org/"
@@ -147,7 +145,7 @@ class TestVectorTile(QgisTestCase):
         uri = md.encodeUri(parts)
         self.assertEqual(
             uri,
-            "serviceType=arcgis&styleUrl=https://qgis.org/&type=xyz&url=https://fake.new.server/%7Bx%7D/%7By%7D/%7Bz%7D.png&zmax=2&http-header:referer=https://qgis.org/",
+            "serviceType=arcgis&styleUrl=https%3A%2F%2Fqgis.org%2F&type=xyz&url=https%3A%2F%2Ffake.new.server%2F%7Bx%7D%2F%7By%7D%2F%7Bz%7D.png&zmax=2&http-header:referer=https%3A%2F%2Fqgis.org%2F",
         )
 
     def testZoomRange(self):

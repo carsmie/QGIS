@@ -1,19 +1,24 @@
-//    Copyright (C) 2023 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT. If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #ifndef PDFDOCUMENTSANITIZER_H
 #define PDFDOCUMENTSANITIZER_H
@@ -24,9 +29,9 @@ namespace pdf
 {
 class PDFAnnotation;
 
-/// Class for sanitizing documents. Can remove sensitive content from the document,
-/// except the content streams. Sanitization is configurable, user can specify,
-/// which content should be removed.
+/// Class for sanitizing documents. Can remove sensitive content from the document
+/// and can also perform selected low-level content stream cleanups.
+/// Sanitization is configurable, user can specify which content should be removed.
 class PDF4QTLIBCORESHARED_EXPORT PDFDocumentSanitizer : public QObject
 {
     Q_OBJECT
@@ -43,6 +48,8 @@ public:
         EmbeddedSearchIndex = 0x0010, ///< Remove embedded search index
         MarkupAnnotations   = 0x0020, ///< Remove markup annotations from all pages
         PageThumbnails      = 0x0040, ///< Remove page thumbnails
+        PageLabels          = 0x0080, ///< Remove page labels
+        InvisibleText       = 0x0100, ///< Remove text-showing operators executed with rendering mode Tr = 3 from page and form content streams
         All                 = 0xFFFF, ///< All sanitization turned on
     };
     Q_DECLARE_FLAGS(SanitizationFlags, SanitizationFlag)
@@ -87,6 +94,10 @@ private:
     void performSanitizeEmbeddedSearchIndex();
     void performSanitizeMarkupAnnotations();
     void performSanitizePageThumbnails();
+    void performSanitizePageLabels();
+    /// Removes invisible OCR-like text from page and form content streams while
+    /// keeping the remaining content stream structure intact as much as possible.
+    void performSanitizeInvisibleText();
 
     void removeAnnotations(const std::function<bool(const PDFAnnotation*)>& filter, QString message);
 

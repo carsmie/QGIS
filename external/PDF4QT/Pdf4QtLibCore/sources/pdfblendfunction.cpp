@@ -1,19 +1,24 @@
-//    Copyright (C) 2019-2022 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT.  If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "pdfblendfunction.h"
 #include "pdfdbgheap.h"
@@ -166,6 +171,19 @@ QPainter::CompositionMode PDFBlendModeInfo::getCompositionModeFromBlendMode(Blen
     }
 
     return QPainter::CompositionMode_SourceOver;
+}
+
+BlendMode PDFBlendModeInfo::getBlendModeFromCompositionMode(QPainter::CompositionMode mode)
+{
+    for (BlendMode blendMode : getBlendModes())
+    {
+        if (mode == getCompositionModeFromBlendMode(blendMode))
+        {
+            return blendMode;
+        }
+    }
+
+    return BlendMode::Normal;
 }
 
 QString PDFBlendModeInfo::getBlendModeName(BlendMode mode)
@@ -537,12 +555,33 @@ PDFGray PDFBlendFunction::nonseparable_rgb2gray(PDFRGB rgb)
 
 PDFRGB PDFBlendFunction::nonseparable_cmyk2rgb(PDFCMYK cmyk)
 {
-    return PDFRGB{ 1.0f - cmyk[0], 1.0f - cmyk[1], 1.0f - cmyk[2] };
+    const PDFColorComponent c = qBound<PDFColorComponent>(0.0f, cmyk[0], 1.0f);
+    const PDFColorComponent m = qBound<PDFColorComponent>(0.0f, cmyk[1], 1.0f);
+    const PDFColorComponent y = qBound<PDFColorComponent>(0.0f, cmyk[2], 1.0f);
+    const PDFColorComponent k = qBound<PDFColorComponent>(0.0f, cmyk[3], 1.0f);
+
+    return PDFRGB{ (1.0f - c) * (1.0f - k), (1.0f - m) * (1.0f - k), (1.0f - y) * (1.0f - k) };
 }
 
 PDFCMYK PDFBlendFunction::nonseparable_rgb2cmyk(PDFRGB rgb, PDFColorComponent K)
 {
-    return PDFCMYK{ 1.0f - rgb[0], 1.0f - rgb[1], 1.0f - rgb[2], K };
+    const PDFColorComponent r = qBound<PDFColorComponent>(0.0f, rgb[0], 1.0f);
+    const PDFColorComponent g = qBound<PDFColorComponent>(0.0f, rgb[1], 1.0f);
+    const PDFColorComponent b = qBound<PDFColorComponent>(0.0f, rgb[2], 1.0f);
+    const PDFColorComponent k = qBound<PDFColorComponent>(0.0f, K, 1.0f);
+
+    if (k >= 0.99999f)
+    {
+        return PDFCMYK{ 0.0f, 0.0f, 0.0f, 1.0f };
+    }
+
+    const PDFColorComponent denominator = 1.0f - k;
+    return PDFCMYK{
+        qBound<PDFColorComponent>(0.0f, 1.0f - r / denominator, 1.0f),
+        qBound<PDFColorComponent>(0.0f, 1.0f - g / denominator, 1.0f),
+        qBound<PDFColorComponent>(0.0f, 1.0f - b / denominator, 1.0f),
+        k
+    };
 }
 
 PDFColorComponent PDFBlendFunction::nonseparable_Lum(PDFRGB rgb)

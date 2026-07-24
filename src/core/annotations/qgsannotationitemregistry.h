@@ -16,13 +16,15 @@
 #ifndef QGSANNOTATIONITEMREGISTRY_H
 #define QGSANNOTATIONITEMREGISTRY_H
 
+#include <functional>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsapplication.h"
 #include "qgspathresolver.h"
-#include <QGraphicsItem> //for QGraphicsItem::UserType
+
+#include <QGraphicsItem>
 #include <QIcon>
-#include <functional>
 
 class QgsAnnotationItem;
 class QDomElement;
@@ -41,7 +43,6 @@ class QgsReadWriteContext;
 class CORE_EXPORT QgsAnnotationItemAbstractMetadata
 {
   public:
-
     /**
      * Constructor for QgsAnnotationItemAbstractMetadata with the specified class \a type
      * and \a visibleName.
@@ -78,7 +79,6 @@ class CORE_EXPORT QgsAnnotationItemAbstractMetadata
     virtual QgsAnnotationItem *createItem() = 0 SIP_FACTORY;
 
   private:
-
     QString mType;
     QString mVisibleName;
     QString mVisibleNamePlural;
@@ -98,15 +98,13 @@ typedef std::function<QgsAnnotationItem *()> QgsAnnotationItemCreateFunc SIP_SKI
 class CORE_EXPORT QgsAnnotationItemMetadata : public QgsAnnotationItemAbstractMetadata
 {
   public:
-
     /**
      * Constructor for QgsAnnotationItemMetadata with the specified class \a type
      * and \a visibleName, and function pointers for the various item creation functions.
      *
      * The \a visiblePluralName argument is used to specify a plural variant of the item type.
      */
-    QgsAnnotationItemMetadata( const QString &type, const QString &visibleName, const QString &visiblePluralName,
-                               const QgsAnnotationItemCreateFunc &pfCreate )
+    QgsAnnotationItemMetadata( const QString &type, const QString &visibleName, const QString &visiblePluralName, const QgsAnnotationItemCreateFunc &pfCreate )
       : QgsAnnotationItemAbstractMetadata( type, visibleName, visiblePluralName )
       , mCreateFunc( pfCreate )
     {}
@@ -120,7 +118,6 @@ class CORE_EXPORT QgsAnnotationItemMetadata : public QgsAnnotationItemAbstractMe
 
   protected:
     QgsAnnotationItemCreateFunc mCreateFunc = nullptr;
-
 };
 
 #endif
@@ -144,7 +141,6 @@ class CORE_EXPORT QgsAnnotationItemRegistry : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Creates a new empty item registry.
      *
@@ -201,10 +197,6 @@ class CORE_EXPORT QgsAnnotationItemRegistry : public QObject
 #endif
 
     QMap<QString, QgsAnnotationItemAbstractMetadata *> mMetadata;
-
 };
 
 #endif //QGSANNOTATIONITEMREGISTRY_H
-
-
-

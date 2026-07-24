@@ -15,23 +15,23 @@
 #ifndef QGSSYMBOLLAYER_H
 #define QGSSYMBOLLAYER_H
 
-#define DEG2RAD(x)    ((x)*M_PI/180)
-#define DEFAULT_SCALE_METHOD              Qgis::ScaleMethod::ScaleDiameter
+#define DEG2RAD( x ) ( ( x ) * M_PI / 180 )
+#define DEFAULT_SCALE_METHOD Qgis::ScaleMethod::ScaleDiameter
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsfields.h"
 #include "qgspropertycollection.h"
 #include "qgssymbolrendercontext.h"
 
 #include <QColor>
-#include <QMap>
-#include <QPointF>
-#include <QSet>
 #include <QDomDocument>
 #include <QDomElement>
-#include <QPainterPath>
 #include <QImage>
+#include <QMap>
+#include <QPainterPath>
+#include <QPointF>
+#include <QSet>
 
 class QPainter;
 class QSize;
@@ -135,7 +135,7 @@ class CORE_EXPORT QgsSymbolLayer
         sipType = sipType_QgsGeometryGeneratorSymbolLayer;
         break;
     }
-    SIP_END
+  SIP_END
 #endif
   public:
 
@@ -146,78 +146,80 @@ class CORE_EXPORT QgsSymbolLayer
      */
     enum class Property SIP_MONKEYPATCH_SCOPEENUM_UNNEST( QgsSymbolLayer, Property ) : int
     {
-      Size SIP_MONKEYPATCH_COMPAT_NAME( PropertySize ) = 0, //!< Symbol size
-      Angle SIP_MONKEYPATCH_COMPAT_NAME( PropertyAngle ), //!< Symbol angle
-      Name SIP_MONKEYPATCH_COMPAT_NAME( PropertyName ), //!< Name, eg shape name for simple markers
-      FillColor SIP_MONKEYPATCH_COMPAT_NAME( PropertyFillColor ), //!< Fill color
-      StrokeColor SIP_MONKEYPATCH_COMPAT_NAME( PropertyStrokeColor ), //!< Stroke color
-      StrokeWidth SIP_MONKEYPATCH_COMPAT_NAME( PropertyStrokeWidth ), //!< Stroke width
-      StrokeStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyStrokeStyle ), //!< Stroke style (eg solid, dashed)
-      Offset SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffset ), //!< Symbol offset
-      Character SIP_MONKEYPATCH_COMPAT_NAME( PropertyCharacter ), //!< Character, eg for font marker symbol layers
-      Width SIP_MONKEYPATCH_COMPAT_NAME( PropertyWidth ), //!< Symbol width
-      Height SIP_MONKEYPATCH_COMPAT_NAME( PropertyHeight ), //!< Symbol height
-      PreserveAspectRatio SIP_MONKEYPATCH_COMPAT_NAME( PropertyPreserveAspectRatio ), //!< Preserve aspect ratio between width and height
-      FillStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyFillStyle ), //!< Fill style (eg solid, dots)
-      JoinStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyJoinStyle ), //!< Line join style
-      SecondaryColor SIP_MONKEYPATCH_COMPAT_NAME( PropertySecondaryColor ), //!< Secondary color (eg for gradient fills)
-      LineAngle SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineAngle ), //!< Line angle, or angle of hash lines for hash line symbols
-      LineDistance SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineDistance ), //!< Distance between lines, or length of lines for hash line symbols
-      GradientType SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientType ), //!< Gradient fill type
-      CoordinateMode SIP_MONKEYPATCH_COMPAT_NAME( PropertyCoordinateMode ), //!< Gradient coordinate mode
-      GradientSpread SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientSpread ), //!< Gradient spread mode
-      GradientReference1X SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference1X ), //!< Gradient reference point 1 x
-      GradientReference1Y SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference1Y ), //!< Gradient reference point 1 y
-      GradientReference2X SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference2X ), //!< Gradient reference point 2 x
-      GradientReference2Y SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference2Y ), //!< Gradient reference point 2 y
+      Size SIP_MONKEYPATCH_COMPAT_NAME( PropertySize ) = 0,                                             //!< Symbol size
+      Angle SIP_MONKEYPATCH_COMPAT_NAME( PropertyAngle ),                                               //!< Symbol angle
+      Name SIP_MONKEYPATCH_COMPAT_NAME( PropertyName ),                                                 //!< Name, eg shape name for simple markers
+      FillColor SIP_MONKEYPATCH_COMPAT_NAME( PropertyFillColor ),                                       //!< Fill color
+      StrokeColor SIP_MONKEYPATCH_COMPAT_NAME( PropertyStrokeColor ),                                   //!< Stroke color
+      StrokeWidth SIP_MONKEYPATCH_COMPAT_NAME( PropertyStrokeWidth ),                                   //!< Stroke width
+      StrokeStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyStrokeStyle ),                                   //!< Stroke style (eg solid, dashed)
+      Offset SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffset ),                                             //!< Symbol offset
+      Character SIP_MONKEYPATCH_COMPAT_NAME( PropertyCharacter ),                                       //!< Character, eg for font marker symbol layers
+      Width SIP_MONKEYPATCH_COMPAT_NAME( PropertyWidth ),                                               //!< Symbol width
+      Height SIP_MONKEYPATCH_COMPAT_NAME( PropertyHeight ),                                             //!< Symbol height
+      PreserveAspectRatio SIP_MONKEYPATCH_COMPAT_NAME( PropertyPreserveAspectRatio ),                   //!< Preserve aspect ratio between width and height
+      FillStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyFillStyle ),                                       //!< Fill style (eg solid, dots)
+      JoinStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyJoinStyle ),                                       //!< Line join style
+      SecondaryColor SIP_MONKEYPATCH_COMPAT_NAME( PropertySecondaryColor ),                             //!< Secondary color (eg for gradient fills)
+      LineAngle SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineAngle ),                                       //!< Line angle, or angle of hash lines for hash line symbols
+      LineDistance SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineDistance ),                                 //!< Distance between lines, or length of lines for hash line symbols
+      GradientType SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientType ),                                 //!< Gradient fill type
+      CoordinateMode SIP_MONKEYPATCH_COMPAT_NAME( PropertyCoordinateMode ),                             //!< Gradient coordinate mode
+      GradientSpread SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientSpread ),                             //!< Gradient spread mode
+      GradientReference1X SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference1X ),                   //!< Gradient reference point 1 x
+      GradientReference1Y SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference1Y ),                   //!< Gradient reference point 1 y
+      GradientReference2X SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference2X ),                   //!< Gradient reference point 2 x
+      GradientReference2Y SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference2Y ),                   //!< Gradient reference point 2 y
       GradientReference1IsCentroid SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference1IsCentroid ), //!< Gradient reference point 1 is centroid
       GradientReference2IsCentroid SIP_MONKEYPATCH_COMPAT_NAME( PropertyGradientReference2IsCentroid ), //!< Gradient reference point 2 is centroid
-      BlurRadius SIP_MONKEYPATCH_COMPAT_NAME( PropertyBlurRadius ), //!< Shapeburst blur radius
-      ShapeburstUseWholeShape SIP_MONKEYPATCH_COMPAT_NAME( PropertyShapeburstUseWholeShape ), //!< Shapeburst use whole shape
-      ShapeburstMaxDistance SIP_MONKEYPATCH_COMPAT_NAME( PropertyShapeburstMaxDistance ), //!< Shapeburst fill from edge distance
-      ShapeburstIgnoreRings SIP_MONKEYPATCH_COMPAT_NAME( PropertyShapeburstIgnoreRings ), //!< Shapeburst ignore rings
-      File SIP_MONKEYPATCH_COMPAT_NAME( PropertyFile ), //!< Filename, eg for svg files
-      DistanceX SIP_MONKEYPATCH_COMPAT_NAME( PropertyDistanceX ), //!< Horizontal distance between points
-      DistanceY SIP_MONKEYPATCH_COMPAT_NAME( PropertyDistanceY ), //!< Vertical distance between points
-      DisplacementX SIP_MONKEYPATCH_COMPAT_NAME( PropertyDisplacementX ), //!< Horizontal displacement
-      DisplacementY SIP_MONKEYPATCH_COMPAT_NAME( PropertyDisplacementY ), //!< Vertical displacement
-      Opacity SIP_MONKEYPATCH_COMPAT_NAME( PropertyOpacity ), //!< Opacity
-      CustomDash SIP_MONKEYPATCH_COMPAT_NAME( PropertyCustomDash ), //!< Custom dash pattern
-      CapStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyCapStyle ), //!< Line cap style
-      Placement SIP_MONKEYPATCH_COMPAT_NAME( PropertyPlacement ), //!< Line marker placement
-      Interval SIP_MONKEYPATCH_COMPAT_NAME( PropertyInterval ), //!< Line marker interval
-      OffsetAlongLine SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffsetAlongLine ), //!< Offset along line
-      AverageAngleLength SIP_MONKEYPATCH_COMPAT_NAME( PropertyAverageAngleLength ), //!< Length to average symbol angles over
-      HorizontalAnchor SIP_MONKEYPATCH_COMPAT_NAME( PropertyHorizontalAnchor ), //!< Horizontal anchor point
-      VerticalAnchor SIP_MONKEYPATCH_COMPAT_NAME( PropertyVerticalAnchor ), //!< Vertical anchor point
-      LayerEnabled SIP_MONKEYPATCH_COMPAT_NAME( PropertyLayerEnabled ), //!< Whether symbol layer is enabled
-      ArrowWidth SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowWidth ), //!< Arrow tail width
-      ArrowStartWidth SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowStartWidth ), //!< Arrow tail start width
-      ArrowHeadLength SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowHeadLength ), //!< Arrow head length
-      ArrowHeadThickness SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowHeadThickness ), //!< Arrow head thickness
-      ArrowHeadType SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowHeadType ), //!< Arrow head type
-      ArrowType SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowType ), //!< Arrow type
-      OffsetX SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffsetX ), //!< Horizontal offset
-      OffsetY SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffsetY ), //!< Vertical offset
-      PointCount SIP_MONKEYPATCH_COMPAT_NAME( PropertyPointCount ), //!< Point count
-      RandomSeed SIP_MONKEYPATCH_COMPAT_NAME( PropertyRandomSeed ), //!< Random number seed
-      ClipPoints SIP_MONKEYPATCH_COMPAT_NAME( PropertyClipPoints ), //!< Whether markers should be clipped to polygon boundaries
-      DensityArea SIP_MONKEYPATCH_COMPAT_NAME( PropertyDensityArea ), //!< Density area
-      FontFamily SIP_MONKEYPATCH_COMPAT_NAME( PropertyFontFamily ), //!< Font family
-      FontStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyFontStyle ), //!< Font style
-      DashPatternOffset SIP_MONKEYPATCH_COMPAT_NAME( PropertyDashPatternOffset ), //!< Dash pattern offset,
-      TrimStart SIP_MONKEYPATCH_COMPAT_NAME( PropertyTrimStart ), //!< Trim distance from start of line \since QGIS 3.20
-      TrimEnd SIP_MONKEYPATCH_COMPAT_NAME( PropertyTrimEnd ), //!< Trim distance from end of line \since QGIS 3.20
-      LineStartWidthValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineStartWidthValue ), //!< Start line width for interpolated line renderer \since QGIS 3.22
-      LineEndWidthValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineEndWidthValue ), //!< End line width for interpolated line renderer \since QGIS 3.22
-      LineStartColorValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineStartColorValue ), //!< Start line color for interpolated line renderer \since QGIS 3.22
-      LineEndColorValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineEndColorValue ), //!< End line color for interpolated line renderer \since QGIS 3.22
-      MarkerClipping SIP_MONKEYPATCH_COMPAT_NAME( PropertyMarkerClipping ), //!< Marker clipping mode \since QGIS 3.24
-      RandomOffsetX SIP_MONKEYPATCH_COMPAT_NAME( PropertyRandomOffsetX ), //!< Random offset X \since QGIS 3.24
-      RandomOffsetY SIP_MONKEYPATCH_COMPAT_NAME( PropertyRandomOffsetY ), //!< Random offset Y \since QGIS 3.24
-      LineClipping SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineClipping ), //!< Line clipping mode \since QGIS 3.24
-      SkipMultiples, //!< Skip multiples of \since QGIS 3.40
-      ShowMarker, //!< Show markers \since QGIS 3.40
+      BlurRadius SIP_MONKEYPATCH_COMPAT_NAME( PropertyBlurRadius ),                                     //!< Shapeburst blur radius
+      ShapeburstUseWholeShape SIP_MONKEYPATCH_COMPAT_NAME( PropertyShapeburstUseWholeShape ),           //!< Shapeburst use whole shape
+      ShapeburstMaxDistance SIP_MONKEYPATCH_COMPAT_NAME( PropertyShapeburstMaxDistance ),               //!< Shapeburst fill from edge distance
+      ShapeburstIgnoreRings SIP_MONKEYPATCH_COMPAT_NAME( PropertyShapeburstIgnoreRings ),               //!< Shapeburst ignore rings
+      File SIP_MONKEYPATCH_COMPAT_NAME( PropertyFile ),                                                 //!< Filename, eg for svg files
+      DistanceX SIP_MONKEYPATCH_COMPAT_NAME( PropertyDistanceX ),                                       //!< Horizontal distance between points
+      DistanceY SIP_MONKEYPATCH_COMPAT_NAME( PropertyDistanceY ),                                       //!< Vertical distance between points
+      DisplacementX SIP_MONKEYPATCH_COMPAT_NAME( PropertyDisplacementX ),                               //!< Horizontal displacement
+      DisplacementY SIP_MONKEYPATCH_COMPAT_NAME( PropertyDisplacementY ),                               //!< Vertical displacement
+      Opacity SIP_MONKEYPATCH_COMPAT_NAME( PropertyOpacity ),                                           //!< Opacity
+      CustomDash SIP_MONKEYPATCH_COMPAT_NAME( PropertyCustomDash ),                                     //!< Custom dash pattern
+      CapStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyCapStyle ),                                         //!< Line cap style
+      Placement SIP_MONKEYPATCH_COMPAT_NAME( PropertyPlacement ),                                       //!< Line marker placement
+      Interval SIP_MONKEYPATCH_COMPAT_NAME( PropertyInterval ),                                         //!< Line marker interval
+      OffsetAlongLine SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffsetAlongLine ),                           //!< Offset along line
+      AverageAngleLength SIP_MONKEYPATCH_COMPAT_NAME( PropertyAverageAngleLength ),                     //!< Length to average symbol angles over
+      HorizontalAnchor SIP_MONKEYPATCH_COMPAT_NAME( PropertyHorizontalAnchor ),                         //!< Horizontal anchor point
+      VerticalAnchor SIP_MONKEYPATCH_COMPAT_NAME( PropertyVerticalAnchor ),                             //!< Vertical anchor point
+      LayerEnabled SIP_MONKEYPATCH_COMPAT_NAME( PropertyLayerEnabled ),                                 //!< Whether symbol layer is enabled
+      ArrowWidth SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowWidth ),                                     //!< Arrow tail width
+      ArrowStartWidth SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowStartWidth ),                           //!< Arrow tail start width
+      ArrowHeadLength SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowHeadLength ),                           //!< Arrow head length
+      ArrowHeadThickness SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowHeadThickness ),                     //!< Arrow head thickness
+      ArrowHeadType SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowHeadType ),                               //!< Arrow head type
+      ArrowType SIP_MONKEYPATCH_COMPAT_NAME( PropertyArrowType ),                                       //!< Arrow type
+      OffsetX SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffsetX ),                                           //!< Horizontal offset
+      OffsetY SIP_MONKEYPATCH_COMPAT_NAME( PropertyOffsetY ),                                           //!< Vertical offset
+      PointCount SIP_MONKEYPATCH_COMPAT_NAME( PropertyPointCount ),                                     //!< Point count
+      RandomSeed SIP_MONKEYPATCH_COMPAT_NAME( PropertyRandomSeed ),                                     //!< Random number seed
+      ClipPoints SIP_MONKEYPATCH_COMPAT_NAME( PropertyClipPoints ),                                     //!< Whether markers should be clipped to polygon boundaries
+      DensityArea SIP_MONKEYPATCH_COMPAT_NAME( PropertyDensityArea ),                                   //!< Density area
+      FontFamily SIP_MONKEYPATCH_COMPAT_NAME( PropertyFontFamily ),                                     //!< Font family
+      FontStyle SIP_MONKEYPATCH_COMPAT_NAME( PropertyFontStyle ),                                       //!< Font style
+      DashPatternOffset SIP_MONKEYPATCH_COMPAT_NAME( PropertyDashPatternOffset ),                       //!< Dash pattern offset,
+      TrimStart SIP_MONKEYPATCH_COMPAT_NAME( PropertyTrimStart ),                                       //!< Trim distance from start of line \since QGIS 3.20
+      TrimEnd SIP_MONKEYPATCH_COMPAT_NAME( PropertyTrimEnd ),                                           //!< Trim distance from end of line \since QGIS 3.20
+      LineStartWidthValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineStartWidthValue ),                   //!< Start line width for interpolated line renderer \since QGIS 3.22
+      LineEndWidthValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineEndWidthValue ),                       //!< End line width for interpolated line renderer \since QGIS 3.22
+      LineStartColorValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineStartColorValue ),                   //!< Start line color for interpolated line renderer \since QGIS 3.22
+      LineEndColorValue SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineEndColorValue ),                       //!< End line color for interpolated line renderer \since QGIS 3.22
+      MarkerClipping SIP_MONKEYPATCH_COMPAT_NAME( PropertyMarkerClipping ),                             //!< Marker clipping mode \since QGIS 3.24
+      RandomOffsetX SIP_MONKEYPATCH_COMPAT_NAME( PropertyRandomOffsetX ),                               //!< Random offset X \since QGIS 3.24
+      RandomOffsetY SIP_MONKEYPATCH_COMPAT_NAME( PropertyRandomOffsetY ),                               //!< Random offset Y \since QGIS 3.24
+      LineClipping SIP_MONKEYPATCH_COMPAT_NAME( PropertyLineClipping ),                                 //!< Line clipping mode \since QGIS 3.24
+      SkipMultiples,                                                                                    //!< Skip multiples of \since QGIS 3.40
+      ShowMarker,                                                                                       //!< Show markers \since QGIS 3.40
+      BlankSegments, //!< String list of distance to define blank segments along line for templated line symbol layers. \since QGIS 4.0
+      ExtraItems,    //!< String list of tuple (x, y and rotation angle) to define extra items to be rendered for templated line symbol layers. \since QGIS 4.2
     };
     // *INDENT-ON*
 
@@ -440,7 +442,12 @@ class CORE_EXPORT QgsSymbolLayer
      */
     virtual bool toSld( QDomDocument &doc, QDomElement &element, QgsSldExportContext &context ) const;
 
-    virtual QString ogrFeatureStyle( double mmScaleFactor, double mapUnitScaleFactor ) const { Q_UNUSED( mmScaleFactor ) Q_UNUSED( mapUnitScaleFactor ); return QString(); }
+    virtual QString ogrFeatureStyle( double mmScaleFactor, double mapUnitScaleFactor ) const
+    {
+      Q_UNUSED( mmScaleFactor )
+      Q_UNUSED( mapUnitScaleFactor );
+      return QString();
+    }
 
     /**
      * Should be reimplemented by subclasses to return a string map that
@@ -463,6 +470,21 @@ class CORE_EXPORT QgsSymbolLayer
 
     //! Returns if the layer can be used below the specified symbol
     virtual bool isCompatibleWithSymbol( QgsSymbol *symbol ) const;
+
+    /**
+     * Returns TRUE if this symbol layer will always render identically
+     * to an \a other symbol layer.
+     *
+     * \note This method is pessimistic, in that it will return FALSE in circumstances
+     * where it is not possible to guarantee that in 100% of cases the layer will
+     * render pixel-identically to the other layer. For instance, calling
+     * rendersIdenticallyTo() with the same symbol layer as \a other may
+     * return FALSE if the symbol layer contains data-defined overrides, such
+     * as those using feature attributes or expression variables.
+     *
+     * \since QGIS 4.0
+     */
+    virtual bool rendersIdenticallyTo( const QgsSymbolLayer *other ) const;
 
     /**
      * Returns TRUE if the symbol layer rendering can cause visible artifacts across a single feature
@@ -497,7 +519,11 @@ class CORE_EXPORT QgsSymbolLayer
      * of the stroke outside of the polygon. This amount is estimated, since it may
      * be affected by data defined symbology rules.
     */
-    virtual double estimateMaxBleed( const QgsRenderContext &context ) const { Q_UNUSED( context ) return 0; }
+    virtual double estimateMaxBleed( const QgsRenderContext &context ) const
+    {
+      Q_UNUSED( context )
+      return 0;
+    }
 
     /**
      * Sets the units to use for sizes and widths within the symbol layer. Individual
@@ -562,14 +588,41 @@ class CORE_EXPORT QgsSymbolLayer
     //! write as DXF
     virtual bool writeDxf( QgsDxfExport &e, double mmMapUnitScaleFactor, const QString &layerName, QgsSymbolRenderContext &context, QPointF shift = QPointF( 0.0, 0.0 ) ) const;
 
-    //! Gets line width
-    virtual double dxfWidth( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+    /**
+     * Gets line width.
+     * \deprecated QGIS 4.2. Use the overload without the \a e parameter instead.
+     */
+    Q_DECL_DEPRECATED virtual double dxfWidth( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const SIP_DEPRECATED;
 
-    //! Gets marker size
-    virtual double dxfSize( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+    /**
+     * Gets line width.
+     * \since QGIS 4.2
+     */
+    virtual double dxfWidth( QgsSymbolRenderContext &context ) const;
 
-    //! Gets offset
-    virtual double dxfOffset( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+    /**
+     * Gets marker size.
+     * \deprecated QGIS 4.2. Use the overload without the \a e parameter instead.
+     */
+    Q_DECL_DEPRECATED virtual double dxfSize( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const SIP_DEPRECATED;
+
+    /**
+     * Gets marker size.
+     * \since QGIS 4.2
+     */
+    virtual double dxfSize( QgsSymbolRenderContext &context ) const;
+
+    /**
+     * Gets offset.
+     * \deprecated QGIS 4.2. Use the overload without the \a e parameter instead.
+     */
+    Q_DECL_DEPRECATED virtual double dxfOffset( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const SIP_DEPRECATED;
+
+    /**
+     * Gets offset.
+     * \since QGIS 4.2
+     */
+    virtual double dxfOffset( QgsSymbolRenderContext &context ) const;
 
     //! Gets color
     virtual QColor dxfColor( QgsSymbolRenderContext &context ) const;
@@ -645,6 +698,30 @@ class CORE_EXPORT QgsSymbolLayer
     virtual QList<QgsSymbolLayerReference> masks() const;
 
     /**
+     * Returns the selective masking source set ID for this symbol layer.
+     *
+     * If non-empty, the symbols from this symbol layer will be masked
+     * by objects from the matching selective masking source set
+     * (see QgsSelectiveMaskingSourceSetManager).
+     *
+     * \see setSelectiveMaskingSourceSetId()
+     * \since QGIS 4.0
+     */
+    QString selectiveMaskingSourceSetId() const;
+
+    /**
+     * Sets the selective masking source set \a id for this symbol layer.
+     *
+     * If non-empty, the symbols from this symbol layer will be masked
+     * by objects from the matching selective masking source set
+     * (see QgsSelectiveMaskingSourceSetManager).
+     *
+     * \see selectiveMaskingSourceSetId()
+     * \since QGIS 4.0
+     */
+    void setSelectiveMaskingSourceSetId( const QString &id );
+
+    /**
      * Prepares all mask internal objects according to what is defined in \a context
      * This should be called prior to calling startRender() method.
      * \see QgsRenderContext::addSymbolLayerClipPath()
@@ -708,6 +785,8 @@ class CORE_EXPORT QgsSymbolLayer
     QString mId;
     QgsPropertyCollection mDataDefinedProperties;
 
+    QString mSelectiveMaskingSourceSetId;
+
     std::unique_ptr< QgsPaintEffect > mPaintEffect;
     QgsFields mFields;
 
@@ -728,14 +807,27 @@ class CORE_EXPORT QgsSymbolLayer
     void restoreOldDataDefinedProperties( const QVariantMap &stringMap );
 
     /**
+     * Copies all common base class properties from this layer to another symbol layer.
+     *
+     * Includes data defined properties and paint effects.
+     *
+     * \since QGIS 4.0
+     */
+    void copyCommonProperties( QgsSymbolLayer *destLayer ) const;
+
+    /**
      * Copies all data defined properties of this layer to another symbol layer.
      * \param destLayer destination layer
+     *
+     * \see copyCommonProperties()
      */
     void copyDataDefinedProperties( QgsSymbolLayer *destLayer ) const;
 
     /**
      * Copies paint effect of this layer to another symbol layer
      * \param destLayer destination layer
+     *
+     * \see copyCommonProperties()
      */
     void copyPaintEffect( QgsSymbolLayer *destLayer ) const;
 
@@ -765,7 +857,6 @@ class CORE_EXPORT QgsSymbolLayer
 #ifdef SIP_RUN
     QgsSymbolLayer( const QgsSymbolLayer &other );
 #endif
-
 };
 
 //////////////////////
@@ -778,7 +869,6 @@ class CORE_EXPORT QgsSymbolLayer
 class CORE_EXPORT QgsMarkerSymbolLayer : public QgsSymbolLayer
 {
   public:
-
     QgsMarkerSymbolLayer &operator=( const QgsMarkerSymbolLayer &other ) = delete;
 
     void startRender( QgsSymbolRenderContext &context ) override;
@@ -970,6 +1060,7 @@ class CORE_EXPORT QgsMarkerSymbolLayer : public QgsSymbolLayer
      */
     Qgis::VerticalAnchorPoint verticalAnchorPoint() const { return mVerticalAnchorPoint; }
 
+    using QgsSymbolLayer::toSld;
     bool toSld( QDomDocument &doc, QDomElement &element, QgsSldExportContext &context ) const override;
 
     /**
@@ -994,8 +1085,9 @@ class CORE_EXPORT QgsMarkerSymbolLayer : public QgsSymbolLayer
     Qgis::RenderUnit outputUnit() const override;
     void setMapUnitScale( const QgsMapUnitScale &scale ) override;
     QgsMapUnitScale mapUnitScale() const override;
-    virtual double dxfSize( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const override;
-    virtual double dxfAngle( QgsSymbolRenderContext &context ) const override;
+    using QgsSymbolLayer::dxfSize;
+    double dxfSize( QgsSymbolRenderContext &context ) const override;
+    double dxfAngle( QgsSymbolRenderContext &context ) const override;
 
     /**
      * Returns the approximate bounding box of the marker symbol layer, taking into account
@@ -1005,7 +1097,6 @@ class CORE_EXPORT QgsMarkerSymbolLayer : public QgsSymbolLayer
     virtual QRectF bounds( QPointF point, QgsSymbolRenderContext &context ) = 0;
 
   protected:
-
     QgsMarkerSymbolLayer( const QgsMarkerSymbolLayer &other ) SIP_SKIP;
 
     /**
@@ -1048,10 +1139,17 @@ class CORE_EXPORT QgsMarkerSymbolLayer : public QgsSymbolLayer
      * \param widthMapUnitScale map unit scale for marker width
      * \param heightMapUnitScale map unit scale for marker height
      */
-    void markerOffset( QgsSymbolRenderContext &context, double width, double height,
-                       Qgis::RenderUnit widthUnit, Qgis::RenderUnit heightUnit,
-                       double &offsetX, double &offsetY,
-                       const QgsMapUnitScale &widthMapUnitScale, const QgsMapUnitScale &heightMapUnitScale ) const SIP_PYNAME( markerOffset2 );
+    void markerOffset(
+      QgsSymbolRenderContext &context,
+      double width,
+      double height,
+      Qgis::RenderUnit widthUnit,
+      Qgis::RenderUnit heightUnit,
+      double &offsetX,
+      double &offsetY,
+      const QgsMapUnitScale &widthMapUnitScale,
+      const QgsMapUnitScale &heightMapUnitScale
+    ) const SIP_PYNAME( markerOffset2 );
 
     /**
      * Adjusts a marker offset to account for rotation.
@@ -1102,12 +1200,11 @@ class CORE_EXPORT QgsMarkerSymbolLayer : public QgsSymbolLayer
 class CORE_EXPORT QgsLineSymbolLayer : public QgsSymbolLayer
 {
   public:
-
     //! Options for filtering rings when the line symbol layer is being used to render a polygon's rings.
     enum RenderRingFilter
     {
-      AllRings, //!< Render both exterior and interior rings
-      ExteriorRingOnly, //!< Render the exterior ring only
+      AllRings,          //!< Render both exterior and interior rings
+      ExteriorRingOnly,  //!< Render the exterior ring only
       InteriorRingsOnly, //!< Render the interior rings only
     };
 
@@ -1119,7 +1216,8 @@ class CORE_EXPORT QgsLineSymbolLayer : public QgsSymbolLayer
     void setMapUnitScale( const QgsMapUnitScale &scale ) override;
     QgsMapUnitScale mapUnitScale() const override;
     void drawPreviewIcon( QgsSymbolRenderContext &context, QSize size ) override;
-    double dxfWidth( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const override;
+    using QgsSymbolLayer::dxfWidth;
+    double dxfWidth( QgsSymbolRenderContext &context ) const override;
 
     /**
      * Renders the line symbol layer along the line joining \a points, using the given render \a context.
@@ -1229,7 +1327,7 @@ class CORE_EXPORT QgsLineSymbolLayer : public QgsSymbolLayer
     */
     const QgsMapUnitScale &offsetMapUnitScale() const { return mOffsetMapUnitScale; }
 
-    // TODO QGIS 4.0 - setWidthUnit(), widthUnit(), setWidthUnitScale(), widthUnitScale()
+    // TODO QGIS 5.0 - setWidthUnit(), widthUnit(), setWidthUnitScale(), widthUnitScale()
     // only apply to simple line symbol layers and do not belong here.
 
     /**
@@ -1298,7 +1396,6 @@ class CORE_EXPORT QgsLineSymbolLayer : public QgsSymbolLayer
 class CORE_EXPORT QgsFillSymbolLayer : public QgsSymbolLayer
 {
   public:
-
     QgsFillSymbolLayer( const QgsFillSymbolLayer &other ) = delete;
     QgsFillSymbolLayer &operator=( const QgsFillSymbolLayer &other ) = delete;
 
@@ -1339,7 +1436,7 @@ class CORE_EXPORT QgsFillSymbolLayer : public QgsSymbolLayer
      * \return the tile image (not necessarily a square) or a null image if not implemented.
      * \since QGIS 3.30
      */
-    virtual QImage toTiledPatternImage( ) const;
+    virtual QImage toTiledPatternImage() const;
 
   protected:
     QgsFillSymbolLayer( bool locked = false );
@@ -1354,6 +1451,6 @@ class CORE_EXPORT QgsFillSymbolLayer : public QgsSymbolLayer
 #endif
 };
 
-class QgsSymbolLayerWidget;  // why does SIP fail, when this isn't here
+class QgsSymbolLayerWidget; // why does SIP fail, when this isn't here
 
 #endif

@@ -15,8 +15,8 @@
 #ifndef QGSSINGLESYMBOLRENDERER_H
 #define QGSSINGLESYMBOLRENDERER_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsrenderer.h"
 
 class QgsDataDefinedSizeLegend;
@@ -30,7 +30,6 @@ class QgsSymbol;
 class CORE_EXPORT QgsSingleSymbolRenderer : public QgsFeatureRenderer
 {
   public:
-
     /**
      * Constructor for QgsSingleSymbolRenderer.
      *
@@ -124,7 +123,6 @@ class CORE_EXPORT QgsSingleSymbolRenderer : public QgsFeatureRenderer
     QgsSingleSymbolRenderer( const QgsSingleSymbolRenderer & );
     QgsSingleSymbolRenderer &operator=( const QgsSingleSymbolRenderer & );
 #endif
-
 };
 
 

@@ -14,20 +14,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsgeometrycheckcontext.h"
 #include "qgsgeometrycheckerutils.h"
-#include "qgsgeometry.h"
-#include "qgsgeometryutils.h"
+
 #include "qgsfeaturepool.h"
-#include "qgspolygon.h"
-#include "qgsgeos.h"
+#include "qgsfeedback.h"
+#include "qgsgeometry.h"
+#include "qgsgeometrycheck.h"
+#include "qgsgeometrycheckcontext.h"
 #include "qgsgeometrycollection.h"
+#include "qgsgeometryutils.h"
+#include "qgsgeos.h"
+#include "qgspolygon.h"
 #include "qgssurface.h"
 #include "qgsvectorlayer.h"
-#include "qgsgeometrycheck.h"
-#include "qgsfeedback.h"
 
+#include <QString>
 #include <qmath.h>
+
+using namespace Qt::StringLiterals;
 
 QgsGeometryCheckerUtils::LayerFeature::LayerFeature( const QgsFeaturePool *pool, const QgsFeature &feature, const QgsGeometryCheckContext *context, bool useMapCrs )
   : mFeaturePool( pool )
@@ -44,7 +48,7 @@ QgsGeometryCheckerUtils::LayerFeature::LayerFeature( const QgsFeaturePool *pool,
     }
     catch ( const QgsCsException & )
     {
-      QgsDebugError( QStringLiteral( "Shrug. What shall we do with a geometry that cannot be converted?" ) );
+      QgsDebugError( u"Shrug. What shall we do with a geometry that cannot be converted?"_s );
     }
   }
 }
@@ -76,7 +80,7 @@ QgsGeometry QgsGeometryCheckerUtils::LayerFeature::geometry() const
 
 QString QgsGeometryCheckerUtils::LayerFeature::id() const
 {
-  return QStringLiteral( "%1:%2" ).arg( mFeaturePool->layerName() ).arg( mFeature.id() );
+  return u"%1:%2"_s.arg( mFeaturePool->layerName() ).arg( mFeature.id() );
 }
 
 bool QgsGeometryCheckerUtils::LayerFeature::operator==( const LayerFeature &other ) const
@@ -104,16 +108,14 @@ QgsGeometryCheckerUtils::LayerFeatures::iterator::iterator( const QgsGeometryChe
   , mFeatureIt( rh.mFeatureIt )
   , mParent( rh.mParent )
   , mCurrentFeature( std::make_unique<LayerFeature>( *rh.mCurrentFeature.get() ) )
-{
-}
+{}
 
 bool QgsGeometryCheckerUtils::LayerFeature::useMapCrs() const
 {
   return mMapCrs;
 }
 QgsGeometryCheckerUtils::LayerFeatures::iterator::~iterator()
-{
-}
+{}
 
 QgsGeometryCheckerUtils::LayerFeatures::iterator QgsGeometryCheckerUtils::LayerFeatures::iterator::operator++( int )
 {
@@ -209,7 +211,14 @@ bool QgsGeometryCheckerUtils::LayerFeatures::iterator::nextFeature( bool begin )
 
 /////////////////////////////////////////////////////////////////////////////
 
-QgsGeometryCheckerUtils::LayerFeatures::LayerFeatures( const QMap<QString, QgsFeaturePool *> &featurePools, const QMap<QString, QgsFeatureIds> &featureIds, const QList<Qgis::GeometryType> &geometryTypes, QgsFeedback *feedback, const QgsGeometryCheckContext *context, bool useMapCrs )
+QgsGeometryCheckerUtils::LayerFeatures::LayerFeatures(
+  const QMap<QString, QgsFeaturePool *> &featurePools,
+  const QMap<QString, QgsFeatureIds> &featureIds,
+  const QList<Qgis::GeometryType> &geometryTypes,
+  QgsFeedback *feedback,
+  const QgsGeometryCheckContext *context,
+  bool useMapCrs
+)
   : mFeaturePools( featurePools )
   , mFeatureIds( featureIds )
   , mLayerIds( featurePools.keys() )
@@ -219,13 +228,14 @@ QgsGeometryCheckerUtils::LayerFeatures::LayerFeatures( const QMap<QString, QgsFe
   , mUseMapCrs( useMapCrs )
 {}
 
-QgsGeometryCheckerUtils::LayerFeatures::LayerFeatures( const QMap<QString, QgsFeaturePool *> &featurePools, const QList<QString> &layerIds, const QgsRectangle &extent, const QList<Qgis::GeometryType> &geometryTypes, const QgsGeometryCheckContext *context )
+QgsGeometryCheckerUtils::LayerFeatures::LayerFeatures(
+  const QMap<QString, QgsFeaturePool *> &featurePools, const QList<QString> &layerIds, const QgsRectangle &extent, const QList<Qgis::GeometryType> &geometryTypes, const QgsGeometryCheckContext *context
+)
   : mFeaturePools( featurePools )
   , mLayerIds( layerIds )
   , mExtent( extent )
   , mGeometryTypes( geometryTypes )
   , mContext( context )
-  , mUseMapCrs( true )
 {
   for ( const QString &layerId : layerIds )
   {

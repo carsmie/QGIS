@@ -21,11 +21,7 @@ Class for storing a STAC asset's data.
 #include "qgsstacasset.h"
 %End
   public:
-    QgsStacAsset( const QString &href,
-                  const QString &title,
-                  const QString &description,
-                  const QString &mediaType,
-                  const QStringList &roles );
+    QgsStacAsset( const QString &href, const QString &title, const QString &description, const QString &mediaType, const QStringList &roles );
 %Docstring
 Constructor
 %End
@@ -73,12 +69,33 @@ Returns the format name for cloud optimized formats
 .. versionadded:: 3.42
 %End
 
-    QgsMimeDataUtils::Uri uri() const;
+    QgsMimeDataUtils::Uri uri( const QString &authcfg = QString() ) const;
 %Docstring
 Returns a uri for the asset if it is a cloud optimized file like COG or
-COPC
+COPC.
+
+:param authcfg: Optional authentication configuration ID (since QGIS
+                4.0).
+
+If the optional ``authcfg`` parameter is set the authentication
+configuration ID will be encoded in the returned URI.
 
 .. versionadded:: 3.42
+%End
+
+    QString toHtml( const QString &assetId ) const;
+%Docstring
+Returns an HTML representation of the STAC Asset including its ID within
+its container
+
+.. versionadded:: 4.0
+%End
+
+    bool isDownloadable() const;
+%Docstring
+Returns whether the asset can be downloaded.
+
+.. versionadded:: 4.0
 %End
 
 };

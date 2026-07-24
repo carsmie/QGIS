@@ -15,18 +15,18 @@
  ***************************************************************************/
 #include "qgsfieldformatter.h"
 
+#include "qgsapplication.h"
 #include "qgsfield.h"
 #include "qgsfields.h"
-#include "qgsvectorlayer.h"
 #include "qgsvectordataprovider.h"
-#include "qgsapplication.h"
+#include "qgsvectorlayer.h"
 
 QString QgsFieldFormatter::representValue( QgsVectorLayer *layer, int fieldIndex, const QVariantMap &config, const QVariant &cache, const QVariant &value ) const
 {
   Q_UNUSED( config )
   Q_UNUSED( cache )
 
-  if ( ! layer->fields().exists( fieldIndex ) )
+  if ( !layer->fields().exists( fieldIndex ) )
     return QString();
 
   QString defVal;

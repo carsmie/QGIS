@@ -18,9 +18,10 @@
 #ifndef QGSPLOTCANVASITEM_H
 #define QGSPLOTCANVASITEM_H
 
-#include <QGraphicsItem>
-#include "qgis_sip.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
+
+#include <QGraphicsItem>
 
 class QgsPlotCanvas;
 
@@ -43,7 +44,7 @@ class GUI_EXPORT QgsPlotCanvasItem : public QGraphicsItem
       sipType = sipType_QgsPlotCanvasItem;
     else
       sipType = nullptr;
-    SIP_END
+  SIP_END
 #endif
 
   protected:

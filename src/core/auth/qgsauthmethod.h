@@ -17,17 +17,18 @@
 #ifndef QGSAUTHMETHOD_H
 #define QGSAUTHMETHOD_H
 
-#include <QObject>
+#include "qgsconfig.h"
+
+#include "qgis_core.h"
+#include "qgis_sip.h"
+
 #include <QFlags>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QObject>
+#include <QRecursiveMutex>
 #include <QStringList>
 #include <QUrl>
-#include <QRecursiveMutex>
-
-#include "qgsconfig.h"
-#include "qgis_core.h"
-#include "qgis_sip.h"
 
 class QgsAuthMethodConfig;
 
@@ -40,7 +41,6 @@ class CORE_EXPORT QgsAuthMethod : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Flags that represent the update points (where authentication configurations are expanded)
      * supported by an authentication method. These equate to the 'update*()' virtual functions
@@ -52,11 +52,11 @@ class CORE_EXPORT QgsAuthMethod : public QObject
     enum Expansion SIP_ENUM_BASETYPE( IntFlag )
     {
       // TODO: Figure out all different authentication expansions current layer providers use
-      NetworkRequest       = 0x1,
-      NetworkReply         = 0x2,
-      DataSourceUri        = 0x4,
+      NetworkRequest = 0x1,
+      NetworkReply = 0x2,
+      DataSourceUri = 0x4,
       GenericDataSourceUri = 0x8,
-      NetworkProxy                = 0x16,
+      NetworkProxy = 0x16,
       All = NetworkRequest | NetworkReply | DataSourceUri | GenericDataSourceUri | NetworkProxy
     };
     Q_DECLARE_FLAGS( Expansions, Expansion )
@@ -90,7 +90,10 @@ class CORE_EXPORT QgsAuthMethod : public QObject
      * supported by an authentication method.
      * \note These should directly correlate to existing 'update*()' member functions
      */
-    QgsAuthMethod::Expansions supportedExpansions() const { return mExpansions; }
+    QgsAuthMethod::Expansions supportedExpansions() const
+    {
+      return mExpansions;
+    }
 
     /**
      * The data providers that the method supports, allowing for filtering out authcfgs that are not
@@ -106,8 +109,7 @@ class CORE_EXPORT QgsAuthMethod : public QObject
      * for custom updater code specific to the provider
      * \returns Whether the update succeeded
      */
-    virtual bool updateNetworkRequest( QNetworkRequest &request, const QString &authcfg,
-                                       const QString &dataprovider = QString() )
+    virtual bool updateNetworkRequest( QNetworkRequest &request, const QString &authcfg, const QString &dataprovider = QString() )
     {
       Q_UNUSED( request )
       Q_UNUSED( authcfg )
@@ -123,8 +125,7 @@ class CORE_EXPORT QgsAuthMethod : public QObject
      * for custom updater code specific to the provider
      * \returns Whether the update succeeded
      */
-    virtual bool updateNetworkReply( QNetworkReply *reply, const QString &authcfg,
-                                     const QString &dataprovider = QString() )
+    virtual bool updateNetworkReply( QNetworkReply *reply, const QString &authcfg, const QString &dataprovider = QString() )
     {
       Q_UNUSED( reply )
       Q_UNUSED( authcfg )
@@ -140,8 +141,7 @@ class CORE_EXPORT QgsAuthMethod : public QObject
      * for custom updater code specific to the provider
      * \returns Whether the update succeeded
      */
-    virtual bool updateDataSourceUriItems( QStringList &connectionItems, const QString &authcfg,
-                                           const QString &dataprovider = QString() )
+    virtual bool updateDataSourceUriItems( QStringList &connectionItems, const QString &authcfg, const QString &dataprovider = QString() )
     {
       Q_UNUSED( connectionItems )
       Q_UNUSED( authcfg )
@@ -157,8 +157,7 @@ class CORE_EXPORT QgsAuthMethod : public QObject
      * for custom updater code specific to the provider
      * \returns Whether the update succeeded
      */
-    virtual bool updateNetworkProxy( QNetworkProxy &proxy, const QString &authcfg,
-                                     const QString &dataprovider = QString() )
+    virtual bool updateNetworkProxy( QNetworkProxy &proxy, const QString &authcfg, const QString &dataprovider = QString() )
     {
       Q_UNUSED( proxy )
       Q_UNUSED( authcfg )
@@ -181,7 +180,6 @@ class CORE_EXPORT QgsAuthMethod : public QObject
     virtual void updateMethodConfig( QgsAuthMethodConfig &mconfig ) = 0;
 
   protected:
-
     /**
      * Construct a default authentication method
      * \note Non-public since this is an abstract base class

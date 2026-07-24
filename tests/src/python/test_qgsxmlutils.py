@@ -10,9 +10,8 @@ __author__ = "Matthias Kuhn"
 __date__ = "18/11/2016"
 __copyright__ = "Copyright 2016, The QGIS Project"
 
-from qgis.PyQt.QtCore import QDate, QDateTime, QTime, QVariant
-from qgis.PyQt.QtGui import QColor
-from qgis.PyQt.QtXml import QDomDocument
+import unittest
+
 from qgis.core import (
     NULL,
     QgsCoordinateReferenceSystem,
@@ -27,14 +26,15 @@ from qgis.core import (
     QgsWkbTypes,
     QgsXmlUtils,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.PyQt.QtCore import QDate, QDateTime, QRect, QTime, QVariant
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 
 start_app()
 
 
 class TestQgsXmlUtils(QgisTestCase):
-
     def test_invalid(self):
         """
         Test that invalid attributes are correctly loaded and written
@@ -263,9 +263,7 @@ class TestQgsXmlUtils(QgisTestCase):
         )
         definition.selectedFeaturesOnly = True
         definition.featureLimit = 27
-        definition.flags = (
-            QgsProcessingFeatureSourceDefinition.Flag.FlagCreateIndividualOutputPerInputFeature
-        )
+        definition.flags = QgsProcessingFeatureSourceDefinition.Flag.FlagCreateIndividualOutputPerInputFeature
         definition.geometryCheck = (
             QgsFeatureRequest.InvalidGeometryCheck.GeometrySkipInvalid
         )
@@ -298,6 +296,21 @@ class TestQgsXmlUtils(QgisTestCase):
         c = QgsXmlUtils.readVariant(elem)
         self.assertEqual(c.sink.staticValue(), "my sink")
         self.assertEqual(c.createOptions, {"opt": 1, "opt2": 2})
+
+    def test_rect(self):
+        """
+        Test that QRect values are correctly loaded and written
+        """
+        doc = QDomDocument("properties")
+
+        rect = QRect(3, 5, 250, 420)
+        elem = QgsXmlUtils.writeVariant(rect, doc)
+        new_rect = QgsXmlUtils.readVariant(elem)
+        self.assertEqual(new_rect, rect)
+
+        elem = QgsXmlUtils.writeVariant(QRect(), doc)
+        new_rect = QgsXmlUtils.readVariant(elem)
+        self.assertEqual(new_rect, NULL)
 
     def testRemappingDefinition(self):
         fields = QgsFields()

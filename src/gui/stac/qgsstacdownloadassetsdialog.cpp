@@ -14,19 +14,24 @@
  ***************************************************************************/
 
 #include "qgsstacdownloadassetsdialog.h"
-#include "moc_qgsstacdownloadassetsdialog.cpp"
-#include "qgsgui.h"
-#include "qgsnetworkcontentfetchertask.h"
-#include "qgssettings.h"
-#include "qgsproject.h"
-#include "qgsmessagebar.h"
-#include "qgsapplication.h"
 
-#include <QTreeWidget>
-#include <QPushButton>
+#include "qgsapplication.h"
+#include "qgsgui.h"
+#include "qgsmessagebar.h"
+#include "qgsnetworkcontentfetchertask.h"
+#include "qgsproject.h"
+#include "qgssettings.h"
+
 #include <QAction>
-#include <QMenu>
 #include <QClipboard>
+#include <QMenu>
+#include <QPushButton>
+#include <QString>
+#include <QTreeWidget>
+
+#include "moc_qgsstacdownloadassetsdialog.cpp"
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
@@ -38,7 +43,7 @@ QgsStacDownloadAssetsDialog::QgsStacDownloadAssetsDialog( QWidget *parent )
   mFileWidget->setStorageMode( QgsFileWidget::StorageMode::GetDirectory );
 
   QString defPath = QDir::cleanPath( QFileInfo( QgsProject::instance()->absoluteFilePath() ).path() );
-  defPath = QgsSettings().value( QStringLiteral( "UI/lastFileNameWidgetDir" ), defPath ).toString();
+  defPath = QgsSettings().value( u"UI/lastFileNameWidgetDir"_s, defPath ).toString();
   if ( defPath.isEmpty() )
     defPath = QDir::homePath();
   mFileWidget->setFilePath( defPath );
@@ -63,11 +68,7 @@ void QgsStacDownloadAssetsDialog::accept()
 
     connect( fetcher, &QgsNetworkContentFetcherTask::errorOccurred, fetcher, [bar = mMessageBar]( QNetworkReply::NetworkError, const QString &errorMsg ) {
       if ( bar )
-        bar->pushMessage(
-          tr( "Error downloading STAC asset" ),
-          errorMsg,
-          Qgis::MessageLevel::Critical
-        );
+        bar->pushMessage( tr( "Error downloading STAC asset" ), errorMsg, Qgis::MessageLevel::Critical );
     } );
 
     connect( fetcher, &QgsNetworkContentFetcherTask::fetched, fetcher, [fetcher, folder, bar = mMessageBar] {
@@ -81,13 +82,13 @@ void QgsStacDownloadAssetsDialog::accept()
       {
         const QString fileName = fetcher->contentDispositionFilename().isEmpty() ? reply->url().fileName() : fetcher->contentDispositionFilename();
         QFileInfo fi( fileName );
-        QFile file( QStringLiteral( "%1/%2" ).arg( folder, fileName ) );
+        QFile file( u"%1/%2"_s.arg( folder, fileName ) );
         int i = 1;
         while ( file.exists() )
         {
-          QString uniqueName = QStringLiteral( "%1/%2(%3)" ).arg( folder, fi.baseName() ).arg( i++ );
+          QString uniqueName = u"%1/%2(%3)"_s.arg( folder, fi.baseName() ).arg( i++ );
           if ( !fi.completeSuffix().isEmpty() )
-            uniqueName.append( QStringLiteral( ".%1" ).arg( fi.completeSuffix() ) );
+            uniqueName.append( u".%1"_s.arg( fi.completeSuffix() ) );
           file.setFileName( uniqueName );
         }
 
@@ -108,20 +109,14 @@ void QgsStacDownloadAssetsDialog::accept()
         if ( failed )
         {
           if ( bar )
-            bar->pushMessage(
-              tr( "Error downloading STAC asset" ),
-              tr( "Could not write to file %1" ).arg( file.fileName() ),
-              Qgis::MessageLevel::Critical
-            );
+            bar->pushMessage( tr( "Error downloading STAC asset" ), tr( "Could not write to file %1" ).arg( file.fileName() ), Qgis::MessageLevel::Critical );
         }
         else
         {
           if ( bar )
-            bar->pushMessage(
-              tr( "STAC asset downloaded" ),
-              file.fileName(),
-              Qgis::MessageLevel::Success
-            );
+          {
+            bar->pushMessage( QString(), tr( "STAC asset downloaded to <a href=\"%1\">%2</a>" ).arg( QUrl::fromLocalFile( file.fileName() ).toString(), QDir::toNativeSeparators( file.fileName() ) ), Qgis::MessageLevel::Success );
+          }
         }
       }
     } );
@@ -150,23 +145,32 @@ void QgsStacDownloadAssetsDialog::setStacItem( QgsStacItem *stacItem )
   const QMap<QString, QgsStacAsset> assets = stacItem->assets();
   for ( auto it = assets.constBegin(); it != assets.constEnd(); ++it )
   {
-    QTreeWidgetItem *item = new QTreeWidgetItem();
-    item->setText( 0, it.key() );
-    item->setToolTip( 0, it.key() );
-    item->setCheckState( 0, Qt::Checked );
-    item->setText( 1, it->title() );
-    item->setToolTip( 1, it->title() );
-    item->setText( 2, it->description() );
-    item->setToolTip( 2, it->description() );
-    item->setText( 3, it->roles().join( "," ) );
-    item->setToolTip( 3, it->roles().join( "," ) );
-    item->setText( 4, it->mediaType() );
-    item->setToolTip( 4, it->mediaType() );
-    item->setText( 5, it->href() );
-    item->setToolTip( 5, it->href() );
-
-    mTreeWidget->addTopLevelItem( item );
+    if ( it.value().isDownloadable() )
+    {
+      addStacAsset( it.key(), &it.value() );
+    }
   }
+}
+
+void QgsStacDownloadAssetsDialog::addStacAsset( const QString &assetId, const QgsStacAsset *stacAsset )
+{
+  QTreeWidgetItem *item = new QTreeWidgetItem();
+
+  item->setText( 0, assetId );
+  item->setToolTip( 0, assetId );
+  item->setCheckState( 0, Qt::Checked );
+  item->setText( 1, stacAsset->title() );
+  item->setToolTip( 1, stacAsset->title() );
+  item->setText( 2, stacAsset->description() );
+  item->setToolTip( 2, stacAsset->description() );
+  item->setText( 3, stacAsset->roles().join( "," ) );
+  item->setToolTip( 3, stacAsset->roles().join( "," ) );
+  item->setText( 4, stacAsset->mediaType() );
+  item->setToolTip( 4, stacAsset->mediaType() );
+  item->setText( 5, stacAsset->href() );
+  item->setToolTip( 5, stacAsset->href() );
+
+  mTreeWidget->addTopLevelItem( item );
 }
 
 QString QgsStacDownloadAssetsDialog::selectedFolder()
@@ -197,9 +201,7 @@ void QgsStacDownloadAssetsDialog::showContextMenu( QPoint p )
 
   const QString url = item->text( 5 );
   QAction *copyUrlAction = new QAction( tr( "Copy URL" ), mContextMenu );
-  connect( copyUrlAction, &QAction::triggered, this, [url] {
-    QApplication::clipboard()->setText( url );
-  } );
+  connect( copyUrlAction, &QAction::triggered, this, [url] { QApplication::clipboard()->setText( url ); } );
   mContextMenu->addAction( copyUrlAction );
   mContextMenu->exec( QCursor::pos() );
 }

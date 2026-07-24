@@ -9,6 +9,7 @@
 
 
 
+
 class QgsLabelLineSettings
 {
 %Docstring(signature="appended")
@@ -26,7 +27,6 @@ labels for line features (or polygon features which are labeled in a
     static const QMetaObject staticMetaObject;
 
   public:
-
     enum class DirectionSymbolPlacement /BaseType=IntEnum/
     {
       SymbolLeftRight,
@@ -44,14 +44,6 @@ labels for line features (or polygon features which are labeled in a
     {
       UseVisiblePartsOfLine,
       UseEntireLine,
-    };
-
-    enum class AnchorTextPoint /BaseType=IntEnum/
-    {
-      StartOfText,
-      CenterOfText,
-      EndOfText,
-      FollowPlacement,
     };
 
     Qgis::LabelLinePlacementFlags placementFlags() const;
@@ -367,7 +359,7 @@ are clipped before calculating the line anchor placement.
 .. versionadded:: 3.20
 %End
 
-    AnchorTextPoint anchorTextPoint() const;
+    Qgis::TextAnchorPoint anchorTextPoint() const;
 %Docstring
 Returns the line anchor text point, which dictates which part of the
 label text should be placed at the
@@ -378,7 +370,7 @@ label text should be placed at the
 .. versionadded:: 3.26
 %End
 
-    void setAnchorTextPoint( AnchorTextPoint point );
+    void setAnchorTextPoint( Qgis::TextAnchorPoint point );
 %Docstring
 Sets the line anchor text ``point``, which dictates which part of the
 label text should be placed at the
@@ -387,6 +379,26 @@ label text should be placed at the
 .. seealso:: :py:func:`anchorTextPoint`
 
 .. versionadded:: 3.26
+%End
+
+    Qgis::CurvedLabelMode curvedLabelMode() const;
+%Docstring
+Returns the mode which determine how curved labels are generated and
+placed.
+
+.. seealso:: :py:func:`setCurvedLabelMode`
+
+.. versionadded:: 4.0
+%End
+
+    void setCurvedLabelMode( Qgis::CurvedLabelMode mode );
+%Docstring
+Sets the ``mode`` which determine how curved labels are generated and
+placed.
+
+.. seealso:: :py:func:`curvedLabelMode`
+
+.. versionadded:: 4.0
 %End
 
 };

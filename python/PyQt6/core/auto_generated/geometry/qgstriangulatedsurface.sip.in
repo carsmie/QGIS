@@ -11,7 +11,9 @@
 
 
 
-class QgsTriangulatedSurface: QgsPolyhedralSurface
+
+
+class QgsTriangulatedSurface : QgsPolyhedralSurface
 {
 %Docstring(signature="appended")
 Triangulated surface geometry type.
@@ -67,6 +69,8 @@ only of triangle patches.
     virtual bool insertVertex( QgsVertexId position, const QgsPoint &vertex );
 
     virtual bool deleteVertex( QgsVertexId position );
+
+    virtual bool deleteVertices( const QSet<QgsVertexId> &positions );
 
 
     void setTriangles( const QVector<QgsTriangle *> &triangles /Transfer/ );

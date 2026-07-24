@@ -16,9 +16,11 @@
 #ifndef QGSOVERLAYUTILS_H
 #define QGSOVERLAYUTILS_H
 
-#include <QList>
-#include "qgswkbtypes.h"
 #include "qgsgeometry.h"
+#include "qgswkbtypes.h"
+
+#include <QList>
+
 #define SIP_NO_FILE
 
 ///@cond PRIVATE
@@ -59,9 +61,33 @@ namespace QgsOverlayUtils
   Q_DECLARE_FLAGS( SanitizeFlags, SanitizeFlag )
 
 
-  void difference( const QgsFeatureSource &sourceA, const QgsFeatureSource &sourceB, QgsFeatureSink &sink, QgsProcessingContext &context, QgsProcessingFeedback *feedback, long &count, long totalCount, DifferenceOutput outputAttrs, const QgsGeometryParameters &parameters = QgsGeometryParameters(), SanitizeFlags flags = SanitizeFlags() );
+  void difference(
+    const QgsFeatureSource &sourceA,
+    const QgsFeatureSource &sourceB,
+    QgsFeatureSink &sink,
+    const QString &sinkName,
+    QgsProcessingContext &context,
+    QgsProcessingFeedback *feedback,
+    long &count,
+    long totalCount,
+    DifferenceOutput outputAttrs,
+    const QgsGeometryParameters &parameters = QgsGeometryParameters(),
+    SanitizeFlags flags = SanitizeFlags()
+  );
 
-  void intersection( const QgsFeatureSource &sourceA, const QgsFeatureSource &sourceB, QgsFeatureSink &sink, QgsProcessingContext &context, QgsProcessingFeedback *feedback, long &count, long totalCount, const QList<int> &fieldIndicesA, const QList<int> &fieldIndicesB, const QgsGeometryParameters &parameters = QgsGeometryParameters() );
+  void intersection(
+    const QgsFeatureSource &sourceA,
+    const QgsFeatureSource &sourceB,
+    QgsFeatureSink &sink,
+    const QString &sinkName,
+    QgsProcessingContext &context,
+    QgsProcessingFeedback *feedback,
+    long &count,
+    long totalCount,
+    const QList<int> &fieldIndicesA,
+    const QList<int> &fieldIndicesB,
+    const QgsGeometryParameters &parameters = QgsGeometryParameters()
+  );
 
   //! Makes sure that what came out from intersection of two geometries is good to be used in the output
   bool sanitizeIntersectionResult( QgsGeometry &geom, Qgis::GeometryType geometryType, SanitizeFlags flags = SanitizeFlags() );
@@ -76,7 +102,14 @@ namespace QgsOverlayUtils
    *
    * As a result, for all pairs of features in the output, a pair either has no common interior or their interior is the same.
    */
-  void resolveOverlaps( const QgsFeatureSource &source, QgsFeatureSink &sink, QgsProcessingFeedback *feedback, const QgsGeometryParameters &parameters = QgsGeometryParameters(), SanitizeFlags flags = SanitizeFlags() );
+  void resolveOverlaps(
+    const QgsFeatureSource &source,
+    QgsFeatureSink &sink,
+    const QString &sinkName,
+    QgsProcessingFeedback *feedback,
+    const QgsGeometryParameters &parameters = QgsGeometryParameters(),
+    SanitizeFlags flags = SanitizeFlags()
+  );
 } // namespace QgsOverlayUtils
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QgsOverlayUtils::SanitizeFlags )

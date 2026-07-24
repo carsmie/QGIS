@@ -16,13 +16,15 @@
  ***************************************************************************/
 
 #include "qgsvectorlayertemporalpropertieswidget.h"
-#include "moc_qgsvectorlayertemporalpropertieswidget.cpp"
+
+#include "qgsexpressioncontextutils.h"
 #include "qgsgui.h"
+#include "qgsstringutils.h"
 #include "qgsunittypes.h"
 #include "qgsvectorlayer.h"
 #include "qgsvectorlayertemporalproperties.h"
-#include "qgsstringutils.h"
-#include "qgsexpressioncontextutils.h"
+
+#include "moc_qgsvectorlayertemporalpropertieswidget.cpp"
 
 QgsVectorLayerTemporalPropertiesWidget::QgsVectorLayerTemporalPropertiesWidget( QWidget *parent, QgsVectorLayer *layer )
   : QWidget( parent )
@@ -80,8 +82,7 @@ QgsVectorLayerTemporalPropertiesWidget::QgsVectorLayerTemporalPropertiesWidget( 
   mFixedDurationSpinBox->setClearValue( 0 );
 
   for ( const Qgis::TemporalUnit u :
-        {
-          Qgis::TemporalUnit::Milliseconds,
+        { Qgis::TemporalUnit::Milliseconds,
           Qgis::TemporalUnit::Seconds,
           Qgis::TemporalUnit::Minutes,
           Qgis::TemporalUnit::Hours,
@@ -90,8 +91,7 @@ QgsVectorLayerTemporalPropertiesWidget::QgsVectorLayerTemporalPropertiesWidget( 
           Qgis::TemporalUnit::Months,
           Qgis::TemporalUnit::Years,
           Qgis::TemporalUnit::Decades,
-          Qgis::TemporalUnit::Centuries
-        } )
+          Qgis::TemporalUnit::Centuries } )
   {
     const QString title = ( QgsGui::higFlags() & QgsGui::HigDialogTitleIsTitleCase ) ? QgsStringUtils::capitalize( QgsUnitTypes::toString( u ), Qgis::Capitalization::TitleCase )
                                                                                      : QgsUnitTypes::toString( u );
@@ -125,10 +125,8 @@ void QgsVectorLayerTemporalPropertiesWidget::saveTemporalProperties()
   Qgis::VectorTemporalLimitMode limitMode = static_cast<Qgis::VectorTemporalLimitMode>( mLimitsComboBox->currentData().toInt() );
   properties->setLimitMode( limitMode );
 
-  const QgsDateTimeRange normalRange = QgsDateTimeRange(
-    mStartTemporalDateTimeEdit->dateTime(), mEndTemporalDateTimeEdit->dateTime(),
-    true, limitMode == Qgis::VectorTemporalLimitMode::IncludeBeginIncludeEnd
-  );
+  const QgsDateTimeRange normalRange
+    = QgsDateTimeRange( mStartTemporalDateTimeEdit->dateTime(), mEndTemporalDateTimeEdit->dateTime(), true, limitMode == Qgis::VectorTemporalLimitMode::IncludeBeginIncludeEnd );
 
   properties->setFixedTemporalRange( normalRange );
 

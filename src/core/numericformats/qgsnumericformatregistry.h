@@ -15,12 +15,12 @@
 #ifndef QGSNUMERICFORMATREGISTRY_H
 #define QGSNUMERICFORMATREGISTRY_H
 
-#include <QHash>
-#include <QString>
-#include <QObject>
-
-#include "qgis_sip.h"
 #include "qgis_core.h"
+#include "qgis_sip.h"
+
+#include <QHash>
+#include <QObject>
+#include <QString>
 
 class QgsNumericFormat;
 class QDomElement;
@@ -37,9 +37,7 @@ class QgsReadWriteContext;
  */
 class CORE_EXPORT QgsNumericFormatRegistry
 {
-
   public:
-
     /**
      * You should not normally need to create your own numeric format registry.
      *

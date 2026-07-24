@@ -16,8 +16,8 @@
 #ifndef QGSSYMBOLLAYERREGISTRY_H
 #define QGSSYMBOLLAYERREGISTRY_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 
 class QgsPathResolver;
 class QgsVectorLayer;
@@ -36,7 +36,6 @@ class QgsReadWriteContext;
 class CORE_EXPORT QgsSymbolLayerAbstractMetadata
 {
   public:
-
     /**
      * Constructor for QgsSymbolLayerAbstractMetadata.
      * \param name internal symbol layer name (unique identifier)
@@ -110,19 +109,21 @@ class CORE_EXPORT QgsSymbolLayerMetadata : public QgsSymbolLayerAbstractMetadata
 {
   public:
     //! \note not available in Python bindings
-    QgsSymbolLayerMetadata( const QString &name, const QString &visibleName,
-                            Qgis::SymbolType type,
-                            QgsSymbolLayerCreateFunc pfCreate,
-                            QgsSymbolLayerCreateFromSldFunc pfCreateFromSld = nullptr,
-                            QgsSymbolLayerPathResolverFunc pfPathResolver = nullptr,
-                            QgsSymbolLayerWidgetFunc pfWidget = nullptr,
-                            QgsSymbolLayerFontResolverFunc pfFontResolver = nullptr ) SIP_SKIP
-  : QgsSymbolLayerAbstractMetadata( name, visibleName, type )
-    , mCreateFunc( pfCreate )
-    , mWidgetFunc( pfWidget )
-    , mCreateFromSldFunc( pfCreateFromSld )
-    , mPathResolverFunc( pfPathResolver )
-    , mFontResolverFunc( pfFontResolver )
+    QgsSymbolLayerMetadata(
+      const QString &name,
+      const QString &visibleName,
+      Qgis::SymbolType type,
+      QgsSymbolLayerCreateFunc pfCreate,
+      QgsSymbolLayerCreateFromSldFunc pfCreateFromSld = nullptr,
+      QgsSymbolLayerPathResolverFunc pfPathResolver = nullptr,
+      QgsSymbolLayerWidgetFunc pfWidget = nullptr,
+      QgsSymbolLayerFontResolverFunc pfFontResolver = nullptr
+    ) SIP_SKIP : QgsSymbolLayerAbstractMetadata( name, visibleName, type ),
+                 mCreateFunc( pfCreate ),
+                 mWidgetFunc( pfWidget ),
+                 mCreateFromSldFunc( pfCreateFromSld ),
+                 mPathResolverFunc( pfPathResolver ),
+                 mFontResolverFunc( pfFontResolver )
     {}
 
     //! \note not available in Python bindings
@@ -182,7 +183,6 @@ class CORE_EXPORT QgsSymbolLayerMetadata : public QgsSymbolLayerAbstractMetadata
 class CORE_EXPORT QgsSymbolLayerRegistry
 {
   public:
-
     QgsSymbolLayerRegistry();
     ~QgsSymbolLayerRegistry();
 

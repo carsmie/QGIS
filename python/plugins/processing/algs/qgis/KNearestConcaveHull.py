@@ -22,11 +22,8 @@ __author__ = "Detlev Neumann"
 __date__ = "November 2014"
 __copyright__ = "(C) 2014, Detlev Neumann"
 
-import os.path
 import math
-
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtCore import QMetaType
+import os.path
 
 from qgis.core import (
     QgsApplication,
@@ -37,6 +34,8 @@ from qgis.core import (
     QgsField,
     QgsFields,
     QgsGeometry,
+    QgsPoint,
+    QgsPointXY,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
@@ -44,10 +43,11 @@ from qgis.core import (
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
     QgsProcessingParameterNumber,
-    QgsPoint,
-    QgsPointXY,
     QgsWkbTypes,
 )
+from qgis.PyQt.QtCore import QMetaType
+from qgis.PyQt.QtGui import QIcon
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
@@ -64,7 +64,19 @@ class KNearestConcaveHull(QgisAlgorithm):
         return self.tr("Concave hull (k-nearest neighbor)")
 
     def shortDescription(self):
-        return self.tr("Creates a concave hull using the k-nearest neighbor algorithm.")
+        return self.tr("Generates a concave hull polygon from a set of points.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm generates a concave hull polygon from a set of points. "
+            "If the input layer is a line or polygon layer, it will use the nodes.\n"
+            "The number of neighbours to consider determines the concaveness of the output polygon. "
+            "A lower number will result in a concave hull that follows the points very closely, "
+            "while a higher number will have a smoother shape. The minimum number of neighbour points to consider is 3. "
+            "A value equal to or greater than the number of points will result in a convex hull.\n"
+            "If a field is selected, the algorithm will group the features in the input layer "
+            "using unique values in that field and generate individual polygons in the output layer for each group."
+        )
 
     def icon(self):
         return QgsApplication.getThemeIcon("/algorithms/mAlgorithmConcaveHull.svg")
@@ -197,6 +209,7 @@ class KNearestConcaveHull(QgisAlgorithm):
                             # Give the polygon the same attribute as the point grouping attribute
                             out_feature.setAttributes([fid, unique])
                             sink.addFeature(out_feature, QgsFeatureSink.Flag.FastInsert)
+                            feedback.featureAddedToSink(self.OUTPUT)
                             success = True  # at least one polygon created
                     fid += 1
                 if not success:
@@ -204,6 +217,7 @@ class KNearestConcaveHull(QgisAlgorithm):
                         "No hulls could be created. Most likely there were not at least three unique points in any of the groups."
                     )
                 sink.finalize()
+                feedback.featureSinkFinalized(self.OUTPUT)
             else:
                 # Field parameter provided but can't read from it
                 raise QgsProcessingException("Unable to find grouping field")
@@ -248,6 +262,7 @@ class KNearestConcaveHull(QgisAlgorithm):
                     out_feature.setGeometry(poly)
                     out_feature.setAttributes([0])
                     sink.addFeature(out_feature, QgsFeatureSink.Flag.FastInsert)
+                    feedback.featureAddedToSink(self.OUTPUT)
                 else:
                     # the_hull returns None only when there are less than three points after cleaning
                     raise QgsProcessingException(
@@ -259,6 +274,7 @@ class KNearestConcaveHull(QgisAlgorithm):
                 )
 
             sink.finalize()
+            feedback.featureSinkFinalized(self.OUTPUT)
 
         return {self.OUTPUT: dest_id}
 
@@ -558,7 +574,6 @@ def concave_hull(points_list, k):
 
     # as long as point_set is not empty or search is returning to the starting point
     while (current_point != first_point) or (step == 2) and (len(point_set) > 0):
-
         # after 3 iterations add the first point to point_set again, otherwise a hull cannot be closed
         if step == 5:
             point_set = add_point(point_set, first_point)

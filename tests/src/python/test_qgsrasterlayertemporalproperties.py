@@ -8,22 +8,21 @@ the Free Software Foundation; either version 2 of the License, or
 
 import unittest
 
-from qgis.PyQt.QtCore import QDate, QTime, QDateTime
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import (
     Qgis,
+    QgsDateTimeRange,
     QgsInterval,
     QgsRasterLayerTemporalProperties,
     QgsReadWriteContext,
-    QgsDateTimeRange,
 )
-from qgis.testing import start_app, QgisTestCase
+from qgis.PyQt.QtCore import QDate, QDateTime, QTime
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 
 start_app()
 
 
 class TestQgsRasterLayerTemporalProperties(QgisTestCase):
-
     def test_basic_fixed_range(self):
         """
         Basic tests for the class using the FixedTemporalRange mode
@@ -434,6 +433,7 @@ class TestQgsRasterLayerTemporalProperties(QgisTestCase):
             props.temporalRepresentationScale(), QgsInterval(1, Qgis.TemporalUnit.Days)
         )
         self.assertEqual(props.temporalRepresentationOffset(), QDateTime())
+        self.assertFalse(props.accumulatePixels())
         self.assertFalse(props.isActive())
 
         props.setBandNumber(2)
@@ -441,6 +441,7 @@ class TestQgsRasterLayerTemporalProperties(QgisTestCase):
         props.setTemporalRepresentationOffset(
             QDateTime(QDate(2024, 1, 1), QTime(0, 0, 0))
         )
+        props.setAccumulatePixels(True)
         props.setIsActive(True)
         self.assertEqual(props.bandNumber(), 2)
         self.assertEqual(
@@ -451,6 +452,7 @@ class TestQgsRasterLayerTemporalProperties(QgisTestCase):
             props.temporalRepresentationOffset(),
             QDateTime(QDate(2024, 1, 1), QTime(0, 0, 0)),
         )
+        self.assertTrue(props.accumulatePixels())
         self.assertTrue(props.isActive())
 
         self.assertEqual(
@@ -492,6 +494,7 @@ class TestQgsRasterLayerTemporalProperties(QgisTestCase):
             props2.temporalRepresentationOffset(),
             QDateTime(QDate(2024, 1, 1), QTime(0, 0, 0)),
         )
+        self.assertTrue(props2.accumulatePixels())
         self.assertTrue(props2.isActive())
 
 

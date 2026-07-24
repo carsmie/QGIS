@@ -18,10 +18,11 @@
 #ifndef QGSSQLITEUTILS_H
 #define QGSSQLITEUTILS_H
 
+#include <memory>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 
-#include <memory>
 #include <QString>
 
 struct sqlite3;
@@ -38,23 +39,21 @@ class QVariant;
  */
 struct CORE_EXPORT QgsSqlite3Closer
 {
-
-  /**
+    /**
    * Closes an sqlite \a database.
    */
-  void operator()( sqlite3 *database ) const;
+    void operator()( sqlite3 *database ) const;
 };
 
 /**
  * Finalizes an sqlite3 statement.
  */
-struct CORE_EXPORT  QgsSqlite3StatementFinalizer
+struct CORE_EXPORT QgsSqlite3StatementFinalizer
 {
-
-  /**
+    /**
    * Finalizes an sqlite3 \a statement.
    */
-  void operator()( sqlite3_stmt *statement ) const;
+    void operator()( sqlite3_stmt *statement ) const;
 };
 
 /**
@@ -67,7 +66,6 @@ struct CORE_EXPORT  QgsSqlite3StatementFinalizer
 class CORE_EXPORT sqlite3_statement_unique_ptr : public std::unique_ptr< sqlite3_stmt, QgsSqlite3StatementFinalizer>
 {
   public:
-
     /**
      * Steps to the next record in the statement, returning the sqlite3 result code.
      */
@@ -115,7 +113,6 @@ class CORE_EXPORT sqlite3_statement_unique_ptr : public std::unique_ptr< sqlite3
 class CORE_EXPORT sqlite3_database_unique_ptr : public std::unique_ptr< sqlite3, QgsSqlite3Closer>
 {
   public:
-
     /**
      * Opens the database at the specified file \a path.
      *
@@ -150,7 +147,6 @@ class CORE_EXPORT sqlite3_database_unique_ptr : public std::unique_ptr< sqlite3,
      * \since QGIS 3.6
      */
     int exec( const QString &sql, QString &errorMessage SIP_OUT ) const;
-
 };
 
 /**
@@ -170,7 +166,6 @@ QString CORE_EXPORT qgs_sqlite3_mprintf( const char *format, ... );
 class CORE_EXPORT QgsSqliteUtils
 {
   public:
-
     /**
      * Returns a quoted string \a value, surround by ' characters and with special
      * characters correctly escaped.
@@ -220,7 +215,6 @@ class CORE_EXPORT QgsSqliteUtils
      * \since QGIS 3.14
      */
     static long long nextSequenceValue( sqlite3 *connection, const QString &tableName, QString errorMessage ) SIP_SKIP;
-
 };
 
 #endif // QGSSQLITEUTILS_H

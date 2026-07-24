@@ -14,31 +14,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsstyleexportimportdialog.h"
-#include "moc_qgsstyleexportimportdialog.cpp"
 #include "ui_qgsstyleexportimportdialogbase.h"
+#include "qgsstyleexportimportdialog.h"
 
 #include "qgsapplication.h"
-#include "qgsstyle.h"
-#include "qgssymbol.h"
-#include "qgsnetworkcontentfetchertask.h"
-#include "qgsstylegroupselectiondialog.h"
-#include "qgsguiutils.h"
-#include "qgssettings.h"
 #include "qgsgui.h"
-#include "qgsstylemodel.h"
+#include "qgsguiutils.h"
+#include "qgsnetworkcontentfetchertask.h"
+#include "qgssettings.h"
+#include "qgsstyle.h"
+#include "qgsstylegroupselectiondialog.h"
 #include "qgsstylemanagerdialog.h"
+#include "qgsstylemodel.h"
+#include "qgssymbol.h"
 
-#include <QInputDialog>
 #include <QCloseEvent>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QNetworkReply>
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QStandardItemModel>
+#include <QString>
 #include <QTemporaryFile>
 #include <QUrl>
+
+#include "moc_qgsstyleexportimportdialog.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsStyleExportImportDialog::QgsStyleExportImportDialog( QgsStyle *style, QWidget *parent, Mode mode )
   : QDialog( parent )
@@ -62,8 +66,6 @@ QgsStyleExportImportDialog::QgsStyleExportImportDialog( QgsStyle *style, QWidget
   mTempStyle->createMemoryDatabase();
 
   // TODO validate
-  mGroupSelectionDlg = nullptr;
-  mTempFile = nullptr;
 
   QgsStyle *dialogStyle = nullptr;
   if ( mDialogMode == Import )
@@ -76,7 +78,7 @@ QgsStyleExportImportDialog::QgsStyleExportImportDialog( QgsStyle *style, QWidget
     connect( importTypeCombo, static_cast<void ( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ), this, &QgsStyleExportImportDialog::importTypeChanged );
     importTypeChanged( 0 );
 
-    mSymbolTags->setText( QStringLiteral( "imported" ) );
+    mSymbolTags->setText( u"imported"_s );
 
     connect( mButtonFetch, &QAbstractButton::clicked, this, &QgsStyleExportImportDialog::fetch );
 
@@ -85,7 +87,7 @@ QgsStyleExportImportDialog::QgsStyleExportImportDialog( QgsStyle *style, QWidget
     mImportFileWidget->setFilter( tr( "XML files (*.xml *.XML)" ) );
 
     const QgsSettings settings;
-    mImportFileWidget->setDefaultRoot( settings.value( QStringLiteral( "StyleManager/lastImportDir" ), QDir::homePath(), QgsSettings::Gui ).toString() );
+    mImportFileWidget->setDefaultRoot( settings.value( u"StyleManager/lastImportDir"_s, QDir::homePath(), QgsSettings::Gui ).toString() );
     connect( mImportFileWidget, &QgsFileWidget::fileChanged, this, &QgsStyleExportImportDialog::importFileChanged );
 
     label->setText( tr( "Select items to import" ) );
@@ -152,7 +154,7 @@ void QgsStyleExportImportDialog::doExportImport()
   if ( mDialogMode == Export )
   {
     QgsSettings settings;
-    const QString lastUsedDir = settings.value( QStringLiteral( "StyleManager/lastExportDir" ), QDir::homePath(), QgsSettings::Gui ).toString();
+    const QString lastUsedDir = settings.value( u"StyleManager/lastExportDir"_s, QDir::homePath(), QgsSettings::Gui ).toString();
     QString fileName = QFileDialog::getSaveFileName( this, tr( "Save Styles" ), lastUsedDir, tr( "XML files (*.xml *.XML)" ) );
     // return dialog focus on Mac
     activateWindow();
@@ -161,12 +163,12 @@ void QgsStyleExportImportDialog::doExportImport()
     {
       return;
     }
-    settings.setValue( QStringLiteral( "StyleManager/lastExportDir" ), QFileInfo( fileName ).absolutePath(), QgsSettings::Gui );
+    settings.setValue( u"StyleManager/lastExportDir"_s, QFileInfo( fileName ).absolutePath(), QgsSettings::Gui );
 
     // ensure the user never omitted the extension from the file name
-    if ( !fileName.endsWith( QLatin1String( ".xml" ), Qt::CaseInsensitive ) )
+    if ( !fileName.endsWith( ".xml"_L1, Qt::CaseInsensitive ) )
     {
-      fileName += QLatin1String( ".xml" );
+      fileName += ".xml"_L1;
     }
 
     mFileName = fileName;
@@ -234,10 +236,7 @@ void QgsStyleExportImportDialog::moveStyles( QModelIndexList *selection, QgsStyl
 }
 
 QgsStyleExportImportDialog::~QgsStyleExportImportDialog()
-{
-  delete mTempFile;
-  delete mGroupSelectionDlg;
-}
+{}
 
 void QgsStyleExportImportDialog::setImportFilePath( const QString &path )
 {
@@ -388,7 +387,7 @@ void QgsStyleExportImportDialog::importTypeChanged( int index )
 #if 0
     case ImportSource::Official:
     {
-      btnBrowse->setText( QStringLiteral( "Fetch Items" ) );
+      btnBrowse->setText( u"Fetch Items"_s );
       locationLineEdit->setEnabled( false );
       break;
     }
@@ -414,7 +413,7 @@ void QgsStyleExportImportDialog::importFileChanged( const QString &path )
 
   mFileName = path;
   const QFileInfo pathInfo( mFileName );
-  const QString tag = pathInfo.fileName().remove( QStringLiteral( ".xml" ) );
+  const QString tag = pathInfo.fileName().remove( u".xml"_s );
   mSymbolTags->setText( tag );
   if ( QFileInfo::exists( mFileName ) )
   {
@@ -422,13 +421,13 @@ void QgsStyleExportImportDialog::importFileChanged( const QString &path )
     populateStyles();
     mImportFileWidget->setDefaultRoot( pathInfo.absolutePath() );
     QgsSettings settings;
-    settings.setValue( QStringLiteral( "StyleManager/lastImportDir" ), pathInfo.absolutePath(), QgsSettings::Gui );
+    settings.setValue( u"StyleManager/lastImportDir"_s, pathInfo.absolutePath(), QgsSettings::Gui );
   }
 }
 
 void QgsStyleExportImportDialog::downloadStyleXml( const QUrl &url )
 {
-  mTempFile = new QTemporaryFile();
+  mTempFile = std::make_unique<QTemporaryFile>();
   if ( mTempFile->open() )
   {
     mFileName = mTempFile->fileName();
@@ -475,5 +474,5 @@ void QgsStyleExportImportDialog::selectionChanged( const QItemSelection &selecte
 
 void QgsStyleExportImportDialog::showHelp()
 {
-  QgsHelp::openHelp( QStringLiteral( "style_library/style_manager.html#sharing-style-items" ) );
+  QgsHelp::openHelp( u"style_library/style_manager.html#sharing-style-items"_s );
 }

@@ -11,8 +11,8 @@ __date__ = "06/09/2017"
 __copyright__ = "Copyright 2017, The QGIS Project"
 
 import os
+import unittest
 
-from qgis.PyQt.QtCore import QTemporaryFile, QVariant
 from qgis.core import (
     NULL,
     QgsAuxiliaryLayer,
@@ -34,9 +34,8 @@ from qgis.core import (
     QgsVectorLayer,
     QgsVectorLayerSimpleLabeling,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QTemporaryFile, QVariant
+from qgis.testing import QgisTestCase, start_app
 from utilities import writeShape
 
 start_app()
@@ -53,7 +52,7 @@ def tmpPath():
 
 def createLayer():
     vl = QgsVectorLayer(
-        "Point?crs=epsg:4326&field=pk:integer&field=cnt:integer&field=name:string(0)&field=name2:string(0)&field=num_char:string&key=pk",
+        "Point?crs=epsg:4326&field=pk:integer&field=cnt:integer&field=name:string(0)&field=name2:string(0)&field=num_char:string",
         "test",
         "memory",
     )
@@ -83,7 +82,6 @@ def createLayer():
 
 
 class TestQgsAuxiliaryStorage(QgisTestCase):
-
     def testCreateSaveOpenStorageWithString(self):
         # Empty string in copy mode. A new database is created in a temporary
         # file.
@@ -809,9 +807,7 @@ class TestQgsAuxiliaryStorage(QgisTestCase):
 
     def testInvalidPrimaryKey(self):
         # create layer
-        vl = QgsVectorLayer(
-            "Point?crs=epsg:4326&field=pk:integer&key=pk", "test", "memory"
-        )
+        vl = QgsVectorLayer("Point?crs=epsg:4326&field=pk:integer", "test", "memory")
         assert vl.isValid()
 
         # add a field with an invalid typename

@@ -15,15 +15,20 @@
  ***************************************************************************/
 
 #include "qgsqmlwidgetwrapper.h"
-#include "moc_qgsqmlwidgetwrapper.cpp"
+
 #include "qgsattributeform.h"
-#include "qgsmessagelog.h"
 #include "qgsexpressioncontextutils.h"
+#include "qgsmessagelog.h"
 #include "qgsvaluerelationfieldformatter.h"
 
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QString>
 #include <QUrl>
+
+#include "moc_qgsqmlwidgetwrapper.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsQmlWidgetWrapper::QgsQmlWidgetWrapper( QgsVectorLayer *layer, QWidget *editor, QWidget *parent )
   : QgsWidgetWrapper( layer, editor, parent )
@@ -72,7 +77,9 @@ void QgsQmlWidgetWrapper::initWidget( QWidget *editor )
     return;
   }
 
-  mWidget->setSource( QUrl::fromLocalFile( mQmlFile.fileName() ) );
+  QUrl sourceUrl = QUrl::fromLocalFile( mQmlFile.fileName() );
+  sourceUrl.setQuery( u"t=%1"_s.arg( QDateTime::currentSecsSinceEpoch() ) );
+  mWidget->setSource( sourceUrl );
 
   mQmlFile.close();
 }
@@ -98,7 +105,8 @@ void QgsQmlWidgetWrapper::setQmlCode( const QString &qmlCode )
   mQmlCode = qmlCode;
 
   bool ok = false;
-  const thread_local QRegularExpression expRe( QStringLiteral( R"re(expression.evaluate\s*\(\s*"(.*)"\))re" ), QRegularExpression::PatternOption::MultilineOption | QRegularExpression::PatternOption::DotMatchesEverythingOption );
+  const thread_local QRegularExpression
+    expRe( QStringLiteral( R"re(expression.evaluate\s*\(\s*"(.*)"\))re" ), QRegularExpression::PatternOption::MultilineOption | QRegularExpression::PatternOption::DotMatchesEverythingOption );
   QRegularExpressionMatchIterator matchIt = expRe.globalMatch( mQmlCode );
   while ( !ok && matchIt.hasNext() )
   {
@@ -116,7 +124,6 @@ void QgsQmlWidgetWrapper::setQmlCode( const QString &qmlCode )
 
   mQmlFile.resize( 0 );
   mQmlFile.write( mQmlCode.toUtf8() );
-
   mQmlFile.close();
 }
 

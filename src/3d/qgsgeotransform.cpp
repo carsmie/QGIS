@@ -14,15 +14,14 @@
  ***************************************************************************/
 
 #include "qgsgeotransform.h"
-#include "moc_qgsgeotransform.cpp"
 
+#include "moc_qgsgeotransform.cpp"
 
 ///@cond PRIVATE
 
 QgsGeoTransform::QgsGeoTransform( Qt3DCore::QNode *parent )
   : Qt3DCore::QTransform( parent )
-{
-}
+{}
 
 void QgsGeoTransform::setGeoTranslation( const QgsVector3D &translation )
 {

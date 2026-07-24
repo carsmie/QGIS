@@ -16,15 +16,15 @@
 #ifndef QGSMAPLAYERACTION_H
 #define QGSMAPLAYERACTION_H
 
-#include <QObject>
-#include "qgis_sip.h"
-#include <QList>
-#include <QMap>
-#include <QAction>
-#include <QPointer>
-
 #include "qgis.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
+
+#include <QAction>
+#include <QList>
+#include <QMap>
+#include <QObject>
+#include <QPointer>
 
 class QgsFeature;
 class QgsMapLayer;
@@ -49,13 +49,33 @@ class GUI_EXPORT QgsMapLayerAction : public QAction
      * Creates a map layer action which can run on any layer
      * \note using AllActions as a target probably does not make a lot of sense. This default action was settled for API compatibility reasons.
      */
-    QgsMapLayerAction( const QString &name, QObject *parent SIP_TRANSFERTHIS, Qgis::MapLayerActionTargets targets = Qgis::MapLayerActionTarget::AllActions, const QIcon &icon = QIcon(), Qgis::MapLayerActionFlags flags = Qgis::MapLayerActionFlags() );
+    QgsMapLayerAction(
+      const QString &name,
+      QObject *parent SIP_TRANSFERTHIS,
+      Qgis::MapLayerActionTargets targets = Qgis::MapLayerActionTarget::AllActions,
+      const QIcon &icon = QIcon(),
+      Qgis::MapLayerActionFlags flags = Qgis::MapLayerActionFlags()
+    );
 
     //! Creates a map layer action which can run only on a specific layer
-    QgsMapLayerAction( const QString &name, QObject *parent SIP_TRANSFERTHIS, QgsMapLayer *layer, Qgis::MapLayerActionTargets targets = Qgis::MapLayerActionTarget::AllActions, const QIcon &icon = QIcon(), Qgis::MapLayerActionFlags flags = Qgis::MapLayerActionFlags() );
+    QgsMapLayerAction(
+      const QString &name,
+      QObject *parent SIP_TRANSFERTHIS,
+      QgsMapLayer *layer,
+      Qgis::MapLayerActionTargets targets = Qgis::MapLayerActionTarget::AllActions,
+      const QIcon &icon = QIcon(),
+      Qgis::MapLayerActionFlags flags = Qgis::MapLayerActionFlags()
+    );
 
     //! Creates a map layer action which can run on a specific type of layer
-    QgsMapLayerAction( const QString &name, QObject *parent SIP_TRANSFERTHIS, Qgis::LayerType layerType, Qgis::MapLayerActionTargets targets = Qgis::MapLayerActionTarget::AllActions, const QIcon &icon = QIcon(), Qgis::MapLayerActionFlags flags = Qgis::MapLayerActionFlags() );
+    QgsMapLayerAction(
+      const QString &name,
+      QObject *parent SIP_TRANSFERTHIS,
+      Qgis::LayerType layerType,
+      Qgis::MapLayerActionTargets targets = Qgis::MapLayerActionTarget::AllActions,
+      const QIcon &icon = QIcon(),
+      Qgis::MapLayerActionFlags flags = Qgis::MapLayerActionFlags()
+    );
 
     ~QgsMapLayerAction() override;
 

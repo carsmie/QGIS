@@ -19,7 +19,6 @@ Triangle geometry type.
 #include "qgstriangle.h"
 %End
   public:
-
     QgsTriangle() /HoldGIL/;
 %Docstring
 Constructor for an empty triangle geometry.
@@ -92,6 +91,8 @@ triangle.
 Inherited method not used. You cannot delete or insert a vertex
 directly. Returns always ``False``.
 %End
+    virtual bool deleteVertices( const QSet<QgsVertexId> &positions );
+
     virtual bool insertVertex( QgsVertexId position, const QgsPoint &vertex );
 
 %Docstring

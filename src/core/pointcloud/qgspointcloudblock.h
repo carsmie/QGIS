@@ -20,12 +20,12 @@
 
 #include "qgis.h"
 #include "qgis_core.h"
+#include "qgspointcloudattribute.h"
+
+#include <QByteArray>
 #include <QPair>
 #include <QString>
 #include <QVector>
-#include <QByteArray>
-
-#include "qgspointcloudattribute.h"
 
 /**
  * \ingroup core
@@ -39,9 +39,7 @@ class CORE_EXPORT QgsPointCloudBlock
 {
   public:
     //! Ctor
-    QgsPointCloudBlock( int count,
-                        const QgsPointCloudAttributeCollection &attributes,
-                        const QByteArray &data, const QgsVector3D &scale, const QgsVector3D &offset );
+    QgsPointCloudBlock( int count, const QgsPointCloudAttributeCollection &attributes, const QByteArray &data, const QgsVector3D &scale, const QgsVector3D &offset );
 
     virtual ~QgsPointCloudBlock() = default;
 
@@ -86,7 +84,6 @@ class CORE_EXPORT QgsPointCloudBlock
     void setPointCount( int size );
 
   private:
-
     int mPointCount = 0;
     QgsPointCloudAttributeCollection mAttributes;
     int mRecordSize = 0;

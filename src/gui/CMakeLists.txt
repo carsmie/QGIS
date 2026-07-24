@@ -1,4 +1,6 @@
 set(QGIS_GUI_SRCS
+  3d/qgsmaterialwidget.cpp
+
   actions/qgsactionmenu.cpp
   actions/qgsmaplayeraction.cpp
   actions/qgsmaplayeractioncontext.cpp
@@ -37,6 +39,10 @@ set(QGIS_GUI_SRCS
   vector/qgsattributesforminitcode.cpp
   vector/qgsattributesformmodel.cpp
   vector/qgsattributesformproperties.cpp
+  vector/qgsattributesformtreeviewindicator.cpp
+  vector/qgsattributesformtreeviewindicatorprovider.cpp
+  vector/qgsattributesformtreeviewitemdelegate.cpp
+  vector/qgsattributesformview.cpp
   vector/qgsdiagramproperties.cpp
   vector/qgsdiagramwidget.cpp
   vector/qgsfieldcalculator.cpp
@@ -120,9 +126,12 @@ set(QGIS_GUI_SRCS
   annotations/qgsannotationitemguiregistry.cpp
   annotations/qgsannotationitemwidget.cpp
   annotations/qgsannotationitemwidget_impl.cpp
+  annotations/qgsannotationmaptool.cpp
   annotations/qgscreateannotationitemmaptool.cpp
   annotations/qgscreateannotationitemmaptool_impl.cpp
   annotations/qgsmaptoolmodifyannotation.cpp
+  annotations/qgsmaptoolselectannotation.cpp
+  annotations/qgsmaptoolselectannotationmousehandles.cpp
 
   auth/qgsauthauthoritieseditor.cpp
   auth/qgsauthcertificateinfo.cpp
@@ -161,8 +170,13 @@ set(QGIS_GUI_SRCS
   codeeditors/qgscodeeditorexpression.cpp
   codeeditors/qgscodeeditorwidget.cpp
 
+  devtools/qgsdevtoolsmodelnode.cpp
   devtools/qgsdevtoolwidget.cpp
   devtools/qgsdevtoolwidgetfactory.cpp
+  devtools/networklogger/qgsnetworklogger.cpp
+  devtools/networklogger/qgsnetworkloggernode.cpp
+  devtools/networklogger/qgsnetworkloggerpanelwidget.cpp
+  devtools/networklogger/qgsnetworkloggerwidgetfactory.cpp
 
   editorwidgets/core/qgseditorconfigwidget.cpp
   editorwidgets/core/qgseditorwidgetautoconf.cpp
@@ -301,6 +315,8 @@ set(QGIS_GUI_SRCS
   layout/qgslayoutitemguiregistry.cpp
   layout/qgslayoutitemslistview.cpp
   layout/qgslayoutitemwidget.cpp
+  layout/qgslayoutchartwidget.cpp
+  layout/qgslayoutchartseriesdetailswidget.cpp
   layout/qgslayoutlabelwidget.cpp
   layout/qgslayoutlegendlayersdialog.cpp
   layout/qgslayoutlegendwidget.cpp
@@ -346,13 +362,22 @@ set(QGIS_GUI_SRCS
   maptools/qgsmaptoolcapture.cpp
   maptools/qgsmaptoolcapturelayergeometry.cpp
   maptools/qgsmaptoolcapturerubberband.cpp
-  maptools/qgsmaptooledit.cpp
   maptools/qgsmaptooldigitizefeature.cpp
+
+  maptools/qgsbezierdata.cpp
+  maptools/qgsbeziermarker.cpp
+
+  maptools/qgsmaptooledit.cpp
+  maptools/qgsmaptooleditblanksegments.cpp
+  maptools/qgsmaptoolextraitem.cpp
   maptools/qgsmaptoolemitpoint.cpp
   maptools/qgsmaptoolextent.cpp
   maptools/qgsmaptoolidentify.cpp
   maptools/qgsmaptoolidentifyfeature.cpp
   maptools/qgsmaptoolpan.cpp
+  maptools/qgsmaptoolselect.cpp
+  maptools/qgsmaptoolselectionhandler.cpp
+  maptools/qgsmaptoolselectutils.cpp
   maptools/qgsmaptoolshapeabstract.cpp
   maptools/qgsmaptoolshaperegistry.cpp
   maptools/qgsmaptoolzoom.cpp
@@ -387,10 +412,12 @@ set(QGIS_GUI_SRCS
   plot/qgsplottoolxaxiszoom.cpp
   plot/qgsplottoolzoom.cpp
   plot/qgsplottransienttools.cpp
+  plot/qgsplotwidget.cpp
 
   pointcloud/qgspointcloudattributebyramprendererwidget.cpp
   pointcloud/qgspointcloudclassifiedrendererwidget.cpp
   pointcloud/qgspointcloudextentrendererwidget.cpp
+  pointcloud/qgspointcloudlayerproperties.cpp
   pointcloud/qgspointcloudlayersaveasdialog.cpp
   pointcloud/qgspointcloudrendererwidget.cpp
   pointcloud/qgspointcloudrendererpropertieswidget.cpp
@@ -399,7 +426,7 @@ set(QGIS_GUI_SRCS
   processing/qgsprocessingaggregatewidgets.cpp
   processing/qgsprocessingaggregatewidgetwrapper.cpp
   processing/qgsprocessingalgorithmconfigurationwidget.cpp
-  processing/qgsprocessingalgorithmdialogbase.cpp
+  processing/qgsprocessingalgorithmwidgetbase.cpp
   processing/qgsprocessingalignrasterlayerswidgetwrapper.cpp
   processing/qgsprocessingbatchalgorithmdialogbase.cpp
   processing/qgsprocessingconfigurationwidgets.cpp
@@ -425,6 +452,7 @@ set(QGIS_GUI_SRCS
   processing/qgsprocessingpointcloudexpressionlineedit.cpp
   processing/qgsprocessingrastercalculatorexpressionlineedit.cpp
   processing/qgsprocessingrasteroptionswidgetwrapper.cpp
+  processing/qgsprocessingrastersourceoptionswidget.cpp
   processing/qgsprocessingrecentalgorithmlog.cpp
   processing/qgsprocessingtininputlayerswidget.cpp
   processing/qgsprocessingtoolboxmodel.cpp
@@ -435,6 +463,8 @@ set(QGIS_GUI_SRCS
 
   processing/models/qgsmodelarrowitem.cpp
   processing/models/qgsmodelcomponentgraphicitem.cpp
+  processing/models/qgsmodeldesignerconfigdockwidget.cpp
+  processing/models/qgsmodeldesignerconfigwidget.cpp
   processing/models/qgsmodeldesignerdialog.cpp
   processing/models/qgsmodeldesignerinputstreewidget.cpp
   processing/models/qgsmodelgraphicitem.cpp
@@ -529,6 +559,7 @@ set(QGIS_GUI_SRCS
 
   tiledscene/qgstiledsceneconnectiondialog.cpp
   tiledscene/qgstiledscenedataitemguiprovider.cpp
+  tiledscene/qgstiledscenelayerproperties.cpp
   tiledscene/qgstiledsceneproviderguimetadata.cpp
   tiledscene/qgstiledscenerendererpropertieswidget.cpp
   tiledscene/qgstiledscenerendererwidget.cpp
@@ -645,6 +676,7 @@ set(QGIS_GUI_SRCS
   qgsfocuswatcher.cpp
   qgsformlabelformatwidget.cpp
   qgsfontbutton.cpp
+  qgsfontcombobox.cpp
   qgsformannotation.cpp
   qgsgeocoderlocatorfilter.cpp
   qgsgeometryrubberband.cpp
@@ -731,6 +763,7 @@ set(QGIS_GUI_SRCS
   qgspanelwidgetstack.cpp
   qgspasswordlineedit.cpp
   qgspercentagewidget.cpp
+  qgspersistentmenu.cpp
   qgspixmaplabel.cpp
   qgsplaybackcontrollerwidget.cpp
   qgspluginmanagerinterface.cpp
@@ -747,6 +780,7 @@ set(QGIS_GUI_SRCS
   qgsprovidersourcewidgetproviderregistry.cpp
   qgsprovidersublayersdialog.cpp
   qgsprojectstorageguiregistry.cpp
+  qgsprojecttrustdialog.cpp
   qgsproviderconnectioncombobox.cpp
   qgsproxystyle.cpp
   qgsquerybuilder.cpp
@@ -916,6 +950,7 @@ set(QGIS_GUI_HDRS
   qgsfocuskeeper.h
   qgsfocuswatcher.h
   qgsfontbutton.h
+  qgsfontcombobox.h
   qgsformannotation.h
   qgsformlabelformatwidget.h
   qgsgeocoderlocatorfilter.h
@@ -1004,6 +1039,7 @@ set(QGIS_GUI_HDRS
   qgspanelwidgetstack.h
   qgspasswordlineedit.h
   qgspercentagewidget.h
+  qgspersistentmenu.h
   qgspixmaplabel.h
   qgsplaybackcontrollerwidget.h
   qgspluginmanagerinterface.h
@@ -1013,6 +1049,7 @@ set(QGIS_GUI_HDRS
   qgsprevieweffect.h
   qgsprojectstorageguiprovider.h
   qgsprojectstorageguiregistry.h
+  qgsprojecttrustdialog.h
   qgspropertyassistantwidget.h
   qgspropertyoverridebutton.h
   qgsproviderconnectioncombobox.h
@@ -1082,6 +1119,8 @@ set(QGIS_GUI_HDRS
   qgsvscrollarea.h
   qgswindowmanagerinterface.h
 
+  3d/qgsmaterialwidget.h
+
   actions/qgsactionmenu.h
   actions/qgsmaplayeraction.h
   actions/qgsmaplayeractioncontext.h
@@ -1091,9 +1130,12 @@ set(QGIS_GUI_HDRS
   annotations/qgsannotationitemcommonpropertieswidget.h
   annotations/qgsannotationitemguiregistry.h
   annotations/qgsannotationitemwidget.h
+  annotations/qgsannotationmaptool.h
   annotations/qgscreateannotationitemmaptool.h
   annotations/qgscreateannotationitemmaptool_impl.h
   annotations/qgsmaptoolmodifyannotation.h
+  annotations/qgsmaptoolselectannotation.h
+  annotations/qgsmaptoolselectannotationmousehandles.h
 
   attributeformconfig/qgsattributeformcontaineredit.h
   attributeformconfig/qgsattributetypedialog.h
@@ -1156,8 +1198,13 @@ set(QGIS_GUI_HDRS
   codeeditors/qgscodeeditorsql.h
   codeeditors/qgscodeeditorwidget.h
 
+  devtools/qgsdevtoolsmodelnode.h
   devtools/qgsdevtoolwidget.h
   devtools/qgsdevtoolwidgetfactory.h
+  devtools/networklogger/qgsnetworklogger.h
+  devtools/networklogger/qgsnetworkloggernode.h
+  devtools/networklogger/qgsnetworkloggerpanelwidget.h
+  devtools/networklogger/qgsnetworkloggerwidgetfactory.h
 
   editorwidgets/core/qgseditorconfigwidget.h
   editorwidgets/core/qgseditorwidgetautoconf.h
@@ -1301,6 +1348,8 @@ set(QGIS_GUI_HDRS
   layout/qgslayoutitemguiregistry.h
   layout/qgslayoutitemslistview.h
   layout/qgslayoutitemwidget.h
+  layout/qgslayoutchartwidget.h
+  layout/qgslayoutchartseriesdetailswidget.h
   layout/qgslayoutlabelwidget.h
   layout/qgslayoutlegendlayersdialog.h
   layout/qgslayoutlegendwidget.h
@@ -1346,13 +1395,20 @@ set(QGIS_GUI_HDRS
   maptools/qgsmaptoolcapture.h
   maptools/qgsmaptoolcapturelayergeometry.h
   maptools/qgsmaptoolcapturerubberband.h
+  maptools/qgsbezierdata.h
+  maptools/qgsbeziermarker.h
   maptools/qgsmaptooldigitizefeature.h
   maptools/qgsmaptooledit.h
+  maptools/qgsmaptooleditblanksegments.h
+  maptools/qgsmaptoolextraitem.h
   maptools/qgsmaptoolemitpoint.h
   maptools/qgsmaptoolextent.h
   maptools/qgsmaptoolidentify.h
   maptools/qgsmaptoolidentifyfeature.h
   maptools/qgsmaptoolpan.h
+  maptools/qgsmaptoolselect.h
+  maptools/qgsmaptoolselectionhandler.h
+  maptools/qgsmaptoolselectutils.h
   maptools/qgsmaptoolshapeabstract.h
   maptools/qgsmaptoolshaperegistry.h
   maptools/qgsmaptoolzoom.h
@@ -1387,10 +1443,12 @@ set(QGIS_GUI_HDRS
   plot/qgsplottoolxaxiszoom.h
   plot/qgsplottoolzoom.h
   plot/qgsplottransienttools.h
+  plot/qgsplotwidget.h
 
   pointcloud/qgspointcloudattributebyramprendererwidget.h
   pointcloud/qgspointcloudclassifiedrendererwidget.h
   pointcloud/qgspointcloudextentrendererwidget.h
+  pointcloud/qgspointcloudlayerproperties.h
   pointcloud/qgspointcloudlayersaveasdialog.h
   pointcloud/qgspointcloudrendererwidget.h
   pointcloud/qgspointcloudrendererpropertieswidget.h
@@ -1399,7 +1457,7 @@ set(QGIS_GUI_HDRS
   processing/qgsprocessingaggregatewidgets.h
   processing/qgsprocessingaggregatewidgetwrapper.h
   processing/qgsprocessingalgorithmconfigurationwidget.h
-  processing/qgsprocessingalgorithmdialogbase.h
+  processing/qgsprocessingalgorithmwidgetbase.h
   processing/qgsprocessingbatchalgorithmdialogbase.h
   processing/qgsprocessingconfigurationwidgets.h
   processing/qgsprocessingdxflayerswidgetwrapper.h
@@ -1425,6 +1483,7 @@ set(QGIS_GUI_HDRS
   processing/qgsprocessingpointcloudexpressionlineedit.h
   processing/qgsprocessingrastercalculatorexpressionlineedit.h
   processing/qgsprocessingrasteroptionswidgetwrapper.h
+  processing/qgsprocessingrastersourceoptionswidget.h
   processing/qgsprocessingrecentalgorithmlog.h
   processing/qgsprocessingtininputlayerswidget.h
   processing/qgsprocessingtoolboxmodel.h
@@ -1435,6 +1494,8 @@ set(QGIS_GUI_HDRS
 
   processing/models/qgsmodelarrowitem.h
   processing/models/qgsmodelcomponentgraphicitem.h
+  processing/models/qgsmodeldesignerconfigdockwidget.h
+  processing/models/qgsmodeldesignerconfigwidget.h
   processing/models/qgsmodeldesignerdialog.h
   processing/models/qgsmodeldesignerinputstreewidget.h
   processing/models/qgsmodelgraphicitem.h
@@ -1536,6 +1597,10 @@ set(QGIS_GUI_HDRS
   vector/qgsattributesforminitcode.h
   vector/qgsattributesformmodel.h
   vector/qgsattributesformproperties.h
+  vector/qgsattributesformtreeviewindicator.h
+  vector/qgsattributesformtreeviewindicatorprovider.h
+  vector/qgsattributesformtreeviewitemdelegate.h
+  vector/qgsattributesformview.h
   vector/qgsdiagramproperties.h
   vector/qgsdiagramwidget.h
   vector/qgsfieldcalculator.h
@@ -1586,6 +1651,7 @@ set(QGIS_GUI_HDRS
   symbology/qgssymbolselectordialog.h
   symbology/qgssymbolslistwidget.h
   symbology/qgssymbolwidgetcontext.h
+  symbology/qgstemplatedcategorizedrendererwidget_p.h
   symbology/qgsvectorfieldsymbollayerwidget.h
 
   sensor/qgssensorguiregistry.h
@@ -1614,6 +1680,7 @@ set(QGIS_GUI_HDRS
 
   tiledscene/qgstiledsceneconnectiondialog.h
   tiledscene/qgstiledscenedataitemguiprovider.h
+  tiledscene/qgstiledscenelayerproperties.h
   tiledscene/qgstiledsceneproviderguimetadata.h
   tiledscene/qgstiledscenerendererpropertieswidget.h
   tiledscene/qgstiledscenerendererwidget.h
@@ -1779,6 +1846,17 @@ if(WITH_INTERNAL_QWT)
     )
   endif()
 
+  set(QWT_COMPILE_OPTIONS)
+  if(HAVE_WFLAG_SUGGEST_OVERRIDE)
+    list(APPEND QWT_COMPILE_OPTIONS "-Wno-suggest-override")
+  endif()
+  if(HAVE_WFLAG_SUGGEST_DESTRUCTOR_OVERRIDE)
+    list(APPEND QWT_COMPILE_OPTIONS "-Wno-suggest-destructor-override")
+  endif()
+  if (QWT_COMPILE_OPTIONS)
+    set_source_files_properties($QGIS_QWT_SRCS PROPERTIES COMPILE_OPTIONS "${QWT_COMPILE_OPTIONS}")
+  endif()
+
   set(QGIS_GUI_SRCS
     ${QGIS_GUI_SRCS}
     ${QGIS_QWT_SRCS}
@@ -1851,9 +1929,6 @@ if(QGISPOSTFIX)
   )
 endif()
 
-# require c++17
-target_compile_features(qgis_gui PRIVATE cxx_std_17)
-
 if (USE_PRECOMPILED_HEADERS)
   target_precompile_headers(qgis_gui PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_SOURCE_DIR}/src/core/qgis.h>)
 endif()
@@ -1867,6 +1942,7 @@ target_include_directories(qgis_gui SYSTEM PUBLIC
 
 target_include_directories(qgis_gui PUBLIC
   ${CMAKE_SOURCE_DIR}/src/gui
+  ${CMAKE_SOURCE_DIR}/src/gui/3d
   ${CMAKE_SOURCE_DIR}/src/gui/actions
   ${CMAKE_SOURCE_DIR}/src/gui/annotations
   ${CMAKE_SOURCE_DIR}/src/gui/attributeformconfig
@@ -1876,6 +1952,7 @@ target_include_directories(qgis_gui PUBLIC
   ${CMAKE_SOURCE_DIR}/src/gui/callouts
   ${CMAKE_SOURCE_DIR}/src/gui/codeeditors
   ${CMAKE_SOURCE_DIR}/src/gui/devtools
+  ${CMAKE_SOURCE_DIR}/src/gui/devtools/networklogger
   ${CMAKE_SOURCE_DIR}/src/gui/editorwidgets
   ${CMAKE_SOURCE_DIR}/src/gui/editorwidgets/core
   ${CMAKE_SOURCE_DIR}/src/gui/effects
@@ -1966,12 +2043,10 @@ target_link_libraries(qgis_gui
   Qt::MultimediaWidgets
 )
 
-if (BUILD_WITH_QT6)
-  find_package(Qt6 COMPONENTS SvgWidgets REQUIRED)
-  target_link_libraries(qgis_gui
-    Qt6::SvgWidgets
-  )
-endif()
+find_package(Qt6 COMPONENTS SvgWidgets REQUIRED)
+target_link_libraries(qgis_gui
+  Qt6::SvgWidgets
+)
 
 if (WITH_QTWEBENGINE)
   find_package(${QT_VERSION_BASE} COMPONENTS WebEngineWidgets REQUIRED)
@@ -1981,8 +2056,9 @@ if (WITH_QTWEBENGINE)
 endif()
 
 if (WITH_QTGAMEPAD)
+    # QtGamepadLegacy from https://github.com/pumphaus/qtgamepadlegacy must be used for Qt6 builds
     target_link_libraries(qgis_gui
-      Qt::Gamepad
+      Qt::GamepadLegacy
     )
 endif()
 

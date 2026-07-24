@@ -17,8 +17,11 @@
 #define QGSOAPIFUTILS_H
 
 #include <nlohmann/json.hpp>
+
 using namespace nlohmann;
 
+#include <QList>
+#include <QNetworkReply>
 #include <QString>
 #include <QStringList>
 
@@ -35,6 +38,7 @@ class QgsOAPIFJson
         QString rel;
         QString type;
         QString title;
+        QStringList profiles;
         qint64 length = -1;
     };
 
@@ -44,5 +48,15 @@ class QgsOAPIFJson
     //! Find among links the one that matches rel, by using an optional list of preferable types.
     static QString findLink( const std::vector<Link> &links, const QString &rel, const QStringList &preferableTypes = QStringList() );
 };
+
+// Return the href for the next link from the response headers and the MIME type of the format
+QString QgsOAPIFGetNextLinkFromResponseHeader( const QList<QNetworkReply::RawHeaderPair> &responseHeaders, const QString &formatType );
+
+extern const QString OAPIF_PROVIDER_DEFAULT_CRS;
+
+// Originally there was a plan to have a proper mime type for JSON-FG,
+// but that was changed to using the one of GeoJSON + a profile. For the
+// sake of simplicity, internally, use the pseudo mime type.
+extern const QString PSEUDO_JSONFG_MEDIA_TYPE;
 
 #endif // QGSOAPIFUTILS_H

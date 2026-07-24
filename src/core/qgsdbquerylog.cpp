@@ -14,11 +14,13 @@
  ***************************************************************************/
 
 #include "qgsdbquerylog.h"
-#include "moc_qgsdbquerylog.cpp"
+
 #include "qgsapplication.h"
 #include "qgslogger.h"
 
 #include <QDateTime>
+
+#include "moc_qgsdbquerylog.cpp"
 
 //
 // QgsDatabaseQueryLogEntry
@@ -41,9 +43,7 @@ bool QgsDatabaseQueryLog::sEnabled = false;
 
 QgsDatabaseQueryLog::QgsDatabaseQueryLog( QObject *parent )
   : QObject( parent )
-{
-
-}
+{}
 
 void QgsDatabaseQueryLog::log( const QgsDatabaseQueryLogEntry &query )
 {
@@ -76,4 +76,3 @@ void QgsDatabaseQueryLog::queryFinishedPrivate( const QgsDatabaseQueryLogEntry &
   QgsDebugMsgLevel( query.query, 2 );
   emit queryFinished( query );
 }
-

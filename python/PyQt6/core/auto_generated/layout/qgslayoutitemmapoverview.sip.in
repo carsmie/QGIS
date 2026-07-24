@@ -10,6 +10,7 @@
 
 
 
+
 class QgsLayoutItemMapOverviewStack : QgsLayoutItemMapItemStack
 {
 %Docstring(signature="appended")
@@ -24,7 +25,6 @@ overviews are drawn and the order they are drawn in.
 #include "qgslayoutitemmapoverview.h"
 %End
   public:
-
     QgsLayoutItemMapOverviewStack( QgsLayoutItemMap *map );
 %Docstring
 Constructor for QgsLayoutItemMapOverviewStack, attached to the specified
@@ -114,7 +114,6 @@ required.
 
 .. versionadded:: 3.6
 %End
-
 };
 
 class QgsLayoutItemMapOverview : QgsLayoutItemMapItem
@@ -131,7 +130,6 @@ An individual overview which is drawn above the map content in a
 #include "qgslayoutitemmapoverview.h"
 %End
   public:
-
     QgsLayoutItemMapOverview( const QString &name, QgsLayoutItemMap *map );
 %Docstring
 Constructor for QgsLayoutItemMapOverview.
@@ -180,6 +178,7 @@ Returns the fill symbol used for drawing the overview extent.
 
 .. seealso:: :py:func:`setFrameSymbol`
 %End
+
 
     QPainter::CompositionMode blendMode() const;
 %Docstring

@@ -16,22 +16,25 @@
 #ifndef QGSRENDERER_H
 #define QGSRENDERER_H
 
+#include "qgsconfig.h"
+
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
-#include "qgsrectangle.h"
-#include "qgsfields.h"
 #include "qgsfeaturerequest.h"
-#include "qgsconfig.h"
+#include "qgsfields.h"
 #include "qgspropertycollection.h"
+#include "qgsrectangle.h"
 
-#include <QList>
-#include <QString>
-#include <QVariant>
-#include <QPair>
-#include <QPixmap>
 #include <QDomDocument>
 #include <QDomElement>
+#include <QList>
+#include <QPair>
+#include <QPixmap>
+#include <QString>
+#include <QVariant>
+
+using namespace Qt::StringLiterals;
 
 class QgsFeature;
 class QgsVectorLayer;
@@ -51,7 +54,7 @@ typedef QMap<QString, QgsSymbol * > QgsSymbolMap SIP_SKIP;
 #include "qgslegendsymbolitem.h"
 
 
-#define RENDERER_TAG_NAME   "renderer-v2"
+#define RENDERER_TAG_NAME "renderer-v2"
 
 ////////
 // symbol levels
@@ -79,7 +82,7 @@ class CORE_EXPORT QgsSymbolLevelItem
      */
     int layer() const;
 
-    // TODO QGIS 4.0 -> make private
+    // TODO QGIS 5.0 -> make private
   protected:
     QgsSymbol *mSymbol = nullptr;
     int mLayer;
@@ -106,37 +109,38 @@ typedef QList< QList< QgsSymbolLevelItem > > QgsSymbolLevelOrder;
  */
 class CORE_EXPORT QgsFeatureRenderer
 {
-
 #ifdef SIP_RUN
     SIP_CONVERT_TO_SUBCLASS_CODE
 
     const QString type = sipCpp->type();
 
-    if ( type == QLatin1String( "singleSymbol" ) )
+    if ( type == "singleSymbol"_L1 )
       sipType = sipType_QgsSingleSymbolRenderer;
-    else if ( type == QLatin1String( "categorizedSymbol" ) )
+    else if ( type == "categorizedSymbol"_L1 )
       sipType = sipType_QgsCategorizedSymbolRenderer;
-    else if ( type == QLatin1String( "graduatedSymbol" ) )
+    else if ( type == "graduatedSymbol"_L1 )
       sipType = sipType_QgsGraduatedSymbolRenderer;
-    else if ( type == QLatin1String( "RuleRenderer" ) )
+    else if ( type == "RuleRenderer"_L1 )
       sipType = sipType_QgsRuleBasedRenderer;
-    else if ( type == QLatin1String( "heatmapRenderer" ) )
+    else if ( type == "heatmapRenderer"_L1 )
       sipType = sipType_QgsHeatmapRenderer;
-    else if ( type == QLatin1String( "invertedPolygonRenderer" ) )
+    else if ( type == "mergedFeatureRenderer"_L1 )
+      sipType = sipType_QgsMergedFeatureRenderer;
+    else if ( type == "invertedPolygonRenderer"_L1 )
       sipType = sipType_QgsInvertedPolygonRenderer;
-    else if ( type == QLatin1String( "pointCluster" ) )
+    else if ( type == "pointCluster"_L1 )
       sipType = sipType_QgsPointClusterRenderer;
-    else if ( type == QLatin1String( "pointDisplacement" ) )
+    else if ( type == "pointDisplacement"_L1 )
       sipType = sipType_QgsPointDisplacementRenderer;
-    else if ( type == QLatin1String( "25dRenderer" ) )
+    else if ( type == "25dRenderer"_L1 )
       sipType = sipType_Qgs25DRenderer;
-    else if ( type == QLatin1String( "nullSymbol" ) )
+    else if ( type == "nullSymbol"_L1 )
       sipType = sipType_QgsNullSymbolRenderer;
-    else if ( type == QLatin1String( "embeddedSymbol" ) )
+    else if ( type == "embeddedSymbol"_L1 )
       sipType = sipType_QgsEmbeddedSymbolRenderer;
     else
       sipType = 0;
-    SIP_END
+  SIP_END
 #endif
 
   public:
@@ -148,7 +152,7 @@ class CORE_EXPORT QgsFeatureRenderer
      */
     enum class Property : int
     {
-      HeatmapRadius, //!< Heatmap renderer radius
+      HeatmapRadius,  //!< Heatmap renderer radius
       HeatmapMaximum, //!< Heatmap maximum value
     };
 
@@ -234,7 +238,11 @@ class CORE_EXPORT QgsFeatureRenderer
      *
      * \returns An expression used as where clause
      */
-    virtual QString filter( const QgsFields &fields = QgsFields() ) { Q_UNUSED( fields ) return QString(); }
+    virtual QString filter( const QgsFields &fields = QgsFields() )
+    {
+      Q_UNUSED( fields )
+      return QString();
+    }
 
     /**
      * Returns a list of attributes required by this renderer. Attributes not listed in here may
@@ -291,10 +299,10 @@ class CORE_EXPORT QgsFeatureRenderer
      */
     enum Capability SIP_ENUM_BASETYPE( IntFlag )
     {
-      SymbolLevels          = 1,      //!< Rendering with symbol levels (i.e. implements symbols(), symbolForFeature())
+      SymbolLevels = 1,               //!< Rendering with symbol levels (i.e. implements symbols(), symbolForFeature())
       MoreSymbolsPerFeature = 1 << 2, //!< May use more than one symbol to render a feature: symbolsForFeature() will return them
-      Filter                = 1 << 3, //!< Features may be filtered, i.e. some features may not be rendered (categorized, rule based ...)
-      ScaleDependent        = 1 << 4  //!< Depends on scale if feature will be rendered (rule based )
+      Filter = 1 << 3,                //!< Features may be filtered, i.e. some features may not be rendered (categorized, rule based ...)
+      ScaleDependent = 1 << 4         //!< Depends on scale if feature will be rendered (rule based )
     };
 
     Q_DECLARE_FLAGS( Capabilities, Capability )
@@ -416,6 +424,17 @@ class CORE_EXPORT QgsFeatureRenderer
      *
      */
     virtual void setLegendSymbolItem( const QString &key, QgsSymbol *symbol SIP_TRANSFER );
+
+    /**
+     * Sets the label for a legend symbol item.
+     * \param key rule key for legend symbol
+     * \param label new label for the legend item
+     *
+     * \see legendKeys()
+     *
+     * \since QGIS 4.2
+     */
+    virtual void setLegendSymbolItemLabel( const QString &key, const QString &label );
 
     /**
      * Attempts to convert the specified legend rule \a key to a QGIS expression matching

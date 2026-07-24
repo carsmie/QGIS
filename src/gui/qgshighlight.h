@@ -17,15 +17,16 @@
 
 #include "qgis_gui.h"
 #include "qgsfeature.h"
-#include "qgsrendercontext.h"
-#include "qgsmapcanvasitem.h"
 #include "qgsgeometry.h"
+#include "qgsmapcanvasitem.h"
+#include "qgsrendercontext.h"
+
 #include <QBrush>
 #include <QColor>
 #include <QList>
-#include <QPen>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPen>
 #include <QPointer>
 
 class QgsMapLayer;
@@ -79,7 +80,7 @@ class GUI_EXPORT QgsHighlight : public QgsMapCanvasItem
     }
     else
       sipType = nullptr;
-    SIP_END
+  SIP_END
 #endif
   public:
     Q_PROPERTY( QColor color READ color WRITE setColor )
@@ -179,6 +180,7 @@ class GUI_EXPORT QgsHighlight : public QgsMapCanvasItem
     void applyDefaultStyle();
 
   protected:
+    using QgsMapCanvasItem::paint;
     void paint( QPainter *p ) override;
 
     //! recalculates needed rectangle

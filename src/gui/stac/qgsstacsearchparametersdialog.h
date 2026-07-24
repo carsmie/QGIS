@@ -17,13 +17,14 @@
 #define QGSSTACSEARCHPARAMETERSDIALOG_H
 
 ///@cond PRIVATE
-#include "qgsrange.h"
-#include "qgsstaccollectionlist.h"
-#define SIP_NO_FILE
-
 #include "ui_qgsstacsearchparametersdialog.h"
 
+#include "qgsrange.h"
+#include "qgsstaccollectionlist.h"
+
 #include <QDialog>
+
+#define SIP_NO_FILE
 
 class QgsMapCanvas;
 class QStandardItemModel;
@@ -36,7 +37,7 @@ class QgsStacSearchParametersDialog : public QDialog, private Ui::QgsStacSearchP
 
   public:
     QgsStacSearchParametersDialog( QgsStacController *stac, QgsMapCanvas *canvas, QWidget *parent = nullptr );
-    ~QgsStacSearchParametersDialog();
+    ~QgsStacSearchParametersDialog() override;
 
     void accept() override;
     void reject() override;

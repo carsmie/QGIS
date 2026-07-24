@@ -32,7 +32,6 @@ class CORE_EXPORT QgsMapRendererAbstractCustomPainterJob : public QgsMapRenderer
 {
     Q_OBJECT
   public:
-
     /**
      * Constructor for QgsMapRendererAbstractCustomPainterJob, using the given
      * map \a settings.
@@ -40,14 +39,12 @@ class CORE_EXPORT QgsMapRendererAbstractCustomPainterJob : public QgsMapRenderer
     QgsMapRendererAbstractCustomPainterJob( const QgsMapSettings &settings );
 
   protected:
-
     /**
      * Prepares the given \a painter ready for a map render.
      *
      * The \a backgroundColor argument specifies the color to use for the map's background.
      */
     void preparePainter( QPainter *painter, const QColor &backgroundColor = Qt::transparent );
-
 };
 
 /**
@@ -143,7 +140,7 @@ class CORE_EXPORT QgsMapRendererCustomPainterJob : public QgsMapRendererAbstract
     QFutureWatcher<void> mFutureWatcher;
     std::unique_ptr< QgsLabelingEngine > mLabelingEngineV2;
 
-    bool mActive;
+    bool mActive = false;
     std::vector< LayerRenderJob > mLayerJobs;
     LabelRenderJob mLabelJob;
     bool mRenderSynchronously = false;

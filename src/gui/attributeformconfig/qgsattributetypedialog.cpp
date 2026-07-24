@@ -16,27 +16,32 @@
  ***************************************************************************/
 
 #include "qgsattributetypedialog.h"
-#include "moc_qgsattributetypedialog.cpp"
-#include "qgsproject.h"
-#include "qgslogger.h"
-#include "qgsfieldformatterregistry.h"
-#include "qgsfieldformatter.h"
+
+#include <cfloat>
+#include <climits>
+
+#include "qgsapplication.h"
 #include "qgseditorwidgetfactory.h"
 #include "qgseditorwidgetregistry.h"
-#include "qgsgui.h"
-#include "qgsapplication.h"
 #include "qgsexpressioncontextutils.h"
+#include "qgsfieldformatter.h"
+#include "qgsfieldformatterregistry.h"
+#include "qgsgui.h"
+#include "qgslogger.h"
+#include "qgsproject.h"
 
-#include <QTableWidgetItem>
 #include <QFile>
-#include <QMessageBox>
 #include <QFileDialog>
-#include <QTextStream>
+#include <QMessageBox>
 #include <QScrollBar>
 #include <QStandardItemModel>
+#include <QString>
+#include <QTableWidgetItem>
+#include <QTextStream>
 
-#include <climits>
-#include <cfloat>
+#include "moc_qgsattributetypedialog.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsAttributeTypeDialog::QgsAttributeTypeDialog( QgsVectorLayer *vl, int fieldIdx, QWidget *parent )
   : QWidget( parent )
@@ -54,7 +59,7 @@ QgsAttributeTypeDialog::QgsAttributeTypeDialog( QgsVectorLayer *vl, int fieldIdx
   while ( it.hasNext() )
   {
     it.next();
-    mWidgetTypeComboBox->addItem( it.value()->name(), it.key() );
+    mWidgetTypeComboBox->addItem( it.value()->icon(), it.value()->name(), it.key() );
     QStandardItem *item = widgetTypeModel->item( mWidgetTypeComboBox->count() - 1 );
     if ( !it.value()->supportsField( vl, fieldIdx ) )
       item->setFlags( item->flags() & ~Qt::ItemIsEnabled );
@@ -68,21 +73,45 @@ QgsAttributeTypeDialog::QgsAttributeTypeDialog( QgsVectorLayer *vl, int fieldIdx
     mEditableExpressionButton->setEnabled( false );
   }
 
+  mReuseLastValuePolicyComboBox->setSizeAdjustPolicy( QComboBox::AdjustToMinimumContentsLengthWithIcon );
+  mReuseLastValuePolicyComboBox->addItem( tr( "Use Default Value" ), QVariant::fromValue( Qgis::AttributeFormReuseLastValuePolicy::NotAllowed ) );
+  mReuseLastValuePolicyComboBox->addItem( tr( "Reuse Last Entered Value" ), QVariant::fromValue( Qgis::AttributeFormReuseLastValuePolicy::AllowedDefaultOn ) );
+  mReuseLastValuePolicyComboBox->addItem( tr( "Allow Reuse of Last Entered Value" ), QVariant::fromValue( Qgis::AttributeFormReuseLastValuePolicy::AllowedDefaultOff ) );
+  connect( mReuseLastValuePolicyComboBox, qOverload<int>( &QComboBox::currentIndexChanged ), this, &QgsAttributeTypeDialog::updateReuseLastValuePolicyLabel );
+  updateReuseLastValuePolicyLabel();
+
+  // Behavior to have the provider comment as the null value and consider an empty string as a valid custom comment
+  const QIcon clearIcon = QgsApplication::getThemeIcon( "/mIconClearText.svg" );
+  mClearAction = new QAction( clearIcon, tr( "clear" ), this );
+  mClearAction->setCheckable( false );
+  connect( mClearAction, &QAction::triggered, this, [this]() { mDisplayedComment->setText( mComment ); } );
+  connect( mDisplayedComment, &QLineEdit::textChanged, this, &QgsAttributeTypeDialog::displayedCommentChanged );
+
   mExpressionWidget->registerExpressionContextGenerator( this );
   mExpressionWidget->setLayer( mLayer );
 
   mEditableExpressionButton->registerExpressionContextGenerator( this );
-  mEditableExpressionButton->init( static_cast<int>( QgsEditFormConfig::DataDefinedProperty::Editable ), mDataDefinedProperties.property( QgsEditFormConfig::DataDefinedProperty::Editable ), vl->editFormConfig().propertyDefinitions(), vl );
+  mEditableExpressionButton
+    ->init( static_cast<int>( QgsEditFormConfig::DataDefinedProperty::Editable ), mDataDefinedProperties.property( QgsEditFormConfig::DataDefinedProperty::Editable ), vl->editFormConfig().propertyDefinitions(), vl );
   mEditableExpressionButton->registerLinkedWidget( isFieldEditableCheckBox );
   connect( mEditableExpressionButton, &QgsPropertyOverrideButton::changed, this, [this] {
     mDataDefinedProperties.setProperty( QgsEditFormConfig::DataDefinedProperty::Editable, mEditableExpressionButton->toProperty() );
   } );
 
   mAliasExpressionButton->registerExpressionContextGenerator( this );
-  mAliasExpressionButton->init( static_cast<int>( QgsEditFormConfig::DataDefinedProperty::Alias ), mDataDefinedProperties.property( QgsEditFormConfig::DataDefinedProperty::Alias ), vl->editFormConfig().propertyDefinitions(), vl );
+  mAliasExpressionButton
+    ->init( static_cast<int>( QgsEditFormConfig::DataDefinedProperty::Alias ), mDataDefinedProperties.property( QgsEditFormConfig::DataDefinedProperty::Alias ), vl->editFormConfig().propertyDefinitions(), vl );
   connect( mAliasExpressionButton, &QgsPropertyOverrideButton::changed, this, [this] {
     mDataDefinedProperties.setProperty( QgsEditFormConfig::DataDefinedProperty::Alias, mAliasExpressionButton->toProperty() );
   } );
+
+  mCustomCommentExpressionButton->registerExpressionContextGenerator( this );
+  mCustomCommentExpressionButton
+    ->init( static_cast<int>( QgsEditFormConfig::DataDefinedProperty::CustomComment ), mDataDefinedProperties.property( QgsEditFormConfig::DataDefinedProperty::CustomComment ), vl->editFormConfig().propertyDefinitions(), vl );
+  connect( mCustomCommentExpressionButton, &QgsPropertyOverrideButton::changed, this, [this] {
+    mDataDefinedProperties.setProperty( QgsEditFormConfig::DataDefinedProperty::CustomComment, mCustomCommentExpressionButton->toProperty() );
+  } );
+
 
   connect( mExpressionWidget, &QgsExpressionLineEdit::expressionChanged, this, &QgsAttributeTypeDialog::defaultExpressionChanged );
   connect( mUniqueCheckBox, &QCheckBox::toggled, this, [this]( bool checked ) {
@@ -214,7 +243,10 @@ void QgsAttributeTypeDialog::setEditorWidgetType( const QString &type, bool forc
     {
       // Force to reset the config, even if
       // if the type matches the current one
-      mEditorConfigWidgets.value( type )->setConfig( mWidgetConfig );
+      if ( QgsEditorConfigWidget *widget = mEditorConfigWidgets.value( type ) )
+      {
+        widget->setConfig( mWidgetConfig );
+      }
     }
     stackedWidget->setCurrentWidget( mEditorConfigWidgets[type] );
   }
@@ -233,7 +265,7 @@ void QgsAttributeTypeDialog::setEditorWidgetType( const QString &type, bool forc
     }
     else
     {
-      QgsDebugError( QStringLiteral( "Oops, couldn't create editor widget config dialog..." ) );
+      QgsDebugError( u"Oops, couldn't create editor widget config dialog..."_s );
     }
   }
 
@@ -243,13 +275,13 @@ void QgsAttributeTypeDialog::setEditorWidgetType( const QString &type, bool forc
   {
     isFieldEditableCheckBox->setEnabled( false );
     mEditableExpressionButton->setEnabled( false );
-    reuseLastValuesCheckBox->setEnabled( false );
+    mReuseLastValuePolicyComboBox->setEnabled( false );
   }
   else
   {
     isFieldEditableCheckBox->setEnabled( true );
     mEditableExpressionButton->setEnabled( true );
-    reuseLastValuesCheckBox->setEnabled( true );
+    mReuseLastValuePolicyComboBox->setEnabled( true );
   }
 
   //update default expression preview
@@ -293,14 +325,14 @@ bool QgsAttributeTypeDialog::labelOnTop() const
   return labelOnTopCheckBox->isChecked();
 }
 
-void QgsAttributeTypeDialog::setReuseLastValues( bool reuse )
+void QgsAttributeTypeDialog::setReuseLastValuePolicy( Qgis::AttributeFormReuseLastValuePolicy policy )
 {
-  reuseLastValuesCheckBox->setChecked( reuse );
+  mReuseLastValuePolicyComboBox->setCurrentIndex( mReuseLastValuePolicyComboBox->findData( QVariant::fromValue( policy ) ) );
 }
 
-bool QgsAttributeTypeDialog::reuseLastValues() const
+Qgis::AttributeFormReuseLastValuePolicy QgsAttributeTypeDialog::reuseLastValuePolicy() const
 {
-  return reuseLastValuesCheckBox->isChecked();
+  return mReuseLastValuePolicyComboBox->currentData().value<Qgis::AttributeFormReuseLastValuePolicy>();
 }
 
 void QgsAttributeTypeDialog::setConstraintExpressionDescription( const QString &desc )
@@ -474,6 +506,59 @@ QString QgsAttributeTypeDialog::alias() const
   return mAlias->text();
 }
 
+void QgsAttributeTypeDialog::setCustomComment( const QString &customComment )
+{
+  mCustomComment = customComment;
+
+  updateDisplayedComment();
+}
+
+QString QgsAttributeTypeDialog::customComment() const
+{
+  return mCustomComment;
+}
+
+void QgsAttributeTypeDialog::updateDisplayedComment()
+{
+  if ( mCustomComment.isNull() )
+  {
+    mDisplayedComment->setText( mComment );
+  }
+  else
+  {
+    mDisplayedComment->setText( mCustomComment );
+  }
+}
+
+void QgsAttributeTypeDialog::displayedCommentChanged()
+{
+  // The clear button should only be visible when there is a (possibly empty) custom comment
+  bool isActionAdded = mDisplayedComment->actions().contains( mClearAction );
+
+  if ( mDisplayedComment->text() == mComment )
+  {
+    // When the displayed comment text equals the provider comment, the custom comment should be reset
+    mCustomComment = QString();
+    // ...and the clear action should not be visible
+    if ( isActionAdded )
+    {
+      mDisplayedComment->removeAction( mClearAction );
+    }
+  }
+  else
+  {
+    // When the displayed comment text equals not the provider comment, the custom comment should be changed
+    mCustomComment = mDisplayedComment->text();
+
+    // ...and the clear action should be visible
+    if ( !isActionAdded )
+    {
+      mDisplayedComment->addAction( mClearAction, QLineEdit::TrailingPosition );
+    }
+  }
+}
+
+
 void QgsAttributeTypeDialog::setDataDefinedProperties( const QgsPropertyCollection &properties )
 {
   mDataDefinedProperties = properties;
@@ -485,11 +570,17 @@ void QgsAttributeTypeDialog::setDataDefinedProperties( const QgsPropertyCollecti
   {
     mEditableExpressionButton->setToProperty( properties.property( QgsEditFormConfig::DataDefinedProperty::Editable ) );
   }
+  if ( properties.hasProperty( QgsEditFormConfig::DataDefinedProperty::CustomComment ) )
+  {
+    mCustomCommentExpressionButton->setToProperty( properties.property( QgsEditFormConfig::DataDefinedProperty::CustomComment ) );
+  }
 }
 
 void QgsAttributeTypeDialog::setComment( const QString &comment )
 {
-  laComment->setText( comment );
+  mComment = comment;
+
+  updateDisplayedComment();
 }
 
 void QgsAttributeTypeDialog::setLabelOnTop( bool onTop )
@@ -568,7 +659,29 @@ void QgsAttributeTypeDialog::updateSplitPolicyLabel()
       helperText = tr( "Clears the field to an unset state." );
       break;
   }
-  mSplitPolicyDescriptionLabel->setText( QStringLiteral( "<i>%1</i>" ).arg( helperText ) );
+  mSplitPolicyDescriptionLabel->setText( u"<i>%1</i>"_s.arg( helperText ) );
+}
+
+void QgsAttributeTypeDialog::updateReuseLastValuePolicyLabel()
+{
+  QString helperText;
+  switch ( mReuseLastValuePolicyComboBox->currentData().value<Qgis::AttributeFormReuseLastValuePolicy>() )
+  {
+    case Qgis::AttributeFormReuseLastValuePolicy::NotAllowed:
+      helperText = tr( "The default value will be used." );
+      break;
+
+    case Qgis::AttributeFormReuseLastValuePolicy::AllowedDefaultOn:
+      helperText = tr( "The last value will be reused. A pin button is added to toggle the behavior. When active, the last value will take priority over the default value." );
+      break;
+
+    case Qgis::AttributeFormReuseLastValuePolicy::AllowedDefaultOff:
+      helperText = tr(
+        "The last value can be reused, however it will not be by default. A pin button is added to toggle the behavior. When active, the last value will take priority over the default value."
+      );
+      break;
+  }
+  mReuseLastValuePolicyDescriptionLabel->setText( u"<i>%1</i>"_s.arg( helperText ) );
 }
 
 void QgsAttributeTypeDialog::updateDuplicatePolicyLabel()
@@ -588,7 +701,7 @@ void QgsAttributeTypeDialog::updateDuplicatePolicyLabel()
       helperText = tr( "Clears the field to an unset state." );
       break;
   }
-  mDuplicatePolicyDescriptionLabel->setText( QStringLiteral( "<i>%1</i>" ).arg( helperText ) );
+  mDuplicatePolicyDescriptionLabel->setText( u"<i>%1</i>"_s.arg( helperText ) );
 }
 
 void QgsAttributeTypeDialog::updateMergePolicyLabel()
@@ -628,7 +741,7 @@ void QgsAttributeTypeDialog::updateMergePolicyLabel()
       helperText = tr( "Set attribute to NULL." );
       break;
   }
-  mMergePolicyDescriptionLabel->setText( QStringLiteral( "<i>%1</i>" ).arg( helperText ) );
+  mMergePolicyDescriptionLabel->setText( u"<i>%1</i>"_s.arg( helperText ) );
 }
 
 QStandardItem *QgsAttributeTypeDialog::currentItem() const

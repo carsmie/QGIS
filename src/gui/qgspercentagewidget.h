@@ -16,9 +16,10 @@
 #ifndef QGSPERCENTAGEWIDGET_H
 #define QGSPERCENTAGEWIDGET_H
 
-#include <QWidget>
-#include "qgis_sip.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
+
+#include <QWidget>
 
 class QgsDoubleSpinBox;
 class QSlider;
@@ -46,6 +47,13 @@ class GUI_EXPORT QgsPercentageWidget : public QWidget
      * \see valueChanged()
      */
     double value() const;
+
+    /**
+     * Returns the spin box part of the widget.
+     *
+     * \since QGIS 4.2
+     */
+    QgsDoubleSpinBox *spinBox();
 
   public slots:
 

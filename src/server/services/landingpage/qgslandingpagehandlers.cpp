@@ -16,16 +16,20 @@
  ***************************************************************************/
 
 #include "qgslandingpagehandlers.h"
-#include "qgslandingpageutils.h"
-#include "qgsserverinterface.h"
-#include "qgsserverresponse.h"
-#include "qgsserverprojectutils.h"
-#include "qgsvectorlayer.h"
-#include "qgslayertreenode.h"
-#include "qgslayertree.h"
 
-#include <QDir>
+#include "qgslandingpageutils.h"
+#include "qgslayertree.h"
+#include "qgslayertreenode.h"
+#include "qgsserverinterface.h"
+#include "qgsserverprojectutils.h"
+#include "qgsserverresponse.h"
+#include "qgsvectorlayer.h"
+
 #include <QCryptographicHash>
+#include <QDir>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsLandingPageHandler::QgsLandingPageHandler( const QgsServerSettings *settings )
   : mSettings( settings )
@@ -46,18 +50,19 @@ void QgsLandingPageHandler::handleRequest( const QgsServerApiContext &context ) 
   if ( urlPath == requestPrefix )
   {
     QUrl url { context.request()->url() };
-    url.setPath( QStringLiteral( "%1/index.%2" )
-                   .arg( requestPrefix, QgsServerOgcApi::contentTypeToExtension( contentTypeFromRequest( context.request() ) ) ) );
+    url.setPath( u"%1/index.%2"_s.arg( requestPrefix, QgsServerOgcApi::contentTypeToExtension( contentTypeFromRequest( context.request() ) ) ) );
     context.response()->setStatusCode( 302 );
-    context.response()->setHeader( QStringLiteral( "Location" ), url.toString() );
+    context.response()->setHeader( u"Location"_s, url.toString() );
   }
   else
   {
-    const json projects = projectsData( *context.request() );
+    const json projects = projectsData( *context.request(), context.serverInterface() );
     json data {
       { "links", links( context ) },
       { "projects", projects },
-      { "projects_count", projects.size() }
+      { "projects_count", projects.size() },
+      // Add env variable to allow creation of OAPIF URL
+      { "QGIS_SERVER_API_WFS3_ROOT_PATH", context.serverInterface()->serverSettings()->apiWfs3RootPath().toStdString() }
     };
     write( data, context, { { "pageTitle", linkTitle() }, { "navigation", json::array() } } );
   }
@@ -66,7 +71,7 @@ void QgsLandingPageHandler::handleRequest( const QgsServerApiContext &context ) 
 const QString QgsLandingPageHandler::templatePath( const QgsServerApiContext &context ) const
 {
   QString path { context.serverInterface()->serverSettings()->apiResourcesDirectory() };
-  path += QLatin1String( "/ogc/static/landingpage/index.html" );
+  path += "/ogc/static/landingpage/index.html"_L1;
   return path;
 }
 
@@ -86,19 +91,36 @@ QString QgsLandingPageHandler::prefix( const QgsServerSettings *settings )
   return prefix;
 }
 
-json QgsLandingPageHandler::projectsData( const QgsServerRequest &request ) const
+json QgsLandingPageHandler::projectsData( const QgsServerRequest &request, QgsServerInterface *serverInterface ) const
 {
   json j = json::array();
+  const QString originalConfigFilePath { serverInterface ? serverInterface->configFilePath() : QString() };
   const QMap<QString, QString> availableProjects = QgsLandingPageUtils::projects( *mSettings );
   for ( auto it = availableProjects.constBegin(); it != availableProjects.constEnd(); ++it )
   {
+    if ( serverInterface )
+    {
+      serverInterface->setConfigFilePath( it.value() );
+    }
     try
     {
-      j.push_back( QgsLandingPageUtils::projectInfo( it.value(), mSettings, request ) );
+      j.push_back( QgsLandingPageUtils::projectInfo( it.value(), mSettings, request, serverInterface ) );
     }
     catch ( QgsServerException & )
     {
-      QgsMessageLog::logMessage( QStringLiteral( "Could not open project '%1': skipping." ).arg( it.value() ), QStringLiteral( "Landing Page" ), Qgis::MessageLevel::Critical );
+      QgsMessageLog::logMessage( u"Could not open project '%1': skipping."_s.arg( it.value() ), u"Landing Page"_s, Qgis::MessageLevel::Critical );
+    }
+    catch ( ... )
+    {
+      if ( serverInterface )
+      {
+        serverInterface->setConfigFilePath( originalConfigFilePath );
+      }
+      throw;
+    }
+    if ( serverInterface )
+    {
+      serverInterface->setConfigFilePath( originalConfigFilePath );
     }
   }
   return j;
@@ -118,15 +140,45 @@ void QgsLandingPageMapHandler::handleRequest( const QgsServerApiContext &context
   const QString projectPath { QgsLandingPageUtils::projectUriFromUrl( context.request()->url().path(), *mSettings ) };
   if ( projectPath.isEmpty() )
   {
-    throw QgsServerApiNotFoundError( QStringLiteral( "Requested project hash not found!" ) );
+    throw QgsServerApiNotFoundError( u"Requested project hash not found!"_s );
   }
-  data["project"] = QgsLandingPageUtils::projectInfo( projectPath, mSettings, *context.request() );
+  const QString originalConfigFilePath { context.serverInterface() ? context.serverInterface()->configFilePath() : QString() };
+  if ( context.serverInterface() )
+  {
+    context.serverInterface()->setConfigFilePath( projectPath );
+  }
+  try
+  {
+    data["project"] = QgsLandingPageUtils::projectInfo( projectPath, mSettings, *context.request(), context.serverInterface() );
+  }
+  catch ( ... )
+  {
+    if ( context.serverInterface() )
+    {
+      context.serverInterface()->setConfigFilePath( originalConfigFilePath );
+    }
+    throw;
+  }
+  if ( context.serverInterface() )
+  {
+    context.serverInterface()->setConfigFilePath( originalConfigFilePath );
+  }
   write( data, context, { { "pageTitle", linkTitle() }, { "navigation", json::array() } } );
 }
 
 QRegularExpression QgsLandingPageMapHandler::path() const
 {
   return QRegularExpression( QStringLiteral( R"re(^%1/map/([a-f0-9]{32}).*$)re" ).arg( QgsLandingPageHandler::prefix( mSettings ) ) );
+}
+
+const QString QgsLandingPageMapHandler::templatePath( const QgsServerApiContext &context ) const
+{
+  // resources/server/api + /ogc/templates/wfs3/ + operationId() + .html
+  QString path { context.serverInterface()->serverSettings()->apiResourcesDirectory() };
+  path += "/ogc/templates/wfs3/"_L1;
+  path += QString::fromStdString( operationId() );
+  path += ".html"_L1;
+  return path;
 }
 
 

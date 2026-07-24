@@ -21,28 +21,28 @@ __copyright__ = "(C) 2017, Nyall Dawson"
 
 import os
 import unittest
-from qgis.testing import start_app, QgisTestCase
+
+from qgis.analysis import QgsNativeAlgorithms
 from qgis.core import (
     QgsApplication,
     QgsCoordinateReferenceSystem,
-    QgsProcessingParameterMatrix,
+    QgsFeature,
+    QgsProcessingModelAlgorithm,
     QgsProcessingOutputLayerDefinition,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFileDestination,
     QgsProcessingParameterFolderDestination,
-    QgsProcessingParameterVectorDestination,
-    QgsProcessingParameterRasterDestination,
+    QgsProcessingParameterMatrix,
     QgsProcessingParameterRange,
-    QgsFeature,
-    QgsProcessingModelAlgorithm,
-    QgsUnitTypes,
+    QgsProcessingParameterRasterDestination,
+    QgsProcessingParameterVectorDestination,
     QgsProject,
+    QgsUnitTypes,
 )
-from qgis.analysis import QgsNativeAlgorithms
+from qgis.testing import QgisTestCase, start_app
 
-from processing.gui.AlgorithmDialog import AlgorithmDialog
+from processing.gui.algorithm_widget import AlgorithmWidget
 from processing.gui.BatchAlgorithmDialog import BatchAlgorithmDialog
-from processing.modeler.ModelerParametersDialog import ModelerParametersDialog
 from processing.gui.wrappers import (
     BandWidgetWrapper,
     BooleanWidgetWrapper,
@@ -88,6 +88,7 @@ from processing.gui.wrappers import (
     VectorLayerWidgetWrapper,
     WidgetWrapperFactory,
 )
+from processing.modeler.ModelerParametersDialog import ModelerParametersDialog
 
 start_app()
 QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())
@@ -96,17 +97,15 @@ testDataPath = os.path.join(os.path.dirname(__file__), "testdata")
 
 
 class AlgorithmDialogTest(QgisTestCase):
-
     def testCreation(self):
         alg = QgsApplication.processingRegistry().createAlgorithmById(
             "native:centroids"
         )
-        a = AlgorithmDialog(alg)
+        a = AlgorithmWidget(alg)
         self.assertEqual(a.mainWidget().algorithm(), alg)
 
 
 class WrappersTest(QgisTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -117,16 +116,17 @@ class WrappersTest(QgisTestCase):
             "native:centroids"
         )
 
-        # algorithm dialog
-        dlg = AlgorithmDialog(alg)
-        wrapper = WidgetWrapperFactory.create_wrapper_from_class(param, dlg)
+        # algorithm widget
+        alg_widget = AlgorithmWidget(alg)
+        wrapper = WidgetWrapperFactory.create_wrapper_from_class(param, alg_widget)
         self.assertIsNotNone(wrapper)
         self.assertIsInstance(wrapper, expected_wrapper_class)
-        self.assertEqual(wrapper.dialog, dlg)
+        self.assertEqual(wrapper.dialog, alg_widget)
         self.assertIsNotNone(wrapper.widget)
         wrapper.widget.deleteLater()
         del wrapper.widget
         del wrapper
+        alg_widget.deleteLater()
 
         alg = QgsApplication.processingRegistry().createAlgorithmById(
             "native:centroids"
@@ -138,6 +138,7 @@ class WrappersTest(QgisTestCase):
         self.assertIsInstance(wrapper, expected_wrapper_class)
         self.assertEqual(wrapper.dialog, dlg)
         self.assertIsNotNone(wrapper.widget)
+        dlg.deleteLater()
 
         alg = QgsApplication.processingRegistry().createAlgorithmById(
             "native:centroids"
@@ -154,6 +155,7 @@ class WrappersTest(QgisTestCase):
 
         wrapper.widget.deleteLater()
         del wrapper.widget
+        dlg.deleteLater()
 
     def testBoolean(self):
         self.checkConstructWrapper(
@@ -230,9 +232,9 @@ class WrappersTest(QgisTestCase):
         alg = QgsApplication.processingRegistry().createAlgorithmById(
             "native:centroids"
         )
-        dlg = AlgorithmDialog(alg)
+        alg_widget = AlgorithmWidget(alg)
         param = QgsProcessingParameterFeatureSource("test")
-        wrapper = FeatureSourceWidgetWrapper(param, dlg)
+        wrapper = FeatureSourceWidgetWrapper(param, alg_widget)
         widget = wrapper.createWidget()
 
         # check layer value
@@ -259,6 +261,7 @@ class WrappersTest(QgisTestCase):
 
         widget.deleteLater()
         del widget
+        alg_widget.deleteLater()
 
     def testRange(self):
         # minimal test to check if wrapper generate GUI for each processign context
@@ -269,7 +272,7 @@ class WrappersTest(QgisTestCase):
         alg = QgsApplication.processingRegistry().createAlgorithmById(
             "native:centroids"
         )
-        dlg = AlgorithmDialog(alg)
+        alg_widget = AlgorithmWidget(alg)
         param = QgsProcessingParameterRange(
             name="test",
             description="test",
@@ -277,7 +280,7 @@ class WrappersTest(QgisTestCase):
             defaultValue="0.0,100.0",
         )
 
-        wrapper = RangeWidgetWrapper(param, dlg)
+        wrapper = RangeWidgetWrapper(param, alg_widget)
         widget = wrapper.createWidget()
 
         # range values check
@@ -303,7 +306,7 @@ class WrappersTest(QgisTestCase):
             defaultValue="0.1,100.1",
         )
 
-        wrapper = RangeWidgetWrapper(param, dlg)
+        wrapper = RangeWidgetWrapper(param, alg_widget)
         widget = wrapper.createWidget()
 
         # range values check
@@ -325,6 +328,7 @@ class WrappersTest(QgisTestCase):
         self.assertEqual(widget.getValue(), "50.0,50.0")
         widget.spnMin.setValue(100.1)
         self.assertEqual(widget.getValue(), "100.0,100.0")
+        alg_widget.deleteLater()
 
     def testMapLayer(self):
         self.checkConstructWrapper(
@@ -344,9 +348,9 @@ class WrappersTest(QgisTestCase):
         alg = QgsApplication.processingRegistry().createAlgorithmById(
             "native:centroids"
         )
-        dlg = AlgorithmDialog(alg)
+        alg_widget = AlgorithmWidget(alg)
         param = QgsProcessingParameterDistance("test")
-        wrapper = DistanceWidgetWrapper(param, dlg)
+        wrapper = DistanceWidgetWrapper(param, alg_widget)
         widget = wrapper.createWidget()
 
         # test units
@@ -434,6 +438,7 @@ class WrappersTest(QgisTestCase):
         self.assertEqual(widget.getValue(), 5)
 
         widget.deleteLater()
+        alg_widget.deleteLater()
 
     def testMatrix(self):
         self.checkConstructWrapper(
@@ -443,11 +448,11 @@ class WrappersTest(QgisTestCase):
         alg = QgsApplication.processingRegistry().createAlgorithmById(
             "native:centroids"
         )
-        dlg = AlgorithmDialog(alg)
+        alg_widget = AlgorithmWidget(alg)
         param = QgsProcessingParameterMatrix(
             "test", "test", 2, True, ["x", "y"], [["a", "b"], ["c", "d"]]
         )
-        wrapper = FixedTableWidgetWrapper(param, dlg)
+        wrapper = FixedTableWidgetWrapper(param, alg_widget)
         widget = wrapper.createWidget()
 
         # check that default value is initially set
@@ -459,6 +464,7 @@ class WrappersTest(QgisTestCase):
         self.assertEqual(wrapper.value(), [[1, 2], [3, 4]])
 
         widget.deleteLater()
+        alg_widget.deleteLater()
 
     def testNumber(self):
         self.checkConstructWrapper(

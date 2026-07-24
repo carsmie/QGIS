@@ -15,31 +15,36 @@
  ***************************************************************************/
 
 #include "qgslayoutitemregistry.h"
-#include "moc_qgslayoutitemregistry.cpp"
-#include "qgslayoutitemshape.h"
-#include "qgslayoutitemmap.h"
-#include "qgslayoutitemlabel.h"
-#include "qgslayoutitemlegend.h"
-#include "qgslayoutitempolygon.h"
-#include "qgslayoutitempolyline.h"
-#include "qgslayoutitempage.h"
-#include "qgslayoutitempicture.h"
+
+#include "qgslayoutframe.h"
+#include "qgslayoutitemattributetable.h"
+#include "qgslayoutitemchart.h"
+#include "qgslayoutitemelevationprofile.h"
 #include "qgslayoutitemgroup.h"
 #include "qgslayoutitemhtml.h"
-#include "qgslayoutitemscalebar.h"
-#include "qgslayoutitemattributetable.h"
+#include "qgslayoutitemlabel.h"
+#include "qgslayoutitemlegend.h"
 #include "qgslayoutitemmanualtable.h"
-#include "qgslayoutitemtexttable.h"
-#include "qgslayoutframe.h"
+#include "qgslayoutitemmap.h"
 #include "qgslayoutitemmarker.h"
-#include "qgslayoutitemelevationprofile.h"
+#include "qgslayoutitempage.h"
+#include "qgslayoutitempicture.h"
+#include "qgslayoutitempolygon.h"
+#include "qgslayoutitempolyline.h"
+#include "qgslayoutitemscalebar.h"
+#include "qgslayoutitemshape.h"
+#include "qgslayoutitemtexttable.h"
 
 #include <QPainter>
+#include <QString>
+
+#include "moc_qgslayoutitemregistry.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayoutItemRegistry::QgsLayoutItemRegistry( QObject *parent )
   : QObject( parent )
-{
-}
+{}
 
 QgsLayoutItemRegistry::~QgsLayoutItemRegistry()
 {
@@ -59,7 +64,7 @@ bool QgsLayoutItemRegistry::populate()
     return new TestLayoutItem( layout );
   };
 
-  addLayoutItemType( new QgsLayoutItemMetadata( QgsLayoutItemRegistry::LayoutItem + 1002, QStringLiteral( "temp type" ), createTemporaryItem ) );
+  addLayoutItemType( new QgsLayoutItemMetadata( QgsLayoutItemRegistry::LayoutItem + 1002, u"temp type"_s, createTemporaryItem ) );
 #endif
 
   addLayoutItemType( new QgsLayoutItemMetadata( LayoutGroup, QObject::tr( "Group" ), QObject::tr( "Groups" ), QgsLayoutItemGroup::create ) );
@@ -70,8 +75,7 @@ bool QgsLayoutItemRegistry::populate()
   addLayoutItemType( new QgsLayoutItemMetadata( LayoutLabel, QObject::tr( "Label" ), QObject::tr( "Labels" ), QgsLayoutItemLabel::create ) );
   addLayoutItemType( new QgsLayoutItemMetadata( LayoutLegend, QObject::tr( "Legend" ), QObject::tr( "Legends" ), QgsLayoutItemLegend::create ) );
   addLayoutItemType( new QgsLayoutItemMetadata( LayoutScaleBar, QObject::tr( "Scalebar" ), QObject::tr( "Scalebars" ), QgsLayoutItemScaleBar::create ) );
-  addLayoutItemType( new QgsLayoutItemMetadata( LayoutShape, QObject::tr( "Shape" ), QObject::tr( "Shapes" ), []( QgsLayout * layout )
-  {
+  addLayoutItemType( new QgsLayoutItemMetadata( LayoutShape, QObject::tr( "Shape" ), QObject::tr( "Shapes" ), []( QgsLayout *layout ) {
     QgsLayoutItemShape *shape = new QgsLayoutItemShape( layout );
     shape->setShapeType( QgsLayoutItemShape::Rectangle );
     return shape;
@@ -81,6 +85,7 @@ bool QgsLayoutItemRegistry::populate()
   addLayoutItemType( new QgsLayoutItemMetadata( LayoutPolyline, QObject::tr( "Polyline" ), QObject::tr( "Polylines" ), QgsLayoutItemPolyline::create ) );
 
   addLayoutItemType( new QgsLayoutItemMetadata( LayoutElevationProfile, QObject::tr( "Elevation Profile" ), QObject::tr( "Elevation Profiles" ), QgsLayoutItemElevationProfile::create ) );
+  addLayoutItemType( new QgsLayoutItemMetadata( LayoutChart, QObject::tr( "Chart" ), QObject::tr( "Charts" ), QgsLayoutItemChart::create ) );
 
   addLayoutMultiFrameType( new QgsLayoutMultiFrameMetadata( LayoutHtml, QObject::tr( "HTML" ), QgsLayoutItemHtml::create ) );
   addLayoutMultiFrameType( new QgsLayoutMultiFrameMetadata( LayoutAttributeTable, QObject::tr( "Attribute Table" ), QgsLayoutItemAttributeTable::create ) );
@@ -202,12 +207,12 @@ TestLayoutItem::TestLayoutItem( QgsLayout *layout )
   mColor = QColor::fromHsv( h, s, v );
 
   QgsStringMap properties;
-  properties.insert( QStringLiteral( "color" ), mColor.name() );
-  properties.insert( QStringLiteral( "style" ), QStringLiteral( "solid" ) );
-  properties.insert( QStringLiteral( "style_border" ), QStringLiteral( "solid" ) );
-  properties.insert( QStringLiteral( "color_border" ), QStringLiteral( "black" ) );
-  properties.insert( QStringLiteral( "width_border" ), QStringLiteral( "0.3" ) );
-  properties.insert( QStringLiteral( "joinstyle" ), QStringLiteral( "miter" ) );
+  properties.insert( u"color"_s, mColor.name() );
+  properties.insert( u"style"_s, u"solid"_s );
+  properties.insert( u"style_border"_s, u"solid"_s );
+  properties.insert( u"color_border"_s, u"black"_s );
+  properties.insert( u"width_border"_s, u"0.3"_s );
+  properties.insert( u"joinstyle"_s, u"miter"_s );
   mShapeStyleSymbol = QgsFillSymbol::createSimple( properties );
 
 }

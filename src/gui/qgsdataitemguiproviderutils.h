@@ -16,13 +16,15 @@
 #ifndef QGSDATAITEMGUIPROVIDERUTILS_H
 #define QGSDATAITEMGUIPROVIDERUTILS_H
 
+#include <functional>
+
+#include "qgis.h"
 #include "qgis_gui.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgsdataitem.h"
 #include "qgsdataitemguiprovider.h"
+
 #include <QPointer>
-#include <functional>
 
 class QgsDataItem;
 
@@ -44,8 +46,7 @@ class GUI_EXPORT QgsDataItemGuiProviderUtils
      *
      * \note Not available in Python bindings
      */
-    template<class T>
-    static void deleteConnections( const QList<T *> &items, const std::function<void( const QString & )> &deleteConnection, QgsDataItemGuiContext context )
+    template<class T> static void deleteConnections( const QList<T *> &items, const std::function<void( const QString & )> &deleteConnection, QgsDataItemGuiContext context )
     {
       ( void ) context;
       if ( items.empty() )
@@ -106,6 +107,23 @@ class GUI_EXPORT QgsDataItemGuiProviderUtils
       QObject *connectionContext
     );
 
+    /**
+     * Add an \a actionToAdd to the sub menu with \a subMenuName in \a mainMenu. If the sub menu with given name does not exist it will be created.
+     *
+     * \param mainMenu The menu in which sub menu is search for or created.
+     * \param actionToAdd The action to add.
+     * \param subMenuName Translated name of the sub menu that is searched for or created.
+     *
+     * \since QGIS 4.0
+     */
+    static void addToSubMenu( QMenu *mainMenu, QAction *actionToAdd, const QString &subMenuName );
+
+    /**
+     * Refresh child of \a item that has give name
+     *
+     * \since QGIS 4.0
+     */
+    static void refreshChildWithName( QgsDataItem *item, const QString &name );
 #endif
 
   private:

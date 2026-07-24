@@ -14,21 +14,24 @@
  ***************************************************************************/
 
 #include "qgslayertreenode.h"
-#include "moc_qgslayertreenode.cpp"
 
 #include "qgslayertree.h"
+#include "qgslayertreecustomnode.h"
 #include "qgslayertreeutils.h"
 
 #include <QDomElement>
+#include <QString>
 #include <QStringList>
 
+#include "moc_qgslayertreenode.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayerTreeNode::QgsLayerTreeNode( QgsLayerTreeNode::NodeType t, bool checked )
   : mNodeType( t )
   , mChecked( checked )
-  , mExpanded( true )
-{
-}
+
+{}
 
 QgsLayerTreeNode::QgsLayerTreeNode( const QgsLayerTreeNode &other )
   : QObject( nullptr )
@@ -55,7 +58,7 @@ QList<QgsLayerTreeNode *> QgsLayerTreeNode::abandonChildren()
   mChildren.clear();
   for ( auto orphan : std::as_const( orphans ) )
   {
-    orphan->makeOrphan( );
+    orphan->makeOrphan();
   }
   return orphans;
 }
@@ -69,10 +72,12 @@ void QgsLayerTreeNode::makeOrphan()
 QgsLayerTreeNode *QgsLayerTreeNode::readXml( QDomElement &element, const QgsReadWriteContext &context )
 {
   QgsLayerTreeNode *node = nullptr;
-  if ( element.tagName() == QLatin1String( "layer-tree-group" ) )
+  if ( element.tagName() == "layer-tree-group"_L1 )
     node = QgsLayerTreeGroup::readXml( element, context );
-  else if ( element.tagName() == QLatin1String( "layer-tree-layer" ) )
+  else if ( element.tagName() == "layer-tree-layer"_L1 )
     node = QgsLayerTreeLayer::readXml( element, context );
+  else if ( element.tagName() == "layer-tree-custom-node"_L1 )
+    node = QgsLayerTreeCustomNode::readXml( element, context );
 
   return node;
 }
@@ -87,7 +92,7 @@ QgsLayerTreeNode *QgsLayerTreeNode::readXml( QDomElement &element, const QgsProj
   context.setProjectTranslator( const_cast<QgsProject *>( project ) );
 
   QgsLayerTreeNode *node = readXml( element, context );
-  if ( node )
+  if ( node && node->nodeType() != NodeCustom )
     node->resolveReferences( project );
   return node;
 }
@@ -280,7 +285,7 @@ void QgsLayerTreeNode::insertChildrenPrivate( int index, const QList<QgsLayerTre
     connect( node, &QgsLayerTreeNode::nameChanged, this, &QgsLayerTreeNode::nameChanged );
 
     // Now add children
-    if ( ! orphans.isEmpty() )
+    if ( !orphans.isEmpty() )
     {
       node->insertChildrenPrivate( -1, orphans );
     }
@@ -303,13 +308,13 @@ void QgsLayerTreeNode::removeChildrenPrivate( int from, int count, bool destroy 
   while ( --count >= 0 )
   {
     const int last { from + count };
-    Q_ASSERT( last >= 0 && last < mChildren.count( ) );
+    Q_ASSERT( last >= 0 && last < mChildren.count() );
     QgsLayerTreeNode *node = mChildren.at( last );
 
     // Remove children first
-    if ( ! node->children().isEmpty() )
+    if ( !node->children().isEmpty() )
     {
-      node->removeChildrenPrivate( 0, node->children().count( ), destroy );
+      node->removeChildrenPrivate( 0, node->children().count(), destroy );
     }
 
     emit willRemoveChildren( this, last, last );

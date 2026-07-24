@@ -15,25 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsmeshcontours.h"
-#include "qgspoint.h"
-#include "qgsmultilinestring.h"
-#include "qgslinestring.h"
-#include "qgspolygon.h"
-#include "qgsmapsettings.h"
-#include "qgsmeshlayer.h"
-#include "qgstriangularmesh.h"
-#include "qgsgeometryutils.h"
-#include "qgsfeature.h"
-#include "qgsgeometry.h"
-#include "qgsmeshlayerutils.h"
-#include "qgsmeshdataprovider.h"
-#include "qgsfeedback.h"
-#include "qgsproject.h"
 
 #include <limits>
 
-#include <QSet>
+#include "qgsfeature.h"
+#include "qgsfeedback.h"
+#include "qgsgeometry.h"
+#include "qgsgeometryutils.h"
+#include "qgslinestring.h"
+#include "qgsmapsettings.h"
+#include "qgsmeshdataprovider.h"
+#include "qgsmeshlayer.h"
+#include "qgsmeshlayerutils.h"
+#include "qgsmultilinestring.h"
+#include "qgspoint.h"
+#include "qgspolygon.h"
+#include "qgsproject.h"
+#include "qgstriangularmesh.h"
+
 #include <QPair>
+#include <QSet>
 
 QgsMeshContours::QgsMeshContours( QgsMeshLayer *layer )
   : mMeshLayer( layer )
@@ -58,13 +59,7 @@ QgsMeshContours::QgsMeshContours( const QgsTriangularMesh &triangularMesh, const
 
 QgsMeshContours::~QgsMeshContours() = default;
 
-QgsGeometry QgsMeshContours::exportPolygons(
-  const QgsMeshDatasetIndex &index,
-  double min_value,
-  double max_value,
-  QgsMeshRendererScalarSettings::DataResamplingMethod method,
-  QgsFeedback *feedback
-)
+QgsGeometry QgsMeshContours::exportPolygons( const QgsMeshDatasetIndex &index, double min_value, double max_value, QgsMeshRendererScalarSettings::DataResamplingMethod method, QgsFeedback *feedback )
 {
   if ( !mMeshLayer )
     return QgsGeometry();
@@ -100,23 +95,11 @@ QgsGeometry QgsMeshContours::exportPolygons( double min_value, double max_value,
       continue;
 
     const QgsMeshFace &triangle = mTriangularMesh.triangles().at( i );
-    const int indices[3] = {
-      triangle.at( 0 ),
-      triangle.at( 1 ),
-      triangle.at( 2 )
-    };
+    const int indices[3] = { triangle.at( 0 ), triangle.at( 1 ), triangle.at( 2 ) };
 
-    const QVector<QgsMeshVertex> coords = {
-      vertices.at( indices[0] ),
-      vertices.at( indices[1] ),
-      vertices.at( indices[2] )
-    };
+    const QVector<QgsMeshVertex> coords = { vertices.at( indices[0] ), vertices.at( indices[1] ), vertices.at( indices[2] ) };
 
-    const double values[3] = {
-      mDatasetValues.at( indices[0] ),
-      mDatasetValues.at( indices[1] ),
-      mDatasetValues.at( indices[2] )
-    };
+    const double values[3] = { mDatasetValues.at( indices[0] ), mDatasetValues.at( indices[1] ), mDatasetValues.at( indices[2] ) };
 
     // any value is NaN
     if ( std::isnan( values[0] ) || std::isnan( values[1] ) || std::isnan( values[2] ) )
@@ -126,11 +109,8 @@ QgsGeometry QgsMeshContours::exportPolygons( double min_value, double max_value,
     if ( ( ( min_value > values[0] ) && ( min_value > values[1] ) && ( min_value > values[2] ) ) || ( ( max_value < values[0] ) && ( max_value < values[1] ) && ( max_value < values[2] ) ) )
       continue;
 
-    const bool valueInRange[3] = {
-      ( min_value <= values[0] ) && ( max_value >= values[0] ),
-      ( min_value <= values[1] ) && ( max_value >= values[1] ),
-      ( min_value <= values[2] ) && ( max_value >= values[2] )
-    };
+    const bool valueInRange[3]
+      = { ( min_value <= values[0] ) && ( max_value >= values[0] ), ( min_value <= values[1] ) && ( max_value >= values[1] ), ( min_value <= values[2] ) && ( max_value >= values[2] ) };
 
     // all values are inside the range == take whole triangle
     if ( valueInRange[0] && valueInRange[1] && valueInRange[2] )
@@ -250,7 +230,7 @@ QgsGeometry QgsMeshContours::exportPolygons( double min_value, double max_value,
   }
   else
   {
-    const QgsGeometry res = QgsGeometry::unaryUnion( multiPolygon );
+    const QgsGeometry res = QgsGeometry::unaryUnion( multiPolygon, QgsGeometryParameters(), feedback );
     return res;
   }
 }
@@ -287,23 +267,11 @@ QgsGeometry QgsMeshContours::exportLines( double value, QgsFeedback *feedback )
 
     const QgsMeshFace &triangle = mTriangularMesh.triangles().at( i );
 
-    const int indices[3] = {
-      triangle.at( 0 ),
-      triangle.at( 1 ),
-      triangle.at( 2 )
-    };
+    const int indices[3] = { triangle.at( 0 ), triangle.at( 1 ), triangle.at( 2 ) };
 
-    const QVector<QgsMeshVertex> coords = {
-      vertices.at( indices[0] ),
-      vertices.at( indices[1] ),
-      vertices.at( indices[2] )
-    };
+    const QVector<QgsMeshVertex> coords = { vertices.at( indices[0] ), vertices.at( indices[1] ), vertices.at( indices[2] ) };
 
-    const double values[3] = {
-      mDatasetValues.at( indices[0] ),
-      mDatasetValues.at( indices[1] ),
-      mDatasetValues.at( indices[2] )
-    };
+    const double values[3] = { mDatasetValues.at( indices[0] ), mDatasetValues.at( indices[1] ), mDatasetValues.at( indices[2] ) };
 
     // any value is NaN
     if ( std::isnan( values[0] ) || std::isnan( values[1] ) || std::isnan( values[2] ) )
@@ -392,12 +360,7 @@ void QgsMeshContours::populateCache( const QgsMeshDatasetIndex &index, QgsMeshRe
     const int count = scalarDataOnVertices ? mNativeMesh.vertices.count() : mNativeMesh.faces.count();
 
     // populate scalar values
-    const QgsMeshDataBlock vals = QgsMeshLayerUtils::datasetValues(
-      mMeshLayer,
-      index,
-      0,
-      count
-    );
+    const QgsMeshDataBlock vals = QgsMeshLayerUtils::datasetValues( mMeshLayer, index, 0, count );
     if ( vals.isValid() )
     {
       // vals could be scalar or vectors, for contour rendering we want always magnitude
@@ -409,22 +372,12 @@ void QgsMeshContours::populateCache( const QgsMeshDatasetIndex &index, QgsMeshRe
     }
 
     // populate face active flag, always defined on faces
-    mScalarActiveFaceFlagValues = mMeshLayer->dataProvider()->areFacesActive(
-      index,
-      0,
-      mNativeMesh.faces.count()
-    );
+    mScalarActiveFaceFlagValues = mMeshLayer->dataProvider()->areFacesActive( index, 0, mNativeMesh.faces.count() );
 
     // for data on faces, there could be request to interpolate the data to vertices
     if ( ( !scalarDataOnVertices ) )
     {
-      mDatasetValues = QgsMeshLayerUtils::interpolateFromFacesData(
-        mDatasetValues,
-        &mNativeMesh,
-        &mTriangularMesh,
-        &mScalarActiveFaceFlagValues,
-        method
-      );
+      mDatasetValues = QgsMeshLayerUtils::interpolateFromFacesData( mDatasetValues, &mNativeMesh, &mTriangularMesh, &mScalarActiveFaceFlagValues, method );
     }
   }
 }

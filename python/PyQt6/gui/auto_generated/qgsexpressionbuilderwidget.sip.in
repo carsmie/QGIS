@@ -49,14 +49,18 @@ Initialize without any layer
 .. versionadded:: 3.14
 %End
 
-    void initWithLayer( QgsVectorLayer *layer, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = QStringLiteral( "generic" ), QgsExpressionBuilderWidget::Flags flags = LoadAll );
+    void initWithLayer(
+      QgsVectorLayer *layer, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = QStringLiteral( "generic" ), QgsExpressionBuilderWidget::Flags flags = LoadAll
+    );
 %Docstring
 Initialize with a layer
 
 .. versionadded:: 3.14
 %End
 
-    void initWithFields( const QgsFields &fields, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = QStringLiteral( "generic" ), QgsExpressionBuilderWidget::Flags flags = LoadAll );
+    void initWithFields(
+      const QgsFields &fields, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = QStringLiteral( "generic" ), QgsExpressionBuilderWidget::Flags flags = LoadAll
+    );
 %Docstring
 Initialize with given fields without any layer
 
@@ -189,22 +193,21 @@ for objects which aren't vector layer features).
 %End
 %MethodCode
     Py_XINCREF( a2 );
-    Py_BEGIN_ALLOW_THREADS
-      sipCpp->setCustomPreviewGenerator( *a0, *a1, [a2]( const QVariant &value ) -> QgsExpressionContext {
-        QgsExpressionContext res;
-        SIP_BLOCK_THREADS
-        PyObject *s = sipCallMethod( NULL, a2, "D", &value, sipType_QVariant, NULL );
-        int state;
-        int sipIsError = 0;
-        QgsExpressionContext *t1 = reinterpret_cast<QgsExpressionContext *>( sipConvertToType( s, sipType_QgsExpressionContext, 0, SIP_NOT_NONE, &state, &sipIsError ) );
-        if ( sipIsError == 0 )
-        {
-          res = QgsExpressionContext( *t1 );
-        }
-        sipReleaseType( t1, sipType_QgsExpressionContext, state );
-        SIP_UNBLOCK_THREADS
-        return res;
-      } );
+    Py_BEGIN_ALLOW_THREADS sipCpp->setCustomPreviewGenerator( *a0, *a1, [a2]( const QVariant &value ) -> QgsExpressionContext {
+      QgsExpressionContext res;
+      SIP_BLOCK_THREADS
+      PyObject *s = sipCallMethod( NULL, a2, "D", &value, sipType_QVariant, NULL );
+      int state;
+      int sipIsError = 0;
+      QgsExpressionContext *t1 = reinterpret_cast<QgsExpressionContext *>( sipConvertToType( s, sipType_QgsExpressionContext, 0, SIP_NOT_NONE, &state, &sipIsError ) );
+      if ( sipIsError == 0 )
+      {
+        res = QgsExpressionContext( *t1 );
+      }
+      sipReleaseType( t1, sipType_QgsExpressionContext, state );
+      SIP_UNBLOCK_THREADS
+      return res;
+    } );
 
     Py_END_ALLOW_THREADS
 %End
@@ -301,7 +304,8 @@ Updates the list of function files found at the given path
 
     void saveProjectFunctionsEntry();
 %Docstring
-Saves the current function editor text to a project entry.
+Writes the current function editor text to a project entry. The project
+becomes dirty.
 
 .. versionadded:: 3.40
 %End
@@ -386,12 +390,20 @@ them (eg. RelationReference).
     void autosave();
 %Docstring
 Auto save the current Python function code.
+
+.. note::
+
+   Auto save does not apply to Project Functions.
 %End
 
     void setAutoSave( bool enabled );
 %Docstring
 Enabled or disable auto saving. When enabled Python scripts will be auto
 saved when text changes.
+
+.. note::
+
+   Auto save does not apply to Project Functions.
 
 :param enabled: ``True`` to enable auto saving.
 %End
@@ -454,10 +466,6 @@ error with the context.
 Will be set to ``True`` if the current expression text reported a parser
 error with the context.
 %End
-
-  protected:
-    virtual void showEvent( QShowEvent *e );
-
 
       public:
 };

@@ -18,8 +18,8 @@
 
 #include "ui_qgsexternalresourceconfigdlg.h"
 
-#include "qgseditorconfigwidget.h"
 #include "qgis_gui.h"
+#include "qgseditorconfigwidget.h"
 
 SIP_NO_FILE
 
@@ -29,7 +29,8 @@ SIP_NO_FILE
  * \brief Configuration widget for external resource widgets.
  * \note not available in Python bindings
  */
-class GUI_EXPORT QgsExternalResourceConfigDlg : public QgsEditorConfigWidget, private Ui::QgsExternalResourceConfigDlg
+class GUI_EXPORT QgsExternalResourceConfigDlg : public QgsEditorConfigWidget,
+                                                private Ui::QgsExternalResourceConfigDlg
 {
     Q_OBJECT
 

@@ -28,16 +28,17 @@ class QgsFeatureIterator;
 class QgsSingleSymbolRenderer;
 class QgsMapClippingRegion;
 
-#define SIP_NO_FILE
 
+#include <QElapsedTimer>
 #include <QList>
 #include <QPainter>
-#include <QElapsedTimer>
+
+#define SIP_NO_FILE
 
 typedef QList<int> QgsAttributeList;
 
 #include "qgis_sip.h"
-#include "qgsfields.h"  // QgsFields
+#include "qgsfields.h" // QgsFields
 #include "qgsfeatureiterator.h"
 #include "qgsvectorsimplifymethod.h"
 #include "qgsfeedback.h"
@@ -75,7 +76,6 @@ class QgsVectorLayerRenderer : public QgsMapLayerRenderer
     void setLayerRenderingTimeHint( int time ) override;
 
   private:
-
     /**
      * Registers label and diagram layer
      * \param layer diagram layer
@@ -101,7 +101,6 @@ class QgsVectorLayerRenderer : public QgsMapLayerRenderer
     bool renderInternal( QgsFeatureRenderer *renderer, int rendererIndex );
 
   private:
-
     std::unique_ptr<QgsFeedback> mFeedback = nullptr;
 
     //! The rendered layer
@@ -119,12 +118,12 @@ class QgsVectorLayerRenderer : public QgsMapLayerRenderer
     QgsFeatureRenderer *mRenderer = nullptr;
     std::vector< std::unique_ptr< QgsFeatureRenderer> > mRenderers;
 
-    bool mDrawVertexMarkers;
-    bool mVertexMarkerOnlyForSelection;
+    bool mDrawVertexMarkers = false;
+    bool mVertexMarkerOnlyForSelection = false;
     Qgis::VertexMarkerType mVertexMarkerStyle = Qgis::VertexMarkerType::SemiTransparentCircle;
     double mVertexMarkerSize = 2.0;
 
-    Qgis::GeometryType mGeometryType;
+    Qgis::GeometryType mGeometryType = Qgis::GeometryType::Unknown;
 
     QSet<QString> mAttrNames;
 
@@ -140,10 +139,10 @@ class QgsVectorLayerRenderer : public QgsMapLayerRenderer
      */
     QgsVectorLayerDiagramProvider *mDiagramProvider = nullptr;
 
-    QPainter::CompositionMode mFeatureBlendMode;
+    QPainter::CompositionMode mFeatureBlendMode = QPainter::CompositionMode::CompositionMode_SourceOver;
 
     QgsVectorSimplifyMethod mSimplifyMethod;
-    bool mSimplifyGeometry;
+    bool mSimplifyGeometry = true;
 
     QList< QgsMapClippingRegion > mClippingRegions;
     QgsGeometry mClipFilterGeom;
@@ -164,7 +163,6 @@ class QgsVectorLayerRenderer : public QgsMapLayerRenderer
     quint64 mPreparationTime = 0;
 
     std::unique_ptr< QgsSymbol > mSelectionSymbol;
-
 };
 
 

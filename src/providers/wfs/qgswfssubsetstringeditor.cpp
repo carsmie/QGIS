@@ -15,11 +15,17 @@
  ***************************************************************************/
 
 #include "qgswfssubsetstringeditor.h"
-#include "moc_qgswfssubsetstringeditor.cpp"
+
+#include "qgssqlstatement.h"
 #include "qgswfsprovider.h"
 #include "qgswfsshareddata.h"
 #include "qgswfsutils.h"
-#include "qgssqlstatement.h"
+
+#include <QString>
+
+#include "moc_qgswfssubsetstringeditor.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsSubsetStringEditorInterface *QgsWfsSubsetStringEditor::create( QgsVectorLayer *layer, QgsWFSProvider *provider, QWidget *parent, Qt::WindowFlags fl )
 {
@@ -49,9 +55,7 @@ QgsSubsetStringEditorInterface *QgsWfsSubsetStringEditor::create( QgsVectorLayer
     mapTypenameToTitle[f.name] = f.title;
 
   QList<QgsSQLComposerDialog::PairNameTitle> tablenames;
-  tablenames << QgsSQLComposerDialog::PairNameTitle(
-    QgsSQLStatement::quotedIdentifierIfNeeded( displayedTypeName ), mapTypenameToTitle[typeName]
-  );
+  tablenames << QgsSQLComposerDialog::PairNameTitle( QgsSQLStatement::quotedIdentifierIfNeeded( displayedTypeName ), mapTypenameToTitle[typeName] );
   if ( bSupportJoins )
   {
     for ( const auto &featureType : caps.featureTypes )
@@ -64,9 +68,7 @@ QgsSubsetStringEditorInterface *QgsWfsSubsetStringEditor::create( QgsVectorLayer
         if ( !caps.setAmbiguousUnprefixedTypename.contains( unprefixedIterTypename ) )
           displayedIterTypename = unprefixedIterTypename;
 
-        tablenames << QgsSQLComposerDialog::PairNameTitle(
-          QgsSQLStatement::quotedIdentifierIfNeeded( displayedIterTypename ), mapTypenameToTitle[iterTypename]
-        );
+        tablenames << QgsSQLComposerDialog::PairNameTitle( QgsSQLStatement::quotedIdentifierIfNeeded( displayedIterTypename ), mapTypenameToTitle[iterTypename] );
       }
     }
   }
@@ -119,7 +121,7 @@ QgsSubsetStringEditorInterface *QgsWfsSubsetStringEditor::create( QgsVectorLayer
   if ( !provider->geometryColumnName().isEmpty() )
   {
     QString fieldName( fieldNamePrefix + QgsSQLStatement::quotedIdentifierIfNeeded( provider->geometryColumnName() ) );
-    fieldList << QgsSQLComposerDialog::PairNameType( fieldName, QStringLiteral( "geometry" ) );
+    fieldList << QgsSQLComposerDialog::PairNameType( fieldName, u"geometry"_s );
   }
   fieldList << QgsSQLComposerDialog::PairNameType( fieldNamePrefix + "*", QString() );
 
@@ -133,8 +135,7 @@ QgsWFSValidatorCallback::QgsWFSValidatorCallback( QObject *parent, const QgsWFSD
   , mURI( uri )
   , mAllSql( allSql )
   , mCaps( caps )
-{
-}
+{}
 
 bool QgsWFSValidatorCallback::isValid( const QString &sqlStr, QString &errorReason, QString &warningMsg )
 {
@@ -162,8 +163,7 @@ QgsWFSTableSelectedCallback::QgsWFSTableSelectedCallback( QgsSQLComposerDialog *
   , mDialog( dialog )
   , mURI( uri )
   , mCaps( caps )
-{
-}
+{}
 
 void QgsWFSTableSelectedCallback::tableSelected( const QString &name )
 {
@@ -192,7 +192,7 @@ void QgsWFSTableSelectedCallback::tableSelected( const QString &name )
   if ( !p.geometryColumnName().isEmpty() )
   {
     QString fieldName( fieldNamePrefix + QgsSQLStatement::quotedIdentifierIfNeeded( p.geometryColumnName() ) );
-    fieldList << QgsSQLComposerDialog::PairNameType( fieldName, QStringLiteral( "geometry" ) );
+    fieldList << QgsSQLComposerDialog::PairNameType( fieldName, u"geometry"_s );
   }
   fieldList << QgsSQLComposerDialog::PairNameType( fieldNamePrefix + "*", QString() );
 

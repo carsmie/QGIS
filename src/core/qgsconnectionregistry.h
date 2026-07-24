@@ -18,8 +18,9 @@
 #ifndef QGSCONNECTIONREGISTRY_H
 #define QGSCONNECTIONREGISTRY_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
+
 #include <QObject>
 
 class QgsAbstractProviderConnection;
@@ -40,7 +41,6 @@ class CORE_EXPORT QgsConnectionRegistry : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsConnectionRegistry.
      */
@@ -62,12 +62,9 @@ class CORE_EXPORT QgsConnectionRegistry : public QObject
     QgsAbstractProviderConnection *createConnection( const QString &name ) SIP_THROW( QgsProviderConnectionException ) SIP_FACTORY;
 
   private:
-
 #ifdef SIP_RUN
     QgsConnectionRegistry( const QgsConnectionRegistry &other );
 #endif
 };
 
 #endif // QGSCONNECTIONREGISTRY_H
-
-

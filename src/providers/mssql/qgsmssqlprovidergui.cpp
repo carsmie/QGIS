@@ -14,23 +14,27 @@
  ***************************************************************************/
 
 #include "qgsapplication.h"
-#include "qgsproviderguimetadata.h"
-#include "qgssourceselectprovider.h"
-
 #include "qgsmssqldataitemguiprovider.h"
 #include "qgsmssqlprovider.h"
 #include "qgsmssqlsourceselect.h"
+#include "qgsproviderguimetadata.h"
+#include "qgssourceselectprovider.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 //! Provider for msssql raster source select
 class QgsMssqlSourceSelectProvider : public QgsSourceSelectProvider
 {
   public:
-    QString providerKey() const override { return QStringLiteral( "mssql" ); }
+    QString providerKey() const override { return u"mssql"_s; }
     QString text() const override { return QObject::tr( "MS SQL Server" ); }
     int ordering() const override { return QgsSourceSelectProvider::OrderDatabaseProvider + 30; }
-    QIcon icon() const override { return QgsApplication::getThemeIcon( QStringLiteral( "/mActionAddMssqlLayer.svg" ) ); }
-    QgsAbstractDataSourceWidget *createDataSourceWidget( QWidget *parent = nullptr, Qt::WindowFlags fl = Qt::Widget, QgsProviderRegistry::WidgetMode widgetMode = QgsProviderRegistry::WidgetMode::Embedded ) const override
+    QIcon icon() const override { return QgsApplication::getThemeIcon( u"/mActionAddMssqlLayer.svg"_s ); }
+    QgsAbstractDataSourceWidget *createDataSourceWidget(
+      QWidget *parent = nullptr, Qt::WindowFlags fl = Qt::Widget, QgsProviderRegistry::WidgetMode widgetMode = QgsProviderRegistry::WidgetMode::Embedded
+    ) const override
     {
       return new QgsMssqlSourceSelect( parent, fl, widgetMode );
     }
@@ -42,14 +46,9 @@ class QgsMssqlProviderGuiMetadata : public QgsProviderGuiMetadata
   public:
     QgsMssqlProviderGuiMetadata()
       : QgsProviderGuiMetadata( QgsMssqlProvider::MSSQL_PROVIDER_KEY )
-    {
-    }
+    {}
 
-    QList<QgsDataItemGuiProvider *> dataItemGuiProviders() override
-    {
-      return QList<QgsDataItemGuiProvider *>()
-             << new QgsMssqlDataItemGuiProvider;
-    }
+    QList<QgsDataItemGuiProvider *> dataItemGuiProviders() override { return QList<QgsDataItemGuiProvider *>() << new QgsMssqlDataItemGuiProvider; }
 
     QList<QgsSourceSelectProvider *> sourceSelectProviders() override
     {

@@ -20,19 +20,18 @@ __date__ = "January 2013"
 __copyright__ = "(C) 2013, Victor Olaya"
 
 import warnings
+
 from qgis.core import (
+    QgsProcessingException,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
     QgsProcessingParameterFileDestination,
-    QgsProcessingException,
     QgsProcessingParameterString,
 )
+from qgis.PyQt.QtCore import QCoreApplication
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
-
 from processing.tools import vector
-
-from qgis.PyQt.QtCore import QCoreApplication
 
 
 class VectorLayerScatterplot3D(QgisAlgorithm):
@@ -120,6 +119,9 @@ class VectorLayerScatterplot3D(QgisAlgorithm):
 
     def shortDescription(self):
         return self.tr("Creates a 3D scatter plot for a vector layer.")
+
+    def shortHelpString(self):
+        return self.tr("This algorithm creates a 3D scatter plot for a vector layer.")
 
     def processAlgorithm(self, parameters, context, feedback):
         try:

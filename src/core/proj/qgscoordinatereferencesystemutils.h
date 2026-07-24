@@ -17,9 +17,9 @@
 #ifndef QGSCOORDINATEREFERENCESYSTEMUTILS_H
 #define QGSCOORDINATEREFERENCESYSTEMUTILS_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 
 class QgsCoordinateReferenceSystem;
 
@@ -32,7 +32,6 @@ class QgsCoordinateReferenceSystem;
 class CORE_EXPORT QgsCoordinateReferenceSystemUtils
 {
   public:
-
     /**
      * Returns the default coordinate order to use for the specified \a crs.
      *

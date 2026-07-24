@@ -16,8 +16,9 @@
 #ifndef QGSPOLYGON3DSYMBOLWIDGET_H
 #define QGSPOLYGON3DSYMBOLWIDGET_H
 
-#include "qgs3dsymbolwidget.h"
 #include "ui_polygon3dsymbolwidget.h"
+
+#include "qgs3dsymbolwidget.h"
 
 class QgsPolygon3DSymbol;
 
@@ -33,6 +34,8 @@ class QgsPolygon3DSymbolWidget : public Qgs3DSymbolWidget, private Ui::Polygon3D
     void setSymbol( const QgsAbstract3DSymbol *symbol, QgsVectorLayer *layer ) override;
     QgsAbstract3DSymbol *symbol() override;
     QString symbolType() const override;
+    Qgis::MaterialRenderingTechnique renderingTechnique() const override;
+    void setDockMode( bool dockMode ) override;
 
   private slots:
     void updateGuiState();

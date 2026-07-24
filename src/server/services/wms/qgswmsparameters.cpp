@@ -16,16 +16,21 @@
  ***************************************************************************/
 
 #include "qgswmsparameters.h"
-#include "moc_qgswmsparameters.cpp"
+
 #include "qgsdatasourceuri.h"
+#include "qgsfontutils.h"
 #include "qgsmaplayerserverproperties.h"
 #include "qgsmessagelog.h"
 #include "qgswmsserviceexception.h"
-#include "qgsfontutils.h"
 
 #include <QRegularExpression>
+#include <QString>
 
-const QString EXTERNAL_LAYER_PREFIX = QStringLiteral( "EXTERNAL_WMS:" );
+#include "moc_qgswmsparameters.cpp"
+
+using namespace Qt::StringLiterals;
+
+const QString EXTERNAL_LAYER_PREFIX = u"EXTERNAL_WMS:"_s;
 
 namespace QgsWms
 {
@@ -35,8 +40,7 @@ namespace QgsWms
   QgsWmsParameter::QgsWmsParameter( const QgsWmsParameter::Name name, const QMetaType::Type type, const QVariant defaultValue )
     : QgsServerParameterDefinition( type, defaultValue )
     , mName( name )
-  {
-  }
+  {}
 
   bool QgsWmsParameter::isValid() const
   {
@@ -293,6 +297,18 @@ namespace QgsWms
     const QgsWmsParameter pHighlightBufferSize( QgsWmsParameter::HIGHLIGHT_LABELBUFFERSIZE );
     save( pHighlightBufferSize );
 
+    const QgsWmsParameter pHighlightFrameBackgroundColor( QgsWmsParameter::HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR );
+    save( pHighlightFrameBackgroundColor );
+
+    const QgsWmsParameter pHighlightFrameOutlineColor( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINECOLOR );
+    save( pHighlightFrameOutlineColor );
+
+    const QgsWmsParameter pHighlightFrameOutlineWidth( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINEWIDTH );
+    save( pHighlightFrameOutlineWidth );
+
+    const QgsWmsParameter pHighlightFrameSize( QgsWmsParameter::HIGHLIGHT_LABELFRAMESIZE );
+    save( pHighlightFrameSize );
+
     const QgsWmsParameter pLabelRotation( QgsWmsParameter::HIGHLIGHT_LABEL_ROTATION, QMetaType::Type::Double );
     save( pLabelRotation );
 
@@ -504,7 +520,7 @@ namespace QgsWms
   {
     bool loaded = false;
 
-    const thread_local QRegularExpression composerParamRegExp( QStringLiteral( "^MAP\\d+:" ), QRegularExpression::CaseInsensitiveOption );
+    const thread_local QRegularExpression composerParamRegExp( u"^MAP\\d+:"_s, QRegularExpression::CaseInsensitiveOption );
     if ( key.contains( composerParamRegExp ) )
     {
       const int mapId = QStringView { key }.mid( 3, key.indexOf( ':' ) - 3 ).toInt();
@@ -545,7 +561,7 @@ namespace QgsWms
       }
       else //maybe an external wms parameter?
       {
-        int separator = key.indexOf( QLatin1Char( ':' ) );
+        int separator = key.indexOf( ':'_L1 );
         if ( separator >= 1 )
         {
           QString id = key.left( separator );
@@ -562,7 +578,7 @@ namespace QgsWms
 
   void QgsWmsParameters::dump() const
   {
-    log( QStringLiteral( "WMS Request parameters:" ) );
+    ( void ) log( u"WMS Request parameters:"_s );
     for ( auto it = mWmsParameters.constBegin(); it != mWmsParameters.constEnd(); ++it )
     {
       const QString value = it->toString();
@@ -573,15 +589,15 @@ namespace QgsWms
 
         if ( it->mMapId >= 0 )
         {
-          name = QStringLiteral( "%1:%2" ).arg( QString::number( it->mMapId ), name );
+          name = u"%1:%2"_s.arg( QString::number( it->mMapId ), name );
         }
 
-        log( QStringLiteral( " - %1 : %2" ).arg( name, value ) );
+        log( u" - %1 : %2"_s.arg( name, value ) );
       }
     }
 
     if ( !version().isEmpty() )
-      log( QStringLiteral( " - VERSION : %1" ).arg( version() ) );
+      log( u" - VERSION : %1"_s.arg( version() ) );
   }
 
   void QgsWmsParameters::save( const QgsWmsParameter &parameter, bool multi )
@@ -698,9 +714,9 @@ namespace QgsWms
   {
     QString version = QgsServerParameters::version();
 
-    if ( QgsServerParameters::request().compare( QLatin1String( "GetProjectSettings" ), Qt::CaseInsensitive ) == 0 )
+    if ( QgsServerParameters::request().compare( "GetProjectSettings"_L1, Qt::CaseInsensitive ) == 0 )
     {
-      version = QStringLiteral( "1.3.0" );
+      version = u"1.3.0"_s;
     }
     else if ( version.isEmpty() )
     {
@@ -710,7 +726,7 @@ namespace QgsWms
       }
       else
       {
-        version = QStringLiteral( "1.3.0" );
+        version = u"1.3.0"_s;
       }
     }
     else if ( !mVersions.contains( QgsProjectVersion( version ) ) )
@@ -720,11 +736,11 @@ namespace QgsWms
       // lowest version it supports.
       if ( QgsProjectVersion( 1, 1, 1 ) > QgsProjectVersion( version ) )
       {
-        version = QStringLiteral( "1.1.1" );
+        version = u"1.1.1"_s;
       }
       else
       {
-        version = QStringLiteral( "1.3.0" );
+        version = u"1.3.0"_s;
       }
     }
 
@@ -735,10 +751,9 @@ namespace QgsWms
   {
     QString req = QgsServerParameters::request();
 
-    if ( version().compare( QLatin1String( "1.1.1" ) ) == 0
-         && req.compare( QLatin1String( "capabilities" ), Qt::CaseInsensitive ) == 0 )
+    if ( version().compare( "1.1.1"_L1 ) == 0 && req.compare( "capabilities"_L1, Qt::CaseInsensitive ) == 0 )
     {
-      req = QStringLiteral( "GetCapabilities" );
+      req = u"GetCapabilities"_s;
     }
 
     return req;
@@ -770,25 +785,23 @@ namespace QgsWms
     const QString fStr = formatAsString();
 
     Format f = Format::NONE;
-    if ( fStr.compare( QLatin1String( "image/png" ), Qt::CaseInsensitive ) == 0 || fStr.compare( QLatin1String( "png" ), Qt::CaseInsensitive ) == 0 )
+    if ( fStr.compare( "image/png"_L1, Qt::CaseInsensitive ) == 0 || fStr.compare( "png"_L1, Qt::CaseInsensitive ) == 0 )
     {
       f = Format::PNG;
     }
-    else if ( fStr.compare( QLatin1String( "jpg" ), Qt::CaseInsensitive ) == 0
-              || fStr.compare( QLatin1String( "jpeg" ), Qt::CaseInsensitive ) == 0
-              || fStr.compare( QLatin1String( "image/jpeg" ), Qt::CaseInsensitive ) == 0 )
+    else if ( fStr.compare( "jpg"_L1, Qt::CaseInsensitive ) == 0 || fStr.compare( "jpeg"_L1, Qt::CaseInsensitive ) == 0 || fStr.compare( "image/jpeg"_L1, Qt::CaseInsensitive ) == 0 )
     {
       f = Format::JPG;
     }
-    else if ( fStr.compare( QLatin1String( "image/svg" ), Qt::CaseInsensitive ) == 0 || fStr.compare( QLatin1String( "image/svg+xml" ), Qt::CaseInsensitive ) == 0 || fStr.compare( QLatin1String( "svg" ), Qt::CaseInsensitive ) == 0 )
+    else if ( fStr.compare( "image/svg"_L1, Qt::CaseInsensitive ) == 0 || fStr.compare( "image/svg+xml"_L1, Qt::CaseInsensitive ) == 0 || fStr.compare( "svg"_L1, Qt::CaseInsensitive ) == 0 )
     {
       f = Format::SVG;
     }
-    else if ( fStr.compare( QLatin1String( "application/pdf" ), Qt::CaseInsensitive ) == 0 || fStr.compare( QLatin1String( "pdf" ), Qt::CaseInsensitive ) == 0 )
+    else if ( fStr.compare( "application/pdf"_L1, Qt::CaseInsensitive ) == 0 || fStr.compare( "pdf"_L1, Qt::CaseInsensitive ) == 0 )
     {
       f = Format::PDF;
     }
-    else if ( fStr.compare( QLatin1String( "application/json" ), Qt::CaseInsensitive ) == 0 || fStr.compare( QLatin1String( "json" ), Qt::CaseInsensitive ) == 0 )
+    else if ( fStr.compare( "application/json"_L1, Qt::CaseInsensitive ) == 0 || fStr.compare( "json"_L1, Qt::CaseInsensitive ) == 0 )
     {
       f = Format::JSON;
     }
@@ -813,16 +826,15 @@ namespace QgsWms
     if ( fStr.isEmpty() )
       return f;
 
-    if ( fStr.startsWith( QLatin1String( "text/xml" ), Qt::CaseInsensitive ) )
+    if ( fStr.startsWith( "text/xml"_L1, Qt::CaseInsensitive ) )
       f = Format::XML;
-    else if ( fStr.startsWith( QLatin1String( "text/html" ), Qt::CaseInsensitive ) )
+    else if ( fStr.startsWith( "text/html"_L1, Qt::CaseInsensitive ) )
       f = Format::HTML;
-    else if ( fStr.startsWith( QLatin1String( "text/plain" ), Qt::CaseInsensitive ) )
+    else if ( fStr.startsWith( "text/plain"_L1, Qt::CaseInsensitive ) )
       f = Format::TEXT;
-    else if ( fStr.startsWith( QLatin1String( "application/vnd.ogc.gml" ), Qt::CaseInsensitive ) )
+    else if ( fStr.startsWith( "application/vnd.ogc.gml"_L1, Qt::CaseInsensitive ) )
       f = Format::GML;
-    else if ( fStr.startsWith( QLatin1String( "application/json" ), Qt::CaseInsensitive )
-              || fStr.startsWith( QLatin1String( "application/geo+json" ), Qt::CaseInsensitive ) )
+    else if ( fStr.startsWith( "application/json"_L1, Qt::CaseInsensitive ) || fStr.startsWith( "application/geo+json"_L1, Qt::CaseInsensitive ) )
       f = Format::JSON;
     else
       f = Format::NONE;
@@ -836,7 +848,7 @@ namespace QgsWms
       return -1;
 
     QString fStr = infoFormatAsString();
-    if ( fStr.startsWith( QLatin1String( "application/vnd.ogc.gml/3" ), Qt::CaseInsensitive ) )
+    if ( fStr.startsWith( "application/vnd.ogc.gml/3"_L1, Qt::CaseInsensitive ) )
       return 3;
     else
       return 2;
@@ -1324,6 +1336,46 @@ namespace QgsWms
     return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELBUFFERSIZE ).toDoubleList( ';', false );
   }
 
+  QStringList QgsWmsParameters::highlightLabelFrameBackgroundColor() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR ).toStringList( ';', false );
+  }
+
+  QList<QColor> QgsWmsParameters::highlightLabelFrameBackgroundColorAsColor() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR ).toColorList( ';', false );
+  }
+
+  QStringList QgsWmsParameters::highlightLabelFrameOutlineColor() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINECOLOR ).toStringList( ';', false );
+  }
+
+  QList<QColor> QgsWmsParameters::highlightLabelFrameOutlineColorAsColor() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINECOLOR ).toColorList( ';', false );
+  }
+
+  QStringList QgsWmsParameters::highlightLabelFrameOutlineWidth() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINEWIDTH ).toStringList( ';', false );
+  }
+
+  QList<double> QgsWmsParameters::highlightLabelFrameOutlineWidthAsFloat() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINEWIDTH ).toDoubleList( ';', false );
+  }
+
+  QStringList QgsWmsParameters::highlightLabelFrameSize() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMESIZE ).toStringList( ';', false );
+  }
+
+  QList<double> QgsWmsParameters::highlightLabelFrameSizeAsFloat() const
+  {
+    return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABELFRAMESIZE ).toDoubleList( ';', false );
+  }
+
   QList<double> QgsWmsParameters::highlightLabelRotation() const
   {
     return mWmsParameters.value( QgsWmsParameter::HIGHLIGHT_LABEL_ROTATION ).toDoubleList( ';', false );
@@ -1436,25 +1488,22 @@ namespace QgsWms
 
   QMultiMap<QString, QgsWmsParametersFilter> QgsWmsParameters::layerFilters( const QStringList &layers ) const
   {
-    const QString nsWfs2 = QStringLiteral( "http://www.opengis.net/fes/2.0" );
-    const QString prefixWfs2 = QStringLiteral( "<fes:" );
+    const QString nsWfs2 = u"http://www.opengis.net/fes/2.0"_s;
+    const QString prefixWfs2 = u"<fes:"_s;
 
     const QStringList rawFilters = filters();
     QMultiMap<QString, QgsWmsParametersFilter> filters;
     for ( int i = 0; i < rawFilters.size(); i++ )
     {
       const QString f = rawFilters[i];
-      if ( f.startsWith( QLatin1Char( '<' ) )
-           && f.endsWith( QLatin1String( "Filter>" ) )
-           && i < layers.size() )
+      if ( f.startsWith( '<'_L1 ) && f.endsWith( "Filter>"_L1 ) && i < layers.size() )
       {
         QgsWmsParametersFilter filter;
         filter.mFilter = f;
         filter.mType = QgsWmsParametersFilter::OGC_FE;
         filter.mVersion = QgsOgcUtils::FILTER_OGC_1_0;
 
-        if ( filter.mFilter.contains( nsWfs2 )
-             || filter.mFilter.contains( prefixWfs2 ) )
+        if ( filter.mFilter.contains( nsWfs2 ) || filter.mFilter.contains( prefixWfs2 ) )
         {
           filter.mVersion = QgsOgcUtils::FILTER_FES_2_0;
         }
@@ -1482,7 +1531,7 @@ namespace QgsWms
         else
         {
           QString filterStr = mWmsParameters.value( QgsWmsParameter::FILTER ).toString();
-          raiseError( QStringLiteral( "FILTER ('" ) + filterStr + QStringLiteral( "') is not properly formatted" ) );
+          raiseError( u"FILTER ('"_s + filterStr + u"') is not properly formatted"_s );
         }
       }
     }
@@ -1550,7 +1599,7 @@ namespace QgsWms
       else
       {
         QString selStr = mWmsParameters.value( QgsWmsParameter::SELECTION ).toString();
-        raiseError( QStringLiteral( "SELECTION ('" ) + selStr + QStringLiteral( "') is not properly formatted" ) );
+        raiseError( u"SELECTION ('"_s + selStr + u"') is not properly formatted"_s );
       }
     }
 
@@ -1616,6 +1665,10 @@ namespace QgsWms
     const QStringList fonts = highlightLabelFont();
     const QList<QColor> bufferColors = highlightLabelBufferColorAsColor();
     const QList<double> bufferSizes = highlightLabelBufferSizeAsFloat();
+    const QList<QColor> frameBackgroundColors = highlightLabelFrameBackgroundColorAsColor();
+    const QList<QColor> frameOutlineColors = highlightLabelFrameOutlineColorAsColor();
+    const QList<double> frameOutlineWidths = highlightLabelFrameOutlineWidthAsFloat();
+    const QList<double> frameSizes = highlightLabelFrameSizeAsFloat();
     const QList<double> rotation = highlightLabelRotation();
     const QList<double> distance = highlightLabelDistance();
     const QStringList hali = highlightLabelHorizontalAlignment();
@@ -1625,7 +1678,7 @@ namespace QgsWms
     for ( int i = 0; i < nLayers; i++ )
     {
       QgsWmsParametersHighlightLayer param;
-      param.mName = QStringLiteral( "highlight_" ) + QString::number( i );
+      param.mName = u"highlight_"_s + QString::number( i );
       param.mGeom = geoms[i];
       param.mSld = slds[i];
 
@@ -1649,6 +1702,18 @@ namespace QgsWms
 
       if ( i < bufferSizes.count() )
         param.mBufferSize = bufferSizes[i];
+
+      if ( i < frameBackgroundColors.count() )
+        param.mFrameBackgroundColor = frameBackgroundColors[i];
+
+      if ( i < frameOutlineColors.count() )
+        param.mFrameOutlineColor = frameOutlineColors[i];
+
+      if ( i < frameOutlineWidths.count() )
+        param.mFrameOutlineWidth = frameOutlineWidths[i];
+
+      if ( i < frameSizes.count() )
+        param.mFrameSize = frameSizes[i];
 
       if ( i < rotation.count() )
         param.mLabelRotation = rotation[i];
@@ -1707,7 +1772,7 @@ namespace QgsWms
     QgsWmsParametersComposerMap param;
     param.mId = mapId;
 
-    QString pMapId = QStringLiteral( "MAP" ) + QString::number( mapId );
+    QString pMapId = u"MAP"_s + QString::number( mapId );
 
     wmsParam = idParameter( QgsWmsParameter::EXTENT, mapId );
     QgsRectangle extent;
@@ -1865,6 +1930,34 @@ namespace QgsWms
       bufferSizes = wmsParam.toDoubleList( ';', false );
     }
 
+    QList<QColor> frameBackgroundColors;
+    wmsParam = idParameter( QgsWmsParameter::HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR, mapId );
+    if ( wmsParam.isValid() )
+    {
+      frameBackgroundColors = wmsParam.toColorList( ';', false );
+    }
+
+    QList<QColor> frameOutlineColors;
+    wmsParam = idParameter( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINECOLOR, mapId );
+    if ( wmsParam.isValid() )
+    {
+      frameOutlineColors = wmsParam.toColorList( ';', false );
+    }
+
+    QList<double> frameOutlineWidths;
+    wmsParam = idParameter( QgsWmsParameter::HIGHLIGHT_LABELFRAMEOUTLINEWIDTH, mapId );
+    if ( wmsParam.isValid() )
+    {
+      frameOutlineWidths = wmsParam.toDoubleList( ';', false );
+    }
+
+    QList<double> frameSizes;
+    wmsParam = idParameter( QgsWmsParameter::HIGHLIGHT_LABELFRAMESIZE, mapId );
+    if ( wmsParam.isValid() )
+    {
+      frameSizes = wmsParam.toDoubleList( ';', false );
+    }
+
     QList<double> rotations;
     wmsParam = idParameter( QgsWmsParameter::HIGHLIGHT_LABEL_ROTATION, mapId );
     if ( wmsParam.isValid() )
@@ -1897,7 +1990,7 @@ namespace QgsWms
     for ( int i = 0; i < nHLayers; i++ )
     {
       QgsWmsParametersHighlightLayer hParam;
-      hParam.mName = pMapId + QStringLiteral( "_highlight_" ) + QString::number( i );
+      hParam.mName = pMapId + u"_highlight_"_s + QString::number( i );
       hParam.mGeom = geoms[i];
       hParam.mSld = slds[i];
 
@@ -1918,6 +2011,18 @@ namespace QgsWms
 
       if ( i < bufferColors.count() )
         hParam.mBufferColor = bufferColors[i];
+
+      if ( i < frameBackgroundColors.count() )
+        hParam.mFrameBackgroundColor = frameBackgroundColors[i];
+
+      if ( i < frameOutlineColors.count() )
+        hParam.mFrameOutlineColor = frameOutlineColors[i];
+
+      if ( i < frameOutlineWidths.count() )
+        hParam.mFrameOutlineWidth = frameOutlineWidths[i];
+
+      if ( i < frameSizes.count() )
+        hParam.mFrameSize = frameSizes[i];
 
       if ( i < bufferSizes.count() )
         hParam.mBufferSize = bufferSizes[i];
@@ -1966,47 +2071,47 @@ namespace QgsWms
     for ( ; paramIt != paramMap.constEnd(); ++paramIt )
     {
       QString paramName = paramIt.key().toLower();
-      if ( paramName == QLatin1String( "layers" ) || paramName == QLatin1String( "styles" ) || paramName == QLatin1String( "opacities" ) )
+      if ( paramName == "layers"_L1 || paramName == "styles"_L1 || paramName == "opacities"_L1 )
       {
         const QStringList values = paramIt.value().split( ',' );
         for ( const QString &value : values )
           wmsUri.setParam( paramName, value );
       }
-      else if ( paramName == QLatin1String( "ignorereportedlayerextents" ) )
+      else if ( paramName == "ignorereportedlayerextents"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "IgnoreReportedLayerExtents" ), paramIt.value() );
+        wmsUri.setParam( u"IgnoreReportedLayerExtents"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "smoothpixmaptransform" ) )
+      else if ( paramName == "smoothpixmaptransform"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "SmoothPixmapTransform" ), paramIt.value() );
+        wmsUri.setParam( u"SmoothPixmapTransform"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "ignoregetmapurl" ) )
+      else if ( paramName == "ignoregetmapurl"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "IgnoreGetMapUrl" ), paramIt.value() );
+        wmsUri.setParam( u"IgnoreGetMapUrl"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "ignoregetfeatureinfourl" ) )
+      else if ( paramName == "ignoregetfeatureinfourl"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "IgnoreGetFeatureInfoUrl" ), paramIt.value() );
+        wmsUri.setParam( u"IgnoreGetFeatureInfoUrl"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "ignoreaxisorientation" ) )
+      else if ( paramName == "ignoreaxisorientation"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "IgnoreAxisOrientation" ), paramIt.value() );
+        wmsUri.setParam( u"IgnoreAxisOrientation"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "invertaxisorientation" ) )
+      else if ( paramName == "invertaxisorientation"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "InvertAxisOrientation" ), paramIt.value() );
+        wmsUri.setParam( u"InvertAxisOrientation"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "dpimode" ) )
+      else if ( paramName == "dpimode"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "dpiMode" ), paramIt.value() );
+        wmsUri.setParam( u"dpiMode"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "stepwidth" ) )
+      else if ( paramName == "stepwidth"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "stepWidth" ), paramIt.value() );
+        wmsUri.setParam( u"stepWidth"_s, paramIt.value() );
       }
-      else if ( paramName == QLatin1String( "stepheight" ) )
+      else if ( paramName == "stepheight"_L1 )
       {
-        wmsUri.setParam( QStringLiteral( "stepHeight" ), paramIt.value() );
+        wmsUri.setParam( u"stepHeight"_s, paramIt.value() );
       }
       else
       {
@@ -2030,7 +2135,7 @@ namespace QgsWms
   {
     const QString mStr = withMapTipAsString();
 
-    if ( mStr.startsWith( QLatin1String( "true" ), Qt::CaseInsensitive ) || mStr.startsWith( QLatin1String( "on" ), Qt::CaseInsensitive ) || mStr.startsWith( QLatin1String( "yes" ), Qt::CaseInsensitive ) || mStr.startsWith( QLatin1Char( '1' ) ) )
+    if ( mStr.startsWith( "true"_L1, Qt::CaseInsensitive ) || mStr.startsWith( "on"_L1, Qt::CaseInsensitive ) || mStr.startsWith( "yes"_L1, Qt::CaseInsensitive ) || mStr.startsWith( '1'_L1 ) )
       return true;
     else
       return false;
@@ -2040,7 +2145,7 @@ namespace QgsWms
   {
     const QString mStr = withMapTipAsString();
 
-    if ( mStr.startsWith( QLatin1String( "html_fi_only_maptip" ), Qt::CaseInsensitive ) )
+    if ( mStr.startsWith( "html_fi_only_maptip"_L1, Qt::CaseInsensitive ) )
       return true;
     else
       return false;
@@ -2058,7 +2163,7 @@ namespace QgsWms
 
   void QgsWmsParameters::log( const QString &msg, const char *file, const char *function, int line ) const
   {
-    QgsMessageLog::logMessage( msg, QStringLiteral( "Server" ), Qgis::MessageLevel::Info, true, file, function, line );
+    QgsMessageLog::logMessage( msg, u"Server"_s, Qgis::MessageLevel::Info, true, file, function, line );
   }
 
   void QgsWmsParameters::raiseError( const QString &msg ) const
@@ -2148,11 +2253,11 @@ namespace QgsWms
     }
 
     const QString mode = options[DxfFormatOption::MODE];
-    if ( mode.compare( QLatin1String( "SymbolLayerSymbology" ), Qt::CaseInsensitive ) == 0 )
+    if ( mode.compare( "SymbolLayerSymbology"_L1, Qt::CaseInsensitive ) == 0 )
     {
       symbol = Qgis::FeatureSymbologyExport::PerSymbolLayer;
     }
-    else if ( mode.compare( QLatin1String( "FeatureSymbology" ), Qt::CaseInsensitive ) == 0 )
+    else if ( mode.compare( "FeatureSymbology"_L1, Qt::CaseInsensitive ) == 0 )
     {
       symbol = Qgis::FeatureSymbologyExport::PerFeature;
     }
@@ -2162,7 +2267,7 @@ namespace QgsWms
 
   QString QgsWmsParameters::dxfCodec() const
   {
-    QString codec = QStringLiteral( "ISO-8859-1" );
+    QString codec = u"ISO-8859-1"_s;
 
     if ( formatOptions<QgsWmsParameters::DxfFormatOption>().contains( DxfFormatOption::CODEC ) )
     {
@@ -2233,11 +2338,11 @@ namespace QgsWms
     const QMap<QgsWmsParameters::PdfFormatOption, QString> options = formatOptions<QgsWmsParameters::PdfFormatOption>();
     if ( options.contains( PdfFormatOption::TEXT_RENDER_FORMAT ) )
     {
-      if ( options[PdfFormatOption::TEXT_RENDER_FORMAT].compare( QStringLiteral( "AlwaysText" ), Qt::CaseInsensitive ) == 0 )
+      if ( options[PdfFormatOption::TEXT_RENDER_FORMAT].compare( u"AlwaysText"_s, Qt::CaseInsensitive ) == 0 )
       {
         format = Qgis::TextRenderFormat::AlwaysText;
       }
-      else if ( options[PdfFormatOption::TEXT_RENDER_FORMAT].compare( QStringLiteral( "PreferText" ), Qt::CaseInsensitive ) == 0 )
+      else if ( options[PdfFormatOption::TEXT_RENDER_FORMAT].compare( u"PreferText"_s, Qt::CaseInsensitive ) == 0 )
       {
         format = Qgis::TextRenderFormat::PreferText;
       }
@@ -2321,7 +2426,7 @@ namespace QgsWms
     const QStringList unmanagedNames = mUnmanagedParameters.keys();
     for ( const QString &key : unmanagedNames )
     {
-      if ( key.startsWith( QLatin1String( "DIM_" ) ) )
+      if ( key.startsWith( "DIM_"_L1 ) )
       {
         dimValues[key.mid( 4 )] = mUnmanagedParameters[key];
       }

@@ -64,16 +64,13 @@ specification of rules for 3D symbols.
     typedef QHash<const QgsRuleBased3DRenderer::Rule *, QgsFeature3DHandler *> RuleToHandlerMap;
 
     class Rule
-{
+    {
 %Docstring(signature="appended")
 A child rule for a QgsRuleBased3DRenderer.
 
 .. versionadded:: 3.6
 %End
 
-%TypeHeaderCode
-#include "qgsrulebased3drenderer.h"
-%End
       public:
         Rule( QgsAbstract3DSymbol *symbol /Transfer/, const QString &filterExp = QString(), const QString &description = QString(), bool elseRule = false );
 %Docstring
@@ -263,6 +260,16 @@ Returns pointer to the root rule
 
     virtual void readXml( const QDomElement &elem, const QgsReadWriteContext &context );
 
+
+    static std::unique_ptr< QgsRuleBased3DRenderer > convertFromRenderer( const QgsAbstractVectorLayer3DRenderer *renderer, QgsVectorLayer *layer = 0 );
+%Docstring
+Creates a new QgsRuleBased3DRenderer from an existing ``renderer``.
+
+:return: a new renderer if the conversion was possible, otherwise
+         ``None``.
+
+.. versionadded:: 4.2
+%End
 
 };
 

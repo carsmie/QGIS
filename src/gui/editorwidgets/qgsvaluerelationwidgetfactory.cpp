@@ -19,15 +19,14 @@
 #include "qgslogger.h"
 #include "qgsvaluerelationconfigdlg.h"
 #include "qgsvaluerelationsearchwidgetwrapper.h"
-#include "qgsvectorlayer.h"
 #include "qgsvaluerelationwidgetwrapper.h"
+#include "qgsvectorlayer.h"
 
 #include <QSettings>
 
-QgsValueRelationWidgetFactory::QgsValueRelationWidgetFactory( const QString &name )
-  : QgsEditorWidgetFactory( name )
-{
-}
+QgsValueRelationWidgetFactory::QgsValueRelationWidgetFactory( const QString &name, const QIcon &icon )
+  : QgsEditorWidgetFactory( name, icon )
+{}
 
 QgsEditorWidgetWrapper *QgsValueRelationWidgetFactory::create( QgsVectorLayer *vl, int fieldIdx, QWidget *editor, QWidget *parent ) const
 {

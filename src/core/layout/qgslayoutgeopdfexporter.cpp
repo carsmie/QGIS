@@ -15,27 +15,30 @@
  ***************************************************************************/
 
 #include "qgslayoutgeopdfexporter.h"
-#include "qgsrenderedfeaturehandlerinterface.h"
-#include "qgsfeaturerequest.h"
-#include "qgslayout.h"
-#include "qgsgeometry.h"
-#include "qgsvectorlayer.h"
-#include "qgslayertree.h"
-#include "qgslayoutrendercontext.h"
 
 #include <gdal.h>
-#include "qgslayoutpagecollection.h"
 
-#include <QMutex>
-#include <QMutexLocker>
+#include "qgsfeaturerequest.h"
+#include "qgsgeometry.h"
+#include "qgslayertree.h"
+#include "qgslayout.h"
+#include "qgslayoutpagecollection.h"
+#include "qgslayoutrendercontext.h"
+#include "qgsrenderedfeaturehandlerinterface.h"
+#include "qgsvectorlayer.h"
+
 #include <QDomDocument>
 #include <QDomElement>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
-class QgsGeospatialPdfRenderedFeatureHandler: public QgsRenderedFeatureHandlerInterface
+class QgsGeospatialPdfRenderedFeatureHandler : public QgsRenderedFeatureHandlerInterface
 {
   public:
-
     QgsGeospatialPdfRenderedFeatureHandler( QgsLayoutItemMap *map, QgsLayoutGeospatialPdfExporter *exporter, const QStringList &layerIds )
       : mExporter( exporter )
       , mMap( map )
@@ -61,8 +64,7 @@ class QgsGeospatialPdfRenderedFeatureHandler: public QgsRenderedFeatureHandlerIn
       QTransform::quadToQuad( mapRectPoly, mapRectInLayout, mMapToLayoutTransform );
 
       // and a transform to PDF coordinate space
-      mLayoutToPdfTransform = QTransform::fromTranslate( 0, pageHeightPdfUnits ).scale( pageWidthPdfUnits / pageSizeLayoutUnits.width(),
-                              -pageHeightPdfUnits / pageSizeLayoutUnits.height() );
+      mLayoutToPdfTransform = QTransform::fromTranslate( 0, pageHeightPdfUnits ).scale( pageWidthPdfUnits / pageSizeLayoutUnits.width(), -pageHeightPdfUnits / pageSizeLayoutUnits.height() );
     }
 
     void handleRenderedFeature( const QgsFeature &feature, const QgsGeometry &renderedBounds, const QgsRenderedFeatureHandlerInterface::RenderedFeatureContext &context ) override
@@ -70,7 +72,7 @@ class QgsGeospatialPdfRenderedFeatureHandler: public QgsRenderedFeatureHandlerIn
       // is it a hack retrieving the layer ID from an expression context like this? possibly... BUT
       // the alternative is adding a layer ID member to QgsRenderContext, and that's just asking for people to abuse it
       // and use it to retrieve QgsMapLayers mid-way through a render operation. Lesser of two evils it is!
-      const QString layerId = context.renderContext.expressionContext().variable( QStringLiteral( "layer_id" ) ).toString();
+      const QString layerId = context.renderContext.expressionContext().variable( u"layer_id"_s ).toString();
       if ( !mLayerIds.contains( layerId ) )
         return;
 
@@ -91,10 +93,7 @@ class QgsGeospatialPdfRenderedFeatureHandler: public QgsRenderedFeatureHandlerIn
       mExporter->pushRenderedFeature( layerId, QgsLayoutGeospatialPdfExporter::RenderedFeature( feature, transformed ), theme );
     }
 
-    QSet<QString> usedAttributes( QgsVectorLayer *, const QgsRenderContext & ) const override
-    {
-      return QSet< QString >() << QgsFeatureRequest::ALL_ATTRIBUTES;
-    }
+    QSet<QString> usedAttributes( QgsVectorLayer *, const QgsRenderContext & ) const override { return QSet< QString >() << QgsFeatureRequest::ALL_ATTRIBUTES; }
 
   private:
     QTransform mMapToLayoutTransform;
@@ -115,18 +114,18 @@ QgsLayoutGeospatialPdfExporter::QgsLayoutGeospatialPdfExporter( QgsLayout *layou
   {
     if ( QgsMapLayer *ml = it.value() )
     {
-      const QVariant visibility = ml->customProperty( QStringLiteral( "geopdf/initiallyVisible" ), true );
+      const QVariant visibility = ml->customProperty( u"geopdf/initiallyVisible"_s, true );
       mInitialLayerVisibility.insert( ml->id(), !visibility.isValid() ? true : visibility.toBool() );
       if ( ml->type() == Qgis::LayerType::Vector )
       {
-        const QVariant v = ml->customProperty( QStringLiteral( "geopdf/includeFeatures" ) );
+        const QVariant v = ml->customProperty( u"geopdf/includeFeatures"_s );
         if ( !v.isValid() || v.toBool() )
         {
           exportableLayerIds << ml->id();
         }
       }
 
-      const QString groupName = ml->customProperty( QStringLiteral( "geopdf/groupName" ) ).toString();
+      const QString groupName = ml->customProperty( u"geopdf/groupName"_s ).toString();
       if ( !groupName.isEmpty() )
         mCustomLayerTreeGroups.insert( ml->id(), groupName );
     }
@@ -142,13 +141,13 @@ QgsLayoutGeospatialPdfExporter::QgsLayoutGeospatialPdfExporter( QgsLayout *layou
     map->addRenderedFeatureHandler( handler );
   }
 
-  mLayerTreeGroupOrder = mLayout->customProperty( QStringLiteral( "pdfGroupOrder" ) ).toStringList();
+  mLayerTreeGroupOrder = mLayout->customProperty( u"pdfGroupOrder"_s ).toStringList();
 
   // start with project layer order, and then apply custom layer order if set
   QStringList geospatialPdfLayerOrder;
-  const QString presetLayerOrder = mLayout->customProperty( QStringLiteral( "pdfLayerOrder" ) ).toString();
+  const QString presetLayerOrder = mLayout->customProperty( u"pdfLayerOrder"_s ).toString();
   if ( !presetLayerOrder.isEmpty() )
-    geospatialPdfLayerOrder = presetLayerOrder.split( QStringLiteral( "~~~" ) );
+    geospatialPdfLayerOrder = presetLayerOrder.split( u"~~~"_s );
 
   QList< QgsMapLayer * > layerOrder = mLayout->project()->layerTreeRoot()->layerOrder();
   for ( auto it = geospatialPdfLayerOrder.rbegin(); it != geospatialPdfLayerOrder.rend(); ++it )
@@ -191,3 +190,42 @@ QgsAbstractGeospatialPdfExporter::VectorComponentDetail QgsLayoutGeospatialPdfEx
   return detail;
 }
 
+QgsLayerTree *QgsLayoutGeospatialPdfExporter::layerTree() const
+{
+  return mLayout->project()->layerTreeRoot();
+}
+
+bool QgsLayoutGeospatialPdfExporter::setMapItemLayersBeforeRendering()
+{
+  bool res = false;
+
+  // Set project layers (including invisible ones) to all maps that
+  // don't follow themes nor locked layers. We'll restore their
+  // previous layer sets right after the rendering.
+  QList< QgsLayoutItemMap * > maps;
+  mLayout->layoutItems( maps );
+  for ( QgsLayoutItemMap *map : std::as_const( maps ) )
+  {
+    if ( !map->followVisibilityPreset() && !map->keepLayerSet() )
+    {
+      // Store previous list of layers to restore it after the rendering
+      mTemporaryLayersToRender.insert( map->uuid(), map->layers() );
+      map->setLayers( mLayout->project()->layerTreeRoot()->layerOrder() );
+      res = true;
+    }
+  }
+  return res;
+}
+
+void QgsLayoutGeospatialPdfExporter::restoreMapItemLayersAfterRendering()
+{
+  for ( auto it = mTemporaryLayersToRender.constBegin(); it != mTemporaryLayersToRender.constEnd(); it++ )
+  {
+    QgsLayoutItem *item = mLayout->itemByUuid( it.key() );
+    if ( item && item->type() == QgsLayoutItemRegistry::ItemType::LayoutMap )
+    {
+      static_cast< QgsLayoutItemMap * >( item )->setLayers( it.value() );
+    }
+  }
+  mTemporaryLayersToRender.clear();
+}

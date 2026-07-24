@@ -10,8 +10,8 @@ __author__ = "Nyall Dawson"
 __date__ = "2016-05"
 __copyright__ = "Copyright 2016, The QGIS Project"
 
-from qgis.PyQt.QtCore import QDate, QDateTime, QTime
-from qgis.PyQt.QtWidgets import QWidget
+import unittest
+
 from qgis.core import QgsFeature, QgsProject, QgsRelation, QgsVectorLayer
 from qgis.gui import (
     QgsCheckboxSearchWidgetWrapper,
@@ -22,14 +22,14 @@ from qgis.gui import (
     QgsValueMapSearchWidgetWrapper,
     QgsValueRelationSearchWidgetWrapper,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.PyQt.QtCore import QDate, QDateTime, QLocale, QTime
+from qgis.PyQt.QtWidgets import QWidget
+from qgis.testing import QgisTestCase, start_app
 
 start_app()
 
 
 class PyQgsSearchWidgetWrapper(QgisTestCase):
-
     def testFlagToString(self):
         # test converting QgsSearchWidgetWrapper.FilterFlag to string
         tests = [
@@ -59,11 +59,15 @@ class PyQgsSearchWidgetWrapper(QgisTestCase):
 
 
 class PyQgsDefaultSearchWidgetWrapper(QgisTestCase):
+    @classmethod
+    def setUpClass(cls):
+        QLocale.setDefault(QLocale(QLocale.Language.English))
+        super().setUpClass()
 
     def testCreateExpression(self):
         """Test creating an expression using the widget"""
         layer = QgsVectorLayer(
-            "Point?field=fldtxt:string&field=fldint:integer&field=flddate:datetime",
+            "Point?field=fldtxt:string&field=fldint:integer&field=flddate:datetime&field=flddouble:double",
             "test",
             "memory",
         )
@@ -171,6 +175,52 @@ class PyQgsDefaultSearchWidgetWrapper(QgisTestCase):
             '"fldint"<=5.5',
         )
 
+        # remove locale specific formattings
+        line_edit.setText("5,000")
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.LessThan),
+            '"fldint"<5000',
+        )
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.GreaterThanOrEqualTo),
+            '"fldint">=5000',
+        )
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.LessThanOrEqualTo),
+            '"fldint"<=5000',
+        )
+        line_edit.setText("10,000,000")
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.LessThan),
+            '"fldint"<10000000',
+        )
+
+        # numeric field (double)
+        parent = QWidget()
+        w = QgsDefaultSearchWidgetWrapper(layer, 3)
+        w.initWidget(parent)
+
+        # remove locale specific formattings
+        line_edit = w.lineEdit()
+        line_edit.setText("5,000.5")
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.LessThan),
+            '"flddouble"<5000.5',
+        )
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.GreaterThanOrEqualTo),
+            '"flddouble">=5000.5',
+        )
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.LessThanOrEqualTo),
+            '"flddouble"<=5000.5',
+        )
+        line_edit.setText("10,000.5555555555")
+        self.assertEqual(
+            w.createExpression(QgsSearchWidgetWrapper.FilterFlag.LessThan),
+            '"flddouble"<10000.5555555555',
+        )
+
         # date/time/datetime
         parent = QWidget()
         w = QgsDefaultSearchWidgetWrapper(layer, 2)
@@ -204,9 +254,69 @@ class PyQgsDefaultSearchWidgetWrapper(QgisTestCase):
             "\"flddate\"<='2015-06-03'",
         )
 
+    def testSetExpression(self):
+        """Test creating an expression using the widget"""
+        layer = QgsVectorLayer(
+            "Point?field=fldint:integer&field=flddouble:double",
+            "test",
+            "memory",
+        )
+        # numeric field
+        parent = QWidget()
+        w = QgsDefaultSearchWidgetWrapper(layer, 0)
+        w.initWidget(parent)
+
+        line_edit = w.lineEdit()
+
+        line_edit.setText("10000")
+        self.assertEqual(
+            w.expression(),
+            "\"fldint\" = '10000'",
+        )
+        line_edit.setText("10,000")
+        self.assertEqual(
+            w.expression(),
+            "\"fldint\" = '10000'",
+        )
+        line_edit.setText("10,000,000")
+        self.assertEqual(
+            w.expression(),
+            "\"fldint\" = '10000000'",
+        )
+
+        w = QgsDefaultSearchWidgetWrapper(layer, 1)
+        w.initWidget(parent)
+
+        line_edit = w.lineEdit()
+
+        line_edit.setText("10000")
+        self.assertEqual(
+            w.expression(),
+            "\"flddouble\" = '10000'",
+        )
+        line_edit.setText("10,000")
+        self.assertEqual(
+            w.expression(),
+            "\"flddouble\" = '10000'",
+        )
+        line_edit.setText("10000.5")
+        self.assertEqual(
+            w.expression(),
+            "\"flddouble\" = '10000.5'",
+        )
+        line_edit.setText("10,000.5")
+        self.assertEqual(
+            w.expression(),
+            "\"flddouble\" = '10000.5'",
+        )
+        line_edit.setText("10,000.5555555555")
+        self.assertEqual(
+            w.expression(),
+            "\"flddouble\" = '10000.5555555555'",
+        )
+
 
 class PyQgsValueMapSearchWidgetWrapper(QgisTestCase):
-
     def testCreateExpression(self):
         """Test creating an expression using the widget"""
         layer = QgsVectorLayer(
@@ -294,7 +404,6 @@ class PyQgsValueMapSearchWidgetWrapper(QgisTestCase):
 
 
 class PyQgsValueRelationSearchWidgetWrapper(QgisTestCase):
-
     def testCreateExpression(self):
         """Test creating an expression using the widget"""
         layer = QgsVectorLayer(
@@ -443,7 +552,6 @@ class PyQgsValueRelationSearchWidgetWrapper(QgisTestCase):
 
 
 class PyQgsCheckboxSearchWidgetWrapper(QgisTestCase):
-
     def testCreateExpression(self):
         """Test creating an expression using the widget"""
         layer = QgsVectorLayer(
@@ -547,7 +655,6 @@ class PyQgsCheckboxSearchWidgetWrapper(QgisTestCase):
 
 
 class PyQgsDateTimeSearchWidgetWrapper(QgisTestCase):
-
     def testCreateExpression(self):
         """Test creating an expression using the widget"""
         layer = QgsVectorLayer(
@@ -681,7 +788,6 @@ class PyQgsDateTimeSearchWidgetWrapper(QgisTestCase):
 
 
 class PyQgsRelationReferenceSearchWidgetWrapper(QgisTestCase):
-
     def testCreateExpression(self):
         """Test creating an expression using the widget"""
         layer = QgsVectorLayer(

@@ -18,12 +18,13 @@
 #ifndef QGSDIMENSIONFILTER_H
 #define QGSDIMENSIONFILTER_H
 
-#define SIP_NO_FILE
 
-#include "qgsfeaturefilterprovider.h"
 #include "qgis_server.h"
+#include "qgsfeaturefilterprovider.h"
 
 #include <QHash>
+
+#define SIP_NO_FILE
 
 /**
  * \ingroup server
@@ -42,6 +43,7 @@ class SERVER_EXPORT QgsDimensionFilter : public QgsFeatureFilterProvider
 
     bool isFilterThreadSafe() const override { return false; }
 
+    using QgsFeatureFilterProvider::filterFeatures;
     void filterFeatures( const QgsVectorLayer *layer, QgsFeatureRequest &filterFeatures ) const override;
     QStringList layerAttributes( const QgsVectorLayer *layer, const QStringList &attributes ) const override;
     QgsDimensionFilter *clone() const override;

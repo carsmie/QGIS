@@ -14,42 +14,43 @@
  ***************************************************************************/
 
 #include "qgscolorwidgets.h"
-#include "moc_qgscolorwidgets.cpp"
-#include "qgsapplication.h"
-#include "qgssymbollayerutils.h"
-#include "qgssettings.h"
-#include "qgslogger.h"
-#include "qgsguiutils.h"
-#include "qgsdoublespinbox.h"
-
-#include <QResizeEvent>
-
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-#include <QStyleOptionFrameV3>
-#else
-#include <QStyleOptionFrame>
-#endif
-#include <QPainter>
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QFontMetrics>
-#include <QToolButton>
-#include <QMenu>
-#include <QDrag>
-#include <QRectF>
-#include <QLineF>
 
 #include <cmath>
+
+#include "qgsapplication.h"
+#include "qgsdoublespinbox.h"
+#include "qgsguiutils.h"
+#include "qgslogger.h"
+#include "qgsscreenhelper.h"
+#include "qgssettingsentryenumflag.h"
+#include "qgssettingstree.h"
+#include "qgssymbollayerutils.h"
+
+#include <QDrag>
+#include <QFontMetrics>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QLineF>
+#include <QMenu>
+#include <QPainter>
+#include <QRectF>
+#include <QResizeEvent>
+#include <QString>
+#include <QStyleOptionFrame>
+#include <QToolButton>
+
+#include "moc_qgscolorwidgets.cpp"
+
+using namespace Qt::StringLiterals;
+
+const QgsSettingsEntryEnumFlag<QgsColorTextWidget::ColorTextFormat> *QgsColorTextWidget::settingsTextFormat
+  = new QgsSettingsEntryEnumFlag<QgsColorTextWidget::ColorTextFormat>( u"text-format"_s, QgsSettingsTree::sTreeColorWidgets, QgsColorTextWidget::HexRgb );
 
 #define HUE_MAX 360
 
 
-// TODO QGIS 4 remove typedef, QColor was qreal (double) and is now float
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-typedef qreal float_type;
-#else
+// TODO QGIS 5 remove typedef, QColor was qreal (double) and is now float
 typedef float float_type;
-#endif
 
 
 //
@@ -131,7 +132,7 @@ float QgsColorWidget::componentValueF( const QgsColorWidget::ColorComponent comp
     return -1;
   }
 
-  // TODO QGIS 4 remove the nolint instructions, QColor was qreal (double) and is now float
+  // TODO QGIS 5 remove the nolint instructions, QColor was qreal (double) and is now float
   // NOLINTBEGIN(bugprone-narrowing-conversions)
   switch ( component )
   {
@@ -198,7 +199,7 @@ float QgsColorWidget::hueF() const
 {
   if ( mCurrentColor.hueF() >= 0 )
   {
-    return mCurrentColor.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 4 remove the nolint instructions, QColor was qreal (double) and is now float
+    return mCurrentColor.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 5 remove the nolint instructions, QColor was qreal (double) and is now float
   }
   else
   {
@@ -311,7 +312,7 @@ const QPixmap &QgsColorWidget::transparentBackground()
   static QPixmap sTranspBkgrd;
 
   if ( sTranspBkgrd.isNull() )
-    sTranspBkgrd = QgsApplication::getThemePixmap( QStringLiteral( "/transp-background_8x8.png" ) );
+    sTranspBkgrd = QgsApplication::getThemePixmap( u"/transp-background_8x8.png"_s );
 
   return sTranspBkgrd;
 }
@@ -390,7 +391,7 @@ void QgsColorWidget::setComponent( const QgsColorWidget::ColorComponent componen
 
 void QgsColorWidget::setComponentValue( const int value )
 {
-  setComponentValueF( static_cast<float>( value ) );
+  setComponentValueF( static_cast<float>( value ) / static_cast< float >( componentRange( mComponent ) ) );
 }
 
 void QgsColorWidget::setComponentValueF( const float value )
@@ -416,7 +417,7 @@ void QgsColorWidget::setComponentValueF( const float value )
   //update recorded hue
   if ( mCurrentColor.hue() >= 0 )
   {
-    mExplicitHue = mCurrentColor.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 4 remove the nolint instructions, QColor was qreal (double) and is now float
+    mExplicitHue = mCurrentColor.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 5 remove the nolint instructions, QColor was qreal (double) and is now float
   }
 
   update();
@@ -434,7 +435,7 @@ void QgsColorWidget::setColor( const QColor &color, const bool emitSignals )
   //update recorded hue
   if ( color.hue() >= 0 )
   {
-    mExplicitHue = color.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 4 remove the nolint instructions, QColor was qreal (double) and is now float
+    mExplicitHue = color.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 5 remove the nolint instructions, QColor was qreal (double) and is now float
   }
 
   if ( emitSignals )
@@ -464,6 +465,9 @@ QgsColorWheel::QgsColorWheel( QWidget *parent )
     wheelGradient.setColorAt( relativePos, gradColor );
   }
   mWheelBrush = QBrush( wheelGradient );
+
+  auto screenHelper = new QgsScreenHelper( this );
+  connect( screenHelper, &QgsScreenHelper::screenDpiChanged, this, &QgsColorWheel::invalidateImages );
 }
 
 QgsColorWheel::~QgsColorWheel() = default;
@@ -496,19 +500,19 @@ void QgsColorWheel::paintEvent( QPaintEvent *event )
   }
 
   //draw wheel centered on widget
-  const QPointF center = QPointF( mWidgetImage.width() / 2.0, mWidgetImage.height() / 2.0 );
-  imagePainter.drawImage( QPointF( center.x() - ( mWheelImage.width() / 2.0 ), center.y() - ( mWheelImage.height() / 2.0 ) ), mWheelImage );
+  const QPointF center = QPointF( mWidgetImage.width() / 2.0 / mWidgetImage.devicePixelRatioF(), mWidgetImage.height() / 2.0 / mWidgetImage.devicePixelRatioF() );
+  imagePainter.drawImage( QPointF( center.x() - ( mWheelImage.width() / 2.0 / mWidgetImage.devicePixelRatioF() ), center.y() - ( mWheelImage.height() / 2.0 / mWidgetImage.devicePixelRatioF() ) ), mWheelImage );
 
   //draw hue marker
   const float h = hueF() * HUE_MAX;
-  const double length = mWheelImage.width() / 2.0;
+  const double length = mWheelImage.width() / 2.0 / mWidgetImage.devicePixelRatioF();
   QLineF hueMarkerLine = QLineF( center.x(), center.y(), center.x() + length, center.y() );
   hueMarkerLine.setAngle( h );
   imagePainter.save();
   //use sourceIn mode for nicer antialiasing
   imagePainter.setCompositionMode( QPainter::CompositionMode_SourceIn );
   QPen pen;
-  pen.setWidthF( 2 * devicePixelRatioF() );
+  pen.setWidthF( 2 * mWidgetImage.devicePixelRatioF() );
   //adapt pen color for hue
   pen.setColor( h > 20 && h < 200 ? Qt::black : Qt::white );
   imagePainter.setPen( pen );
@@ -520,10 +524,10 @@ void QgsColorWheel::paintEvent( QPaintEvent *event )
   {
     createTriangle();
   }
-  imagePainter.drawImage( QPointF( center.x() - ( mWheelImage.width() / 2.0 ), center.y() - ( mWheelImage.height() / 2.0 ) ), mTriangleImage );
+  imagePainter.drawImage( QPointF( center.x() - ( mWheelImage.width() / 2.0 / mWidgetImage.devicePixelRatioF() ), center.y() - ( mWheelImage.height() / 2.0 / mWidgetImage.devicePixelRatioF() ) ), mTriangleImage );
 
   //draw current color marker
-  const double triangleRadius = length - mWheelThickness * devicePixelRatioF() - 1;
+  const double triangleRadius = length - ( mWheelThickness + 1 ) * mWheelImage.devicePixelRatioF();
 
   //adapted from equations at https://github.com/timjb/colortriangle/blob/master/colortriangle.js by Tim Baumann
   const double lightness = mCurrentColor.lightnessF();
@@ -545,7 +549,7 @@ void QgsColorWheel::paintEvent( QPaintEvent *event )
   pen.setColor( lightness > 0.7 ? Qt::black : Qt::white );
   imagePainter.setPen( pen );
   imagePainter.setBrush( Qt::NoBrush );
-  imagePainter.drawEllipse( QPointF( x + center.x(), y + center.y() ), 4.0 * devicePixelRatioF(), 4.0 * devicePixelRatioF() );
+  imagePainter.drawEllipse( QPointF( x + center.x(), y + center.y() ), 4.0 * mWheelImage.devicePixelRatioF(), 4.0 * mWheelImage.devicePixelRatioF() );
   imagePainter.end();
 
   //draw image onto widget
@@ -572,36 +576,21 @@ void QgsColorWheel::createImages( const QSizeF size )
   //recreate cache images at correct size
   const double pixelRatio = devicePixelRatioF();
   mWheelImage = QImage( wheelSize * pixelRatio, wheelSize * pixelRatio, QImage::Format_ARGB32 );
+  mWheelImage.setDevicePixelRatio( pixelRatio );
   mTriangleImage = QImage( wheelSize * pixelRatio, wheelSize * pixelRatio, QImage::Format_ARGB32 );
+  mTriangleImage.setDevicePixelRatio( pixelRatio );
   mWidgetImage = QImage( size.width() * pixelRatio, size.height() * pixelRatio, QImage::Format_ARGB32 );
+  mWidgetImage.setDevicePixelRatio( pixelRatio );
 
   //trigger a redraw for the images
   mWheelDirty = true;
   mTriangleDirty = true;
 }
 
-void QgsColorWheel::resizeEvent( QResizeEvent *event )
+void QgsColorWheel::resizeEvent( QResizeEvent * )
 {
-  QgsColorWidget::resizeEvent( event );
-#ifdef Q_OS_WIN
-  // For some reason the first reported size than that of the parent widget, leading to a cut-off color wheel
-  if ( event->size().width() > parentWidget()->size().width() )
-  {
-    QSize newSize(
-      std::min( event->size().width(), parentWidget()->size().width() - 2 ),
-      std::min( event->size().height(), parentWidget()->size().height() - 2 )
-    );
-    resize( newSize );
-    createImages( newSize );
-  }
-  else
-  {
-    createImages( event->size() );
-  }
-#else
-  //recreate images for new size
-  createImages( event->size() );
-#endif
+  // force a recreation on next paint
+  invalidateImages();
 }
 
 void QgsColorWheel::setColorFromPos( const QPointF pos )
@@ -629,7 +618,7 @@ void QgsColorWheel::setColorFromPos( const QPointF pos )
     const double hueRadians = h * 2 * M_PI;
     double rad0 = std::fmod( eventAngleRadians + 2.0 * M_PI - hueRadians, 2.0 * M_PI );
     double rad1 = std::fmod( rad0, ( ( 2.0 / 3.0 ) * M_PI ) ) - ( M_PI / 3.0 );
-    const double length = mWheelImage.width() / 2.0 / devicePixelRatioF();
+    const double length = mWheelImage.width() / 2.0 / mWheelImage.devicePixelRatioF();
     const double triangleLength = length - mWheelThickness - 1;
 
     const double a = 0.5 * triangleLength;
@@ -664,7 +653,7 @@ void QgsColorWheel::setColorFromPos( const QPointF pos )
   {
     //use hue angle
     s = mCurrentColor.hsvSaturationF();
-    const float v = mCurrentColor.valueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 4 remove the nolint instructions, QColor was qreal (double) and is now float
+    const float v = mCurrentColor.valueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 5 remove the nolint instructions, QColor was qreal (double) and is now float
     const qreal newHue = line.angle() / HUE_MAX;
     newColor = QColor::fromHsvF( static_cast<float>( newHue ), s, v, alpha );
     //hue has changed, need to redraw triangle
@@ -679,7 +668,7 @@ void QgsColorWheel::setColorFromPos( const QPointF pos )
     if ( mCurrentColor.hueF() >= 0 )
     {
       //color has a valid hue, so update the QgsColorWidget's explicit hue
-      mExplicitHue = mCurrentColor.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 4 remove the nolint instructions, QColor was qreal (double) and is now float
+      mExplicitHue = mCurrentColor.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 5 remove the nolint instructions, QColor was qreal (double) and is now float
     }
 
     update();
@@ -705,7 +694,7 @@ void QgsColorWheel::mousePressEvent( QMouseEvent *event )
     //create a line from the widget's center to the event
     const QLineF line = QLineF( width() / 2.0, height() / 2.0, event->pos().x(), event->pos().y() );
 
-    const double innerLength = mWheelImage.width() / 2.0 / devicePixelRatioF() - mWheelThickness;
+    const double innerLength = mWheelImage.width() / 2.0 / mWheelImage.devicePixelRatioF() - mWheelThickness * mWheelImage.devicePixelRatioF();
     if ( line.length() < innerLength )
     {
       mClickedPart = QgsColorWheel::Triangle;
@@ -735,6 +724,12 @@ void QgsColorWheel::mouseReleaseEvent( QMouseEvent *event )
   }
 }
 
+void QgsColorWheel::invalidateImages()
+{
+  // force a recreation on next paint
+  mWidgetImage = QImage();
+}
+
 void QgsColorWheel::createWheel()
 {
   if ( mWheelImage.isNull() )
@@ -743,7 +738,7 @@ void QgsColorWheel::createWheel()
   }
 
   const int maxSize = std::min( mWheelImage.width(), mWheelImage.height() );
-  const double wheelRadius = maxSize / 2.0;
+  const double wheelRadius = maxSize / 2.0 / mWheelImage.devicePixelRatioF();
 
   mWheelImage.fill( Qt::transparent );
   QPainter p( &mWheelImage );
@@ -753,12 +748,12 @@ void QgsColorWheel::createWheel()
 
   //draw hue wheel as a circle
   p.translate( wheelRadius, wheelRadius );
-  p.drawEllipse( QPointF( 0.0, 0.0 ), wheelRadius, wheelRadius );
+  p.drawEllipse( QPointF( 0, 0 ), wheelRadius, wheelRadius );
 
   //cut hole in center of circle to make a ring
   p.setCompositionMode( QPainter::CompositionMode_DestinationOut );
   p.setBrush( QBrush( Qt::black ) );
-  p.drawEllipse( QPointF( 0, 0 ), wheelRadius - mWheelThickness * devicePixelRatioF(), wheelRadius - mWheelThickness * devicePixelRatioF() );
+  p.drawEllipse( QPointF( 0, 0 ), wheelRadius - mWheelThickness * mWheelImage.devicePixelRatioF(), wheelRadius - mWheelThickness * mWheelImage.devicePixelRatioF() );
   p.end();
 
   mWheelDirty = false;
@@ -771,7 +766,7 @@ void QgsColorWheel::createTriangle()
     return;
   }
 
-  const QPointF center = QPointF( mWheelImage.width() / 2.0, mWheelImage.height() / 2.0 );
+  const QPointF center = QPointF( mWheelImage.width() / 2.0 / mWheelImage.devicePixelRatioF(), mWheelImage.height() / 2.0 / mWheelImage.devicePixelRatioF() );
   mTriangleImage.fill( Qt::transparent );
 
   QPainter imagePainter( &mTriangleImage );
@@ -779,8 +774,8 @@ void QgsColorWheel::createTriangle()
 
   const float angle = hueF();
   const float angleDegree = angle * HUE_MAX;
-  const double wheelRadius = mWheelImage.width() / 2.0;
-  const double triangleRadius = wheelRadius - mWheelThickness * devicePixelRatioF() - 1;
+  const double wheelRadius = mWheelImage.width() / 2.0 / mWheelImage.devicePixelRatioF();
+  const double triangleRadius = wheelRadius - mWheelThickness * mWheelImage.devicePixelRatioF() - 1;
 
   //pure version of hue (at full saturation and value)
   const QColor pureColor = QColor::fromHsvF( angle, 1., 1. );
@@ -850,13 +845,11 @@ QgsColorBox::QgsColorBox( QWidget *parent, const ColorComponent component )
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding );
 
-  mBoxImage = new QImage( width() - mMargin * 2, height() - mMargin * 2, QImage::Format_RGB32 );
+  mBoxImage = std::make_unique<QImage>( width() - static_cast<int>( mMargin * 2 ), height() - static_cast<int>( mMargin * 2 ), QImage::Format_RGB32 );
 }
 
 QgsColorBox::~QgsColorBox()
-{
-  delete mBoxImage;
-}
+{}
 
 QSize QgsColorBox::sizeHint() const
 {
@@ -922,8 +915,8 @@ void QgsColorBox::setColor( const QColor &color, const bool emitSignals )
 void QgsColorBox::resizeEvent( QResizeEvent *event )
 {
   mDirty = true;
-  delete mBoxImage;
-  mBoxImage = new QImage( event->size().width() - mMargin * 2, event->size().height() - mMargin * 2, QImage::Format_RGB32 );
+  mBoxImage = std::make_unique<QImage>( event->size().width() - static_cast<int>( mMargin * 2 ), event->size().height() - static_cast<int>( mMargin * 2 ), QImage::Format_RGB32 );
+
   QgsColorWidget::resizeEvent( event );
 }
 
@@ -1083,7 +1076,7 @@ void QgsColorBox::setColorFromPoint( QPoint point )
 
   if ( color.hueF() >= 0 )
   {
-    mExplicitHue = color.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 4 remove the nolint instructions, QColor was qreal (double) and is now float
+    mExplicitHue = color.hueF(); // NOLINT(bugprone-narrowing-conversions): TODO QGIS 5 remove the nolint instructions, QColor was qreal (double) and is now float
   }
 
   mCurrentColor = color;
@@ -1362,23 +1355,19 @@ void QgsColorRampWidget::keyPressEvent( QKeyEvent *event )
   {
     setComponentValueF( oldValue - delta );
   }
-  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_PageDown )
-            || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_PageUp ) )
+  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_PageDown ) || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_PageUp ) )
   {
     setComponentValueF( oldValue + 10 * delta );
   }
-  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_PageUp )
-            || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_PageDown ) )
+  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_PageUp ) || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_PageDown ) )
   {
     setComponentValueF( oldValue - 10 * delta );
   }
-  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_Home )
-            || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_End ) )
+  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_Home ) || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_End ) )
   {
     setComponentValueF( 0 );
   }
-  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_End )
-            || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_Home ) )
+  else if ( ( mOrientation == QgsColorRampWidget::Horizontal && event->key() == Qt::Key_End ) || ( mOrientation == QgsColorRampWidget::Vertical && event->key() == Qt::Key_Home ) )
   {
     //set to maximum value
     setComponentValueF( 1.f );
@@ -1448,8 +1437,8 @@ QgsColorSliderWidget::QgsColorSliderWidget( QWidget *parent, const ColorComponen
   mSpinBox = new QgsDoubleSpinBox();
   mSpinBox->setShowClearButton( false );
   //set spinbox to a reasonable width
-  const int largestCharWidth = mSpinBox->fontMetrics().horizontalAdvance( QStringLiteral( "888%" ) );
-  mSpinBox->setMinimumWidth( largestCharWidth + 35 );
+  const int largestCharWidth = mSpinBox->fontMetrics().horizontalAdvance( u"888.88%"_s );
+  mSpinBox->setFixedWidth( largestCharWidth + 35 );
   mSpinBox->setMinimum( 0 );
   mSpinBox->setMaximum( convertRealToDisplay( 1.f ) );
   mSpinBox->setValue( convertRealToDisplay( componentValueF() ) );
@@ -1573,23 +1562,21 @@ QgsColorTextWidget::QgsColorTextWidget( QWidget *parent )
   hLayout->addWidget( mLineEdit );
 
   mMenuButton = new QToolButton( mLineEdit );
-  mMenuButton->setIcon( QgsApplication::getThemeIcon( QStringLiteral( "/mIconDropDownMenu.svg" ) ) );
+  mMenuButton->setIcon( QgsApplication::getThemeIcon( u"/mIconDropDownMenu.svg"_s ) );
   mMenuButton->setCursor( Qt::ArrowCursor );
   mMenuButton->setFocusPolicy( Qt::NoFocus );
-  mMenuButton->setStyleSheet( QStringLiteral( "QToolButton { border: none; padding: 0px; }" ) );
+  mMenuButton->setStyleSheet( u"QToolButton { border: none; padding: 0px; }"_s );
 
   setLayout( hLayout );
 
   const int frameWidth = mLineEdit->style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  mLineEdit->setStyleSheet( QStringLiteral( "QLineEdit { padding-right: %1px; } " )
-                              .arg( mMenuButton->sizeHint().width() + frameWidth + 1 ) );
+  mLineEdit->setStyleSheet( u"QLineEdit { padding-right: %1px; } "_s.arg( mMenuButton->sizeHint().width() + frameWidth + 1 ) );
 
   connect( mLineEdit, &QLineEdit::editingFinished, this, &QgsColorTextWidget::textChanged );
   connect( mMenuButton, &QAbstractButton::clicked, this, &QgsColorTextWidget::showMenu );
 
   //restore format setting
-  QgsSettings settings;
-  mFormat = settings.enumValue( QStringLiteral( "ColorWidgets/textWidgetFormat" ), HexRgb );
+  mFormat = settingsTextFormat->value();
 
   updateText();
 }
@@ -1616,7 +1603,7 @@ void QgsColorTextWidget::updateText()
       mLineEdit->setText( mCurrentColor.name() );
       break;
     case HexRgbA:
-      mLineEdit->setText( mCurrentColor.name() + QStringLiteral( "%1" ).arg( mCurrentColor.alpha(), 2, 16, QChar( '0' ) ) );
+      mLineEdit->setText( mCurrentColor.name() + u"%1"_s.arg( mCurrentColor.alpha(), 2, 16, QChar( '0' ) ) );
       break;
     case Rgb:
       mLineEdit->setText( tr( "rgb( %1, %2, %3 )" ).arg( mCurrentColor.red() ).arg( mCurrentColor.green() ).arg( mCurrentColor.blue() ) );
@@ -1694,8 +1681,7 @@ void QgsColorTextWidget::showMenu()
   }
 
   //save format setting
-  QgsSettings settings;
-  settings.setEnumValue( QStringLiteral( "ColorWidgets/textWidgetFormat" ), mFormat );
+  settingsTextFormat->setValue( mFormat );
 
   updateText();
 }
@@ -1712,8 +1698,7 @@ void QgsColorTextWidget::setAllowOpacity( const bool allowOpacity )
 QgsColorPreviewWidget::QgsColorPreviewWidget( QWidget *parent )
   : QgsColorWidget( parent )
   , mColor2( QColor() )
-{
-}
+{}
 
 void QgsColorPreviewWidget::drawColor( const QColor &color, QRect rect, QPainter &painter )
 {
@@ -1861,8 +1846,6 @@ QgsColorWidgetAction::QgsColorWidgetAction( QgsColorWidget *colorWidget, QMenu *
   : QWidgetAction( parent )
   , mMenu( menu )
   , mColorWidget( colorWidget )
-  , mSuppressRecurse( false )
-  , mDismissOnColorSelection( true )
 {
   setDefaultWidget( mColorWidget );
   connect( mColorWidget, &QgsColorWidget::colorChanged, this, &QgsColorWidgetAction::setColor );

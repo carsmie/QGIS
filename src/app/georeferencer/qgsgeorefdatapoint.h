@@ -17,9 +17,9 @@
 #define QGSGEOREFDATAPOINT_H
 
 #include "qgis_app.h"
-#include "qgsmapcanvasitem.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgsgcppoint.h"
+#include "qgsmapcanvasitem.h"
 
 class QgsGCPCanvasItem;
 class QgsCoordinateTransformContext;
@@ -41,7 +41,9 @@ class APP_EXPORT QgsGeorefDataPoint : public QObject
      * \param destinationPointCrs CRS of destination point
      * \param enabled whether the point is currently enabled
      */
-    QgsGeorefDataPoint( QgsMapCanvas *srcCanvas, QgsMapCanvas *dstCanvas, const QgsPointXY &sourceCoordinates, const QgsPointXY &destinationPoint, const QgsCoordinateReferenceSystem &destinationPointCrs, bool enabled );
+    QgsGeorefDataPoint(
+      QgsMapCanvas *srcCanvas, QgsMapCanvas *dstCanvas, const QgsPointXY &sourceCoordinates, const QgsPointXY &destinationPoint, const QgsCoordinateReferenceSystem &destinationPointCrs, bool enabled
+    );
     QgsGeorefDataPoint( const QgsGeorefDataPoint &p );
     ~QgsGeorefDataPoint() override;
 
@@ -140,7 +142,7 @@ class APP_EXPORT QgsGeorefDataPoint : public QObject
 
     QgsGcpPoint mGcpPoint;
 
-    int mId;
+    int mId = -1;
     QPointF mResidual;
 
     QgsGeorefDataPoint &operator=( const QgsGeorefDataPoint & ) = delete;

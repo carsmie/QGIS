@@ -15,14 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsabstractprofilegenerator.h"
-#include "qgsprofilesnapping.h"
 
+#include "qgsprofilesnapping.h"
 
 QgsProfileRenderContext::QgsProfileRenderContext( QgsRenderContext &context )
   : mRenderContext( context )
-{
-
-}
+{}
 
 const QTransform &QgsProfileRenderContext::worldTransform() const
 {
@@ -80,9 +78,7 @@ QVector<QgsProfileIdentifyResults> QgsAbstractProfileResults::identify( const Qg
 }
 
 void QgsAbstractProfileResults::copyPropertiesFromGenerator( const QgsAbstractProfileGenerator * )
-{
-
-}
+{}
 
 //
 // QgsProfileGenerationContext
@@ -151,6 +147,4 @@ Qgis::ProfileGeneratorFlags QgsAbstractProfileGenerator::flags() const
 QgsProfileIdentifyResults::QgsProfileIdentifyResults( QgsMapLayer *layer, const QVector<QVariantMap> &results )
   : mLayer( layer )
   , mResults( results )
-{
-
-}
+{}

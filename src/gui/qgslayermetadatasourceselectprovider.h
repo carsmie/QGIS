@@ -16,11 +16,10 @@
 #ifndef QGSLAYERMETADATASOURCESELECTPROVIDER_H
 #define QGSLAYERMETADATASOURCESELECTPROVIDER_H
 
-#include "qgssourceselectprovider.h"
 #include "qgis_gui.h"
+#include "qgssourceselectprovider.h"
 
 #define SIP_NO_FILE
-
 
 /**
  * \ingroup gui

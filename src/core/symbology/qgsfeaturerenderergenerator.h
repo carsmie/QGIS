@@ -18,6 +18,7 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
+
 #include <QString>
 
 class QgsFeatureRenderer;
@@ -31,7 +32,6 @@ class QgsFeatureRenderer;
 class CORE_EXPORT QgsFeatureRendererGenerator
 {
   public:
-
     virtual ~QgsFeatureRendererGenerator() = default;
 
     /**

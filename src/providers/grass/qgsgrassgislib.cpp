@@ -14,11 +14,13 @@
  *                                                                         *
  ***************************************************************************/
 //#include <signal.h>
-#include "qgis.h"
-#include <stdio.h>
 #include <stdarg.h>
-#include <qmath.h>
+#include <stdio.h>
+
+#include "qgis.h"
+
 #include <QtGlobal>
+#include <qmath.h>
 
 // If qgsgrassgislibfunctions.h is included on Linux, symbols defined here
 // cannot be found (undefined symbol error) even if they are present in
@@ -217,9 +219,7 @@ int GRASS_LIB_EXPORT QgsGrassGisLib::G__gisinit( const char *version, const char
     // familiar with the code (should also give a more descriptive name to the generated CRS)
     if ( mCrs.srsid() == 0 )
     {
-      QString myName = QString( " * %1 (%2)" )
-                         .arg( QObject::tr( "Generated CRS", "A CRS automatically generated from layer info get this prefix for description" ) )
-                         .arg( mCrs.toProj() );
+      QString myName = QString( " * %1 (%2)" ).arg( QObject::tr( "Generated CRS", "A CRS automatically generated from layer info get this prefix for description" ) ).arg( mCrs.toProj() );
       mCrs.saveAsUserCRS( myName );
     }
   }

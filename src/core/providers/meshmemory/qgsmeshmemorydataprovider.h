@@ -18,29 +18,30 @@
 #ifndef QGSMESHMEMORYDATAPROVIDER_H
 #define QGSMESHMEMORYDATAPROVIDER_H
 
-#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
-#include <QString>
 #include <memory>
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsmeshdataprovider.h"
 #include "qgsrectangle.h"
+
+#include <QString>
+
+#define SIP_NO_FILE
 
 /**
  * \ingroup core
  * \brief Provides data stored in-memory for QgsMeshLayer. Useful for plugins or tests.
  * \since QGIS 3.2
  */
-class CORE_EXPORT QgsMeshMemoryDataProvider final: public QgsMeshDataProvider
+class CORE_EXPORT QgsMeshMemoryDataProvider final : public QgsMeshDataProvider
 {
     Q_OBJECT
 
   public:
-
     /**
      * Construct a mesh in-memory data provider from data string
      *
@@ -83,8 +84,7 @@ class CORE_EXPORT QgsMeshMemoryDataProvider final: public QgsMeshDataProvider
      *    );
      * \endcode
      */
-    QgsMeshMemoryDataProvider( const QString &uri, const QgsDataProvider::ProviderOptions &providerOptions,
-                               Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
+    QgsMeshMemoryDataProvider( const QString &uri, const QgsDataProvider::ProviderOptions &providerOptions, Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
 
     bool isValid() const override;
     QString name() const override;
@@ -142,21 +142,20 @@ class CORE_EXPORT QgsMeshMemoryDataProvider final: public QgsMeshDataProvider
 
     bool isFaceActive( QgsMeshDatasetIndex index, int faceIndex ) const override;
     QgsMeshDataBlock areFacesActive( QgsMeshDatasetIndex index, int faceIndex, int count ) const override;
-    bool persistDatasetGroup( const QString &outputFilePath,
-                              const QString &outputDriver,
-                              const QgsMeshDatasetGroupMetadata &meta,
-                              const QVector<QgsMeshDataBlock> &datasetValues,
-                              const QVector<QgsMeshDataBlock> &datasetActive,
-                              const QVector<double> &times
-                            ) override;
 
-    virtual bool persistDatasetGroup( const QString &outputFilePath,
-                                      const QString &outputDriver,
-                                      QgsMeshDatasetSourceInterface *source,
-                                      int datasetGroupIndex
-                                    ) override;
+    using QgsMeshDataProvider::persistDatasetGroup;
+    bool persistDatasetGroup(
+      const QString &outputFilePath,
+      const QString &outputDriver,
+      const QgsMeshDatasetGroupMetadata &meta,
+      const QVector<QgsMeshDataBlock> &datasetValues,
+      const QVector<QgsMeshDataBlock> &datasetActive,
+      const QVector<double> &times
+    ) override;
 
-    bool saveMeshFrame( const QgsMesh & ) override {return false;}
+    bool persistDatasetGroup( const QString &outputFilePath, const QString &outputDriver, QgsMeshDatasetSourceInterface *source, int datasetGroupIndex ) override;
+
+    bool saveMeshFrame( const QgsMesh & ) override { return false; }
 
     void close() override;
 
@@ -166,7 +165,7 @@ class CORE_EXPORT QgsMeshMemoryDataProvider final: public QgsMeshDataProvider
     static QString providerDescription();
 
   private:
-    QgsRectangle calculateExtent( ) const;
+    QgsRectangle calculateExtent() const;
 
     bool splitMeshSections( const QString &uri );
     bool addMeshVertices( const QString &def );
@@ -190,7 +189,7 @@ class CORE_EXPORT QgsMeshMemoryDataProvider final: public QgsMeshDataProvider
     QStringList mExtraDatasetUris;
 };
 
-class QgsMeshMemoryProviderMetadata final: public QgsProviderMetadata
+class QgsMeshMemoryProviderMetadata final : public QgsProviderMetadata
 {
     Q_OBJECT
 

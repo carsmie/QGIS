@@ -63,10 +63,16 @@ Content-Type: application/geo+json
       "rel": "alternate",
       "title": "Retrieve the features of the collection as HTML",
       "type": "text/html"
+    },
+    {
+      "href": "http://server.qgis.org/wfs3/collections/layer1_with_short_name/items.fgb?sortby=name",
+      "rel": "alternate",
+      "title": "Retrieve the features of the collection as FLATGEOBUF",
+      "type": "application/flatgeobuf"
     }
   ],
   "numberMatched": 3,
   "numberReturned": 3,
-  "timeStamp": "2020-06-26T11:47:36Z",
+  "timeStamp": "2019-07-05T12:27:07Z",
   "type": "FeatureCollection"
 }

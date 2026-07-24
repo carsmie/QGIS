@@ -16,8 +16,9 @@
 #ifndef QGSSTACKTRACE_H
 #define QGSSTACKTRACE_H
 
-#include <QVector>
 #include "qgsconfig.h"
+
+#include <QVector>
 
 #ifdef WIN32
 #include <windows.h>
@@ -48,16 +49,16 @@ class QgsStackTrace
         QString lineNumber;
 
         /**
-      * Check if this stack line is part of QGIS.
-      * \return TRUE if part of QGIS.
-      */
+         * Check if this stack line is part of QGIS.
+         * \return TRUE if part of QGIS.
+         */
         bool isQgisModule() const;
 
         /**
-      * Check if this stack line is valid.  Considered valid when the filename and line
-      * number are known.
-      * \return TRUE of the line is valid.
-      */
+         * Check if this stack line is valid.  Considered valid when the filename and line
+         * number are known.
+         * \return TRUE of the line is valid.
+         */
         bool isValid() const;
     };
 

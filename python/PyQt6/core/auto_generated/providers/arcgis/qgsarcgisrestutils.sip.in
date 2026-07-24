@@ -10,7 +10,6 @@
 
 
 
-
 class QgsArcGisRestContext
 {
 %Docstring(signature="appended")
@@ -25,7 +24,6 @@ Contains the context of a ArcGIS REST service operation.
 #include "qgsarcgisrestutils.h"
 %End
   public:
-
     void setTimeZone( const QTimeZone &zone );
 %Docstring
 Sets the time ``zone`` for datetime values.
@@ -73,7 +71,6 @@ Utility functions for working with ArcGIS REST services.
     static const QMetaObject staticMetaObject;
 
   public:
-
     static QMetaType::Type convertFieldType( const QString &type );
 %Docstring
 Converts an ESRI REST field ``type`` to a QVariant type.
@@ -84,7 +81,9 @@ Converts an ESRI REST field ``type`` to a QVariant type.
 Converts an ESRI REST geometry ``type`` to a WKB type.
 %End
 
-    static QgsAbstractGeometry *convertGeometry( const QVariantMap &geometry, const QString &esriGeometryType, bool hasM, bool hasZ, QgsCoordinateReferenceSystem *crs /Out/ = 0 ) /Factory/;
+    static std::unique_ptr< QgsAbstractGeometry > convertGeometry(
+      const QVariantMap &geometry, const QString &esriGeometryType, bool hasM, bool hasZ, bool allowCurves = true, QgsCoordinateReferenceSystem *crs /Out/ = 0
+    );
 %Docstring
 Converts an ESRI REST ``geometry`` JSON definition to a
 :py:class:`QgsAbstractGeometry`.
@@ -95,6 +94,8 @@ Caller takes ownership of the returned object.
 :param esriGeometryType: ESRI geometry type string
 :param hasM: set to ``True`` to if geometry includes M values
 :param hasZ: set to ``True`` to if geometry includes Z values
+:param allowCurves: controls whether the returned geometry can be a
+                    curved geometry type (since QGIS 4.0)
 
 :return: - converted geometry
          - crs: the parsed geometry CRS
@@ -106,22 +107,69 @@ Converts a spatial reference JSON definition to a
 :py:class:`QgsCoordinateReferenceSystem` value.
 %End
 
-    static QgsSymbol *convertSymbol( const QVariantMap &definition ) /Factory/;
+    static std::unique_ptr< QgsSymbol > convertSymbol( const QVariantMap &definition, QgsSymbolConverterContext &context );
 %Docstring
 Converts a symbol JSON ``definition`` to a :py:class:`QgsSymbol`.
 
-Caller takes ownership of the returned symbol.
+:param definition: symbol JSON definition
+:param context: conversion context, used to collect warnings and errors
+                encountered during conversion.
+
+:return: the converted symbol, or None on failure. Caller takes
+         ownership of the returned symbol.
+
+.. note::
+
+   The ``context`` parameter was added in QGIS 4.2
 %End
 
-    static QgsFeatureRenderer *convertRenderer( const QVariantMap &rendererData ) /Factory/;
+ static std::unique_ptr< QgsSymbol > convertSymbol( const QVariantMap &definition ) /Deprecated="Since 4.2. Use the overload with a QgsSymbolConverterContext argument instead."/;
+%Docstring
+Converts a symbol JSON ``definition`` to a :py:class:`QgsSymbol`.
+
+:param definition: symbol JSON definition
+
+:return: the converted symbol, or None on failure. Caller takes
+         ownership of the returned symbol.
+
+.. deprecated:: 4.2
+
+   Use the overload with a :py:class:`QgsSymbolConverterContext` argument instead.
+%End
+
+    static std::unique_ptr< QgsFeatureRenderer > convertRenderer( const QVariantMap &rendererData, QgsSymbolConverterContext &context );
 %Docstring
 Converts renderer JSON ``data`` to an equivalent
 :py:class:`QgsFeatureRenderer`.
 
-Caller takes ownership of the returned renderer.
+:param rendererData: renderer JSON data
+:param context: conversion context, used to collect warnings and errors
+                encountered during conversion.
+
+:return: the converted renderer, or None on failure. Caller takes
+         ownership of the returned renderer.
+
+.. note::
+
+   The ``context`` parameter was added in QGIS 4.2
 %End
 
-    static QgsAbstractVectorLayerLabeling *convertLabeling( const QVariantList &data ) /Factory/;
+ static std::unique_ptr< QgsFeatureRenderer > convertRenderer( const QVariantMap &rendererData ) /Deprecated="Since 4.2. Use the overload with a QgsSymbolConverterContext argument instead."/;
+%Docstring
+Converts renderer JSON ``data`` to an equivalent
+:py:class:`QgsFeatureRenderer`.
+
+:param rendererData: renderer JSON data
+
+:return: the converted renderer, or None on failure. Caller takes
+         ownership of the returned renderer.
+
+.. deprecated:: 4.2
+
+   Use the overload with a :py:class:`QgsSymbolConverterContext` argument instead.
+%End
+
+    static std::unique_ptr< QgsAbstractVectorLayerLabeling > convertLabeling( const QVariantList &data );
 %Docstring
 Converts labeling JSON ``data`` to an equivalent QGIS vector labeling.
 
@@ -190,10 +238,14 @@ Returns a null rectangle if the value cannot be converted.
     typedef QFlags<QgsArcGisRestUtils::FeatureToJsonFlag> FeatureToJsonFlags;
 
 
-    static QVariantMap featureToJson( const QgsFeature &feature,
-                                      const QgsArcGisRestContext &context,
-                                      const QgsCoordinateReferenceSystem &crs = QgsCoordinateReferenceSystem(),
-                                      QgsArcGisRestUtils::FeatureToJsonFlags flags = QgsArcGisRestUtils::FeatureToJsonFlags( static_cast< int >( QgsArcGisRestUtils::FeatureToJsonFlag::IncludeGeometry ) | static_cast< int >( QgsArcGisRestUtils::FeatureToJsonFlag::IncludeNonObjectIdAttributes ) ) );
+    static QVariantMap featureToJson(
+      const QgsFeature &feature,
+      const QgsArcGisRestContext &context,
+      const QgsCoordinateReferenceSystem &crs = QgsCoordinateReferenceSystem(),
+      QgsArcGisRestUtils::FeatureToJsonFlags flags = QgsArcGisRestUtils::FeatureToJsonFlags(
+        static_cast< int >( QgsArcGisRestUtils::FeatureToJsonFlag::IncludeGeometry ) | static_cast< int >( QgsArcGisRestUtils::FeatureToJsonFlag::IncludeNonObjectIdAttributes )
+      )
+    );
 %Docstring
 Converts a ``feature`` to an ArcGIS REST JSON representation.
 
@@ -219,6 +271,48 @@ Converts a ``field``'s definition to an ArcGIS REST JSON representation.
 Converts a string value to a REST service type.
 
 .. versionadded:: 3.28
+%End
+
+    static Qgis::ArcGisRestServiceCapabilities serviceCapabilitiesFromString( const QString &capabilities );
+%Docstring
+Parses a capabilities string to known values.
+
+.. versionadded:: 4.2
+%End
+
+    static Qgis::DataType dataTypeFromString( const QString &pixelType );
+%Docstring
+Returns the raster data type corresponding to an ESRI ``pixelType``
+string.
+
+.. versionadded:: 4.2
+%End
+
+
+
+
+    static Qgis::RasterColorInterpretation colorInterpretationFromBandName( const QString &bandName );
+%Docstring
+Attempts to match arbitrary band name strings to a QGIS raster color
+interpretation.
+
+Since band names are free-form strings, this is a best-effort
+translation only.
+
+.. versionadded:: 4.2
+%End
+
+    static double defaultNoDataForDataType( Qgis::DataType type, bool &ok /Out/ );
+%Docstring
+Returns a sensible no-data value to use for the specified data ``type``.
+
+:param type: data type
+
+:return: - suggested nodata value, if one exists
+         - ok: ``True`` if there IS a sensible nodata value for the
+           specified type
+
+.. versionadded:: 4.2
 %End
 
 };

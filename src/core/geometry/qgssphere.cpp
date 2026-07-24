@@ -16,9 +16,10 @@
  ***************************************************************************/
 
 #include "qgssphere.h"
-#include "qgspoint.h"
-#include "qgscircle.h"
+
 #include "qgsbox3d.h"
+#include "qgscircle.h"
+#include "qgspoint.h"
 #include "qgsvector3d.h"
 
 QgsSphere::QgsSphere( double x, double y, double z, double radius )
@@ -26,9 +27,7 @@ QgsSphere::QgsSphere( double x, double y, double z, double radius )
   , mCenterY( y )
   , mCenterZ( z )
   , mRadius( radius )
-{
-
-}
+{}
 
 bool QgsSphere::isNull() const
 {
@@ -80,7 +79,5 @@ QgsBox3D QgsSphere::boundingBox() const
   if ( isNull() )
     return QgsBox3D();
 
-  return QgsBox3D( mCenterX - mRadius, mCenterY - mRadius, mCenterZ - mRadius,
-                   mCenterX + mRadius, mCenterY + mRadius, mCenterZ + mRadius );
+  return QgsBox3D( mCenterX - mRadius, mCenterY - mRadius, mCenterZ - mRadius, mCenterX + mRadius, mCenterY + mRadius, mCenterZ + mRadius );
 }
-

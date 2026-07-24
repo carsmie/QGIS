@@ -19,10 +19,9 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include <QList>
-
 #include "qgsrendercontext.h"
 
+#include <QList>
 #include <QTransform>
 
 class QgsProfileSnapResult;
@@ -39,7 +38,6 @@ class QgsGeometry;
 class CORE_EXPORT QgsProfileRenderContext
 {
   public:
-
     /**
      * Constructor for QgsProfileRenderContext, with the specified embedded render \a context.
      */
@@ -105,14 +103,12 @@ class CORE_EXPORT QgsProfileRenderContext
     void setElevationRange( const QgsDoubleRange &range );
 
   private:
-
     QgsRenderContext mRenderContext;
 
     QTransform mWorldTransform;
 
     QgsDoubleRange mDistanceRange;
     QgsDoubleRange mElevationRange;
-
 };
 
 
@@ -124,7 +120,6 @@ class CORE_EXPORT QgsProfileRenderContext
 class CORE_EXPORT QgsProfileIdentifyContext
 {
   public:
-
     //! Maximum allowed snapping delta for the distance values when identifying a continuous elevation surface
     double maximumSurfaceDistanceDelta = 0;
 
@@ -142,7 +137,6 @@ class CORE_EXPORT QgsProfileIdentifyContext
 
     //! Associated project.
     QgsProject *project = nullptr;
-
 };
 
 
@@ -157,7 +151,6 @@ class QgsAbstractProfileGenerator;
 class CORE_EXPORT QgsProfileIdentifyResults
 {
   public:
-
     /**
      * Constructor for QgsProfileIdentifyResult, with the associated map \a layer.
      */
@@ -176,11 +169,9 @@ class CORE_EXPORT QgsProfileIdentifyResults
     QVector<QVariantMap> results() const { return mResults; }
 
   private:
-
     QPointer< QgsMapLayer > mLayer = nullptr;
 
     QVector<QVariantMap> mResults;
-
 };
 
 /**
@@ -192,7 +183,6 @@ class CORE_EXPORT QgsProfileIdentifyResults
 class CORE_EXPORT QgsAbstractProfileResults
 {
   public:
-
     /**
      * Encapsulates information about a feature exported from the profile results.
      *
@@ -200,12 +190,12 @@ class CORE_EXPORT QgsAbstractProfileResults
      */
     struct Feature
     {
-      //! Identifier for grouping output features
-      QString layerIdentifier;
-      //! Exported geometry
-      QgsGeometry geometry;
-      //! Exported attributes
-      QVariantMap attributes;
+        //! Identifier for grouping output features
+        QString layerIdentifier;
+        //! Exported geometry
+        QgsGeometry geometry;
+        //! Exported attributes
+        QVariantMap attributes;
     };
 
     virtual ~QgsAbstractProfileResults();
@@ -285,7 +275,6 @@ class CORE_EXPORT QgsAbstractProfileResults
 class CORE_EXPORT QgsProfileGenerationContext
 {
   public:
-
     /**
      * Returns the maximum allowed error in the generated result, in profile curve map units.
      *
@@ -379,7 +368,6 @@ class CORE_EXPORT QgsProfileGenerationContext
     bool operator!=( const QgsProfileGenerationContext &other ) const;
 
   private:
-
     double mMaxErrorMapUnits = std::numeric_limits< double >::quiet_NaN();
     double mMapUnitsPerDistancePixel = 1;
     QgsDoubleRange mDistanceRange;
@@ -414,16 +402,14 @@ class CORE_EXPORT QgsProfileGenerationContext
  */
 class CORE_EXPORT QgsAbstractProfileGenerator
 {
-
   public:
-
     virtual ~QgsAbstractProfileGenerator();
 
     /**
      * Returns a unique identifier representing the source of the profile.
      *
      * For generators associated with a map layer the source ID will match the layer's QgsMapLayer::id(). Other (non-map-layer) sources
-     * will have a different unique ID with its own custom interpretation.gen
+     * will have a different unique ID with its own custom interpretation.
      */
     virtual QString sourceId() const = 0;
 
@@ -452,6 +438,10 @@ class CORE_EXPORT QgsAbstractProfileGenerator
      */
     virtual QgsAbstractProfileResults *takeResults() = 0 SIP_TRANSFERBACK;
 
+    /**
+     * Returns the unique string identifier for the results type.
+     */
+    virtual QString type() const = 0;
 };
 
 #endif // QGSABSTRACTPROFILEGENERATOR_H

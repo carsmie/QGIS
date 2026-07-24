@@ -18,10 +18,11 @@
 
 #include "ui_qgsstyleitemslistwidgetbase.h"
 
-#include "qgsstylemodel.h"
-#include <QWidget>
-#include <QStyledItemDelegate>
 #include "qgis_gui.h"
+#include "qgsstylemodel.h"
+
+#include <QStyledItemDelegate>
+#include <QWidget>
 
 class QgsStyle;
 class QMenu;
@@ -166,6 +167,13 @@ class GUI_EXPORT QgsStyleItemsListWidget : public QWidget, private Ui::QgsStyleI
      */
     QgsStyle::StyleEntity currentEntityType() const;
 
+    /**
+     * Returns the associated proxy model.
+     *
+     * \since QGIS 4.2
+     */
+    QgsStyleProxyModel *proxyModel();
+
   protected:
     void showEvent( QShowEvent *event ) override;
 
@@ -200,7 +208,7 @@ class GUI_EXPORT QgsStyleItemsListWidget : public QWidget, private Ui::QgsStyleI
   private slots:
     void groupsCombo_currentIndexChanged( int index );
     void updateModelFilters();
-    void onSelectionChanged( const QModelIndex &index );
+    void onSelectionChanged( const QModelIndex &index, const QModelIndex &previous );
     void populateGroups();
     void openStyleManager();
 

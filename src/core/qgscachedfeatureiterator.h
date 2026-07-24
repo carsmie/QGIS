@@ -17,10 +17,11 @@
 #define QGSCACHEDFEATUREITERATOR_H
 
 #include "qgis_core.h"
+#include "qgscoordinatetransform.h"
 #include "qgsfeature.h"
 #include "qgsfeatureiterator.h"
-#include "qgscoordinatetransform.h"
 #include "qgsvectorlayercache.h"
+
 #include <QPointer>
 
 class QgsVectorLayerCache;
@@ -33,7 +34,6 @@ class QgsVectorLayerCache;
 class CORE_EXPORT QgsCachedFeatureIterator : public QgsAbstractFeatureIterator
 {
   public:
-
     /**
      * This constructor creates a feature iterator, that delivers all cached features. No request is made to the backend.
      *
@@ -60,7 +60,6 @@ class CORE_EXPORT QgsCachedFeatureIterator : public QgsAbstractFeatureIterator
 
     // QgsAbstractFeatureIterator interface
   protected:
-
     /**
      * Implementation for fetching a feature.
      *
@@ -102,7 +101,6 @@ class CORE_EXPORT QgsCachedFeatureIterator : public QgsAbstractFeatureIterator
 class CORE_EXPORT QgsCachedFeatureWriterIterator : public QgsAbstractFeatureIterator
 {
   public:
-
     /**
      * This constructor creates a feature iterator, which queries the backend and caches retrieved features.
      *
@@ -126,7 +124,6 @@ class CORE_EXPORT QgsCachedFeatureWriterIterator : public QgsAbstractFeatureIter
     bool close() override;
 
   protected:
-
     /**
      * Implementation for fetching a feature.
      *
@@ -141,6 +138,5 @@ class CORE_EXPORT QgsCachedFeatureWriterIterator : public QgsAbstractFeatureIter
     QgsFeatureIds mFids;
     QgsCoordinateTransform mTransform;
     QgsRectangle mFilterRect;
-
 };
 #endif // QGSCACHEDFEATUREITERATOR_H

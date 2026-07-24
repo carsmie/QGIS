@@ -17,17 +17,19 @@
 #ifndef QGSMODELVIEWTOOLSELECT_H
 #define QGSMODELVIEWTOOLSELECT_H
 
-#include "qgis_sip.h"
+#include <memory>
+
 #include "qgis_gui.h"
+#include "qgis_sip.h"
+#include "qgsmodelviewrubberband.h"
 #include "qgsmodelviewtool.h"
 #include "qgsmodelviewtoollink.h"
-#include "qgsmodelviewrubberband.h"
-#include <memory>
+
+#define SIP_NO_FILE
 
 class QgsModelViewMouseHandles;
 class QGraphicsItem;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup gui

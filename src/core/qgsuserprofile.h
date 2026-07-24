@@ -18,6 +18,7 @@
 
 #include "qgis_core.h"
 #include "qgserror.h"
+
 #include <QIcon>
 
 /**
@@ -34,7 +35,6 @@
 class CORE_EXPORT QgsUserProfile
 {
   public:
-
     /**
      * Reference to an existing user profile folder.
      * Profile folder should be created using QgsProfileManager.

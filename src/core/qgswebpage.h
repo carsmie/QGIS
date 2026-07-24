@@ -16,23 +16,18 @@
 #ifndef QGSWEBPAGE_H
 #define QGSWEBPAGE_H
 
-#define SIP_NO_FILE
 
 #include "qgis_core.h"
 #include "qgsmessagelog.h"
-#include <QObject>
-
-#ifdef WITH_QTWEBKIT
-#include <QWebPage>
-#else
-
 #include "qgswebframe.h"
 
 #include <QMenu>
 #include <QNetworkAccessManager>
+#include <QObject>
 #include <QPalette>
 #include <QTextBrowser>
 
+#define SIP_NO_FILE
 
 /**
  * \ingroup core
@@ -41,11 +36,10 @@
  */
 class CORE_EXPORT QWebSettings : public QObject
 {
-/// @cond NOT_STABLE_API
+    /// @cond NOT_STABLE_API
     Q_OBJECT
 
   public:
-
     enum WebAttribute
     {
       AutoLoadImages,
@@ -82,17 +76,12 @@ class CORE_EXPORT QWebSettings : public QObject
     };
     explicit QWebSettings( QObject *parent = nullptr )
       : QObject( parent )
-    {
-    }
+    {}
 
-    void setUserStyleSheetUrl( const QUrl & )
-    {
-    }
+    void setUserStyleSheetUrl( const QUrl & ) {}
 
-    void setAttribute( WebAttribute, bool )
-    {
-    }
-/// @endcond
+    void setAttribute( WebAttribute, bool ) {}
+    /// @endcond
 };
 
 /**
@@ -102,11 +91,10 @@ class CORE_EXPORT QWebSettings : public QObject
  */
 class CORE_EXPORT QWebPage : public QObject
 {
-/// @cond NOT_STABLE_API
+    /// @cond NOT_STABLE_API
     Q_OBJECT
 
   public:
-
     enum LinkDelegationPolicy
     {
       DontDelegateLinks,
@@ -122,32 +110,19 @@ class CORE_EXPORT QWebPage : public QObject
 
     explicit QWebPage( QObject *parent = nullptr )
       : QObject( parent )
-      , mSettings( new QWebSettings() )
-      , mFrame( new QWebFrame() )
+      , mSettings( std::make_unique<QWebSettings>() )
+      , mFrame( std::make_unique<QWebFrame>() )
     {
-      connect( mFrame, &QWebFrame::loadFinished, this, &QWebPage::loadFinished );
+      connect( mFrame.get(), &QWebFrame::loadFinished, this, &QWebPage::loadFinished );
     }
 
-    ~QWebPage()
-    {
-      delete mFrame;
-      delete mSettings;
-    }
+    ~QWebPage() override {}
 
-    QPalette palette() const
-    {
-      return QPalette();
-    }
+    QPalette palette() const { return QPalette(); }
 
-    void setPalette( const QPalette &palette )
-    {
-      Q_UNUSED( palette )
-    }
+    void setPalette( const QPalette &palette ) { Q_UNUSED( palette ) }
 
-    void setViewportSize( const QSize &size ) const
-    {
-      Q_UNUSED( size )
-    }
+    void setViewportSize( const QSize &size ) const { Q_UNUSED( size ) }
 
     void setLinkDelegationPolicy( LinkDelegationPolicy linkDelegationPolicy )
     {
@@ -161,30 +136,15 @@ class CORE_EXPORT QWebPage : public QObject
       tb->setOpenExternalLinks( linkDelegationPolicy != DontDelegateLinks );
     }
 
-    void setNetworkAccessManager( QNetworkAccessManager *networkAccessManager )
-    {
-      Q_UNUSED( networkAccessManager )
-    }
+    void setNetworkAccessManager( QNetworkAccessManager *networkAccessManager ) { Q_UNUSED( networkAccessManager ) }
 
-    QWebFrame *mainFrame() const
-    {
-      return mFrame;
-    }
+    QWebFrame *mainFrame() const { return mFrame.get(); }
 
-    QWebSettings *settings() const
-    {
-      return mSettings;
-    }
+    QWebSettings *settings() const { return mSettings.get(); }
 
-    QSize viewportSize() const
-    {
-      return QSize();
-    }
+    QSize viewportSize() const { return QSize(); }
 
-    QMenu *createStandardContextMenu()
-    {
-      return new QMenu();
-    }
+    QMenu *createStandardContextMenu() { return new QMenu(); }
 
   signals:
 
@@ -197,15 +157,13 @@ class CORE_EXPORT QWebPage : public QObject
   public slots:
 
   protected:
-
     virtual void javaScriptConsoleMessage( const QString &, int, const QString & ) {}
 
   private:
-    QWebSettings *mSettings = nullptr;
-    QWebFrame *mFrame = nullptr;
-/// @endcond
+    std::unique_ptr<QWebSettings> mSettings;
+    std::unique_ptr<QWebFrame> mFrame;
+    /// @endcond
 };
-#endif
 
 /**
  * \ingroup core
@@ -218,7 +176,6 @@ class CORE_EXPORT QgsWebPage : public QWebPage
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsWebPage.
      * \param parent parent object
@@ -244,7 +201,6 @@ class CORE_EXPORT QgsWebPage : public QWebPage
     QString identifier() const { return mIdentifier; }
 
   protected:
-
     void javaScriptConsoleMessage( const QString &message, int lineNumber, const QString & ) override
     {
       if ( mIdentifier.isEmpty() )
@@ -254,10 +210,7 @@ class CORE_EXPORT QgsWebPage : public QWebPage
     }
 
   private:
-
     QString mIdentifier;
-
 };
 
 #endif // QGSWEBPAGE_H
-

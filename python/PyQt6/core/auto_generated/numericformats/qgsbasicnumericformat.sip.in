@@ -7,6 +7,7 @@
  ************************************************************************/
 
 
+
 class QgsBasicNumericFormat : QgsNumericFormat
 {
 %Docstring(signature="appended")
@@ -20,7 +21,6 @@ value.
 #include "qgsbasicnumericformat.h"
 %End
   public:
-
     enum RoundingType /BaseType=IntEnum/
     {
       DecimalPlaces,
@@ -164,7 +164,6 @@ an invalid QChar is set, then the QGIS locale separator is used instead.
 %End
 
   protected:
-
     virtual void setConfiguration( const QVariantMap &configuration, const QgsReadWriteContext &context );
 %Docstring
 Sets the format's ``configuration``.

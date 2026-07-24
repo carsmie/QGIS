@@ -20,9 +20,9 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgsrange.h"
-#include "qgsinterval.h"
 #include "qgsdataprovidertemporalcapabilities.h"
+#include "qgsinterval.h"
+#include "qgsrange.h"
 
 /**
  * \class QgsRasterDataProviderTemporalCapabilities
@@ -38,7 +38,6 @@
 class CORE_EXPORT QgsRasterDataProviderTemporalCapabilities : public QgsDataProviderTemporalCapabilities
 {
   public:
-
     /**
      * Constructor for QgsRasterDataProviderTemporalProperties.
      *
@@ -167,7 +166,6 @@ class CORE_EXPORT QgsRasterDataProviderTemporalCapabilities : public QgsDataProv
     void setRequestedTemporalRange( const QgsDateTimeRange &range ) SIP_SKIP;
 
   private:
-
     /**
      * Represents available data provider datetime range.
      *
@@ -201,7 +199,6 @@ class CORE_EXPORT QgsRasterDataProviderTemporalCapabilities : public QgsDataProv
 
     friend class QgsRasterLayerRenderer;
     friend class TestQgsRasterDataProviderTemporalCapabilities;
-
 };
 
 #endif // QGSRASTERDATAPROVIDERTEMPORALCAPABILITIES_H

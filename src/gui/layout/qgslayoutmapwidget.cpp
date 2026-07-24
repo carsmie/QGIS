@@ -17,28 +17,33 @@
  ***************************************************************************/
 
 #include "qgslayoutmapwidget.h"
-#include "moc_qgslayoutmapwidget.cpp"
-#include "qgssettingsregistrycore.h"
-#include "qgslayoutitemmap.h"
-#include "qgsproject.h"
-#include "qgsmapthemecollection.h"
-#include "qgslayout.h"
+
+#include "qgsbookmarkmodel.h"
+#include "qgsfillsymbol.h"
+#include "qgsguiutils.h"
 #include "qgslayertree.h"
-#include "qgsmapcanvas.h"
-#include "qgslayoutmapgridwidget.h"
-#include "qgslayoutundostack.h"
+#include "qgslayout.h"
 #include "qgslayoutatlas.h"
 #include "qgslayoutdesignerinterface.h"
-#include "qgsguiutils.h"
-#include "qgsbookmarkmodel.h"
-#include "qgsreferencedgeometry.h"
-#include "qgsprojectviewsettings.h"
+#include "qgslayoutitemmap.h"
+#include "qgslayoutmapgridwidget.h"
+#include "qgslayoutundostack.h"
+#include "qgsmapcanvas.h"
 #include "qgsmaplayermodel.h"
-#include "qgsfillsymbol.h"
+#include "qgsmapthemecollection.h"
+#include "qgsproject.h"
+#include "qgsprojectviewsettings.h"
+#include "qgsreferencedgeometry.h"
+#include "qgssettingsregistrycore.h"
 
 #include <QMenu>
 #include <QMessageBox>
+#include <QString>
 #include <QStringListModel>
+
+#include "moc_qgslayoutmapwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayoutMapWidget::QgsLayoutMapWidget( QgsLayoutItemMap *item, QgsMapCanvas *mapCanvas )
   : QgsLayoutItemBaseWidget( nullptr, item )
@@ -115,7 +120,7 @@ QgsLayoutMapWidget::QgsLayoutMapWidget( QgsLayoutItemMap *item, QgsMapCanvas *ma
   QToolButton *btnLayers = new QToolButton( this );
   btnLayers->setAutoRaise( true );
   btnLayers->setToolTip( tr( "Set Map Extent to Layer Extent" ) );
-  btnLayers->setIcon( QgsApplication::getThemeIcon( QStringLiteral( "/mActionLayers.svg" ) ) );
+  btnLayers->setIcon( QgsApplication::getThemeIcon( u"/mActionLayers.svg"_s ) );
   btnLayers->setPopupMode( QToolButton::InstantPopup );
   btnLayers->setMenu( mLayersMenu );
 
@@ -126,7 +131,7 @@ QgsLayoutMapWidget::QgsLayoutMapWidget( QgsLayoutItemMap *item, QgsMapCanvas *ma
   QToolButton *btnBookmarks = new QToolButton( this );
   btnBookmarks->setAutoRaise( true );
   btnBookmarks->setToolTip( tr( "Set Map Extent to Bookmark Extent" ) );
-  btnBookmarks->setIcon( QgsApplication::getThemeIcon( QStringLiteral( "/mActionShowBookmarks.svg" ) ) );
+  btnBookmarks->setIcon( QgsApplication::getThemeIcon( u"/mActionShowBookmarks.svg"_s ) );
   btnBookmarks->setPopupMode( QToolButton::InstantPopup );
   btnBookmarks->setMenu( mBookmarkMenu );
 
@@ -167,7 +172,7 @@ QgsLayoutMapWidget::QgsLayoutMapWidget( QgsLayoutItemMap *item, QgsMapCanvas *ma
   // keep layers from preset button
   QMenu *menuKeepLayers = new QMenu( this );
   mLayerListFromPresetButton->setMenu( menuKeepLayers );
-  mLayerListFromPresetButton->setIcon( QgsApplication::getThemeIcon( QStringLiteral( "/mActionShowAllLayers.svg" ) ) );
+  mLayerListFromPresetButton->setIcon( QgsApplication::getThemeIcon( u"/mActionShowAllLayers.svg"_s ) );
   mLayerListFromPresetButton->setToolTip( tr( "Set layer list from a map theme" ) );
   connect( menuKeepLayers, &QMenu::aboutToShow, this, &QgsLayoutMapWidget::aboutToShowKeepLayersVisibilityPresetsMenu );
 
@@ -296,8 +301,7 @@ void QgsLayoutMapWidget::populateDataDefinedButtons()
 
 void QgsLayoutMapWidget::compositionAtlasToggled( bool atlasEnabled )
 {
-  if ( atlasEnabled && mMapItem && mMapItem->layout() && mMapItem->layout()->reportContext().layer()
-       && mMapItem->layout()->reportContext().layer()->wkbType() != Qgis::WkbType::NoGeometry )
+  if ( atlasEnabled && mMapItem && mMapItem->layout() && mMapItem->layout()->reportContext().layer() && mMapItem->layout()->reportContext().layer()->wkbType() != Qgis::WkbType::NoGeometry )
   {
     mAtlasCheckBox->setEnabled( true );
   }
@@ -543,9 +547,7 @@ void QgsLayoutMapWidget::aboutToShowBookmarkMenu()
     }
     QAction *action = new QAction( mBookmarkModel->data( mBookmarkModel->index( i, 0 ), static_cast<int>( QgsBookmarkManagerModel::CustomRole::Name ) ).toString(), mBookmarkMenu );
     const QgsReferencedRectangle extent = mBookmarkModel->data( mBookmarkModel->index( i, 0 ), static_cast<int>( QgsBookmarkManagerModel::CustomRole::Extent ) ).value<QgsReferencedRectangle>();
-    connect( action, &QAction::triggered, this, [this, extent] {
-      setToCustomExtent( extent );
-    } );
+    connect( action, &QAction::triggered, this, [this, extent] { setToCustomExtent( extent ); } );
     destMenu->addAction( action );
   }
 
@@ -831,8 +833,7 @@ void QgsLayoutMapWidget::setToMapCanvasExtent()
   QgsRectangle newExtent = mMapCanvas->mapSettings().visibleExtent();
 
   //transform?
-  if ( mMapCanvas->mapSettings().destinationCrs()
-       != mMapItem->crs() )
+  if ( mMapCanvas->mapSettings().destinationCrs() != mMapItem->crs() )
   {
     try
     {
@@ -967,9 +968,7 @@ void QgsLayoutMapWidget::updateGuiElements()
   mMapRotationSpinBox->setValue( mMapItem->mapRotation( QgsLayoutObject::OriginalValue ) );
 
   // follow preset checkbox
-  mFollowVisibilityPresetCheckBox->setCheckState(
-    mMapItem->followVisibilityPreset() ? Qt::Checked : Qt::Unchecked
-  );
+  mFollowVisibilityPresetCheckBox->setCheckState( mMapItem->followVisibilityPreset() ? Qt::Checked : Qt::Unchecked );
   const int presetModelIndex = mFollowVisibilityPresetCombo->findText( mMapItem->followVisibilityPresetName() );
   mFollowVisibilityPresetCombo->setCurrentIndex( presetModelIndex != -1 ? presetModelIndex : 0 ); // 0 == none
 
@@ -1613,7 +1612,7 @@ void QgsLayoutMapWidget::mOverviewListWidget_itemChanged( QListWidgetItem *item 
     return;
   }
 
-  mMapItem->beginCommand( QStringLiteral( "Rename Overview" ) );
+  mMapItem->beginCommand( u"Rename Overview"_s );
   overview->setName( item->text() );
   mMapItem->endCommand();
   if ( item->isSelected() )
@@ -1674,7 +1673,9 @@ void QgsLayoutMapWidget::setOverviewItems( QgsLayoutItemMapOverview *overview )
 
   mOverviewPositionComboBox->setCurrentIndex( mOverviewPositionComboBox->findData( overview->stackingPosition() ) );
   mOverviewStackingLayerComboBox->setLayer( overview->stackingLayer() );
-  mOverviewStackingLayerComboBox->setEnabled( mOverviewPositionComboBox->isEnabled() && ( overview->stackingPosition() == QgsLayoutItemMapItem::StackAboveMapLayer || overview->stackingPosition() == QgsLayoutItemMapItem::StackBelowMapLayer ) );
+  mOverviewStackingLayerComboBox->setEnabled(
+    mOverviewPositionComboBox->isEnabled() && ( overview->stackingPosition() == QgsLayoutItemMapItem::StackAboveMapLayer || overview->stackingPosition() == QgsLayoutItemMapItem::StackBelowMapLayer )
+  );
 
   mOverviewFrameStyleButton->setSymbol( overview->frameSymbol()->clone() );
 
@@ -2161,6 +2162,14 @@ QgsLayoutMapClippingWidget::QgsLayoutMapClippingWidget( QgsLayoutItemMap *map )
       mMapItem->endCommand();
     }
   } );
+  connect( mClipFrameCheckBox, &QCheckBox::toggled, this, [this]( bool active ) {
+    if ( !mBlockUpdates )
+    {
+      mMapItem->beginCommand( tr( "Change Atlas Clipping Label Behavior" ) );
+      mMapItem->atlasClippingSettings()->setClipItemShape( active );
+      mMapItem->endCommand();
+    }
+  } );
   connect( mAtlasClippingTypeComboBox, qOverload<int>( &QComboBox::currentIndexChanged ), this, [this] {
     if ( !mBlockUpdates )
     {
@@ -2259,6 +2268,7 @@ void QgsLayoutMapClippingWidget::setReportTypeString( const QString &string )
   mClipToAtlasCheckBox->setTitle( tr( "Clip to %1 feature" ).arg( string ) );
   mClipToAtlasLabel->setText( tr( "<b>When enabled, map layers will be automatically clipped to the boundary of the current %1 feature.</b>" ).arg( string ) );
   mForceLabelsInsideCheckBox->setText( tr( "Force labels inside %1 feature" ).arg( string ) );
+  mClipFrameCheckBox->setText( tr( "Clip item frame to match %1 feature" ).arg( string ) );
 }
 
 bool QgsLayoutMapClippingWidget::setNewItem( QgsLayoutItem *item )
@@ -2292,6 +2302,7 @@ void QgsLayoutMapClippingWidget::updateGuiElements()
   mClipToAtlasCheckBox->setChecked( mMapItem->atlasClippingSettings()->enabled() );
   mAtlasClippingTypeComboBox->setCurrentIndex( mAtlasClippingTypeComboBox->findData( static_cast<int>( mMapItem->atlasClippingSettings()->featureClippingType() ) ) );
   mForceLabelsInsideCheckBox->setChecked( mMapItem->atlasClippingSettings()->forceLabelsInsideFeature() );
+  mClipFrameCheckBox->setChecked( mMapItem->atlasClippingSettings()->clipItemShape() );
 
   mRadioClipAllLayers->setChecked( !mMapItem->atlasClippingSettings()->restrictToLayers() );
   mRadioClipSelectedLayers->setChecked( mMapItem->atlasClippingSettings()->restrictToLayers() );
@@ -2322,8 +2333,7 @@ void QgsLayoutMapClippingWidget::atlasLayerChanged( QgsVectorLayer *layer )
 
 void QgsLayoutMapClippingWidget::atlasToggled( bool atlasEnabled )
 {
-  if ( atlasEnabled && mMapItem && mMapItem->layout() && mMapItem->layout()->reportContext().layer()
-       && mMapItem->layout()->reportContext().layer()->geometryType() == Qgis::GeometryType::Polygon )
+  if ( atlasEnabled && mMapItem && mMapItem->layout() && mMapItem->layout()->reportContext().layer() && mMapItem->layout()->reportContext().layer()->geometryType() == Qgis::GeometryType::Polygon )
   {
     mClipToAtlasCheckBox->setEnabled( true );
   }

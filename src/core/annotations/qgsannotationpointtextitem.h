@@ -18,12 +18,11 @@
 #ifndef QGSANNOTATIONPOINTTEXTITEM_H
 #define QGSANNOTATIONPOINTTEXTITEM_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsannotationitem.h"
 #include "qgstextformat.h"
-
 
 /**
  * \ingroup core
@@ -34,7 +33,6 @@
 class CORE_EXPORT QgsAnnotationPointTextItem : public QgsAnnotationItem
 {
   public:
-
     /**
      * Constructor for QgsAnnotationPointTextItem, containing the specified \a text at the specified \a point.
      */
@@ -150,7 +148,6 @@ class CORE_EXPORT QgsAnnotationPointTextItem : public QgsAnnotationItem
     void setRotationMode( Qgis::SymbolRotationMode mode );
 
   private:
-
     QString mText;
     QgsPointXY mPoint;
     QgsTextFormat mTextFormat;
@@ -161,7 +158,6 @@ class CORE_EXPORT QgsAnnotationPointTextItem : public QgsAnnotationItem
 #ifdef SIP_RUN
     QgsAnnotationPointTextItem( const QgsAnnotationPointTextItem &other );
 #endif
-
 };
 
 #endif // QGSANNOTATIONPOINTTEXTITEM_H

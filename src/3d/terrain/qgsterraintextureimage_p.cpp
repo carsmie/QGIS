@@ -14,11 +14,10 @@
  ***************************************************************************/
 
 #include "qgsterraintextureimage_p.h"
-#include "moc_qgsterraintextureimage_p.cpp"
 
 #include <Qt3DRender/QTextureImageDataGenerator>
 
-#include "qgsterraintexturegenerator_p.h"
+#include "moc_qgsterraintextureimage_p.cpp"
 
 ///@cond PRIVATE
 
@@ -37,23 +36,21 @@ class TerrainTextureImageDataGenerator : public Qt3DRender::QTextureImageDataGen
     }
 
     TerrainTextureImageDataGenerator( const QgsRectangle &extent, const QString &debugText, const QImage &img, int version )
-      : mExtent( extent ), mDebugText( debugText ), mImage( img ), mVersion( version ) {}
+      : mExtent( extent )
+      , mDebugText( debugText )
+      , mImage( img )
+      , mVersion( version )
+    {}
 
     Qt3DRender::QTextureImageDataPtr operator()() override
     {
       Qt3DRender::QTextureImageDataPtr dataPtr = Qt3DRender::QTextureImageDataPtr::create();
       dataPtr->setImage( mImage.isNull() ? placeholderImage() : mImage ); // will copy image data to the internal byte array
+      dataPtr->setFormat( QOpenGLTexture::TextureFormat::SRGB8_Alpha8 );
       return dataPtr;
     }
 
-    qintptr id() const override
-    {
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-      return reinterpret_cast<qintptr>( &Qt3DRender::FunctorType<TerrainTextureImageDataGenerator>::id );
-#else
-      return reinterpret_cast<qintptr>( &Qt3DCore::FunctorType<TerrainTextureImageDataGenerator>::id );
-#endif
-    }
+    qintptr id() const override { return reinterpret_cast<qintptr>( &Qt3DCore::FunctorType<TerrainTextureImageDataGenerator>::id ); }
 
     bool operator==( const QTextureImageDataGenerator &other ) const override
     {
@@ -76,8 +73,7 @@ QgsTerrainTextureImage::QgsTerrainTextureImage( const QImage &image, const QgsRe
   , mExtent( extent )
   , mDebugText( debugText )
   , mImage( image )
-{
-}
+{}
 
 Qt3DRender::QTextureImageDataGeneratorPtr QgsTerrainTextureImage::dataGenerator() const
 {

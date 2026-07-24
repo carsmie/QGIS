@@ -18,8 +18,12 @@
 #ifndef QGSASPECTFILTER_H
 #define QGSASPECTFILTER_H
 
-#include "qgsderivativefilter.h"
 #include "qgis_analysis.h"
+#include "qgsderivativefilter.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup analysis
@@ -37,10 +41,7 @@ class ANALYSIS_EXPORT QgsAspectFilter : public QgsDerivativeFilter
 
 #ifdef HAVE_OPENCL
   private:
-    const QString openClProgramBaseName() const override
-    {
-      return QStringLiteral( "aspect" );
-    }
+    const QString openClProgramBaseName() const override { return u"aspect"_s; }
 #endif
 };
 

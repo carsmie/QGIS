@@ -15,9 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgstest.h"
-#include <QObject>
 #include "qgsrange.h"
+#include "qgstest.h"
+
+#include <QObject>
 
 //qgis includes...
 #include <qgstemporalproperty.h>
@@ -64,8 +65,7 @@ void TestQgsTemporalProperty::init()
 }
 
 void TestQgsTemporalProperty::cleanup()
-{
-}
+{}
 
 void TestQgsTemporalProperty::cleanupTestCase()
 {

@@ -21,18 +21,19 @@
 
 class QgsProviderMetadata;
 
-#include "qgsproviderguimetadata.h"
-#include "qgsgdalsourceselect.h"
+#include "qgis_sip.h"
 #include "qgsdataitemguiprovider.h"
+#include "qgsgdalsourceselect.h"
+#include "qgsproviderguimetadata.h"
 #include "qgsproviderguiregistry.h"
 #include "qgsprovidersourcewidgetprovider.h"
+
 #include <QObject>
 #include <QPointer>
 
-#include "qgis_sip.h"
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 class QgsGdalItemGuiProvider : public QObject, public QgsDataItemGuiProvider
 {
@@ -40,7 +41,7 @@ class QgsGdalItemGuiProvider : public QObject, public QgsDataItemGuiProvider
 
   public:
     QgsGdalItemGuiProvider();
-    ~QgsGdalItemGuiProvider();
+    ~QgsGdalItemGuiProvider() override;
 
     QString name() override;
     void populateContextMenu( QgsDataItem *item, QMenu *menu, const QList<QgsDataItem *> &selectedItems, QgsDataItemGuiContext context ) override;

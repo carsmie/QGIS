@@ -18,11 +18,12 @@
 #define QGSAUTHCONFIG_H
 
 #include "qgis_core.h"
+#include "qgis_sip.h"
 
+#include <QDomDocument>
+#include <QDomElement>
 #include <QHash>
 #include <QString>
-#include <QDomElement>
-#include <QDomDocument>
 
 #ifndef QT_NO_SSL
 #include <QSslCertificate>
@@ -41,7 +42,6 @@
 class CORE_EXPORT QgsAuthMethodConfig
 {
   public:
-
     /**
      * Construct a configuration for an authentication method
      * \param method Textual key of the authentication method
@@ -207,16 +207,13 @@ typedef QHash<QString, QgsAuthMethodConfig> QgsAuthMethodConfigsMap;
 class CORE_EXPORT QgsPkiBundle
 {
   public:
-
     /**
      * Construct a bundle from existing PKI components
      * \param clientCert Certificate to store in bundle
      * \param clientKey Private key to store in bundle
      * \param caChain Chain of Certificate Authorities for client certificate
      */
-    QgsPkiBundle( const QSslCertificate &clientCert = QSslCertificate(),
-                  const QSslKey &clientKey = QSslKey(),
-                  const QList<QSslCertificate> &caChain = QList<QSslCertificate>() );
+    QgsPkiBundle( const QSslCertificate &clientCert = QSslCertificate(), const QSslKey &clientKey = QSslKey(), const QList<QSslCertificate> &caChain = QList<QSslCertificate>() );
 
     /**
      * Construct a bundle of PKI components from PEM-formatted file paths
@@ -225,18 +222,14 @@ class CORE_EXPORT QgsPkiBundle
      * \param keyPass Private key passphrase
      * \param caChain Chain of Certificate Authorities for client certificate
      */
-    static const QgsPkiBundle fromPemPaths( const QString &certPath,
-                                            const QString &keyPath,
-                                            const QString &keyPass = QString(),
-                                            const QList<QSslCertificate> &caChain = QList<QSslCertificate>() );
+    static const QgsPkiBundle fromPemPaths( const QString &certPath, const QString &keyPath, const QString &keyPass = QString(), const QList<QSslCertificate> &caChain = QList<QSslCertificate>() );
 
     /**
      * Construct a bundle of PKI components from a PKCS#12 file path
      * \param bundlepath Bundle file path
      * \param bundlepass Optional bundle passphrase
      */
-    static const QgsPkiBundle fromPkcs12Paths( const QString &bundlepath,
-        const QString &bundlepass = QString() );
+    static const QgsPkiBundle fromPkcs12Paths( const QString &bundlepath, const QString &bundlepass = QString() );
 
     //! Whether the bundle, either its certificate or private key, is null
     bool isNull() const;
@@ -276,7 +269,6 @@ class CORE_EXPORT QgsPkiBundle
 class CORE_EXPORT QgsPkiConfigBundle
 {
   public:
-
     /**
      * Construct a bundle from existing PKI components and authentication method configuration
      * \param config Authentication method configuration
@@ -284,10 +276,7 @@ class CORE_EXPORT QgsPkiConfigBundle
      * \param certkey Private key to store in bundle
      * \param cachain list of CA certificates
      */
-    QgsPkiConfigBundle( const QgsAuthMethodConfig &config,
-                        const QSslCertificate &cert,
-                        const QSslKey &certkey,
-                        const QList<QSslCertificate> &cachain = QList<QSslCertificate>( ) );
+    QgsPkiConfigBundle( const QgsAuthMethodConfig &config, const QSslCertificate &cert, const QSslKey &certkey, const QList<QSslCertificate> &cachain = QList<QSslCertificate>() );
 
     //! Whether the bundle is valid
     bool isValid();
@@ -329,58 +318,9 @@ class CORE_EXPORT QgsPkiConfigBundle
     QList<QSslCertificate> mCaChain;
 };
 
-
-
-#ifdef SIP_RUN
-% MappedType QList<QSslError::SslError>
-{
-  % TypeHeaderCode
-#include <QList>
-  % End
-
-  % ConvertFromTypeCode
-  // Create the list.
-  PyObject *l;
-
-  if ( ( l = PyList_New( sipCpp->size() ) ) == NULL )
-    return NULL;
-
-  // Set the list elements.
-  QList<QSslError::SslError>::iterator it = sipCpp->begin();
-  for ( int i = 0; it != sipCpp->end(); ++it, ++i )
-  {
-    PyObject *tobj;
-
-    if ( ( tobj = sipConvertFromEnum( *it, sipType_QSslError_SslError ) ) == NULL )
-    {
-      Py_DECREF( l );
-      return NULL;
-    }
-    PyList_SET_ITEM( l, i, tobj );
-  }
-
-  return l;
-  % End
-
-  % ConvertToTypeCode
-  // Check the type if that is all that is required.
-  if ( sipIsErr == NULL )
-    return PyList_Check( sipPy );
-
-  QList<QSslError::SslError> *qlist = new QList<QSslError::SslError>;
-
-  for ( int i = 0; i < PyList_GET_SIZE( sipPy ); ++i )
-  {
-    *qlist << ( QSslError::SslError )SIPLong_AsLong( PyList_GET_ITEM( sipPy, i ) );
-  }
-
-  *sipCppPtr = qlist;
-  return sipGetState( sipTransferObj );
-  % End
-};
+#ifdef SIP_RUN // should not be required, but mingw workflow needs it..
+SIP_INSERT_QLIST_ENUM_CONVERSION_CODE( QSslError::SslError, "<QSslError>" );
 #endif
-
-
 
 /**
  * \ingroup core
@@ -398,7 +338,7 @@ class CORE_EXPORT QgsAuthConfigSslServer
     void setSslCertificate( const QSslCertificate &cert ) { mSslCert = cert; }
 
     //! Server host:port string
-    const QString sslHostPort() const  { return mSslHostPort; }
+    const QString sslHostPort() const { return mSslHostPort; }
     //! Sets server host:port string
     void setSslHostPort( const QString &hostport ) { mSslHostPort = hostport; }
 
@@ -450,7 +390,6 @@ class CORE_EXPORT QgsAuthConfigSslServer
     bool isNull() const;
 
   private:
-
     QString mSslHostPort;
     QSslCertificate mSslCert;
 

@@ -14,10 +14,13 @@
  ***************************************************************************/
 
 #include "qgsonlineterraingenerator.h"
-#include "moc_qgsonlineterraingenerator.cpp"
+
+#include <limits>
+#include <memory>
 
 #include "qgsdemterraintileloader_p.h"
 
+#include "moc_qgsonlineterraingenerator.cpp"
 
 QgsOnlineTerrainGenerator::QgsOnlineTerrainGenerator() = default;
 
@@ -56,7 +59,7 @@ float QgsOnlineTerrainGenerator::heightAt( double x, double y, const Qgs3DRender
   if ( mHeightMapGenerator )
     return mHeightMapGenerator->heightAt( x, y );
   else
-    return 0;
+    return std::numeric_limits<float>::quiet_NaN();
 }
 
 QgsTerrainGenerator *QgsOnlineTerrainGenerator::create()
@@ -92,5 +95,10 @@ void QgsOnlineTerrainGenerator::updateGenerator()
     mTerrainTilingScheme = QgsTilingScheme( mExtent, mCrs );
   }
 
-  mHeightMapGenerator.reset( new QgsDemHeightMapGenerator( nullptr, mTerrainTilingScheme, mResolution, mTransformContext ) );
+  mHeightMapGenerator = std::make_unique<QgsDemHeightMapGenerator>( nullptr, mTerrainTilingScheme, mResolution, mTransformContext );
+}
+
+QgsTerrainGenerator::Capabilities QgsOnlineTerrainGenerator::capabilities() const
+{
+  return QgsTerrainGenerator::Capability::SupportsTileResolution;
 }

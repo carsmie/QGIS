@@ -14,19 +14,23 @@
  ***************************************************************************/
 
 #include "qgslistwidgetfactory.h"
-#include "qgslistwidgetwrapper.h"
-#include "qgslistconfigdlg.h"
-#include "qgsfields.h"
-#include "qgsvectorlayer.h"
+
 #include "qgseditorwidgetregistry.h"
+#include "qgsfields.h"
+#include "qgslistconfigdlg.h"
+#include "qgslistwidgetwrapper.h"
+#include "qgsvectorlayer.h"
 
-#include <QVariant>
 #include <QSettings>
+#include <QString>
+#include <QVariant>
+#include <qjsonarray.h>
 
-QgsListWidgetFactory::QgsListWidgetFactory( const QString &name )
-  : QgsEditorWidgetFactory( name )
-{
-}
+using namespace Qt::StringLiterals;
+
+QgsListWidgetFactory::QgsListWidgetFactory( const QString &name, const QIcon &icon )
+  : QgsEditorWidgetFactory( name, icon )
+{}
 
 QgsEditorWidgetWrapper *QgsListWidgetFactory::create( QgsVectorLayer *vl, int fieldIdx, QWidget *editor, QWidget *parent ) const
 {
@@ -41,8 +45,8 @@ QgsEditorConfigWidget *QgsListWidgetFactory::configWidget( QgsVectorLayer *vl, i
 unsigned int QgsListWidgetFactory::fieldScore( const QgsVectorLayer *vl, int fieldIdx ) const
 {
   const QgsField field = vl->fields().field( fieldIdx );
-  // Check if this is a JSON field misinterpreted as a map
-  if ( field.type() == QMetaType::Type::QVariantMap && ( field.typeName().compare( QStringLiteral( "JSON" ), Qt::CaseSensitivity::CaseInsensitive ) == 0 || field.subType() == QMetaType::Type::QString ) )
+  // Handle the json field
+  if ( field.typeName().compare( u"json"_s, Qt::CaseInsensitive ) == 0 || field.typeName().compare( u"jsonb"_s, Qt::CaseInsensitive ) == 0 )
   {
     // Look the first not-null value (limiting to the first 20 features) and check if it is really an array
     const int MAX_FEATURE_LIMIT { 20 };
@@ -54,6 +58,8 @@ unsigned int QgsListWidgetFactory::fieldScore( const QgsVectorLayer *vl, int fie
     QgsFeatureIterator featureIt { vl->getFeatures( req ) };
     // The counter is an extra safety measure in case the provider does not respect the limit
     int featureCount = 0;
+    bool foundNotNull = false;
+    bool foundInvalidValue = false; // An invalid value is any value that is not a JSON list or a list with nested or invalid values
     while ( featureIt.nextFeature( f ) )
     {
       ++featureCount;
@@ -65,28 +71,77 @@ unsigned int QgsListWidgetFactory::fieldScore( const QgsVectorLayer *vl, int fie
       const QVariant value( f.attribute( fieldIdx ) );
       if ( !value.isNull() )
       {
-        switch ( value.type() )
+        foundNotNull = true;
+
+        // Read the list from a string or a list
+        QJsonArray jsonArray;
+        bool validArray = false;
+        if ( value.type() == QVariant::Type::List )
         {
-          case QVariant::Type::List:
+          validArray = true;
+          jsonArray = QJsonArray::fromVariantList( value.toList() );
+        }
+        else
+        {
+          const QJsonDocument doc = QJsonDocument::fromJson( value.toString().toUtf8() );
+          if ( doc.isArray() )
           {
-            return 20;
+            validArray = true;
+            jsonArray = doc.array();
           }
-          default:
-          case QVariant::Type::String:
+        }
+
+        if ( validArray ) // empty array [] counts as valid as well
+        {
+          // It's a array(list), check the first 20 entries if flat (not nested)
+          int count = 0;
+          for ( auto it = jsonArray.begin(); it != jsonArray.end(); ++it )
           {
-            const QJsonDocument doc = QJsonDocument::fromJson( value.toString().toUtf8() );
-            if ( doc.isArray() )
+            if ( count >= 20 )
             {
-              return 20;
+              break;
             }
-            else
+            count++;
+
+            QJsonValue childValue = *it;
+            if ( childValue.isObject() || childValue.isArray() || childValue.isUndefined() )
             {
-              return 0;
+              foundInvalidValue = true;
+              break;
             }
           }
+          if ( foundInvalidValue )
+          {
+            break;
+          }
+        }
+        else
+        {
+          // Stop when we find the first not-array
+          foundInvalidValue = true;
+          break;
         }
       }
     }
+    if ( foundNotNull )
+    {
+      if ( !foundInvalidValue )
+      {
+        return 20;
+      }
+      else
+      {
+        return 5;
+      }
+    }
+    else
+    {
+      return 10;
+    }
   }
-  return ( field.type() == QMetaType::Type::QVariantList || field.type() == QMetaType::Type::QStringList || field.type() == QMetaType::Type::QVariantMap ) && field.subType() != QMetaType::Type::UnknownType ? 20 : 0;
+
+  return ( field.type() == QMetaType::Type::QVariantList || field.type() == QMetaType::Type::QStringList || field.type() == QMetaType::Type::QVariantMap )
+             && field.subType() != QMetaType::Type::UnknownType
+           ? 20
+           : 0;
 }

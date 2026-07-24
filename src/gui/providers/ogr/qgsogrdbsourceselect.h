@@ -18,17 +18,18 @@
 #ifndef QGSGOGRDBSOURCESELECT_H
 #define QGSGOGRDBSOURCESELECT_H
 
+#include "qgis_sip.h"
+#include "qgsabstractdbsourceselect.h"
 #include "qgsguiutils.h"
 #include "qgshelp.h"
-#include "qgsabstractdbsourceselect.h"
 #include "qgsproviderregistry.h"
-#include "qgis_sip.h"
+
+#define SIP_NO_FILE
 
 class QPushButton;
 class QgsOgrDbTableModel;
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 /**
  * The QgsOgrDbSourceSelect class is a generic class for DB based OGR
@@ -45,7 +46,14 @@ class QgsOgrDbSourceSelect : public QgsAbstractDbSourceSelect
      * and \a theName as string for describing the layers managed by the source select (e.g. : "GeoPackage" etc.)
      * The \a extensions is a string dscribing the accepted file extensions (e.g. : "GeoPackage Database (*.gpkg *.GPKG)")
      */
-    QgsOgrDbSourceSelect( const QString &theOgrDriverName, const QString &theName, const QString &theExtensions, QWidget *parent = nullptr, Qt::WindowFlags fl = QgsGuiUtils::ModalDialogFlags, QgsProviderRegistry::WidgetMode theWidgetMode = QgsProviderRegistry::WidgetMode::Standalone );
+    QgsOgrDbSourceSelect(
+      const QString &theOgrDriverName,
+      const QString &theName,
+      const QString &theExtensions,
+      QWidget *parent = nullptr,
+      Qt::WindowFlags fl = QgsGuiUtils::ModalDialogFlags,
+      QgsProviderRegistry::WidgetMode theWidgetMode = QgsProviderRegistry::WidgetMode::Standalone
+    );
 
     ~QgsOgrDbSourceSelect() override;
 
@@ -58,13 +66,13 @@ class QgsOgrDbSourceSelect : public QgsAbstractDbSourceSelect
     void dbChanged();
 
     //! Returns the QSettings key name
-    const QString ogrDriverName() { return mOgrDriverName; }
+    QString ogrDriverName() const { return mOgrDriverName; }
 
     //! Returns the name of the managed layers, needs to be translatable
-    const QString name() { return mName; }
+    QString name() const { return mName; }
 
     //! Returns the extensions of the managed layers, needs to be translatable
-    const QString extension() { return mExtension; }
+    QString extension() const { return mExtension; }
 
     //! Open file selector to add new connection
     static bool newConnection( QWidget *parent );
@@ -89,8 +97,6 @@ class QgsOgrDbSourceSelect : public QgsAbstractDbSourceSelect
     void cbxAllowGeometrylessTables_stateChanged( int );
     void cmbConnections_activated( int );
     void treeWidgetSelectionChanged( const QItemSelection &selected, const QItemSelection &deselected );
-    //!Sets a new regular expression to the model
-    void setSearchExpression( const QString &regexp );
     void showHelp();
     bool configureFromUri( const QString &uri ) override;
     void setSql( const QModelIndex &index ) override;

@@ -18,11 +18,17 @@
 
 #include "qgsfeaturepickermodelbase.h"
 
+class QgsSettingsEntryInteger;
+
 /**
  * \ingroup core
  * \brief Provides a list of features based on filter conditions.
  *
  * Features are fetched asynchronously.
+ *
+ * Entries are identified by the values of one or more identifier fields
+ * (e.g. to store a foreign key in a relation reference widget).
+ * To identify features by their feature id instead, use QgsFeaturePickerModel.
  */
 class CORE_EXPORT QgsFeatureFilterModel : public QgsFeaturePickerModelBase
 {
@@ -41,6 +47,10 @@ class CORE_EXPORT QgsFeatureFilterModel : public QgsFeaturePickerModelBase
     Q_PROPERTY( QVariantList extraIdentifierValues READ extraIdentifierValues WRITE setExtraIdentifierValues NOTIFY extraIdentifierValuesChanged )
 
   public:
+#ifndef SIP_RUN
+    //! Settings for maximum number of entries in relation widget
+    static const QgsSettingsEntryInteger *settingsMaxEntriesRelationWidget;
+#endif
 
     /**
      * Create a new QgsFeatureFilterModel, optionally specifying a \a parent.

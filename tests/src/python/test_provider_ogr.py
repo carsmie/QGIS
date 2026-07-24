@@ -11,22 +11,20 @@ __date__ = "2016-04-11"
 __copyright__ = "Copyright 2016, Even Rouault"
 
 import hashlib
+import http.server
+import math
 import os
 import shutil
+import socketserver
 import sys
 import tempfile
-import math
-from datetime import datetime
-import http.server
-import os
-import socketserver
 import threading
 import time
-import shutil
+import unittest
+from datetime import datetime
 
+import mockedwebserver
 from osgeo import gdal, ogr  # NOQA
-from qgis.PyQt.QtCore import QByteArray, QTemporaryDir, QVariant
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import (
     NULL,
     Qgis,
@@ -66,11 +64,10 @@ from qgis.core import (
     QgsWkbTypes,
 )
 from qgis.gui import QgsGui
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.PyQt.QtCore import QByteArray, QTemporaryDir, QVariant
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 from qgis.utils import spatialite_connect
-
-import mockedwebserver
 from utilities import unitTestDataPath
 
 start_app()
@@ -100,7 +97,6 @@ def count_opened_filedescriptors(filename_to_test):
 
 
 class PyQgsOGRProvider(QgisTestCase):
-
     @classmethod
     def setUpClass(cls):
         """Run before all tests"""
@@ -646,13 +642,13 @@ class PyQgsOGRProvider(QgisTestCase):
     def testSetupProxy(self):
         """Test proxy setup"""
         settings = QgsSettings()
-        settings.setValue("proxy/proxyEnabled", True)
-        settings.setValue("proxy/proxyPort", "1234")
-        settings.setValue("proxy/proxyHost", "myproxyhostname.com")
-        settings.setValue("proxy/proxyUser", "username")
-        settings.setValue("proxy/proxyPassword", "password")
+        settings.setValue("proxy/proxy-enabled", True)
+        settings.setValue("proxy/proxy-port", "1234")
+        settings.setValue("proxy/proxy-host", "myproxyhostname.com")
+        settings.setValue("proxy/proxy-user", "username")
+        settings.setValue("proxy/proxy-password", "password")
         settings.setValue(
-            "proxy/proxyExcludedUrls",
+            "proxy/proxy-excluded-urls",
             "http://www.myhost.com|http://www.myotherhost.com",
         )
         QgsNetworkAccessManager.instance().setupDefaultProxyAndCache()
@@ -665,13 +661,13 @@ class PyQgsOGRProvider(QgisTestCase):
             gdal.GetConfigOption("GDAL_HTTP_PROXYUSERPWD"), "username:password"
         )
 
-        settings.setValue("proxy/proxyEnabled", True)
-        settings.remove("proxy/proxyPort")
-        settings.setValue("proxy/proxyHost", "myproxyhostname.com")
-        settings.setValue("proxy/proxyUser", "username")
-        settings.remove("proxy/proxyPassword")
+        settings.setValue("proxy/proxy-enabled", True)
+        settings.remove("proxy/proxy-port")
+        settings.setValue("proxy/proxy-host", "myproxyhostname.com")
+        settings.setValue("proxy/proxy-user", "username")
+        settings.remove("proxy/proxy-password")
         settings.setValue(
-            "proxy/proxyExcludedUrls",
+            "proxy/proxy-excluded-urls",
             "http://www.myhost.com|http://www.myotherhost.com",
         )
         QgsNetworkAccessManager.instance().setupDefaultProxyAndCache()
@@ -680,7 +676,7 @@ class PyQgsOGRProvider(QgisTestCase):
         self.assertEqual(gdal.GetConfigOption("GDAL_HTTP_PROXY"), "myproxyhostname.com")
         self.assertEqual(gdal.GetConfigOption("GDAL_HTTP_PROXYUSERPWD"), "username")
 
-        settings.setValue("proxy/proxyEnabled", False)
+        settings.setValue("proxy/proxy-enabled", False)
         QgsNetworkAccessManager.instance().setupDefaultProxyAndCache()
         gdal.SetConfigOption("GDAL_HTTP_PROXY", "")
         gdal.SetConfigOption("GDAL_HTTP_PROXYUSERPWD", "")
@@ -2489,7 +2485,10 @@ class PyQgsOGRProvider(QgisTestCase):
         self.assertEqual(res[0].uri(), TEST_DATA_DIR + "/lines.shp")
         self.assertEqual(res[0].providerKey(), "ogr")
         self.assertEqual(res[0].type(), QgsMapLayerType.VectorLayer)
-        self.assertEqual(res[0].wkbType(), QgsWkbTypes.Type.LineString)
+        if int(gdal.VersionInfo("VERSION_NUM")) < GDAL_COMPUTE_VERSION(3, 14, 0):
+            self.assertEqual(res[0].wkbType(), QgsWkbTypes.Type.LineString)
+        else:
+            self.assertEqual(res[0].wkbType(), QgsWkbTypes.Type.MultiLineString)
         self.assertEqual(res[0].geometryColumnName(), "")
         self.assertEqual(res[0].driverName(), "ESRI Shapefile")
 
@@ -3177,15 +3176,6 @@ class PyQgsOGRProvider(QgisTestCase):
                     "geomColName": "geom",
                 },
                 {
-                    "name": "data_licenses",
-                    "description": "",
-                    "uri": f"{TEST_DATA_DIR}/provider/spatialite.db|layername=data_licenses",
-                    "providerKey": "ogr",
-                    "wkbType": 100,
-                    "driverName": "SQLite",
-                    "geomColName": "",
-                },
-                {
                     "name": "some view",
                     "description": "",
                     "uri": f"{TEST_DATA_DIR}/provider/spatialite.db|layername=some view",
@@ -3314,7 +3304,10 @@ class PyQgsOGRProvider(QgisTestCase):
         self.assertEqual(res[0].providerKey(), "ogr")
         self.assertEqual(res[0].type(), QgsMapLayerType.VectorLayer)
         self.assertEqual(res[0].featureCount(), Qgis.FeatureCountState.Uncounted)
-        self.assertEqual(res[0].wkbType(), QgsWkbTypes.Type.Polygon)
+        if int(gdal.VersionInfo("VERSION_NUM")) < GDAL_COMPUTE_VERSION(3, 14, 0):
+            self.assertEqual(res[0].wkbType(), QgsWkbTypes.Type.Polygon)
+        else:
+            self.assertEqual(res[0].wkbType(), QgsWkbTypes.Type.MultiPolygon)
         self.assertEqual(res[0].geometryColumnName(), "")
         self.assertEqual(res[0].driverName(), "ESRI Shapefile")
         vl = res[0].toLayer(options)
@@ -3800,9 +3793,14 @@ class PyQgsOGRProvider(QgisTestCase):
         self.assertEqual(table.geometryColumnCount(), 1)
         self.assertEqual(len(table.geometryColumnTypes()), 1)
         self.assertEqual(table.geometryColumnTypes()[0].crs, layer.crs())
-        self.assertEqual(
-            table.geometryColumnTypes()[0].wkbType, QgsWkbTypes.Type.LineString
-        )
+        if int(gdal.VersionInfo("VERSION_NUM")) < GDAL_COMPUTE_VERSION(3, 14, 0):
+            self.assertEqual(
+                table.geometryColumnTypes()[0].wkbType, QgsWkbTypes.Type.LineString
+            )
+        else:
+            self.assertEqual(
+                table.geometryColumnTypes()[0].wkbType, QgsWkbTypes.Type.MultiLineString
+            )
         self.assertEqual(
             table.flags(), QgsAbstractDatabaseProviderConnection.TableFlag.Vector
         )
@@ -3815,9 +3813,14 @@ class PyQgsOGRProvider(QgisTestCase):
         self.assertEqual(table.geometryColumnCount(), 1)
         self.assertEqual(len(table.geometryColumnTypes()), 1)
         self.assertEqual(table.geometryColumnTypes()[0].crs, layer.crs())
-        self.assertEqual(
-            table.geometryColumnTypes()[0].wkbType, QgsWkbTypes.Type.LineString
-        )
+        if int(gdal.VersionInfo("VERSION_NUM")) < GDAL_COMPUTE_VERSION(3, 14, 0):
+            self.assertEqual(
+                table.geometryColumnTypes()[0].wkbType, QgsWkbTypes.Type.LineString
+            )
+        else:
+            self.assertEqual(
+                table.geometryColumnTypes()[0].wkbType, QgsWkbTypes.Type.MultiLineString
+            )
         self.assertEqual(
             table.flags(), QgsAbstractDatabaseProviderConnection.TableFlag.Vector
         )
@@ -5107,6 +5110,247 @@ class PyQgsOGRProvider(QgisTestCase):
             vl2 = QgsVectorLayer(dest_file_name, "vl2")
             features = {f.id(): f.attributes() for f in vl2.getFeatures()}
             self.assertEqual(features, {1: [1, "b"], 2: [2, "d"]})
+
+    def test_urisReferToSameWithVsi(self):
+        """
+        Test provider metadata urisReferToSame
+        """
+        metadata = QgsProviderRegistry.instance().providerMetadata("ogr")
+
+        uri1_parts = {
+            "path": "some_db.zip",
+            "vsiPrefix": "/vsizip/",
+            "vsiSuffix": "/shapefile.gpkg",
+            "layerName": "table1",
+        }
+        uri2_parts = {
+            "path": "some_db.zip",
+            "vsiPrefix": "/vsizip/",
+            "vsiSuffix": "/shapefile.gpkg",
+            "layerName": "table2",
+        }
+
+        uri1 = metadata.encodeUri(uri1_parts)
+        uri2 = metadata.encodeUri(uri2_parts)
+
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Object)
+        )
+
+        uri2_parts["path"] = "some_db2.zip"
+        uri2 = metadata.encodeUri(uri2_parts)
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+
+        uri2_parts["path"] = "some_db.rar"
+        uri2_parts["vsiPrefix"] = "/vsirar/"
+        uri2 = metadata.encodeUri(uri2_parts)
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+
+        uri2_parts["path"] = "some_db.zip"
+        uri2_parts["vsiPrefix"] = "/vsizip/"
+        uri2_parts["layerName"] = "table1"
+        uri2 = metadata.encodeUri(uri2_parts)
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Object)
+        )
+
+    def test_urisReferToSame(self):
+        """
+        Test provider metadata urisReferToSame
+        """
+        metadata = QgsProviderRegistry.instance().providerMetadata("ogr")
+
+        uri1_parts = {
+            "path": "some_db.gpkg",
+            "layerName": "table1",
+        }
+        uri2_parts = {
+            "path": "some_db.gpkg",
+            "layerName": "table2",
+        }
+
+        uri1 = metadata.encodeUri(uri1_parts)
+        uri2 = metadata.encodeUri(uri2_parts)
+
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Object)
+        )
+
+        uri2_parts["path"] = "some_db2.gpkg"
+        uri2 = metadata.encodeUri(uri2_parts)
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+
+        uri2_parts["path"] = "some_db.gpkg"
+        uri2_parts["layerName"] = "table1"
+        uri2 = metadata.encodeUri(uri2_parts)
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Object)
+        )
+
+    def test_urisReferToSameDatabase(self):
+        """
+        Test provider metadata urisReferToSame with database sources
+        """
+        metadata = QgsProviderRegistry.instance().providerMetadata("ogr")
+
+        uri1 = "MySQL:westholland,user=root,password=psv9570,port=3306|layername=table1"
+        uri2 = "MySQL:westholland,user=root,password=psv9570,port=3306|layername=table2"
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Object)
+        )
+
+        uri2 = (
+            "MySQL:westholland2,user=root,password=psv9570,port=3306|layername=table2"
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertFalse(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+
+        uri2 = "MySQL:westholland,user=root,password=psv9570,port=3306|layername=table1"
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Connection)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Group)
+        )
+        self.assertTrue(
+            metadata.urisReferToSame(uri1, uri2, Qgis.SourceHierarchyLevel.Object)
+        )
+
+    def testListFieldDomainsCapabilityShapefile(self):
+        """Shapefile provider should not report ListFieldDomains capability"""
+        vl = QgsVectorLayer(
+            os.path.join(unitTestDataPath(), "points.shp"), "test", "ogr"
+        )
+        self.assertTrue(vl.isValid())
+        self.assertFalse(
+            vl.dataProvider().capabilities()
+            & Qgis.VectorProviderCapability.ReadFieldDomains
+        )
+
+    def testCreateEmptyLayer(self):
+        """Test creating empty layers using the provider"""
+        metadata = QgsProviderRegistry.instance().providerMetadata("ogr")
+        fields = QgsFields()
+        fields.append(QgsField("test", QVariant.String))
+        with tempfile.TemporaryDirectory() as temp_dir:
+            gpkg_file = os.path.join(temp_dir, "test.gpkg")
+            res = metadata.createEmptyLayer(
+                gpkg_file,
+                fields,
+                Qgis.WkbType.Point,
+                QgsCoordinateReferenceSystem("EPSG:3857"),
+            )
+            self.assertEqual(res.result(), Qgis.VectorExportResult.Success)
+            self.assertEqual(res.createdLayerUri(), gpkg_file + "|layername=test")
+            self.assertFalse(res.errorMessage())
+
+            vl = QgsVectorLayer(res.createdLayerUri(), "test", "ogr")
+            self.assertTrue(vl.isValid())
+            self.assertEqual(vl.wkbType(), Qgis.WkbType.Point)
+            self.assertEqual(vl.crs(), QgsCoordinateReferenceSystem("EPSG:3857"))
+
+            # should not overwrite by default
+            res2 = metadata.createEmptyLayer(
+                gpkg_file,
+                fields,
+                Qgis.WkbType.Point,
+                QgsCoordinateReferenceSystem("EPSG:3857"),
+            )
+            self.assertEqual(
+                res2.result(), Qgis.VectorExportResult.ErrorCreatingDataSource
+            )
+            self.assertIn("exists", res2.errorMessage())
+
+            # create new layer
+            res2 = metadata.createEmptyLayer(
+                gpkg_file + "|layername=polygons",
+                fields,
+                Qgis.WkbType.Polygon,
+                QgsCoordinateReferenceSystem("EPSG:3857"),
+                Qgis.CreateLayerActionOnExisting.CreateOrOverwriteLayer,
+            )
+            self.assertEqual(res2.result(), Qgis.VectorExportResult.Success)
+            self.assertEqual(res2.createdLayerUri(), gpkg_file + "|layername=polygons")
+            self.assertFalse(res2.errorMessage())
+            vl = QgsVectorLayer(res2.createdLayerUri(), "test", "ogr")
+            self.assertTrue(vl.isValid())
+            self.assertEqual(vl.wkbType(), Qgis.WkbType.Polygon)
+            self.assertEqual(vl.crs(), QgsCoordinateReferenceSystem("EPSG:3857"))
+
+            # original should still exist
+            vl = QgsVectorLayer(res.createdLayerUri(), "test", "ogr")
+            self.assertTrue(vl.isValid())
+            self.assertEqual(vl.wkbType(), Qgis.WkbType.Point)
+            self.assertEqual(vl.crs(), QgsCoordinateReferenceSystem("EPSG:3857"))
+
+            # now overwrite whole database
+            res3 = metadata.createEmptyLayer(
+                gpkg_file + "|layername=lines",
+                fields,
+                Qgis.WkbType.LineString,
+                QgsCoordinateReferenceSystem("EPSG:3857"),
+                Qgis.CreateLayerActionOnExisting.CreateOrOverwriteFile,
+            )
+            self.assertEqual(res3.result(), Qgis.VectorExportResult.Success)
+            self.assertEqual(res3.createdLayerUri(), gpkg_file + "|layername=lines")
+            self.assertFalse(res3.errorMessage())
+            vl = QgsVectorLayer(res3.createdLayerUri(), "test", "ogr")
+            self.assertTrue(vl.isValid())
+            self.assertEqual(vl.wkbType(), Qgis.WkbType.LineString)
+            self.assertEqual(vl.crs(), QgsCoordinateReferenceSystem("EPSG:3857"))
+
+            # other layers should be deleted
+            vl = QgsVectorLayer(res.createdLayerUri(), "test", "ogr")
+            self.assertFalse(vl.isValid())
 
 
 if __name__ == "__main__":

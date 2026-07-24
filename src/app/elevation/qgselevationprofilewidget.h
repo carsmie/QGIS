@@ -17,18 +17,22 @@
 #ifndef QGSELEVATIONPROFILEWIDGET_H
 #define QGSELEVATIONPROFILEWIDGET_H
 
-#include "qmenu.h"
-#include "qgsdockwidget.h"
-#include "qgis_app.h"
-#include "qgsgeometry.h"
-#include "qobjectuniqueptr.h"
-#include "qgselevationprofilelayertreeview.h"
 #include "ui_qgselevationprofileaddlayersdialogbase.h"
 
-#include <QWidgetAction>
-#include <QElapsedTimer>
-#include <QTimer>
+#include "qgis_app.h"
+#include "qgsdockwidget.h"
+#include "qgselevationprofilelayertreeview.h"
+#include "qgsgeometry.h"
+#include "qgsprofilepoint.h"
+#include "qobjectuniqueptr.h"
 
+#include <QElapsedTimer>
+#include <QPointer>
+#include <QTimer>
+#include <QWidgetAction>
+#include <qmenu.h>
+
+class QgsElevationProfile;
 class QgsDockableWidgetHelper;
 class QgsMapCanvas;
 class QProgressBar;
@@ -49,7 +53,6 @@ class QgsLayerTreeRegistryBridge;
 class QgsElevationProfileToolIdentify;
 class QgsElevationProfileToolMeasure;
 class QLabel;
-class QgsProfilePoint;
 class QgsSettingsEntryDouble;
 class QgsSettingsEntryBool;
 class QgsSettingsEntryString;
@@ -87,7 +90,7 @@ class QgsElevationProfileLayersDialog : public QDialog, private Ui::QgsElevation
     QList<QgsMapLayer *> mVisibleLayers;
 };
 
-class QgsElevationProfileWidget : public QWidget
+class APP_EXPORT QgsElevationProfileWidget : public QWidget
 {
     Q_OBJECT
   public:
@@ -98,16 +101,19 @@ class QgsElevationProfileWidget : public QWidget
     static const QgsSettingsEntryColor *settingBackgroundColor;
     static const QgsSettingsEntryBool *settingShowSubsections;
     static const QgsSettingsEntryBool *settingShowScaleRatioInToolbar;
+    static const QgsSettingsEntryBool *settingShowCurveIn3D;
 
-    QgsElevationProfileWidget( const QString &name );
-    ~QgsElevationProfileWidget();
+    QgsElevationProfileWidget( QgsElevationProfile *profile, QgsMapCanvas *canvas );
+    ~QgsElevationProfileWidget() override;
+
+    /**
+     * Modifies an elevation \a profile to apply default QGIS app settings to it.
+     */
+    static void applyDefaultSettingsToProfile( QgsElevationProfile *profile );
+
+    QgsElevationProfile *profile();
 
     QgsDockableWidgetHelper *dockableWidgetHelper() { return mDockableWidgetHelper; }
-
-    void setCanvasName( const QString &name );
-    QString canvasName() const { return mCanvasName; }
-
-    void setMainCanvas( QgsMapCanvas *canvas );
 
     QgsElevationProfileCanvas *profileCanvas() { return mCanvas; }
 
@@ -118,13 +124,19 @@ class QgsElevationProfileWidget : public QWidget
 
   signals:
     void toggleDockModeRequested( bool docked );
+    void profileDataChanged( QgsElevationProfile *profile, double zMin, double zMax );
+    void profileDataRemoved( QgsElevationProfile *profile );
+    void profileCursorMoved( QgsElevationProfile *profile, const QgsPointXY &mapPoint, const QgsProfilePoint &profilePoint );
+
+  public slots:
+    void updateCurveIn3D();
 
   private slots:
     void addLayers();
     void addLayersInternal( const QList<QgsMapLayer *> &layers );
-    void updateCanvasLayers();
+    void updateCanvasSources();
     void onTotalPendingJobsCountChanged( int count );
-    void setProfileCurve( const QgsGeometry &curve, bool resetView );
+    void setProfileCurve( const QgsGeometry &curve, bool resetView, bool storeCurve = true );
     void onCanvasPointHovered( const QgsPointXY &point, const QgsProfilePoint &profilePoint );
     void updatePlot();
     void scheduleUpdate();
@@ -140,11 +152,28 @@ class QgsElevationProfileWidget : public QWidget
     void onProjectElevationPropertiesChanged();
     void showSubsectionsTriggered();
     void editSubsectionsSymbology();
+    void syncProjectToggled( bool active );
 
   private:
-    QgsElevationProfileCanvas *mCanvas = nullptr;
+    void setMainCanvas( QgsMapCanvas *canvas );
+    void setupLayerTreeView( bool resetTree = true );
+    static void copyProjectTree( QgsLayerTree *destination );
 
-    QString mCanvasName;
+    /**
+     * Decides if a custom node needs to be added to the layer tree for a registered profile source,
+     * depending on the whether the Synchronize Layers to Project is off or not.
+     *
+     * If the node is added to the layer tree, it will be accessible via the source id.
+     * If the source already has a corresponding node in the layer tree, a second node will never be created.
+     *
+     * \param sourceId    Unique identifier of the registered profile source.
+     * \param sourceName  Name of the registered profile source.
+     */
+    void handleNodeForNewlyRegisteredSource( const QString &sourceId, const QString &sourceName );
+
+    QgsElevationProfileCanvas *mCanvas = nullptr;
+    QPointer< QgsElevationProfile > mProfile;
+
     QgsMapCanvas *mMainCanvas = nullptr;
 
     QProgressBar *mProgressPendingJobs = nullptr;
@@ -162,7 +191,10 @@ class QgsElevationProfileWidget : public QWidget
     QAction *mRenameProfileAction = nullptr;
     QAction *mLockRatioAction = nullptr;
     QAction *mShowSubsectionsAction = nullptr;
+    QAction *mShowCurveIn3DAction = nullptr;
     QAction *mSubsectionsSymbologyAction = nullptr;
+    QAction *mSyncLayerTreeAction = nullptr;
+    QAction *mActionAddGroup = nullptr;
     QMenu *mDistanceUnitMenu = nullptr;
 
     QgsDockableWidgetHelper *mDockableWidgetHelper = nullptr;
@@ -188,11 +220,14 @@ class QgsElevationProfileWidget : public QWidget
     int mBlockScaleRatioChanges = 0;
     QgsElevationProfileScaleRatioWidgetSettingsAction *mScaleRatioSettingsAction = nullptr;
 
-    std::unique_ptr<QgsLayerTree> mLayerTree;
     QgsLayerTreeRegistryBridge *mLayerTreeBridge = nullptr;
     QgsElevationProfileLayerTreeView *mLayerTreeView = nullptr;
 
     std::unique_ptr<QgsLineSymbol> mSubsectionsSymbol;
+
+    QPointer< QgsLayerTree > mLayerTree;
+
+    friend class TestQgsAppElevationProfileWidget;
 };
 
 

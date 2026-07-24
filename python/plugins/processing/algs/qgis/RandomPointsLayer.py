@@ -22,28 +22,28 @@ __copyright__ = "(C) 2014, Alexander Bruy"
 import os
 import random
 
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsApplication,
-    QgsField,
-    QgsFeatureSink,
     QgsFeature,
+    QgsFeatureRequest,
+    QgsFeatureSink,
+    QgsField,
     QgsFields,
     QgsGeometry,
     QgsPointXY,
-    QgsWkbTypes,
-    QgsSpatialIndex,
-    QgsFeatureRequest,
     QgsProcessing,
     QgsProcessingException,
-    QgsProcessingParameterNumber,
-    QgsProcessingParameterDistance,
-    QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterFeatureSink,
     QgsProcessingParameterDefinition,
+    QgsProcessingParameterDistance,
+    QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterNumber,
+    QgsSpatialIndex,
+    QgsWkbTypes,
 )
+from qgis.PyQt.QtCore import QMetaType
+from qgis.PyQt.QtGui import QIcon
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import vector
@@ -120,6 +120,19 @@ class RandomPointsLayer(QgisAlgorithm):
     def displayName(self):
         return self.tr("Random points in layer bounds")
 
+    def shortDescription(self):
+        return self.tr(
+            "Creates a new point layer with a given number of random points, "
+            "all of them within the extent of a given layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a new point layer with a given number of random points, "
+            "all of them within the extent of a given layer. A distance factor can be specified, "
+            "to avoid points being too close to each other."
+        )
+
     def documentationFlags(self):
         return Qgis.ProcessingAlgorithmDocumentationFlag.RegeneratesPrimaryKey
 
@@ -187,6 +200,7 @@ class RandomPointsLayer(QgisAlgorithm):
                         f.setAttribute("id", nPoints)
                         f.setGeometry(geom)
                         sink.addFeature(f, QgsFeatureSink.Flag.FastInsert)
+                        feedback.featureAddedToSink(self.OUTPUT)
                         index.addFeature(f)
                         points[nPoints] = p
                         nPoints += 1
@@ -202,4 +216,5 @@ class RandomPointsLayer(QgisAlgorithm):
             )
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}

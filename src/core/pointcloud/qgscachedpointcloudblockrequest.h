@@ -18,9 +18,9 @@
 #ifndef QGSCACHEDPOINTCLOUDBLOCKREQUEST_H
 #define QGSCACHEDPOINTCLOUDBLOCKREQUEST_H
 
-#include <QObject>
-
 #include "qgspointcloudblockrequest.h"
+
+#include <QObject>
 
 #define SIP_NO_FILE
 
@@ -39,15 +39,22 @@ class CORE_EXPORT QgsCachedPointCloudBlockRequest : public QgsPointCloudBlockReq
 {
     Q_OBJECT
   public:
-
     /**
      * QgsCachedPointCloudBlockRequest constructor using an existing \a block
      * Note: Ownership of \a block is transferred
      */
-    QgsCachedPointCloudBlockRequest( QgsPointCloudBlock *block, const QgsPointCloudNodeId &node, const QString &uri,
-                                     const QgsPointCloudAttributeCollection &attributes, const QgsPointCloudAttributeCollection &requestedAttributes,
-                                     const QgsVector3D &scale, const QgsVector3D &offset, const QgsPointCloudExpression &filterExpression, const QgsRectangle &filterRect );
+    QgsCachedPointCloudBlockRequest(
+      QgsPointCloudBlock *block,
+      QgsPointCloudNodeId node,
+      const QString &uri,
+      const QgsPointCloudAttributeCollection &attributes,
+      const QgsPointCloudAttributeCollection &requestedAttributes,
+      const QgsVector3D &scale,
+      const QgsVector3D &offset,
+      const QgsPointCloudExpression &filterExpression,
+      const QgsRectangle &filterRect
+    );
 
-    ~QgsCachedPointCloudBlockRequest() = default;
+    ~QgsCachedPointCloudBlockRequest() override = default;
 };
 #endif // QGSCACHEDPOINTCLOUDBLOCKREQUEST_H

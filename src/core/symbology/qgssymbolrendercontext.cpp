@@ -14,10 +14,15 @@
  ***************************************************************************/
 
 #include "qgssymbolrendercontext.h"
-#include "qgsrendercontext.h"
-#include "qgslegendpatchshape.h"
 
-QgsSymbolRenderContext::QgsSymbolRenderContext( QgsRenderContext &c, Qgis::RenderUnit u, qreal opacity, bool selected, Qgis::SymbolRenderHints renderHints, const QgsFeature *f, const QgsFields &fields, const QgsMapUnitScale &mapUnitScale )
+#include <memory>
+
+#include "qgslegendpatchshape.h"
+#include "qgsrendercontext.h"
+
+QgsSymbolRenderContext::QgsSymbolRenderContext(
+  QgsRenderContext &c, Qgis::RenderUnit u, qreal opacity, bool selected, Qgis::SymbolRenderHints renderHints, const QgsFeature *f, const QgsFields &fields, const QgsMapUnitScale &mapUnitScale
+)
   : mRenderContext( c )
   , mOutputUnit( u )
   , mMapUnitScale( mapUnitScale )
@@ -26,10 +31,7 @@ QgsSymbolRenderContext::QgsSymbolRenderContext( QgsRenderContext &c, Qgis::Rende
   , mRenderHints( renderHints )
   , mFeature( f )
   , mFields( fields )
-  , mGeometryPartCount( 0 )
-  , mGeometryPartNum( 0 )
-{
-}
+{}
 
 QgsSymbolRenderContext::~QgsSymbolRenderContext() = default;
 
@@ -40,8 +42,7 @@ void QgsSymbolRenderContext::setOriginalValueVariable( const QVariant &value )
 
 bool QgsSymbolRenderContext::forceVectorRendering() const
 {
-  return mRenderContext.rasterizedRenderingPolicy() != Qgis::RasterizedRenderingPolicy::Default
-         || mRenderHints.testFlag( Qgis::SymbolRenderHint::ForceVectorRendering );
+  return mRenderContext.rasterizedRenderingPolicy() != Qgis::RasterizedRenderingPolicy::Default || mRenderHints.testFlag( Qgis::SymbolRenderHint::ForceVectorRendering );
 }
 
 double QgsSymbolRenderContext::outputLineWidth( double width ) const
@@ -82,5 +83,5 @@ const QgsLegendPatchShape *QgsSymbolRenderContext::patchShape() const
 
 void QgsSymbolRenderContext::setPatchShape( const QgsLegendPatchShape &patchShape )
 {
-  mPatchShape.reset( new QgsLegendPatchShape( patchShape ) );
+  mPatchShape = std::make_unique<QgsLegendPatchShape>( patchShape );
 }

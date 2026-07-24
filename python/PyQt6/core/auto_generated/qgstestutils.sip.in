@@ -12,12 +12,10 @@
 
 class QgsTestUtils
 {
-
 %TypeHeaderCode
 #include "qgstestutils.h"
 %End
   public:
-
     static bool testProviderIteratorThreadSafety( QgsVectorDataProvider *provider, const QgsFeatureRequest &request = QgsFeatureRequest() );
 %Docstring
 Runs a thready safety test on iterators from a vector data ``provider``,
@@ -33,6 +31,10 @@ Compares two DOM elements and returns ``True`` if they are equivalent.
 Dumps useful diff information to the console if the elements differ.
 %End
 
+    static QString sanitizeFakeHttpEndpoint( const QString &urlString );
+%Docstring
+Sanitizes fake_qgis_http_endpoint URLs
+%End
 };
 
 /************************************************************************

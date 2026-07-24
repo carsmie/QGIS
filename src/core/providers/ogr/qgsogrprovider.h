@@ -18,10 +18,12 @@ email                : sherman at mrcc.com
 #ifndef QGSOGRPROVIDER_H
 #define QGSOGRPROVIDER_H
 
-#include "qgsvectordataprovider.h"
 #include "qgsogrproviderutils.h"
+#include "qgsvectordataprovider.h"
 
-#define CPL_SUPRESS_CPLUSPLUS  //#spellok
+#define SIP_NO_FILE
+
+#define CPL_SUPRESS_CPLUSPLUS //#spellok
 #include <gdal.h>
 
 class QgsOgrLayer;
@@ -30,18 +32,16 @@ class QgsProviderSublayerDetails;
 class QgsDataProviderElevationProperties;
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 /**
  * \class QgsOgrProvider
  * \brief Data provider for OGR datasources
   */
-class QgsOgrProvider final: public QgsVectorDataProvider
+class QgsOgrProvider final : public QgsVectorDataProvider
 {
     Q_OBJECT
 
   public:
-
     //! Convert a vector layer to a vector file
     static Qgis::VectorExportResult createEmptyLayer(
       const QString &uri,
@@ -60,9 +60,7 @@ class QgsOgrProvider final: public QgsVectorDataProvider
      * \param uri uniform resource locator (URI) for a dataset
      * \param options generic data provider options
      */
-    explicit QgsOgrProvider( QString const &uri,
-                             const QgsDataProvider::ProviderOptions &providerOptions,
-                             Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
+    explicit QgsOgrProvider( QString const &uri, const QgsDataProvider::ProviderOptions &providerOptions, Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
 
     ~QgsOgrProvider() override;
 
@@ -99,7 +97,7 @@ class QgsOgrProvider final: public QgsVectorDataProvider
     QString subsetStringHelpUrl() const override;
     bool setSubsetString( const QString &theSQL, bool updateFeatureCount = true ) override;
     Qgis::WkbType wkbType() const override;
-    virtual size_t layerCount() const;
+    size_t layerCount() const;
     long long featureCount() const override;
     QgsFields fields() const override;
     QgsRectangle extent() const override;
@@ -108,6 +106,8 @@ class QgsOgrProvider final: public QgsVectorDataProvider
     QString defaultValueClause( int fieldIndex ) const override;
     bool skipConstraintCheck( int fieldIndex, QgsFieldConstraints::Constraint constraint, const QVariant &value = QVariant() ) const override;
     void updateExtents() override;
+
+    using QgsVectorDataProvider::addFeatures;
     bool addFeatures( QgsFeatureList &flist, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) override;
     bool deleteFeatures( const QgsFeatureIds &id ) override;
     bool addAttributes( const QList<QgsField> &attributes ) override;
@@ -130,8 +130,7 @@ class QgsOgrProvider final: public QgsVectorDataProvider
     QVariant minimumValue( int index ) const override;
     QVariant maximumValue( int index ) const override;
     QSet< QVariant > uniqueValues( int index, int limit = -1 ) const override;
-    QStringList uniqueStringsMatching( int index, const QString &substring, int limit = -1,
-                                       QgsFeedback *feedback = nullptr ) const override;
+    QStringList uniqueStringsMatching( int index, const QString &substring, int limit = -1, QgsFeedback *feedback = nullptr ) const override;
     Qgis::SpatialIndexPresence hasSpatialIndex() const override;
     Qgis::VectorLayerTypeFlags vectorLayerTypeFlags() const override;
     QList<QgsRelation> discoverRelations( const QgsVectorLayer *target, const QList<QgsVectorLayer *> &layers ) const override;
@@ -209,7 +208,7 @@ class QgsOgrProvider final: public QgsVectorDataProvider
     //! Does the real job of settings the subset string and adds an argument to disable update capabilities
     bool _setSubsetString( const QString &theSQL, bool updateFeatureCount = true, bool updateCapabilities = true, bool hasExistingRef = true );
 
-    bool  createSpatialIndexImpl();
+    bool createSpatialIndexImpl();
 
     QList< QgsProviderSublayerDetails > _subLayers( Qgis::SublayerQueryFlags flags ) const;
 

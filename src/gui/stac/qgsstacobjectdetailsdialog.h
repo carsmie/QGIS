@@ -17,12 +17,15 @@
 #define QGSSTACOBJECTDETAILSDIALOG_H
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
-#include "qgsstacobject.h"
 #include "ui_qgsstacobjectdetailsdialog.h"
 
 #include <QDialog>
+
+#define SIP_NO_FILE
+
+class QgsStacAsset;
+class QgsStacObject;
 
 class QgsStacObjectDetailsDialog : public QDialog, private Ui::QgsStacObjectDetailsDialog
 {
@@ -31,7 +34,16 @@ class QgsStacObjectDetailsDialog : public QDialog, private Ui::QgsStacObjectDeta
   public:
     explicit QgsStacObjectDetailsDialog( QWidget *parent = nullptr );
 
-    void setStacObject( QgsStacObject *stacObject );
+    void setAuthcfg( const QString &authcfg );
+
+    void setContentFromStacObject( QgsStacObject *stacObject );
+    void setContentFromStacAsset( const QString &assetId, const QgsStacAsset *stacAsset );
+
+  private:
+    QString mAuthcfg;
+    void setContent( QString bodyHtml, QString thumbnailHtml );
+    bool isThumbnailAsset( const QgsStacAsset *stacAsset );
+    QString thumbnailHtmlContent( const QgsStacAsset *stacAsset );
 };
 
 ///@endcond

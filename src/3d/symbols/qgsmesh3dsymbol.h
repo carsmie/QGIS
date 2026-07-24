@@ -17,9 +17,8 @@
 #define QGSMESH3DSYMBOL_H
 
 #include "qgis_3d.h"
-
-#include "qgsabstract3dsymbol.h"
 #include "qgs3dtypes.h"
+#include "qgsabstract3dsymbol.h"
 #include "qgscolorrampshader.h"
 
 #include <Qt3DRender/QCullFace>
@@ -110,14 +109,14 @@ class _3D_EXPORT QgsMesh3DSymbol : public QgsAbstract3DSymbol
     void setHeight( float height ) { mHeight = height; }
 
     //! Returns material settings used for shading of the symbol
-    QgsAbstractMaterialSettings *materialSettings() const;
+    QgsAbstractMaterialSettings *materialSettings() const override;
 
     /**
      * Sets the \a material settings used for shading of the symbol.
      *
      * Ownership of \a material is transferred to the symbol.
      */
-    void setMaterialSettings( QgsAbstractMaterialSettings *materialSettings SIP_TRANSFER );
+    void setMaterialSettings( QgsAbstractMaterialSettings *materialSettings SIP_TRANSFER ) override;
 
     /**
      * Returns whether also triangles facing the other side will be created. Useful if input data have inconsistent order of vertices

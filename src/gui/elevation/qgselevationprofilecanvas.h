@@ -19,13 +19,14 @@
 #define QGSELEVATIONPROFILECANVAS_H
 
 #include "qgsconfig.h"
-#include "qgis_sip.h"
+
 #include "qgis_gui.h"
-#include "qgsplotcanvas.h"
-#include "qgsmaplayer.h"
+#include "qgis_sip.h"
 #include "qgscoordinatereferencesystem.h"
-#include "qgsprofilepoint.h"
 #include "qgslinesymbol.h"
+#include "qgsmaplayer.h"
+#include "qgsplotcanvas.h"
+#include "qgsprofilepoint.h"
 
 class QgsElevationProfilePlotItem;
 class QgsElevationProfileCrossHairsItem;
@@ -115,6 +116,22 @@ class GUI_EXPORT QgsElevationProfileCanvas : public QgsPlotCanvas
     QList<QgsMapLayer *> layers() const;
 
     /**
+     * Sets the list of \a sources to include in the profile.
+     *
+     * \see sources()
+     */
+    void setSources( const QList<QgsAbstractProfileSource *> &sources );
+
+    /**
+     * Returns the list of sources included in the profile.
+     *
+     * It includes both layer profile sources and custom sources from the profile source registry.
+     *
+     * \see setSources()
+     */
+    QList<QgsAbstractProfileSource *> sources() const;
+
+    /**
      * Sets the \a crs associated with the canvas' map coordinates.
      *
      * \see crs()
@@ -186,6 +203,16 @@ class GUI_EXPORT QgsElevationProfileCanvas : public QgsPlotCanvas
      * \see setVisiblePlotRange()
      */
     QgsDoubleRange visibleElevationRange() const;
+
+    /**
+     * Returns elevation range of the computed profile results.
+     *
+     * Calculated from data, not from visible extent.
+     *
+     * \see visibleElevationRange()
+     * \since QGIS 4.2
+     */
+    QgsDoubleRange dataElevationRange() const;
 
     /**
      * Returns a reference to the 2D plot used by the widget.
@@ -294,10 +321,7 @@ class GUI_EXPORT QgsElevationProfileCanvas : public QgsPlotCanvas
      * \see setSubsectionsSymbol()
      * \since QGIS 3.44
      */
-    QgsLineSymbol *subsectionsSymbol()
-    {
-      return mSubsectionsSymbol.get();
-    }
+    QgsLineSymbol *subsectionsSymbol() { return mSubsectionsSymbol.get(); }
 
     /**
      * Sets the \a symbol used to draw the subsections. If \a symbol is NULLPTR, the subsections are not drawn.
@@ -357,6 +381,7 @@ class GUI_EXPORT QgsElevationProfileCanvas : public QgsPlotCanvas
     void startDeferredRegeneration();
     void startDeferredRedraw();
     void refineResults();
+    void setSourcesPrivate();
 
   private:
     void updateChartFromPalette();
@@ -377,6 +402,7 @@ class GUI_EXPORT QgsElevationProfileCanvas : public QgsPlotCanvas
     Qgis::DistanceUnit mDistanceUnit = Qgis::DistanceUnit::Unknown;
 
     QgsWeakMapLayerPointerList mLayers;
+    QList< std::variant< QgsWeakMapLayerPointer, QgsAbstractProfileSource * > > mSources;
 
     QgsElevationProfilePlotItem *mPlotItem = nullptr;
     QgsElevationProfileCrossHairsItem *mCrossHairsItem = nullptr;

@@ -20,12 +20,12 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include <QMap>
-#include <QDomElement>
-#include <QDomDocument>
-
-#include "qgsreadwritecontext.h"
 #include "qgspropertycollection.h"
+#include "qgsreadwritecontext.h"
+
+#include <QDomDocument>
+#include <QDomElement>
+#include <QMap>
 
 class QgsRelationManager;
 class QgsEditFormConfigPrivate;
@@ -39,33 +39,31 @@ class QgsAttributeEditorElement;
  */
 class CORE_EXPORT QgsEditFormConfig
 {
-
     Q_GADGET
 
   public:
-
     struct GroupData
     {
-      GroupData() = default;
-      GroupData( const QString &name, const QList<QString> &fields )
-        : mName( name )
-        , mFields( fields )
-      {}
-      QString mName;
-      QList<QString> mFields;
+        GroupData() = default;
+        GroupData( const QString &name, const QList<QString> &fields )
+          : mName( name )
+          , mFields( fields )
+        {}
+        QString mName;
+        QList<QString> mFields;
     };
 
     struct TabData
     {
-      TabData() = default;
-      TabData( const QString &name, const QList<QString> &fields, const QList<QgsEditFormConfig::GroupData> &groups )
-        : mName( name )
-        , mFields( fields )
-        , mGroups( groups )
-      {}
-      QString mName;
-      QList<QString> mFields;
-      QList<QgsEditFormConfig::GroupData> mGroups;
+        TabData() = default;
+        TabData( const QString &name, const QList<QString> &fields, const QList<QgsEditFormConfig::GroupData> &groups )
+          : mName( name )
+          , mFields( fields )
+          , mGroups( groups )
+        {}
+        QString mName;
+        QList<QString> mFields;
+        QList<QgsEditFormConfig::GroupData> mGroups;
     };
 
     // *INDENT-OFF*
@@ -78,11 +76,12 @@ class CORE_EXPORT QgsEditFormConfig
      * \since QGIS 3.14
      */
     enum class DataDefinedProperty SIP_MONKEYPATCH_SCOPEENUM_UNNEST( QgsEditFormConfig, DataDefinedProperty ) : int
-      {
-      NoProperty = 0, //!< No property
+    {
+      NoProperty = 0,    //!< No property
       AllProperties = 1, //!< All properties for item
-      Alias = 2, //!< Alias
-      Editable = 3, //!< Editable state \since QGIS 3.30
+      Alias = 2,         //!< Alias
+      Editable = 3,      //!< Editable state \since QGIS 3.30
+      CustomComment = 4, //!< Custom comment \since QGIS 4.2
     };
     // *INDENT-ON*
 
@@ -203,22 +202,40 @@ class CORE_EXPORT QgsEditFormConfig
     void setLabelOnTop( int idx, bool onTop );
 
     /**
-     * If this returns TRUE, the widget at the given \a index will remember the previously
-     * entered value from this QGIS session when creating new features.
+     * If this returns TRUE, the widget at the given \a index will reuse the last
+     * value within a QGIS session when creating new features.
      *
      * \see setReuseLastValue()
      * \since QGIS 3.20
+     * \deprecated QGIS 4.0. Use reuseLastValuePolicy instead.
      */
-    bool reuseLastValue( int index ) const;
+    Q_DECL_DEPRECATED bool reuseLastValue( int index ) const;
 
     /**
-     * Sets whether the widget at the given \a index will remember the previously
-     * entered value from this QGIS session when creating new features.
+     * Sets whether the widget at the given \a index will reuse the last value
+     * within a QGIS session when creating new features.
      *
      * \see reuseLastValue()
      * \since QGIS 3.20
+     * \deprecated QGIS 4.0. Use setReuseLastValuePolicy instead.
      */
-    void setReuseLastValue( int index, bool reuse );
+    Q_DECL_DEPRECATED void setReuseLastValue( int index, bool reuse );
+
+    /**
+     * Returns the reuse of last value policy for an attribute \a index.
+     *
+     * \see setReuseLastValuePolicy()
+     * \since QGIS 4.0
+     */
+    Qgis::AttributeFormReuseLastValuePolicy reuseLastValuePolicy( int index ) const;
+
+    /**
+     * Sets the reuse of last value policy for an attribute \a index.
+     *
+     * \see reuseLastValuePolicy()
+     * \since QGIS 4.0
+     */
+    void setReuseLastValuePolicy( int index, Qgis::AttributeFormReuseLastValuePolicy policy );
 
     // Python form init function stuff
 
@@ -295,7 +312,9 @@ class CORE_EXPORT QgsEditFormConfig
      * Deserialize drag and drop designer elements.
      * \deprecated QGIS 3.18. Use QgsAttributeEditorElement::create instead.
      */
-    Q_DECL_DEPRECATED QgsAttributeEditorElement *attributeEditorElementFromDomElement( QDomElement &elem, QgsAttributeEditorElement *parent, const QString &layerId = QString(), const QgsReadWriteContext &context = QgsReadWriteContext() ) SIP_DEPRECATED;
+    Q_DECL_DEPRECATED QgsAttributeEditorElement *attributeEditorElementFromDomElement(
+      QDomElement &elem, QgsAttributeEditorElement *parent, const QString &layerId = QString(), const QgsReadWriteContext &context = QgsReadWriteContext()
+    ) SIP_DEPRECATED;
 
     /**
      * Create a new edit form config. Normally invoked by QgsVectorLayer
@@ -321,7 +340,6 @@ class CORE_EXPORT QgsEditFormConfig
     static const QgsPropertiesDefinition &propertyDefinitions();
 
   private:
-
     /**
      * Used internally to set the fields when they change.
      * This should only be called from QgsVectorLayer for synchronization reasons
@@ -337,7 +355,7 @@ class CORE_EXPORT QgsEditFormConfig
      * Used for the backwards compatibility of the api, on setting nmrel or force-suppress-popup for relations.
      * Returns TRUE when a relation instance (the first one found) has been updated.
      */
-    bool legacyUpdateRelationWidgetInTabs( QgsAttributeEditorContainer *container,  const QString &widgetName, const QVariantMap &config );
+    bool legacyUpdateRelationWidgetInTabs( QgsAttributeEditorContainer *container, const QString &widgetName, const QVariantMap &config );
 
   private:
     void fixLegacyConfig( QDomElement &el ) const;

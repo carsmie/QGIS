@@ -14,13 +14,17 @@
  ***************************************************************************/
 
 #include "qgssettingstreenode.h"
-#include "moc_qgssettingstreenode.cpp"
-#include "qgssettingsentryimpl.h"
+
 #include "qgsexception.h"
-#include "qgssettings.h"
-#include "qgssettingsproxy.h"
+#include "qgssettingsentry.h"
+#include "qgssettingsentryimpl.h"
 
 #include <QDir>
+#include <QString>
+
+#include "moc_qgssettingstreenode.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsSettingsTreeNode::~QgsSettingsTreeNode()
 {
@@ -44,7 +48,7 @@ QgsSettingsTreeNode *QgsSettingsTreeNode::createRootNode()
   QgsSettingsTreeNode *te = new QgsSettingsTreeNode();
   te->mType = Qgis::SettingsTreeNodeType::Root;
   te->mKey = QString();
-  te->mCompleteKey = QStringLiteral( "/" );
+  te->mCompleteKey = u"/"_s;
   return te;
 }
 
@@ -98,7 +102,7 @@ QgsSettingsTreeNode *QgsSettingsTreeNode::childNode( const QString &key ) const
 
 const QgsSettingsEntryBase *QgsSettingsTreeNode::childSetting( const QString &key ) const
 {
-  const QString testCompleteKey = QStringLiteral( "%1%2" ).arg( mCompleteKey, key );
+  const QString testCompleteKey = u"%1%2"_s.arg( mCompleteKey, key );
   QList<const QgsSettingsEntryBase *>::const_iterator it = mChildrenSettings.constBegin();
   for ( ; it != mChildrenSettings.constEnd(); ++it )
   {
@@ -141,7 +145,7 @@ void QgsSettingsTreeNode::init( QgsSettingsTreeNode *parent, const QString &key 
 {
   mParent = parent;
   mKey = key;
-  mCompleteKey = QDir::cleanPath( QStringLiteral( "%1/%2" ).arg( parent->completeKey(), key ) ) + '/';
+  mCompleteKey = QDir::cleanPath( u"%1/%2"_s.arg( parent->completeKey(), key ) ) + '/';
 }
 
 QgsSettingsTreeNamedListNode::QgsSettingsTreeNamedListNode() = default;
@@ -152,18 +156,16 @@ void QgsSettingsTreeNamedListNode::initNamedList( const Qgis::SettingsTreeNodeOp
   if ( options.testFlag( Qgis::SettingsTreeNodeOption::NamedListSelectedItemSetting ) )
   {
     // this must be done before completing the key
-    mSelectedItemSetting = std::make_unique<QgsSettingsEntryString>( QStringLiteral( "%1/selected" ).arg( mCompleteKey ), nullptr );
+    mSelectedItemSetting = std::make_unique<QgsSettingsEntryString>( u"%1/selected"_s.arg( mCompleteKey ), nullptr );
   }
 
   mNamedNodesCount = mParent->namedNodesCount() + 1;
-  mItemsCompleteKey = QStringLiteral( "%1items/" ).arg( mCompleteKey );
-  mCompleteKey.append( QStringLiteral( "items/%%1/" ).arg( mNamedNodesCount ) );
+  mItemsCompleteKey = u"%1items/"_s.arg( mCompleteKey );
+  mCompleteKey.append( u"items/%%1/"_s.arg( mNamedNodesCount ) );
 }
 
 QgsSettingsTreeNamedListNode::~QgsSettingsTreeNamedListNode()
-{
-
-}
+{}
 
 
 QStringList QgsSettingsTreeNamedListNode::items( const QStringList &parentsNamedItems ) const
@@ -173,22 +175,30 @@ QStringList QgsSettingsTreeNamedListNode::items( const QStringList &parentsNamed
 
 QStringList QgsSettingsTreeNamedListNode::items( Qgis::SettingsOrigin origin, const QStringList &parentsNamedItems ) const
 {
-  if ( namedNodesCount() - 1 != parentsNamedItems.count() )
-    throw QgsSettingsException( QObject::tr( "The number of given parent named items (%1) for the node '%2' doesn't match with the number of named items in the key (%3)." ).arg( QString::number( parentsNamedItems.count() ), mCompleteKey, QString::number( namedNodesCount() ) ) );
+  Q_UNUSED( origin )
 
+  if ( namedNodesCount() - 1 != parentsNamedItems.count() )
+    throw QgsSettingsException(
+      QObject::tr( "The number of given parent named items (%1) for the node '%2' doesn't match with the number of named items in the key (%3)." )
+        .arg( QString::number( parentsNamedItems.count() ), mCompleteKey, QString::number( namedNodesCount() ) )
+    );
 
   const QString completeKeyParam = completeKeyWithNamedItems( mItemsCompleteKey, parentsNamedItems );
-  auto settings = QgsSettings::get();
-  settings->beginGroup( completeKeyParam );
-  const QStringList res = settings->childGroups( origin );
-  settings->endGroup();
+
+  QSettings &settings = QgsSettingsEntryBase::userSettings();
+  settings.beginGroup( completeKeyParam );
+  const QStringList res = settings.childGroups();
+  settings.endGroup();
   return res;
 }
 
 void QgsSettingsTreeNamedListNode::setSelectedItem( const QString &item, const QStringList &parentsNamedItems )
 {
   if ( namedNodesCount() - 1 != parentsNamedItems.count() )
-    throw QgsSettingsException( QObject::tr( "The number of given parent named items (%1) for the node '%2' doesn't match with the number of named items in the key (%3)." ).arg( QString::number( parentsNamedItems.count() ), mCompleteKey, QString::number( namedNodesCount() ) ) );
+    throw QgsSettingsException(
+      QObject::tr( "The number of given parent named items (%1) for the node '%2' doesn't match with the number of named items in the key (%3)." )
+        .arg( QString::number( parentsNamedItems.count() ), mCompleteKey, QString::number( namedNodesCount() ) )
+    );
   if ( !mOptions.testFlag( Qgis::SettingsTreeNodeOption::NamedListSelectedItemSetting ) )
     throw QgsSettingsException( QObject::tr( "The named list node '%1' has no option to set the current selected entry." ).arg( mCompleteKey ) );
 
@@ -198,7 +208,10 @@ void QgsSettingsTreeNamedListNode::setSelectedItem( const QString &item, const Q
 QString QgsSettingsTreeNamedListNode::selectedItem( const QStringList &parentsNamedItems )
 {
   if ( namedNodesCount() - 1 != parentsNamedItems.count() )
-    throw QgsSettingsException( QObject::tr( "The number of given parent named items (%1) for the node '%2' doesn't match with the number of named items in the key (%3)." ).arg( QString::number( parentsNamedItems.count() ), mCompleteKey, QString::number( namedNodesCount() ) ) );
+    throw QgsSettingsException(
+      QObject::tr( "The number of given parent named items (%1) for the node '%2' doesn't match with the number of named items in the key (%3)." )
+        .arg( QString::number( parentsNamedItems.count() ), mCompleteKey, QString::number( namedNodesCount() ) )
+    );
   if ( !mOptions.testFlag( Qgis::SettingsTreeNodeOption::NamedListSelectedItemSetting ) )
     throw QgsSettingsException( QObject::tr( "The named list node '%1' has no option to set the current selected entry." ).arg( mCompleteKey ) );
 
@@ -208,27 +221,31 @@ QString QgsSettingsTreeNamedListNode::selectedItem( const QStringList &parentsNa
 void QgsSettingsTreeNamedListNode::deleteItem( const QString &item, const QStringList &parentsNamedItems )
 {
   if ( namedNodesCount() - 1 != parentsNamedItems.count() )
-    throw QgsSettingsException( QObject::tr( "The number of given parent named items (%1) doesn't match with the number of named items in the key (%2)." ).arg( parentsNamedItems.count(), namedNodesCount() ) );
+    throw QgsSettingsException(
+      QObject::tr( "The number of given parent named items (%1) doesn't match with the number of named items in the key (%2)." ).arg( parentsNamedItems.count(), namedNodesCount() )
+    );
 
   QStringList args = parentsNamedItems;
   args << item;
   QString key = completeKeyWithNamedItems( mCompleteKey, args );
-  QgsSettings::get()->remove( key );
+  QgsSettingsEntryBase::userSettings().remove( key );
 }
 
 void QgsSettingsTreeNamedListNode::deleteAllItems( const QStringList &parentsNamedItems )
 {
   if ( namedNodesCount() - 1 != parentsNamedItems.count() )
-    throw QgsSettingsException( QObject::tr( "The number of given parent named items (%1) doesn't match with the number of named items in the key (%2)." ).arg( parentsNamedItems.count(), namedNodesCount() ) );
+    throw QgsSettingsException(
+      QObject::tr( "The number of given parent named items (%1) doesn't match with the number of named items in the key (%2)." ).arg( parentsNamedItems.count(), namedNodesCount() )
+    );
 
   const QStringList children = items( parentsNamedItems );
-  auto settings = QgsSettings::get();
+  QSettings &settings = QgsSettingsEntryBase::userSettings();
   for ( const QString &child : children )
   {
     QStringList args = parentsNamedItems;
     args << child;
     QString key = completeKeyWithNamedItems( mCompleteKey, args );
-    settings->remove( key );
+    settings.remove( key );
   }
 }
 

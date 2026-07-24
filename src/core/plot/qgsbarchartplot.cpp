@@ -16,15 +16,20 @@
  ***************************************************************************/
 
 #include "qgsbarchartplot.h"
+
 #include "qgsexpressioncontextutils.h"
 #include "qgssymbol.h"
 #include "qgssymbollayer.h"
 #include "qgssymbollayerutils.h"
+#include "qgsvectorlayerplotdatagatherer.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsBarChartPlot::QgsBarChartPlot()
 {
-  setFillSymbol( 0, QgsPlotDefaultSettings::barChartFillSymbol() );
+  setFillSymbolAt( 0, QgsPlotDefaultSettings::barChartFillSymbol() );
 }
 
 void QgsBarChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderContext &, const QRectF &plotArea, const QgsPlotData &plotData )
@@ -54,29 +59,62 @@ void QgsBarChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCon
       break;
   }
 
-  QgsExpressionContextScope *chartScope = new QgsExpressionContextScope( QStringLiteral( "chart" ) );
+  QgsExpressionContextScope *chartScope = new QgsExpressionContextScope( u"chart"_s );
   const QgsExpressionContextScopePopper scopePopper( context.expressionContext(), chartScope );
 
   context.painter()->save();
   context.painter()->setClipRect( plotArea );
 
-  const double xScale = plotArea.width() / ( xMaximum() - xMinimum() );
-  const double yScale = plotArea.height() / ( yMaximum() - yMinimum() );
-  const double categoriesWidth = plotArea.width() / categories.size();
-  const double valuesWidth = plotArea.width() * ( xAxis().gridIntervalMinor() / ( xMaximum() - xMinimum() ) );
-  const double barsWidth = xAxis().type() == Qgis::PlotAxisType::Categorical ? categoriesWidth / 2 : valuesWidth / 2;
-  const double barWidth = barsWidth / seriesList.size();
+  double minX = xMinimum();
+  double maxX = xMaximum();
+  double minY = yMinimum();
+  double maxY = yMaximum();
+  double majorIntervalX = xAxis().gridIntervalMajor();
+  double minorIntervalX = xAxis().gridIntervalMinor();
+  double labelIntervalX = xAxis().labelInterval();
+  double majorIntervalY = yAxis().gridIntervalMajor();
+  double minorIntervalY = yAxis().gridIntervalMinor();
+  double labelIntervalY = yAxis().labelInterval();
+  Qgs2DXyPlot::applyDataDefinedProperties( context, minX, maxX, minY, maxY, majorIntervalX, minorIntervalX, labelIntervalX, majorIntervalY, minorIntervalY, labelIntervalY );
+
+  double xScale = 0.0;
+  double yScale = 0.0;
+  double categoriesWidth = 0.0;
+  double valuesWidth = 0.0;
+  double barsWidth = 0.0;
+  double barWidth = 0.0;
+  if ( flipAxes() )
+  {
+    xScale = plotArea.height() / ( maxX - minX );
+    yScale = plotArea.width() / ( maxY - minY );
+    categoriesWidth = plotArea.height() / static_cast<double>( categories.size() );
+    valuesWidth = plotArea.height() * ( minorIntervalX / ( maxX - minY ) );
+    barsWidth = xAxis().type() == Qgis::PlotAxisType::Categorical ? categoriesWidth / 2 : valuesWidth / 2;
+    barWidth = barsWidth / seriesList.size();
+  }
+  else
+  {
+    xScale = plotArea.width() / ( maxX - minX );
+    yScale = plotArea.height() / ( maxY - minY );
+    categoriesWidth = plotArea.width() / static_cast<double>( categories.size() );
+    valuesWidth = plotArea.width() * ( minorIntervalX / ( maxX - minX ) );
+    barsWidth = xAxis().type() == Qgis::PlotAxisType::Categorical ? categoriesWidth / 2 : valuesWidth / 2;
+    barWidth = barsWidth / seriesList.size();
+  }
+
   int seriesIndex = 0;
   for ( const QgsAbstractPlotSeries *series : seriesList )
   {
-    QgsFillSymbol *symbol = fillSymbol( seriesIndex % mFillSymbols.size() );
+    QgsFillSymbol *symbol = fillSymbolAt( seriesIndex % mFillSymbols.size() );
     if ( !symbol )
     {
       continue;
     }
     symbol->startRender( context );
 
-    const double barStartAdjustement = -( barsWidth / 2 ) + barWidth * seriesIndex;
+    chartScope->addVariable( QgsExpressionContextScope::StaticVariable( u"chart_series_name"_s, series->name(), true ) );
+
+    const double barStartAdjustment = -( barsWidth / 2 ) + barWidth * seriesIndex;
     if ( const QgsXyPlotSeries *xySeries = dynamic_cast<const QgsXyPlotSeries *>( series ) )
     {
       const QList<std::pair<double, double>> data = xySeries->data();
@@ -90,23 +128,31 @@ void QgsBarChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCon
             {
               continue;
             }
-            x = ( categoriesWidth * pair.first ) + ( categoriesWidth / 2 ) + barStartAdjustement;
+            x = ( categoriesWidth * pair.first ) + ( categoriesWidth / 2 ) + barStartAdjustment;
+            chartScope->addVariable( QgsExpressionContextScope::StaticVariable( u"chart_category"_s, categories[pair.first], true ) );
             break;
 
           case Qgis::PlotAxisType::Interval:
-            x = ( pair.first - xMinimum() ) * xScale + barStartAdjustement;
+            x = ( pair.first - minX ) * xScale + barStartAdjustment;
             break;
         }
 
-        double y = ( pair.second - yMinimum() ) * yScale;
+        const double y = ( pair.second - minY ) * yScale;
+        const double zero = ( 0.0 - minY ) * yScale;
+        QPoint topLeft;
+        QPoint bottomRight;
+        if ( flipAxes() )
+        {
+          topLeft = QPoint( plotArea.x() + zero, plotArea.bottom() - x - barWidth );
+          bottomRight = QPoint( plotArea.x() + y, plotArea.bottom() - x );
+        }
+        else
+        {
+          topLeft = QPoint( plotArea.left() + x, plotArea.y() + plotArea.height() - y );
+          bottomRight = QPoint( plotArea.left() + x + barWidth, plotArea.y() + plotArea.height() - zero );
+        }
 
-        const double zero = ( 0.0 - yMinimum() ) * yScale;
-        const QPoint topLeft( plotArea.left() + x,
-                              plotArea.y() + plotArea.height() - y );
-        const QPoint bottomRight( plotArea.left() + x + barWidth,
-                                  plotArea.y() + plotArea.height() - zero );
-
-        chartScope->addVariable( QgsExpressionContextScope::StaticVariable( QStringLiteral( "chart_value" ), pair.second, true ) );
+        chartScope->addVariable( QgsExpressionContextScope::StaticVariable( u"chart_value"_s, pair.second, true ) );
         symbol->renderPolygon( QPolygonF( QRectF( topLeft, bottomRight ) ), nullptr, nullptr, context );
       }
     }
@@ -118,7 +164,7 @@ void QgsBarChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCon
   context.painter()->restore();
 }
 
-QgsFillSymbol *QgsBarChartPlot::fillSymbol( int index ) const
+QgsFillSymbol *QgsBarChartPlot::fillSymbolAt( int index ) const
 {
   if ( index < 0 || index >= static_cast<int>( mFillSymbols.size() ) )
   {
@@ -128,7 +174,7 @@ QgsFillSymbol *QgsBarChartPlot::fillSymbol( int index ) const
   return mFillSymbols[index].get();
 }
 
-void QgsBarChartPlot::setFillSymbol( int index, QgsFillSymbol *symbol )
+void QgsBarChartPlot::setFillSymbolAt( int index, QgsFillSymbol *symbol )
 {
   if ( index < 0 )
   {
@@ -147,11 +193,11 @@ bool QgsBarChartPlot::writeXml( QDomElement &element, QDomDocument &document, co
 {
   Qgs2DXyPlot::writeXml( element, document, context );
 
-  QDomElement fillSymbolsElement = document.createElement( QStringLiteral( "fillSymbols" ) );
+  QDomElement fillSymbolsElement = document.createElement( u"fillSymbols"_s );
   for ( int i = 0; i < static_cast<int>( mFillSymbols.size() ); i++ )
   {
-    QDomElement fillSymbolElement = document.createElement( QStringLiteral( "fillSymbol" ) );
-    fillSymbolElement.setAttribute( QStringLiteral( "index" ), QString::number( i ) );
+    QDomElement fillSymbolElement = document.createElement( u"fillSymbol"_s );
+    fillSymbolElement.setAttribute( u"index"_s, QString::number( i ) );
     if ( mFillSymbols[i] )
     {
       fillSymbolElement.appendChild( QgsSymbolLayerUtils::saveSymbol( QString(), mFillSymbols[i].get(), document, context ) );
@@ -167,21 +213,21 @@ bool QgsBarChartPlot::readXml( const QDomElement &element, const QgsReadWriteCon
 {
   Qgs2DXyPlot::readXml( element, context );
 
-  const QDomNodeList fillSymbolsList = element.firstChildElement( QStringLiteral( "fillSymbols" ) ).childNodes();
+  const QDomNodeList fillSymbolsList = element.firstChildElement( u"fillSymbols"_s ).childNodes();
   for ( int i = 0; i < fillSymbolsList.count(); i++ )
   {
     const QDomElement fillSymbolElement = fillSymbolsList.at( i ).toElement();
-    const int index = fillSymbolElement.attribute( QStringLiteral( "index" ), QStringLiteral( "-1" ) ).toInt();
+    const int index = fillSymbolElement.attribute( u"index"_s, u"-1"_s ).toInt();
     if ( index >= 0 )
     {
       if ( fillSymbolElement.hasChildNodes() )
       {
-        const QDomElement symbolElement = fillSymbolElement.firstChildElement( QStringLiteral( "symbol" ) );
-        setFillSymbol( index, QgsSymbolLayerUtils::loadSymbol< QgsFillSymbol >( symbolElement, context ).release() );
+        const QDomElement symbolElement = fillSymbolElement.firstChildElement( u"symbol"_s );
+        setFillSymbolAt( index, QgsSymbolLayerUtils::loadSymbol< QgsFillSymbol >( symbolElement, context ).release() );
       }
       else
       {
-        setFillSymbol( index, nullptr );
+        setFillSymbolAt( index, nullptr );
       }
     }
   }
@@ -192,4 +238,40 @@ bool QgsBarChartPlot::readXml( const QDomElement &element, const QgsReadWriteCon
 QgsBarChartPlot *QgsBarChartPlot::create()
 {
   return new QgsBarChartPlot();
+}
+
+QgsVectorLayerAbstractPlotDataGatherer *QgsBarChartPlot::createDataGatherer( QgsPlot *plot )
+{
+  QgsBarChartPlot *chart = dynamic_cast<QgsBarChartPlot *>( plot );
+  if ( !chart )
+  {
+    return nullptr;
+  }
+
+  return new QgsVectorLayerXyPlotDataGatherer( chart->xAxis().type() );
+}
+
+void QgsBarChartPlot::initFromPlot( const QgsPlot *plot )
+{
+  if ( !plot )
+  {
+    return;
+  }
+
+  if ( const Qgs2DXyPlot *plotXy = dynamic_cast<const Qgs2DXyPlot *>( plot ) )
+  {
+    Qgs2DXyPlot::copyCommonProperties( plotXy );
+  }
+  else if ( const Qgs2DPlot *plotPie = dynamic_cast<const Qgs2DPlot *>( plot ) )
+  {
+    Qgs2DPlot::copyCommonProperties( plotPie );
+  }
+
+  if ( const QgsBarChartPlot *barChartPlot = dynamic_cast<const QgsBarChartPlot *>( plot ) )
+  {
+    for ( int idx = 0; idx < barChartPlot->fillSymbolCount(); idx++ )
+    {
+      setFillSymbolAt( idx, barChartPlot->fillSymbolAt( idx )->clone() );
+    }
+  }
 }

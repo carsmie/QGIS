@@ -14,9 +14,12 @@
  ***************************************************************************/
 
 #include "qgstest.h"
+
 #include <QObject>
 #include <QString>
 #include <QTemporaryFile>
+
+using namespace Qt::StringLiterals;
 
 //qgis includes...
 #include "qgsapplication.h"
@@ -42,6 +45,8 @@ class TestQgsVectorTileUtils : public QObject
 
     void test_scaleToZoomLevel();
     void test_urlsFromStyle();
+    void test_mapboxUrls_data();
+    void test_mapboxUrls();
 };
 
 
@@ -68,11 +73,12 @@ void TestQgsVectorTileUtils::test_urlsFromStyle()
 {
   QString dataDir( TEST_DATA_DIR );
   QFile style1File( dataDir + "/vector_tile/styles/style1.json" );
-  style1File.open( QIODevice::Text | QIODevice::ReadOnly );
+  QVERIFY( style1File.open( QIODevice::Text | QIODevice::ReadOnly ) );
   QString style1Content = style1File.readAll();
   style1File.close();
   style1Content.replace( QString( "_TILE_SOURCE_TEST_PATH_" ), "file://" + dataDir + "/vector_tile/styles" );
-  QFile fixedStyleFilePath( QDir::tempPath() + QStringLiteral( "/style1.json" ) );
+  style1Content.replace( QString( "_TILE_SOURCE_EXTERNE_TEST_PATH_" ), "file://" + dataDir + "/vector_tile/styles_externe" );
+  QFile fixedStyleFilePath( QDir::tempPath() + u"/style1.json"_s );
   if ( fixedStyleFilePath.open( QFile::WriteOnly | QFile::Truncate ) )
   {
     QTextStream out( &fixedStyleFilePath );
@@ -81,15 +87,19 @@ void TestQgsVectorTileUtils::test_urlsFromStyle()
   fixedStyleFilePath.close();
 
   auto sources = QgsVectorTileUtils::parseStyleSourceUrl( "file://" + fixedStyleFilePath.fileName() );
-  QCOMPARE( sources.count(), 2 );
+  QCOMPARE( sources.count(), 3 );
   QVERIFY( sources.contains( "base_v1.0.0" ) );
   QString sourceUrl = sources.value( "base_v1.0.0" );
-  sourceUrl.replace( QRegularExpression( "vectortiles[0-9]" ), QStringLiteral( "vectortilesX" ) );
+  sourceUrl.replace( QRegularExpression( "vectortiles[0-9]" ), u"vectortilesX"_s );
   QCOMPARE( sourceUrl, "https://vectortilesX.geo.admin.ch/tiles/ch.swisstopo.base.vt/v1.0.0/{z}/{x}/{y}.pbf" );
   QVERIFY( sources.contains( "terrain_v1.0.0" ) );
   sourceUrl = sources.value( "terrain_v1.0.0" );
-  sourceUrl.replace( QRegularExpression( "vectortiles[0-9]" ), QStringLiteral( "vectortilesX" ) );
+  sourceUrl.replace( QRegularExpression( "vectortiles[0-9]" ), u"vectortilesX"_s );
   QCOMPARE( sourceUrl, "https://vectortilesX.geo.admin.ch/tiles/ch.swisstopo.relief.vt/v1.0.0/{z}/{x}/{y}.pbf" );
+  QVERIFY( sources.contains( "terrain_externe_v1.0.0" ) );
+  sourceUrl = sources.value( "terrain_externe_v1.0.0" );
+  QCOMPARE( sourceUrl, "file://" + dataDir + "/vector_tile/styles_externe/VectorTileServer/tile/{z}/{y}/{x}.pbf" );
+
 
   sources = QgsVectorTileUtils::parseStyleSourceUrl( "file://" + dataDir + "/vector_tile/styles/style2.json" );
   QCOMPARE( sources.count(), 2 );
@@ -97,6 +107,29 @@ void TestQgsVectorTileUtils::test_urlsFromStyle()
   QCOMPARE( sources.value( "plan_ign" ), "https://data.geopf.fr/tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf" );
   QVERIFY( sources.contains( "plan_ign_relative" ) );
   QCOMPARE( sources.value( "plan_ign_relative" ), "file:///tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf" );
+}
+
+
+void TestQgsVectorTileUtils::test_mapboxUrls_data()
+{
+  QTest::addColumn<QString>( "url" );
+  QTest::addColumn<QString>( "apiKey" );
+  QTest::addColumn<QString>( "expected" );
+
+  QTest::newRow( "not mapbox" ) << "https://mytiles.com" << QString() << "https://mytiles.com";
+  QTest::newRow( "mapbox style" ) << "mapbox://styles/mapbox/dark-v11" << "abc123" << "https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=abc123";
+  QTest::newRow( "mapbox sprite" ) << "mapbox://sprites/mapbox/streets-v11" << "abc123" << "https://api.mapbox.com/styles/v1/mapbox/streets-v11/sprite?access_token=abc123";
+  QTest::newRow( "mapbox fonts" ) << "mapbox://fonts/mapbox/Open Sans Regular/123.pbf" << "abc123" << "https://api.mapbox.com/fonts/v1/mapbox/Open Sans Regular/123.pbf?access_token=abc123";
+  QTest::newRow( "mapbox sources" ) << "mapbox://username.tileset_id" << "abc123" << "https://api.mapbox.com/v4/username.tileset_id.json?secure&access_token=abc123";
+}
+
+void TestQgsVectorTileUtils::test_mapboxUrls()
+{
+  QFETCH( QString, url );
+  QFETCH( QString, apiKey );
+  QFETCH( QString, expected );
+
+  QCOMPARE( QgsVectorTileUtils::resolveMapboxUri( url, apiKey ), expected );
 }
 
 QGSTEST_MAIN( TestQgsVectorTileUtils )

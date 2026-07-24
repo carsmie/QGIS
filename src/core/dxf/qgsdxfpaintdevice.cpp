@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "qgsdxfpaintdevice.h"
+
 #include "qgsdxfpaintengine.h"
 #include "qgspoint.h"
 
@@ -25,9 +26,7 @@ QgsDxfPaintDevice::QgsDxfPaintDevice( QgsDxfExport *dxf )
 }
 
 QgsDxfPaintDevice::~QgsDxfPaintDevice()
-{
-
-}
+{}
 
 QPaintEngine *QgsDxfPaintDevice::paintEngine() const
 {
@@ -59,12 +58,12 @@ int QgsDxfPaintDevice::metric( PaintDeviceMetric metric ) const
     case QPaintDevice::PdmDevicePixelRatio:
       return 1;
     case QPaintDevice::PdmDevicePixelRatioScaled:
-      return 1;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+      return static_cast<int>( 1 * QPaintDevice::devicePixelRatioFScale() );
+#if ( QT_VERSION >= QT_VERSION_CHECK( 6, 8, 0 ) )
     case PdmDevicePixelRatioF_EncodedA:
-      return 1;
+      return QPaintDevice::encodeMetricF( PdmDevicePixelRatioF_EncodedA, 1.0 );
     case PdmDevicePixelRatioF_EncodedB:
-      return 1;
+      return QPaintDevice::encodeMetricF( PdmDevicePixelRatioF_EncodedB, 1.0 );
 #endif
   }
   // NOLINTEND(bugprone-branch-clone)
@@ -110,5 +109,3 @@ void QgsDxfPaintDevice::setShift( QPointF shift )
     mPaintEngine->setShift( shift );
   }
 }
-
-

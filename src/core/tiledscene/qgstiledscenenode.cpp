@@ -16,13 +16,12 @@
  ***************************************************************************/
 
 #include "qgstiledscenenode.h"
+
 #include "qgstiledscenetile.h"
 
 QgsTiledSceneNode::QgsTiledSceneNode( QgsTiledSceneTile *tile )
   : mTile( tile )
-{
-
-}
+{}
 
 QgsTiledSceneNode::~QgsTiledSceneNode()
 {

@@ -34,7 +34,7 @@ namespace fs = std::filesystem;
 void Clip::addArgs()
 {
     argOutput = &programArgs.add("output,o", "Output point cloud file", outputFile);
-    argOutputFormat = &programArgs.add("output-format", "Output format (las/laz/copc)", outputFormat);
+    argOutputFormatVpc = &programArgs.add("vpc-output-format", "Output format (las/laz/copc)", outputFormatVpc, "copc");
     argPolygon = &programArgs.add("polygon,p", "Input polygon vector file", polygonFile);
 }
 
@@ -51,17 +51,20 @@ bool Clip::checkArgs()
         return false;
     }
 
-    if (argOutputFormat->set())
+    if (argOutputFormatVpc->set())
     {
-        if (outputFormat != "las" && outputFormat != "laz")
+        if (outputFormatVpc != "las" && outputFormatVpc != "laz" && outputFormatVpc != "copc")
         {
-            std::cerr << "unknown output format: " << outputFormat << std::endl;
+            std::cerr << "unknown output format: " << outputFormatVpc << std::endl;
             return false;
         }
     }
-    else
-        outputFormat = "las";  // uncompressed by default
 
+    if ( isVpcFilename(outputFile) && outputFormatVpc == "copc" )
+    {
+        isStreaming = false;
+    }
+    
     return true;
 }
 
@@ -98,7 +101,26 @@ bool loadPolygons(const std::string &polygonFile, pdal::Options& crop_opts, BOX2
                 fullEnvelope = envelope;
             else
                 fullEnvelope.Merge(envelope);
-            crop_opts.add(pdal::Option("polygon", pdal::Polygon(hGeometry)));
+
+            char* wkt_ptr = nullptr;
+            OGR_G_ExportToWkt(hGeometry, &wkt_ptr);
+            const std::string wkt(wkt_ptr);
+            CPLFree(wkt_ptr);
+
+            SpatialReference pdalSrs;
+            if ( OGRSpatialReferenceH srs = OGR_G_GetSpatialReference(hGeometry) )
+            {
+                char *srsWkt_ptr = nullptr;
+                const OGRErr err = OSRExportToWkt(srs, &srsWkt_ptr);
+                if ( err== OGRERR_NONE )
+                {
+                  const std::string srsWkt = std::string(srsWkt_ptr);
+                  pdalSrs = SpatialReference( srsWkt );
+                }
+                CPLFree(srsWkt_ptr);
+            }
+
+            crop_opts.add(pdal::Option("polygon", pdal::Polygon(wkt, pdalSrs)));
         }
         OGR_F_Destroy( hFeature );
     }
@@ -116,7 +138,7 @@ static std::unique_ptr<PipelineManager> pipeline(ParallelJobInfo *tile, const pd
 
     std::unique_ptr<PipelineManager> manager( new PipelineManager );
 
-    Stage& r = manager->makeReader( tile->inputFilenames[0], "");
+    Stage& r = makeReader(manager.get(), tile->inputFilenames[0]);
 
     Stage *last = &r;
 
@@ -134,7 +156,7 @@ static std::unique_ptr<PipelineManager> pipeline(ParallelJobInfo *tile, const pd
         else
         {
             // Reader can't do the filtering - do it with a filter
-            last = &manager->makeFilter( "filters.crop", *last, filter_opts);
+            last = &manager->makeFilter("filters.crop", *last, filter_opts);
         }
     }
     if (!tile->filterExpression.empty())
@@ -146,9 +168,7 @@ static std::unique_ptr<PipelineManager> pipeline(ParallelJobInfo *tile, const pd
 
     last = &manager->makeFilter( "filters.crop", *last, crop_opts );
 
-    pdal::Options writer_opts;
-    writer_opts.add(pdal::Option("forward", "all"));
-    manager->makeWriter( tile->outputFilename, "", *last, writer_opts);
+    makeWriter(manager.get(), tile->outputFilename, last);
 
     return manager;
 }
@@ -161,7 +181,26 @@ void Clip::preparePipelines(std::vector<std::unique_ptr<PipelineManager>>& pipel
     if (!loadPolygons(polygonFile, crop_opts, bbox))
         return;
 
-    if (ends_with(inputFile, ".vpc"))
+    // equal combinedBox to the polygon bounds
+    // it is never necessary to read more from the input than this
+    BOX2D combinedBox = BOX2D(bbox);
+
+    // if filterBounds is set, combine it with the polygon bounds
+    if (!filterBounds.empty()) {
+       BOX2D filterBoundsBox;
+       std::string::size_type pos = 0;
+       filterBoundsBox.parse(filterBounds, pos);
+
+       // combinedBox is the intersection of the polygon bounds and the filter bounds
+       combinedBox.clip(filterBoundsBox);
+    }
+
+    if (!combinedBox.valid()) {
+      std::cerr << "clip bounds are empty or polygon and filter bounds do not overlap" << std::endl;
+      return;
+    }
+
+    if (isVpcFilename(inputFile))
     {
         // for /tmp/hello.vpc we will use /tmp/hello dir for all results
         fs::path outputParentDir = fs::path(outputFile).parent_path();
@@ -186,18 +225,10 @@ void Clip::preparePipelines(std::vector<std::unique_ptr<PipelineManager>>& pipel
               std::cout << "using " << f.filename << std::endl;
             }
 
-            ParallelJobInfo tile(ParallelJobInfo::FileBased, BOX2D(), filterExpression, filterBounds);
+            ParallelJobInfo tile(ParallelJobInfo::FileBased, BOX2D(), filterExpression, box_to_pdal_bounds(combinedBox));
             tile.inputFilenames.push_back(f.filename);
 
-            // for input file /x/y/z.las that goes to /tmp/hello.vpc,
-            // individual output file will be called /tmp/hello/z.las
-            fs::path inputBasename = fileStem(f.filename);
-            
-            // if the output is not VPC  las file format is forced to avoid time spent on compression, files will be later merged into single output and removed anyways
-            if (!ends_with(outputFile, ".vpc"))
-                tile.outputFilename = (outputSubdir / inputBasename).string() + ".las";
-            else
-                tile.outputFilename = (outputSubdir / inputBasename).string() + "." + outputFormat;
+            tile.outputFilename = tileOutputFileName(outputFile, outputFormatVpc, outputSubdir, f.filename);
 
             tileOutputFiles.push_back(tile.outputFilename);
 
@@ -210,7 +241,7 @@ void Clip::preparePipelines(std::vector<std::unique_ptr<PipelineManager>>& pipel
         {
             isStreaming = false;
         }
-        ParallelJobInfo tile(ParallelJobInfo::Single, BOX2D(), filterExpression, filterBounds);
+        ParallelJobInfo tile(ParallelJobInfo::Single, BOX2D(), filterExpression, box_to_pdal_bounds(combinedBox));
         tile.inputFilenames.push_back(inputFile);
         tile.outputFilename = outputFile;
         pipelines.push_back(pipeline(&tile, crop_opts));
@@ -222,29 +253,5 @@ void Clip::finalize(std::vector<std::unique_ptr<PipelineManager>>&)
     if (tileOutputFiles.empty())
         return;
 
-    // now build a new output VPC
-    std::vector<std::string> args;
-    args.push_back("--output=" + outputFile);
-    for (std::string f : tileOutputFiles)
-        args.push_back(f);
-    
-    if (ends_with(outputFile, ".vpc"))
-    {
-        // now build a new output VPC
-        buildVpc(args);
-    }
-    else
-    {
-        // merge all the output files into a single file        
-        Merge merge;
-        // for copc set isStreaming to false
-        if (ends_with(outputFile, ".copc.laz"))
-        {
-            merge.isStreaming = false;
-        }
-        runAlg(args, merge);
-
-        // remove files as they are not needed anymore - they are merged
-        removeFiles(tileOutputFiles, true);
-    }
+    buildOutput(outputFile, tileOutputFiles);
 }

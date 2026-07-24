@@ -15,25 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsprofilerenderer.h"
-#include "moc_qgsprofilerenderer.cpp"
-#include "qgsabstractprofilesource.h"
+
 #include "qgsabstractprofilegenerator.h"
+#include "qgsabstractprofilesource.h"
 #include "qgscurve.h"
-#include "qgsprofilesnapping.h"
 #include "qgslinesymbollayer.h"
+#include "qgsprofilesnapping.h"
 
 #include <QtConcurrentMap>
-#include <QtConcurrentRun>
 
-QgsProfilePlotRenderer::QgsProfilePlotRenderer( const QList< QgsAbstractProfileSource * > &sources,
-    const QgsProfileRequest &request )
+#include "moc_qgsprofilerenderer.cpp"
+
+QgsProfilePlotRenderer::QgsProfilePlotRenderer( const QList< QgsAbstractProfileSource * > &sources, const QgsProfileRequest &request )
   : mRequest( request )
 {
   for ( QgsAbstractProfileSource *source : sources )
   {
     if ( source )
     {
-      if ( std::unique_ptr< QgsAbstractProfileGenerator > generator{ source->createProfileGenerator( mRequest ) } )
+      if ( std::unique_ptr< QgsAbstractProfileGenerator > generator { source->createProfileGenerator( mRequest ) } )
         mGenerators.emplace_back( std::move( generator ) );
     }
   }
@@ -42,8 +42,7 @@ QgsProfilePlotRenderer::QgsProfilePlotRenderer( const QList< QgsAbstractProfileS
 QgsProfilePlotRenderer::QgsProfilePlotRenderer( std::vector<std::unique_ptr<QgsAbstractProfileGenerator> > generators, const QgsProfileRequest &request )
   : mGenerators( std::move( generators ) )
   , mRequest( request )
-{
-}
+{}
 
 QgsProfilePlotRenderer::~QgsProfilePlotRenderer()
 {
@@ -234,19 +233,17 @@ bool QgsProfilePlotRenderer::replaceSourceInternal( QgsAbstractProfileSource *so
   if ( !source )
     return false;
 
-  std::unique_ptr< QgsAbstractProfileGenerator > generator{ source->createProfileGenerator( mRequest ) };
+  std::unique_ptr< QgsAbstractProfileGenerator > generator { source->createProfileGenerator( mRequest ) };
   if ( !generator )
     return false;
 
   QString sourceId = generator->sourceId();
-  bool res = false;
   for ( auto &job : mJobs )
   {
     if ( job->generator && job->generator->sourceId() == sourceId )
     {
       job->mutex.lock();
-      res = true;
-      if ( clearPreviousResults )
+      if ( clearPreviousResults || job->generator->type() != generator->type() )
       {
         job->results.reset();
         job->complete = false;
@@ -261,14 +258,16 @@ bool QgsProfilePlotRenderer::replaceSourceInternal( QgsAbstractProfileSource *so
       for ( auto it = mGenerators.begin(); it != mGenerators.end(); )
       {
         if ( ( *it )->sourceId() == sourceId )
+        {
           it = mGenerators.erase( it );
-        else
-          it++;
+          mGenerators.emplace( it, std::move( generator ) );
+          return true;
+        }
+        it++;
       }
-      mGenerators.emplace_back( std::move( generator ) );
     }
   }
-  return res;
+  return false;
 }
 
 void QgsProfilePlotRenderer::regenerateInvalidatedResults()
@@ -317,8 +316,6 @@ QImage QgsProfilePlotRenderer::renderToImage( int width, int height, double dist
   context.setMapToPixel( QgsMapToPixel( mapUnitsPerPixel ) );
 
   render( context, width, height, distanceMin, distanceMax, zMin, zMax, sourceId );
-  QRectF plotArea( QPointF( 0, 0 ), QPointF( width, height ) );
-  renderSubsectionsIndicator( context, plotArea, distanceMin, distanceMax, zMin, zMax );
   p.end();
 
   return res;
@@ -363,6 +360,9 @@ void QgsProfilePlotRenderer::render( QgsRenderContext &context, double width, do
       job->mutex.unlock();
     }
   }
+
+  QRectF plotArea( QPointF( 0, 0 ), QPointF( width, height ) );
+  renderSubsectionsIndicator( context, plotArea, distanceMin, distanceMax, zMin, zMax );
 }
 
 std::unique_ptr<QgsLineSymbol> QgsProfilePlotRenderer::defaultSubSectionsSymbol()

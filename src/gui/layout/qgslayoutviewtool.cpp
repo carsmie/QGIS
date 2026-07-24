@@ -14,18 +14,18 @@
  ***************************************************************************/
 
 #include "qgslayoutviewtool.h"
-#include "moc_qgslayoutviewtool.cpp"
+
 #include "qgslayoutview.h"
 #include "qgslayoutviewmouseevent.h"
+
+#include "moc_qgslayoutviewtool.cpp"
 
 QgsLayoutViewTool::QgsLayoutViewTool( QgsLayoutView *view, const QString &name )
   : QObject( view )
   , mView( view )
   , mToolName( name )
 {
-  connect( mView, &QgsLayoutView::willBeDeleted, this, [this] {
-    mView = nullptr;
-  } );
+  connect( mView, &QgsLayoutView::willBeDeleted, this, [this] { mView = nullptr; } );
 }
 
 bool QgsLayoutViewTool::isClickAndDrag( QPoint startViewPoint, QPoint endViewPoint ) const

@@ -16,12 +16,13 @@
 #ifndef QGSMEMORYPROVIDER_H
 #define QGSMEMORYPROVIDER_H
 
-#define SIP_NO_FILE
 
-#include "qgsvectordataprovider.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgsfields.h"
 #include "qgsprovidermetadata.h"
+#include "qgsvectordataprovider.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 typedef QMap<QgsFeatureId, QgsFeature> QgsFeatureMap;
@@ -30,13 +31,12 @@ class QgsSpatialIndex;
 
 class QgsMemoryFeatureIterator;
 
-class QgsMemoryProvider final: public QgsVectorDataProvider
+class QgsMemoryProvider final : public QgsVectorDataProvider
 {
     Q_OBJECT
 
   public:
-    explicit QgsMemoryProvider( const QString &uri, const QgsVectorDataProvider::ProviderOptions &coordinateTransformContext,
-                                Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
+    explicit QgsMemoryProvider( const QString &uri, const QgsVectorDataProvider::ProviderOptions &coordinateTransformContext, Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
 
     ~QgsMemoryProvider() override;
 
@@ -55,6 +55,8 @@ class QgsMemoryProvider final: public QgsVectorDataProvider
     Qgis::WkbType wkbType() const override;
     long long featureCount() const override;
     QgsFields fields() const override;
+
+    using QgsVectorDataProvider::addFeatures;
     bool addFeatures( QgsFeatureList &flist, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) override;
     bool deleteFeatures( const QgsFeatureIds &id ) override;
     bool addAttributes( const QList<QgsField> &attributes ) override;
@@ -77,6 +79,7 @@ class QgsMemoryProvider final: public QgsVectorDataProvider
     QString name() const override;
     QString description() const override;
     QgsRectangle extent() const override;
+    QgsBox3D extent3D() const override;
     void updateExtents() override;
     bool isValid() const override;
     QgsCoordinateReferenceSystem crs() const override;
@@ -89,7 +92,7 @@ class QgsMemoryProvider final: public QgsVectorDataProvider
     // fields
     QgsFields mFields;
     Qgis::WkbType mWkbType;
-    mutable QgsRectangle mExtent;
+    mutable QgsBox3D mExtent3D;
 
     // features
     QgsFeatureMap mFeatures;
@@ -104,7 +107,7 @@ class QgsMemoryProvider final: public QgsVectorDataProvider
 };
 
 
-class QgsMemoryProviderMetadata final: public QgsProviderMetadata
+class QgsMemoryProviderMetadata final : public QgsProviderMetadata
 {
     Q_OBJECT
 

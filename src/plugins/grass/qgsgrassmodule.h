@@ -19,10 +19,9 @@
 #include "ui_qgsgrassmodulebase.h"
 
 #include "qgis.h"
+#include "qgsgrassmoduleoptions.h"
 
 #include <QProcess>
-
-#include "qgsgrassmoduleoptions.h"
 
 class QDomNode;
 class QDomElement;
@@ -45,7 +44,9 @@ class QgsGrassModule : public QWidget, private Ui::QgsGrassModuleBase
         bool direct = true;
         Description() = default;
         Description( QString lab, bool dir = false )
-          : label( lab ), direct( dir ) {}
+          : label( lab )
+          , direct( dir )
+        {}
     };
 
     //! Constructor
@@ -72,7 +73,7 @@ class QgsGrassModule : public QWidget, private Ui::QgsGrassModuleBase
     QgisInterface *qgisIface();
 
     //! Options widget
-    QgsGrassModuleOptions *options() { return mOptions; }
+    QgsGrassModuleOptions *options() const { return mOptions; }
 
     /**
      * Get executable + arguments. Executable is returned as first string.
@@ -85,7 +86,7 @@ class QgsGrassModule : public QWidget, private Ui::QgsGrassModuleBase
     static QProcessEnvironment processEnvironment( bool direct );
 
     //! Returns true if module is direct
-    bool isDirect() { return mDirect; }
+    bool isDirect() const { return mDirect; }
 
     //! Gets name of library path environment variable
     static QString libraryPathVariable();
@@ -93,7 +94,7 @@ class QgsGrassModule : public QWidget, private Ui::QgsGrassModuleBase
     //! Sets LD_LIBRARY_PATH or equivalent to GRASS Direct library
     static void setDirectLibraryPath( QProcessEnvironment &environment );
 
-    QStringList errors() { return mErrors; }
+    QStringList errors() const { return mErrors; }
 
   signals:
     //! emitted when the module started
@@ -172,7 +173,7 @@ class QgsGrassModule : public QWidget, private Ui::QgsGrassModuleBase
     QStringList mOutputVector;
 
     //! True if the module successfully finished
-    bool mSuccess;
+    bool mSuccess = false;
 
     //! Direct mode
     bool mDirect;

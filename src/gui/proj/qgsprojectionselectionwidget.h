@@ -17,17 +17,17 @@
 #ifndef QGSPROJECTIONSELECTIONWIDGET_H
 #define QGSPROJECTIONSELECTIONWIDGET_H
 
-#include <QWidget>
+#include "qgis_gui.h"
 #include "qgis_sip.h"
-#include <QLineEdit>
-#include <QToolButton>
-#include <QComboBox>
-#include <QPointer>
-#include <QConcatenateTablesProxyModel>
-
 #include "qgscoordinatereferencesystem.h"
 #include "qgscoordinatereferencesystemmodel.h"
-#include "qgis_gui.h"
+
+#include <QComboBox>
+#include <QConcatenateTablesProxyModel>
+#include <QLineEdit>
+#include <QPointer>
+#include <QToolButton>
+#include <QWidget>
 
 class QgsMapLayer;
 class QgsHighlightableComboBox;
@@ -73,7 +73,10 @@ class GUI_EXPORT QgsProjectionSelectionWidget : public QWidget
      * shown in the widget. The default is to show all horizontal and compound CRS in order to match
      * the behavior of older QGIS releases. The \a filter can be altered to also include vertical CRS if desired.
      */
-      explicit QgsProjectionSelectionWidget( QWidget *parent SIP_TRANSFERTHIS = nullptr, QgsCoordinateReferenceSystemProxyModel::Filters filters = QgsCoordinateReferenceSystemProxyModel::FilterHorizontal | QgsCoordinateReferenceSystemProxyModel::FilterCompound );
+      explicit QgsProjectionSelectionWidget(
+        QWidget *parent SIP_TRANSFERTHIS = nullptr,
+        QgsCoordinateReferenceSystemProxyModel::Filters filters = QgsCoordinateReferenceSystemProxyModel::FilterHorizontal | QgsCoordinateReferenceSystemProxyModel::FilterCompound
+      );
 
     /**
      * Returns the currently selected CRS for the widget
@@ -193,6 +196,15 @@ class GUI_EXPORT QgsProjectionSelectionWidget : public QWidget
      */
     void setFilters( QgsCoordinateReferenceSystemProxyModel::Filters filters );
 
+    /**
+     * Sets whether the topocentric CRS option is allowed in the CRS selector dialog
+     * opened by the widget's button. When \a allow is FALSE, the topocentric option
+     * will be hidden from the CRS selection dialog.
+     *
+     * \since QGIS 4.2
+     */
+    void setAllowTopocentricCrs( bool allow );
+
   signals:
 
     /**
@@ -238,6 +250,7 @@ class GUI_EXPORT QgsProjectionSelectionWidget : public QWidget
 
     QString mMessage;
 
+    bool mAllowTopocentricCrs = true;
     bool mShowAccuracyWarnings = false;
     QString mSourceEnsemble;
 

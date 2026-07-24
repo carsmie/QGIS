@@ -13,17 +13,17 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "qgsrasterbandcomboboxplugin.h"
+
 #include "qgiscustomwidgets.h"
 #include "qgsrasterbandcombobox.h"
-#include "qgsrasterbandcomboboxplugin.h"
-#include "moc_qgsrasterbandcomboboxplugin.cpp"
 
+#include "moc_qgsrasterbandcomboboxplugin.cpp"
 
 QgsRasterBandComboBoxPlugin::QgsRasterBandComboBoxPlugin( QObject *parent )
   : QObject( parent )
   , mInitialized( false )
-{
-}
+{}
 
 
 QString QgsRasterBandComboBoxPlugin::name() const
@@ -82,17 +82,19 @@ QString QgsRasterBandComboBoxPlugin::whatsThis() const
 
 QString QgsRasterBandComboBoxPlugin::domXml() const
 {
-  return QString( "<ui language=\"c++\">\n"
-                  " <widget class=\"%1\" name=\"mRasterBandComboBox\">\n"
-                  "  <property name=\"geometry\">\n"
-                  "   <rect>\n"
-                  "    <x>0</x>\n"
-                  "    <y>0</y>\n"
-                  "    <width>160</width>\n"
-                  "    <height>27</height>\n"
-                  "   </rect>\n"
-                  "  </property>\n"
-                  " </widget>\n"
-                  "</ui>\n" )
+  return QString(
+           "<ui language=\"c++\">\n"
+           " <widget class=\"%1\" name=\"mRasterBandComboBox\">\n"
+           "  <property name=\"geometry\">\n"
+           "   <rect>\n"
+           "    <x>0</x>\n"
+           "    <y>0</y>\n"
+           "    <width>160</width>\n"
+           "    <height>27</height>\n"
+           "   </rect>\n"
+           "  </property>\n"
+           " </widget>\n"
+           "</ui>\n"
+  )
     .arg( name() );
 }

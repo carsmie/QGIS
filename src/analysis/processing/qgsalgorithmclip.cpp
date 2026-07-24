@@ -16,15 +16,20 @@
  ***************************************************************************/
 
 #include "qgsalgorithmclip.h"
+
 #include "qgsgeometryengine.h"
 #include "qgsoverlayutils.h"
 #include "qgsvectorlayer.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
 QString QgsClipAlgorithm::name() const
 {
-  return QStringLiteral( "clip" );
+  return u"clip"_s;
 }
 
 Qgis::ProcessingAlgorithmFlags QgsClipAlgorithm::flags() const
@@ -51,25 +56,29 @@ QString QgsClipAlgorithm::group() const
 
 QString QgsClipAlgorithm::groupId() const
 {
-  return QStringLiteral( "vectoroverlay" );
+  return u"vectoroverlay"_s;
 }
 
 void QgsClipAlgorithm::initAlgorithm( const QVariantMap & )
 {
-  addParameter( new QgsProcessingParameterFeatureSource( QStringLiteral( "INPUT" ), QObject::tr( "Input layer" ) ) );
-  addParameter( new QgsProcessingParameterFeatureSource( QStringLiteral( "OVERLAY" ), QObject::tr( "Overlay layer" ), QList<int>() << static_cast<int>( Qgis::ProcessingSourceType::VectorPolygon ) ) );
+  addParameter( new QgsProcessingParameterFeatureSource( u"INPUT"_s, QObject::tr( "Input layer" ) ) );
+  addParameter( new QgsProcessingParameterFeatureSource( u"OVERLAY"_s, QObject::tr( "Overlay layer" ), QList<int>() << static_cast<int>( Qgis::ProcessingSourceType::VectorPolygon ) ) );
 
-  addParameter( new QgsProcessingParameterFeatureSink( QStringLiteral( "OUTPUT" ), QObject::tr( "Clipped" ) ) );
+  addParameter( new QgsProcessingParameterFeatureSink( u"OUTPUT"_s, QObject::tr( "Clipped" ) ) );
 }
 
 QString QgsClipAlgorithm::shortHelpString() const
 {
-  return QObject::tr( "This algorithm clips a vector layer using the features of an additional polygon layer. Only the parts of the features "
-                      "in the Input layer that fall within the polygons of the Overlay layer will be added to the resulting layer." )
-         + QStringLiteral( "\n\n" )
-         + QObject::tr( "The attributes of the features are not modified, although properties such as area or length of the features will "
-                        "be modified by the clipping operation. If such properties are stored as attributes, those attributes will have to "
-                        "be manually updated." );
+  return QObject::tr(
+           "This algorithm clips a vector layer using the features of an additional polygon layer. Only the parts of the features "
+           "in the Input layer that fall within the polygons of the Overlay layer will be added to the resulting layer."
+         )
+         + u"\n\n"_s
+         + QObject::tr(
+           "The attributes of the features are not modified, although properties such as area or length of the features will "
+           "be modified by the clipping operation. If such properties are stored as attributes, those attributes will have to "
+           "be manually updated."
+         );
 }
 
 QString QgsClipAlgorithm::shortDescription() const
@@ -93,23 +102,25 @@ bool QgsClipAlgorithm::supportInPlaceEdit( const QgsMapLayer *l ) const
 
 QVariantMap QgsClipAlgorithm::processAlgorithm( const QVariantMap &parameters, QgsProcessingContext &context, QgsProcessingFeedback *feedback )
 {
-  std::unique_ptr<QgsFeatureSource> featureSource( parameterAsSource( parameters, QStringLiteral( "INPUT" ), context ) );
+  std::unique_ptr<QgsFeatureSource> featureSource( parameterAsSource( parameters, u"INPUT"_s, context ) );
   if ( !featureSource )
-    throw QgsProcessingException( invalidSourceError( parameters, QStringLiteral( "INPUT" ) ) );
+    throw QgsProcessingException( invalidSourceError( parameters, u"INPUT"_s ) );
 
-  std::unique_ptr<QgsFeatureSource> maskSource( parameterAsSource( parameters, QStringLiteral( "OVERLAY" ), context ) );
+  std::unique_ptr<QgsFeatureSource> maskSource( parameterAsSource( parameters, u"OVERLAY"_s, context ) );
   if ( !maskSource )
-    throw QgsProcessingException( invalidSourceError( parameters, QStringLiteral( "OVERLAY" ) ) );
+    throw QgsProcessingException( invalidSourceError( parameters, u"OVERLAY"_s ) );
 
   if ( featureSource->hasSpatialIndex() == Qgis::SpatialIndexPresence::NotPresent )
     feedback->pushWarning( QObject::tr( "No spatial index exists for input layer, performance will be severely degraded" ) );
 
   QString dest;
   const Qgis::GeometryType sinkType = QgsWkbTypes::geometryType( featureSource->wkbType() );
-  std::unique_ptr<QgsFeatureSink> sink( parameterAsSink( parameters, QStringLiteral( "OUTPUT" ), context, dest, featureSource->fields(), QgsWkbTypes::promoteNonPointTypesToMulti( featureSource->wkbType() ), featureSource->sourceCrs() ) );
+  std::unique_ptr<QgsFeatureSink> sink(
+    parameterAsSink( parameters, u"OUTPUT"_s, context, dest, featureSource->fields(), QgsWkbTypes::promoteNonPointTypesToMulti( featureSource->wkbType() ), featureSource->sourceCrs() )
+  );
 
   if ( !sink )
-    throw QgsProcessingException( invalidSinkError( parameters, QStringLiteral( "OUTPUT" ) ) );
+    throw QgsProcessingException( invalidSinkError( parameters, u"OUTPUT"_s ) );
 
   // first build up a list of clip geometries
   QVector<QgsGeometry> clipGeoms;
@@ -122,7 +133,7 @@ QVariantMap QgsClipAlgorithm::processAlgorithm( const QVariantMap &parameters, Q
   }
 
   QVariantMap outputs;
-  outputs.insert( QStringLiteral( "OUTPUT" ), dest );
+  outputs.insert( u"OUTPUT"_s, dest );
 
   if ( clipGeoms.isEmpty() )
     return outputs;
@@ -132,7 +143,7 @@ QVariantMap QgsClipAlgorithm::processAlgorithm( const QVariantMap &parameters, Q
   QgsGeometry combinedClipGeom;
   if ( clipGeoms.length() > 1 )
   {
-    combinedClipGeom = QgsGeometry::unaryUnion( clipGeoms );
+    combinedClipGeom = QgsGeometry::unaryUnion( clipGeoms, QgsGeometryParameters(), feedback );
     if ( combinedClipGeom.isEmpty() )
     {
       throw QgsProcessingException( QObject::tr( "Could not create the combined clip geometry: %1" ).arg( combinedClipGeom.lastError() ) );
@@ -199,12 +210,12 @@ QVariantMap QgsClipAlgorithm::processAlgorithm( const QVariantMap &parameters, Q
       if ( !engine->contains( inputFeature.geometry().constGet() ) )
       {
         const QgsGeometry currentGeometry = inputFeature.geometry();
-        newGeometry = combinedClipGeom.intersection( currentGeometry );
+        newGeometry = combinedClipGeom.intersection( currentGeometry, QgsGeometryParameters(), feedback );
         if ( newGeometry.wkbType() == Qgis::WkbType::Unknown || QgsWkbTypes::flatType( newGeometry.wkbType() ) == Qgis::WkbType::GeometryCollection )
         {
-          const QgsGeometry intCom = inputFeature.geometry().combine( newGeometry );
-          const QgsGeometry intSym = inputFeature.geometry().symDifference( newGeometry );
-          newGeometry = intCom.difference( intSym );
+          const QgsGeometry intCom = inputFeature.geometry().combine( newGeometry, QgsGeometryParameters(), feedback );
+          const QgsGeometry intSym = inputFeature.geometry().symDifference( newGeometry, QgsGeometryParameters(), feedback );
+          newGeometry = intCom.difference( intSym, QgsGeometryParameters(), feedback );
         }
       }
       else
@@ -220,8 +231,9 @@ QVariantMap QgsClipAlgorithm::processAlgorithm( const QVariantMap &parameters, Q
       outputFeature.setGeometry( newGeometry );
       outputFeature.setAttributes( inputFeature.attributes() );
       if ( !sink->addFeature( outputFeature, QgsFeatureSink::FastInsert ) )
-        throw QgsProcessingException( writeFeatureError( sink.get(), parameters, QStringLiteral( "OUTPUT" ) ) );
-
+        throw QgsProcessingException( writeFeatureError( sink.get(), parameters, u"OUTPUT"_s ) );
+      else
+        feedback->featureAddedToSink( u"OUTPUT"_s );
 
       if ( singleClipFeature )
         feedback->setProgress( current * step );
@@ -235,6 +247,7 @@ QVariantMap QgsClipAlgorithm::processAlgorithm( const QVariantMap &parameters, Q
   }
 
   sink->finalize();
+  feedback->featureSinkFinalized( u"OUTPUT"_s );
 
   return outputs;
 }

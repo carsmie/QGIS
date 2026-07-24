@@ -17,9 +17,9 @@
 #define QGSPOINTLIGHTSETTINGS_H
 
 #include "qgis_3d.h"
-
-#include "qgsvector3d.h"
 #include "qgslightsource.h"
+#include "qgsvector3d.h"
+
 #include <QColor>
 
 class QDomDocument;
@@ -48,9 +48,9 @@ class _3D_EXPORT QgsPointLightSettings : public QgsLightSource
     QDomElement writeXml( QDomDocument &doc, const QgsReadWriteContext &context = QgsReadWriteContext() ) const override;
     void readXml( const QDomElement &elem, const QgsReadWriteContext &context = QgsReadWriteContext() ) override;
 
-    //! Returns position of the light (in 3D world coordinates)
+    //! Returns position of the light (in 3D map coordinates)
     QgsVector3D position() const { return mPosition; }
-    //! Sets position of the light (in 3D world coordinates)
+    //! Sets position of the light (in 3D map coordinates)
     void setPosition( const QgsVector3D &pos ) { mPosition = pos; }
 
     //! Returns color of the light
@@ -59,35 +59,35 @@ class _3D_EXPORT QgsPointLightSettings : public QgsLightSource
     void setColor( const QColor &color ) { mColor = color; }
 
     //! Returns intensity of the light
-    float intensity() const { return mIntensity; }
+    double intensity() const { return mIntensity; }
     //! Sets intensity of the light
-    void setIntensity( float intensity ) { mIntensity = intensity; }
+    void setIntensity( double intensity ) { mIntensity = intensity; }
 
     //! Returns constant attenuation (A_0)
-    float constantAttenuation() const { return mConstantAttenuation; }
+    double constantAttenuation() const { return mConstantAttenuation; }
     //! Sets constant attenuation (A_0)
-    void setConstantAttenuation( float value ) { mConstantAttenuation = value; }
+    void setConstantAttenuation( double value ) { mConstantAttenuation = value; }
 
     //! Returns linear attenuation (A_1)
-    float linearAttenuation() const { return mLinearAttenuation; }
+    double linearAttenuation() const { return mLinearAttenuation; }
     //! Sets linear attenuation (A_1)
-    void setLinearAttenuation( float value ) { mLinearAttenuation = value; }
+    void setLinearAttenuation( double value ) { mLinearAttenuation = value; }
 
     //! Returns quadratic attenuation (A_2)
-    float quadraticAttenuation() const { return mQuadraticAttenuation; }
+    double quadraticAttenuation() const { return mQuadraticAttenuation; }
     //! Sets quadratic attenuation (A_2)
-    void setQuadraticAttenuation( float value ) { mQuadraticAttenuation = value; }
+    void setQuadraticAttenuation( double value ) { mQuadraticAttenuation = value; }
 
     // TODO c++20 - replace with = default
     bool operator==( const QgsPointLightSettings &other ) const;
 
   private:
-    QgsVector3D mPosition { 0, 0, 1000 };
+    QgsVector3D mPosition { 0, 0, 0 };
     QColor mColor = Qt::white;
-    float mIntensity = 1.0;
-    float mConstantAttenuation = 1.0f;
-    float mLinearAttenuation = 0.0f;
-    float mQuadraticAttenuation = 0.0f;
+    double mIntensity = 1.0;
+    double mConstantAttenuation = 1.0f;
+    double mLinearAttenuation = 0.0f;
+    double mQuadraticAttenuation = 0.0f;
 };
 
 #endif // QGSPOINTLIGHTSETTINGS_H

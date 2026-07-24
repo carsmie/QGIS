@@ -18,10 +18,11 @@
 #ifndef QGSALGORITHMTRANSLATE_H
 #define QGSALGORITHMTRANSLATE_H
 
-#define SIP_NO_FILE
 
 #include "qgis_sip.h"
 #include "qgsprocessingalgorithm.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -50,6 +51,7 @@ class QgsTranslateAlgorithm : public QgsProcessingFeatureBasedAlgorithm
     Qgis::WkbType outputWkbType( Qgis::WkbType inputWkbType ) const override;
 
   private:
+    mutable Qgis::WkbType mOutputWkbType = Qgis::WkbType::Unknown;
     double mDeltaX = 0.0;
     bool mDynamicDeltaX = false;
     QgsProperty mDeltaXProperty;

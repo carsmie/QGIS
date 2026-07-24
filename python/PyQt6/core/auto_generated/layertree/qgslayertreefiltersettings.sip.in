@@ -10,6 +10,7 @@
 
 
 
+
 class QgsLayerTreeFilterSettings
 {
 %Docstring(signature="appended")
@@ -23,7 +24,6 @@ Contains settings relating to filtering the contents of
 #include "qgslayertreefiltersettings.h"
 %End
   public:
-
     explicit QgsLayerTreeFilterSettings( const QgsMapSettings &settings );
 %Docstring
 Constructor for QgsLayerTreeFilterSettings, using the specified map

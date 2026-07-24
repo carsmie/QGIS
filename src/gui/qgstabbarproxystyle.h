@@ -15,18 +15,17 @@
 #ifndef QGSTABBARPROXYSTYLE_H
 #define QGSTABBARPROXYSTYLE_H
 
-#include "qgsproxystyle.h"
+#include "qgis_gui.h"
 #include "qgsattributeeditorelement.h"
+#include "qgsproxystyle.h"
 
-#include <QProxyStyle>
-#include <QFont>
 #include <QColor>
+#include <QFont>
 #include <QMap>
+#include <QProxyStyle>
 #include <QTabBar>
 
 #define SIP_NO_FILE
-
-#include "qgis_gui.h"
 
 ///@cond private
 
@@ -71,7 +70,7 @@ class QgsTabBar : public QTabBar
     void setTabBarStyle( QgsTabBarProxyStyle *tabStyle );
 
   protected:
-    QSize tabSizeHint( int index ) const;
+    QSize tabSizeHint( int index ) const override;
 
   private:
     QgsTabBarProxyStyle *mTabBarStyle = nullptr;

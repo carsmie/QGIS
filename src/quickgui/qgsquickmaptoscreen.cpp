@@ -14,13 +14,14 @@
  ***************************************************************************/
 
 #include "qgsquickmaptoscreen.h"
-#include "moc_qgsquickmaptoscreen.cpp"
+
 #include "qgspoint.h"
+
+#include "moc_qgsquickmaptoscreen.cpp"
 
 QgsQuickMapToScreen::QgsQuickMapToScreen( QObject *parent )
   : QObject( parent )
-{
-}
+{}
 
 void QgsQuickMapToScreen::setMapSettings( QgsQuickMapSettings *mapSettings )
 {

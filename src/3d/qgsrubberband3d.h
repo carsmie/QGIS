@@ -16,7 +16,6 @@
 #ifndef QGSRUBBERBAND3D_H
 #define QGSRUBBERBAND3D_H
 
-#define SIP_NO_FILE
 
 /// @cond PRIVATE
 
@@ -31,16 +30,17 @@
 
 #include "qgis_3d.h"
 #include "qgsgeometry.h"
-#include "qgspolygon.h"
-#include "qgstessellator.h"
+#include "qobjectuniqueptr.h"
 
 #include <QColor>
+
+#define SIP_NO_FILE
 
 class QgsGeometry;
 class QgsAbstract3DEngine;
 class QgsPoint;
 class QgsPhongMaterialSettings;
-class QgsMaterial;
+class QgsUnlitMaterial;
 class QgsTessellatedPolygonGeometry;
 class QgsLineMaterial;
 class Qgs3DMapSettings;
@@ -52,20 +52,13 @@ class QgsGeoTransform;
 namespace Qt3DCore
 {
   class QEntity;
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
   class QBuffer;
   class QGeometry;
   class QAttribute;
-#endif
 } // namespace Qt3DCore
 
 namespace Qt3DRender
 {
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-  class QBuffer;
-  class QGeometry;
-  class QAttribute;
-#endif
   class QGeometryRenderer;
 } // namespace Qt3DRender
 
@@ -86,6 +79,7 @@ class _3D_EXPORT QgsRubberBand3D
     //! Icons
     enum MarkerType
     {
+
       /**
        * A box is used to highlight points (□)
        */
@@ -212,7 +206,7 @@ class _3D_EXPORT QgsRubberBand3D
     void updateGeometry();
     void updateMarkerMaterial();
     void setupMarker( Qt3DCore::QEntity *parentEntity );
-    void setupLine( Qt3DCore::QEntity *parentEntity, QgsAbstract3DEngine *engine );
+    void setupLine( Qt3DCore::QEntity *parentEntity );
     void setupPolygon( Qt3DCore::QEntity *parentEntity );
     //! negative index counts from end
     void removePoint( int index );
@@ -237,9 +231,9 @@ class _3D_EXPORT QgsRubberBand3D
     bool mEdgesEnabled = true;
     bool mPolygonFillEnabled = true;
 
-    Qt3DCore::QEntity *mLineEntity = nullptr;    // owned by parentEntity (from constructor)
-    Qt3DCore::QEntity *mPolygonEntity = nullptr; // owned by parentEntity (from constructor)
-    Qt3DCore::QEntity *mMarkerEntity = nullptr;  // owned by parentEntity (from constructor)
+    QObjectUniquePtr<Qt3DCore::QEntity> mLineEntity = nullptr;    // owned by parentEntity (from constructor)
+    QObjectUniquePtr<Qt3DCore::QEntity> mPolygonEntity = nullptr; // owned by parentEntity (from constructor)
+    QObjectUniquePtr<Qt3DCore::QEntity> mMarkerEntity = nullptr;  // owned by parentEntity (from constructor)
 
     QgsGeoTransform *mLineTransform = nullptr;
     QgsGeoTransform *mPolygonTransform = nullptr;
@@ -247,19 +241,13 @@ class _3D_EXPORT QgsRubberBand3D
 
     // all these are owned by mPolygonEntity
     QgsTessellatedPolygonGeometry *mPolygonGeometry = nullptr;
-    QgsMaterial *mPolygonMaterial = nullptr;
+    QgsUnlitMaterial *mPolygonMaterial = nullptr;
 
     // all these are owned by mLineEntity
     Qt3DRender::QGeometryRenderer *mLineGeometryRenderer = nullptr;
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    Qt3DRender::QGeometry *mLineGeometry = nullptr;
-    Qt3DRender::QAttribute *mPositionAttribute = nullptr;
-    Qt3DRender::QAttribute *mIndexAttribute = nullptr;
-#else
     Qt3DCore::QGeometry *mLineGeometry = nullptr;
     Qt3DCore::QAttribute *mPositionAttribute = nullptr;
     Qt3DCore::QAttribute *mIndexAttribute = nullptr;
-#endif
     QgsLineMaterial *mLineMaterial = nullptr;
 
     // and these are owned by mMarkerEntity

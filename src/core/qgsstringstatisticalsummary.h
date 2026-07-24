@@ -16,11 +16,11 @@
 #ifndef QGSSTRINGSTATISTICALSUMMARY_H
 #define QGSSTRINGSTATISTICALSUMMARY_H
 
+#include "qgis.h"
+#include "qgis_core.h"
+
 #include <QSet>
 #include <QVariantList>
-
-#include "qgis_core.h"
-#include "qgis.h"
 
 /***************************************************************************
  * This class is considered CRITICAL and any change MUST be accompanied with
@@ -43,7 +43,6 @@
 class CORE_EXPORT QgsStringStatisticalSummary
 {
   public:
-
     /**
      * Constructor for QgsStringStatistics
      * \param stats flags for statistics to calculate
@@ -206,7 +205,6 @@ class CORE_EXPORT QgsStringStatisticalSummary
     static QString displayName( Qgis::StringStatistic statistic );
 
   private:
-
     Qgis::StringStatistics mStatistics;
 
     int mCount;

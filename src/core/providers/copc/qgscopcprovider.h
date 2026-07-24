@@ -18,26 +18,25 @@
 #ifndef QGSCOPCPROVIDER_H
 #define QGSCOPCPROVIDER_H
 
+#include <memory>
+
 #include "qgspointclouddataprovider.h"
 #include "qgsprovidermetadata.h"
 
-#include <memory>
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 class QgsCopcPointCloudIndex;
 class QgsRemoteCopcPointCloudIndex;
 
-class QgsCopcProvider: public QgsPointCloudDataProvider
+class QgsCopcProvider : public QgsPointCloudDataProvider
 {
     Q_OBJECT
   public:
-    QgsCopcProvider( const QString &uri,
-                     const QgsDataProvider::ProviderOptions &providerOptions,
-                     Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
+    QgsCopcProvider( const QString &uri, const QgsDataProvider::ProviderOptions &providerOptions, Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() );
 
-    ~QgsCopcProvider();
+    ~QgsCopcProvider() override;
 
     QgsCoordinateReferenceSystem crs() const override;
     Qgis::DataProviderFlags flags() const override;
@@ -49,9 +48,9 @@ class QgsCopcProvider: public QgsPointCloudDataProvider
     QgsPointCloudIndex index() const override;
     qint64 pointCount() const override;
     QVariantMap originalMetadata() const override;
-    void loadIndex( ) override;
-    void generateIndex( ) override;
-    PointCloudIndexGenerationState indexingState( ) override { return PointCloudIndexGenerationState::Indexed; }
+    void loadIndex() override;
+    void generateIndex() override;
+    PointCloudIndexGenerationState indexingState() override { return PointCloudIndexGenerationState::Indexed; }
     QgsPointCloudDataProvider::Capabilities capabilities() const override;
 
   private:

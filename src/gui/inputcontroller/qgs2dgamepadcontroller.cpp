@@ -15,10 +15,14 @@
 
 #include "qgs2dgamepadcontroller.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
+
 #ifdef HAVE_QTGAMEPAD
 #include "moc_qgs2dgamepadcontroller.cpp"
 
-#include <QtGamepad/QGamepad>
+#include <QtGamepadLegacy/QGamepad>
 
 QgsGamepad2DMapController::QgsGamepad2DMapController( int gamepadDeviceId, QObject *parent )
   : QgsAbstract2DMapController( parent )
@@ -69,7 +73,7 @@ QgsGamepad2DMapController *QgsGamepad2DMapController::clone() const
 
 QString QgsGamepad2DMapController::deviceId() const
 {
-  return QStringLiteral( "gamepad2d:%1" ).arg( mGamepadDeviceId );
+  return u"gamepad2d:%1"_s.arg( mGamepadDeviceId );
 }
 
 bool QgsGamepad2DMapController::isConnected() const

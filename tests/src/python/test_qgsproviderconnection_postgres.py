@@ -13,7 +13,6 @@ __copyright__ = "Copyright 2019, The QGIS Project"
 
 import os
 
-from qgis.PyQt.QtCore import QTemporaryDir, QMetaType
 from qgis.core import (
     Qgis,
     QgsAbstractDatabaseProviderConnection,
@@ -21,6 +20,7 @@ from qgis.core import (
     QgsDataSourceUri,
     QgsField,
     QgsFields,
+    QgsMapLayer,
     QgsProviderConnectionException,
     QgsProviderRegistry,
     QgsRasterLayer,
@@ -28,15 +28,14 @@ from qgis.core import (
     QgsVectorLayer,
     QgsWkbTypes,
 )
+from qgis.PyQt.QtCore import QMetaType, QTemporaryDir
 from qgis.testing import unittest
-
 from test_qgsproviderconnection_base import TestPyQgsProviderConnectionBase
 
 
 class TestPyQgsProviderConnectionPostgres(
     unittest.TestCase, TestPyQgsProviderConnectionBase
 ):
-
     # Provider test cases must define the string URI for the test
     uri = ""
     # Provider test cases must define the provider name (e.g. "postgres" or "ogr")
@@ -447,7 +446,7 @@ CREATE FOREIGN TABLE IF NOT EXISTS points_csv (
         password = uri.password()
         service = uri.service()
 
-        foreign_table_definition = """
+        foreign_table_definition = f"""
         CREATE EXTENSION IF NOT EXISTS postgres_fdw;
         CREATE SERVER IF NOT EXISTS postgres_fdw_test_server FOREIGN DATA WRAPPER postgres_fdw OPTIONS (service '{service}', dbname '{dbname}', host '{host}', port '{port}');
         DROP SCHEMA  IF EXISTS foreign_schema CASCADE;
@@ -456,14 +455,7 @@ CREATE FOREIGN TABLE IF NOT EXISTS points_csv (
         IMPORT FOREIGN SCHEMA qgis_test LIMIT TO ( "someData" )
         FROM SERVER postgres_fdw_test_server
         INTO foreign_schema;
-        """.format(
-            host=host,
-            user=user,
-            port=port,
-            dbname=dbname,
-            password=password,
-            service=service,
-        )
+        """
         conn.executeSql(foreign_table_definition)
         self.assertEqual(
             conn.tables(
@@ -947,6 +939,7 @@ CREATE FOREIGN TABLE IF NOT EXISTS points_csv (
         conn = md.createConnection(self.uri, {})
 
         sql = """
+        DROP TABLE IF EXISTS qgis_test.rename_field;
         CREATE TABLE qgis_test.rename_field (id SERIAL PRIMARY KEY);
         ALTER TABLE qgis_test.rename_field ADD COLUMN geom geometry(POINT,4326);
         ALTER TABLE qgis_test.rename_field ADD COLUMN column_1 TEXT;
@@ -974,7 +967,8 @@ CREATE FOREIGN TABLE IF NOT EXISTS points_csv (
             id SERIAL PRIMARY KEY,
             geom geometry(Geometry,4326)
         );
-        CREATE SCHEMA schema_test;
+        DROP SCHEMA IF EXISTS qgis_schema_test CASCADE;
+        CREATE SCHEMA IF NOT EXISTS qgis_schema_test;
         """
 
         conn.executeSql(sql)
@@ -1003,12 +997,219 @@ CREATE FOREIGN TABLE IF NOT EXISTS points_csv (
         conn.moveTableToSchema(
             "qgis_test",
             "table_to_move",
-            "schema_test",
+            "qgis_schema_test",
         )
 
         # test moved table exist in the schema
-        table = conn.table("schema_test", "table_to_move")
+        table = conn.table("qgis_schema_test", "table_to_move")
         self.assertEqual(table.tableName(), "table_to_move")
+
+    def test_move_raster_with_overviews_to_schema(self):
+        """Test that raster with overviews can be moved to another schema."""
+
+        md = QgsProviderRegistry.instance().providerMetadata("postgres")
+        conn = md.createConnection(self.uri, {})
+
+        # create raster table
+        sql = """
+        DROP SCHEMA IF EXISTS qgis_schema_test CASCADE;
+        CREATE SCHEMA IF NOT EXISTS qgis_schema_test;
+        DROP TABLE IF EXISTS qgis_test.raster_for_move;
+        CREATE TABLE qgis_test.raster_for_move (
+            id serial PRIMARY KEY,
+            rast raster
+        );
+        INSERT INTO qgis_test.raster_for_move (rast)
+        SELECT ST_SetSRID(ST_AsRaster(ST_Buffer(ST_Point(0,0),10),150, 150), 3857);
+        SELECT AddRasterConstraints('qgis_test'::name, 'raster_for_move'::name, 'rast'::name);
+        DROP TABLE IF EXISTS qgis_test.o_2_raster_for_move;
+        DROP TABLE IF EXISTS qgis_test.o_4_raster_for_move;
+        """
+
+        conn.executeSql(sql)
+
+        # test table exist
+        table = conn.table("qgis_test", "raster_for_move")
+        self.assertEqual(table.tableName(), "raster_for_move")
+
+        # create overviews
+        sql = """
+        SELECT ST_CreateOverview('qgis_test.raster_for_move'::regclass, 'rast'::name, 2);
+        SELECT ST_CreateOverview('qgis_test.raster_for_move'::regclass, 'rast'::name, 4);
+        """
+
+        conn.executeSql(sql)
+
+        # check that overviews were created
+        sqlOverviews = """
+        SELECT o_table_schema, o_table_name FROM public.raster_overviews 
+        WHERE r_table_schema = 'qgis_test' AND r_table_name = 'raster_for_move' ORDER BY o_table_name;
+        """
+        overviews = conn.executeSql(sqlOverviews)
+
+        self.assertEqual(len(overviews), 2)
+        self.assertIn(["qgis_test", "o_2_raster_for_move"], overviews)
+        self.assertIn(["qgis_test", "o_4_raster_for_move"], overviews)
+
+        # move table to another schema - overviews should be moved too
+        conn.moveTableToSchema(
+            "qgis_test",
+            "raster_for_move",
+            "qgis_schema_test",
+        )
+
+        # test moved table exist in the schema
+        table = conn.table("qgis_schema_test", "raster_for_move")
+        self.assertEqual(table.tableName(), "raster_for_move")
+
+        # look at overviews after move
+        sqlOverviews = """
+        SELECT o_table_schema, o_table_name FROM public.raster_overviews 
+        WHERE r_table_schema = 'qgis_schema_test' AND r_table_name = 'raster_for_move' ORDER BY o_table_name;
+        """
+
+        overviews = conn.executeSql(sqlOverviews)
+
+        self.assertEqual(len(overviews), 2)
+        self.assertIn(["qgis_schema_test", "o_2_raster_for_move"], overviews)
+        self.assertIn(["qgis_schema_test", "o_4_raster_for_move"], overviews)
+
+        # look for original overviews after move - should be empty
+        sqlTables = """
+        SELECT tablename FROM pg_catalog.pg_tables
+        WHERE schemaname = 'qgis_test'
+        AND tablename LIKE '%raster_for_move'
+        ORDER BY tablename;
+        """
+
+        tables = conn.executeSql(sqlTables)
+
+        self.assertEqual(
+            [],
+            tables,
+        )
+
+        # look for overviews after move in the new schema - should be present
+        sqlTables = """
+        SELECT tablename FROM pg_catalog.pg_tables
+        WHERE schemaname = 'qgis_schema_test'
+        AND tablename LIKE '%raster_for_move'
+        ORDER BY tablename;
+        """
+
+        tables = conn.executeSql(sqlTables)
+
+        self.assertEqual(
+            [["o_2_raster_for_move"], ["o_4_raster_for_move"], ["raster_for_move"]],
+            tables,
+        )
+
+    def test_rename_table_updates_layer_styles(self):
+        """Test that renaming a table also updates f_table_name in layer_styles."""
+        md = QgsProviderRegistry.instance().providerMetadata("postgres")
+        conn = md.createConnection(self.uri, {})
+
+        conn.executeSql(
+            """
+            DROP TABLE IF EXISTS qgis_test.rename_style_test CASCADE;
+            CREATE TABLE qgis_test.rename_style_test (id SERIAL PRIMARY KEY, geom geometry(POINT,4326));
+            INSERT INTO qgis_test.rename_style_test (geom) VALUES (ST_GeomFromText('POINT(0 0)', 4326));
+            """
+        )
+
+        vl = QgsVectorLayer(
+            conn.tableUri("qgis_test", "rename_style_test"),
+            "test_rename_with_style",
+            "postgres",
+        )
+        self.assertTrue(vl.isValid())
+        result, msg = vl.saveStyleToDatabaseV2("test_style", "", False, "")
+        self.assertTrue(result == QgsMapLayer.SaveStyleResult.Success)
+
+        # Verify style was saved under the original name
+        rows = conn.executeSql(
+            "SELECT f_table_name FROM public.layer_styles "
+            "WHERE f_table_schema = 'qgis_test' AND f_table_name = 'rename_style_test'"
+        )
+        self.assertEqual(len(rows), 1)
+
+        conn.renameVectorTable(
+            "qgis_test", "rename_style_test", "rename_style_test_renamed"
+        )
+
+        # Style must now reference the new table name
+        rows = conn.executeSql(
+            "SELECT f_table_name FROM public.layer_styles "
+            "WHERE f_table_schema = 'qgis_test' AND f_table_name = 'rename_style_test_renamed'"
+        )
+        self.assertEqual(len(rows), 1)
+
+        # No stale row for the old name
+        rows = conn.executeSql(
+            "SELECT f_table_name FROM public.layer_styles "
+            "WHERE f_table_schema = 'qgis_test' AND f_table_name = 'rename_style_test'"
+        )
+        self.assertEqual(len(rows), 0)
+
+        conn.executeSql(
+            "DROP TABLE IF EXISTS qgis_test.rename_style_test_renamed CASCADE"
+        )
+
+    def test_move_table_to_schema_updates_layer_styles(self):
+        """Test that moving a table also updates f_table_schema in layer_styles."""
+        md = QgsProviderRegistry.instance().providerMetadata("postgres")
+        conn = md.createConnection(self.uri, {})
+
+        conn.executeSql(
+            """
+            DROP TABLE IF EXISTS qgis_test.move_style_test CASCADE;
+            DROP SCHEMA IF EXISTS qgis_schema_test CASCADE;
+            CREATE TABLE qgis_test.move_style_test (id SERIAL PRIMARY KEY, geom geometry(POINT,4326));
+            INSERT INTO qgis_test.move_style_test (geom) VALUES (ST_GeomFromText('POINT(0 0)', 4326));
+            CREATE SCHEMA IF NOT EXISTS qgis_schema_test;
+            """
+        )
+
+        vl = QgsVectorLayer(
+            conn.tableUri("qgis_test", "move_style_test"),
+            "test_move_with_style",
+            "postgres",
+        )
+        self.assertTrue(vl.isValid())
+        result, msg = vl.saveStyleToDatabaseV2("test_style_move", "", False, "")
+        self.assertTrue(result == QgsMapLayer.SaveStyleResult.Success)
+
+        # Verify style initially points to the source schema
+        rows = conn.executeSql(
+            "SELECT f_table_schema FROM public.layer_styles "
+            "WHERE f_table_schema = 'qgis_test' AND f_table_name = 'move_style_test'"
+        )
+        self.assertEqual(len(rows), 1)
+
+        conn.moveTableToSchema(
+            "qgis_test",
+            "move_style_test",
+            "qgis_schema_test",
+        )
+
+        # Style must now reference the target schema
+        rows = conn.executeSql(
+            "SELECT f_table_schema FROM public.layer_styles "
+            "WHERE f_table_schema = 'qgis_schema_test' AND f_table_name = 'move_style_test'"
+        )
+        self.assertEqual(len(rows), 1)
+
+        # No stale row for the old schema
+        rows = conn.executeSql(
+            "SELECT f_table_schema FROM public.layer_styles "
+            "WHERE f_table_schema = 'qgis_test' AND f_table_name = 'move_style_test'"
+        )
+        self.assertEqual(len(rows), 0)
+
+        conn.executeSql(
+            "DROP TABLE IF EXISTS qgis_schema_test.move_style_test CASCADE;"
+            "DROP SCHEMA IF EXISTS qgis_schema_test CASCADE;"
+        )
 
 
 if __name__ == "__main__":

@@ -15,11 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsnetworkcontentfetcher.h"
 #include "qgsapplication.h"
-#include <QObject>
+#include "qgsnetworkcontentfetcher.h"
 #include "qgstest.h"
+
 #include <QNetworkReply>
+#include <QObject>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class TestQgsNetworkContentFetcher : public QObject
 {
@@ -54,12 +58,10 @@ void TestQgsNetworkContentFetcher::cleanupTestCase()
 }
 
 void TestQgsNetworkContentFetcher::init()
-{
-}
+{}
 
 void TestQgsNetworkContentFetcher::cleanup()
-{
-}
+{}
 
 void TestQgsNetworkContentFetcher::fetchEmptyUrl()
 {
@@ -81,7 +83,7 @@ void TestQgsNetworkContentFetcher::fetchBadUrl()
   QgsNetworkContentFetcher fetcher;
   //test fetching from a bad url
   mLoaded = false;
-  fetcher.fetchContent( QUrl( QStringLiteral( "http://x" ) ) );
+  fetcher.fetchContent( QUrl( u"http://x"_s ) );
   connect( &fetcher, SIGNAL( finished() ), this, SLOT( contentLoaded() ) );
   while ( !mLoaded )
   {

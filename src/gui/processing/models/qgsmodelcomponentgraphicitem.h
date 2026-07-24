@@ -19,8 +19,9 @@
 #include "qgis.h"
 #include "qgis_gui.h"
 #include "qgsprocessingcontext.h"
-#include <QGraphicsObject>
+
 #include <QFont>
+#include <QGraphicsObject>
 #include <QPicture>
 #include <QPointer>
 
@@ -36,6 +37,7 @@ class QgsModelDesignerSocketGraphicItem;
 class QgsModelGraphicsView;
 class QgsModelViewMouseEvent;
 class QgsProcessingModelGroupBox;
+class QgsModelArrowItem;
 
 ///@cond NOT_STABLE
 
@@ -140,6 +142,13 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
 #ifndef SIP_RUN
 
     /**
+     * Returns the color of the link at the specified \a index on the specified \a edge.
+     *
+     * \since QGIS 4.0
+     */
+    virtual QColor linkColor( Qt::Edge edge, int index ) const;
+
+    /**
      * Shows a preview of setting a new \a rect for the item.
      */
     QRectF previewItemRectChange( QRectF rect );
@@ -237,7 +246,7 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
 
     /**
      * Returns the output socket graphics items at the specified \a index.
-     * 
+     *
      * May return NULLPTR if no corresponding output socket exists.
      * \since QGIS 3.44
      */
@@ -263,6 +272,22 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
      */
     virtual void deleteComponent() {}
 
+    /**
+     * Returns the list of incoming arrow items terminating at this item.
+     *
+     * \see outgoingArrows()
+     * \since QGIS 4.2
+     */
+    QList< QgsModelArrowItem * > incomingArrows();
+
+    /**
+     * Returns the list of outgoing arrow items originating at this item.
+     *
+     * \see incomingArrows()
+     * \since QGIS 4.2
+     */
+    QList< QgsModelArrowItem * > outgoingArrows();
+
   signals:
 
     // TODO - rework this, should be triggered externally when the model actually changes!
@@ -279,7 +304,7 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
      * The \a text argument gives the translated text describing the change about to occur, and the
      * optional \a id can be used to group the associated undo commands.
      */
-    void aboutToChange( const QString &text, int id = 0 );
+    void aboutToChange( const QString &text, const QString &id = QString() );
 
     /**
      * Emitted when the definition of the associated component is changed
@@ -313,6 +338,18 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
 
   protected:
     /**
+     * Paints the background part of the graphic item.
+     *
+     * Subclasses may override this to customize the background appearance.
+     */
+    virtual void paintBackground( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr );
+
+    /**
+     * Paints the outline part of the graphic item.
+     */
+    void paintOutline( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr );
+
+    /**
      * Truncates a \a text string so that it fits nicely within the item's width,
      * accounting for margins and interactive buttons.
      */
@@ -339,6 +376,13 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
     virtual Qt::PenStyle strokeStyle( State state ) const;
 
     /**
+     * Returns the optional color for an outline effect around the item.
+     *
+     * Returns an invalid color if the outline effect is not required.
+     */
+    virtual QColor outlineColor() const { return QColor(); }
+
+    /**
      * Returns the title alignment
      */
     virtual Qt::Alignment titleAlignment() const;
@@ -362,6 +406,13 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
      * Updates the item's button positions, based on the current item rect.
      */
     void updateButtonPositions();
+
+    /**
+     * The fallback color if the parameter or output does not have a specific color.
+     *
+     * \since QGIS 4.0
+     */
+    SIP_SKIP static constexpr QColor FALLBACK_COLOR = QColor( 128, 128, 128 ); /* mid gray */
 
   private:
     QSizeF itemSize() const;
@@ -394,6 +445,7 @@ class GUI_EXPORT QgsModelComponentGraphicItem : public QGraphicsObject
     static constexpr double BUTTON_MARGIN = 2;
     static constexpr double TEXT_MARGIN = 4;
     static constexpr double RECT_PEN_SIZE = 2;
+    static constexpr double RECT_OUTLINE_SIZE = 10;
     QSizeF mButtonSize { DEFAULT_BUTTON_WIDTH, DEFAULT_BUTTON_HEIGHT };
 
     QFont mFont;
@@ -426,6 +478,8 @@ class GUI_EXPORT QgsModelParameterGraphicItem : public QgsModelComponentGraphicI
 
     void contextMenuEvent( QGraphicsSceneContextMenuEvent *event ) override;
     bool canDeleteComponent() override;
+
+    QColor linkColor( Qt::Edge edge, int index ) const override;
 
   protected:
     QColor fillColor( State state ) const override;
@@ -473,6 +527,66 @@ class GUI_EXPORT QgsModelChildAlgorithmGraphicItem : public QgsModelComponentGra
      */
     void setResults( const QgsProcessingModelChildAlgorithmResult &results );
 
+    /**
+     * Sets the feature count for the source attached to the specified input.
+     *
+     * This can be used to dynamically update the feature count badge for the matching arrow item.
+     *
+     * \since QGIS 4.2
+     */
+    void setSourceFeatureCount( const QString &parameterName, long long featureCount );
+
+    /**
+     * Sets the feature count for the sink attached to the specified output.
+     *
+     * This can be used to dynamically update the feature count badge for the matching arrow item.
+     *
+     * \since QGIS 4.2
+     */
+    void setSinkFeatureCount( const QString &outputName, long long featureCount );
+
+    /**
+     * Returns the \a results for this child algorithm for the last model execution through the dialog.
+     *
+     * \since QGIS 4.0
+     */
+    QgsProcessingModelChildAlgorithmResult results() { return mResults; };
+
+    /**
+     * Sets the child's \a progress.
+     */
+    void setProgress( double progress );
+
+    /**
+     * Flags the algorithm as having started.
+     *
+     * \since QGIS 4.2
+     */
+    void setStarted();
+
+    /**
+     * Flags the algorithm as possibly being outdated (i.e. previous results are invalid due to changes elsewhere in the model).
+     *
+     * \since QGIS 4.2
+     */
+    void setOutdated();
+
+    /**
+     * Returns the index for the input with the specified parameter name, or -1 if the parameter could not be matched.
+     *
+     * \see indexForOutput()
+     * \since QGIS 4.2
+     */
+    int indexForInput( const QString &parameterName ) const;
+
+    /**
+     * Returns the index for the output with the specified name, or -1 if the output could not be matched.
+     *
+     * \see indexForInput()
+     * \since QGIS 4.2
+     */
+    int indexForOutput( const QString &output ) const;
+
   signals:
 
     /**
@@ -503,10 +617,21 @@ class GUI_EXPORT QgsModelChildAlgorithmGraphicItem : public QgsModelComponentGra
     */
     void showLog();
 
+    /**
+     * Requests that any associated configuration dock widget is rebuilt to reflect the
+     * current state of the child algorithm.
+     *
+     * \since QGIS 4.2
+     */
+    void rebuildConfigurationDockWidget();
+
   protected:
+    void paintBackground( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr ) override;
+
     QColor fillColor( State state ) const override;
     QColor strokeColor( State state ) const override;
     QColor textColor( State state ) const override;
+    QColor outlineColor() const override;
     QPixmap iconPixmap() const override;
     QPicture iconPicture() const override;
 
@@ -525,7 +650,10 @@ class GUI_EXPORT QgsModelChildAlgorithmGraphicItem : public QgsModelComponentGra
   private:
     QPicture mPicture;
     QPixmap mPixmap;
+    bool mStarted = false;
+    bool mOutdated = false;
     QgsProcessingModelChildAlgorithmResult mResults;
+    double mProgress = -1;
     bool mIsValid = true;
 };
 
@@ -641,6 +769,13 @@ class GUI_EXPORT QgsModelGroupBoxGraphicItem : public QgsModelComponentGraphicIt
     ~QgsModelGroupBoxGraphicItem() override;
     void contextMenuEvent( QGraphicsSceneContextMenuEvent *event ) override;
     bool canDeleteComponent() override;
+
+    /**
+     * Applies edits to the item, using an updated \a groupBox definition.
+     *
+     * \since QGIS 4.0
+     */
+    void applyEdit( const QgsProcessingModelGroupBox &groupBox );
 
   protected:
     QColor fillColor( State state ) const override;

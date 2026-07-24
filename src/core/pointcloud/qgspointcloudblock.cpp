@@ -15,24 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgis.h"
 #include "qgspointcloudblock.h"
+
+#include "qgis.h"
 #include "qgspointcloudattribute.h"
 
-
-QgsPointCloudBlock::QgsPointCloudBlock(
-  int count,
-  const QgsPointCloudAttributeCollection &attributes,
-  const QByteArray &data, const QgsVector3D &scale, const QgsVector3D &offset
-)
+QgsPointCloudBlock::QgsPointCloudBlock( int count, const QgsPointCloudAttributeCollection &attributes, const QByteArray &data, const QgsVector3D &scale, const QgsVector3D &offset )
   : mPointCount( count )
   , mAttributes( attributes )
   , mRecordSize( mAttributes.pointRecordSize() )
   , mStorage( data )
   , mScale( scale )
   , mOffset( offset )
-{
-}
+{}
 
 QgsPointCloudBlock *QgsPointCloudBlock::clone() const
 {

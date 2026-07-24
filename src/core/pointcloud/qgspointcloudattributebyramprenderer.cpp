@@ -16,22 +16,27 @@
  ***************************************************************************/
 
 #include "qgspointcloudattributebyramprenderer.h"
+
+#include "qgscolorramp.h"
+#include "qgscolorramplegendnode.h"
+#include "qgslayertreemodellegendnode.h"
 #include "qgspointcloudblock.h"
 #include "qgsstyle.h"
-#include "qgscolorramp.h"
 #include "qgssymbollayerutils.h"
-#include "qgslayertreemodellegendnode.h"
-#include "qgscolorramplegendnode.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsPointCloudAttributeByRampRenderer::QgsPointCloudAttributeByRampRenderer()
 {
-  mColorRampShader.setSourceColorRamp( QgsStyle::defaultStyle()->colorRamp( QStringLiteral( "Viridis" ) ) );
+  mColorRampShader.setSourceColorRamp( QgsStyle::defaultStyle()->colorRamp( u"Viridis"_s ) );
   mColorRampShader.classifyColorRamp( 5, -1, QgsRectangle(), nullptr );
 }
 
 QString QgsPointCloudAttributeByRampRenderer::type() const
 {
-  return QStringLiteral( "ramp" );
+  return u"ramp"_s;
 }
 
 QgsPointCloudRenderer *QgsPointCloudAttributeByRampRenderer::clone() const
@@ -72,9 +77,9 @@ void QgsPointCloudAttributeByRampRenderer::renderBlock( const QgsPointCloudBlock
   const QgsDoubleRange zRange = context.renderContext().zRange();
   const bool considerZ = !zRange.isInfinite() || renderElevation;
 
-  const bool applyZOffset = attribute->name() == QLatin1String( "Z" );
-  const bool applyXOffset = attribute->name() == QLatin1String( "X" );
-  const bool applyYOffset = attribute->name() == QLatin1String( "Y" );
+  const bool applyZOffset = attribute->name() == "Z"_L1;
+  const bool applyXOffset = attribute->name() == "X"_L1;
+  const bool applyYOffset = attribute->name() == "Y"_L1;
 
   int rendered = 0;
   double x = 0;
@@ -87,6 +92,8 @@ void QgsPointCloudAttributeByRampRenderer::renderBlock( const QgsPointCloudBlock
   int green = 0;
   int blue = 0;
   int alpha = 0;
+
+  bool dataDefinedPropertiesActive = dataDefinedProperties().isActive( QgsPointCloudRenderer::Property::Color );
   for ( int i = 0; i < count; ++i )
   {
     if ( context.renderContext().renderingStopped() )
@@ -129,16 +136,20 @@ void QgsPointCloudAttributeByRampRenderer::renderBlock( const QgsPointCloudBlock
 
       mColorRampShader.shade( attributeValue, &red, &green, &blue, &alpha );
 
+      QColor color( red, green, blue, alpha );
+      if ( dataDefinedPropertiesActive )
+        color = colorFromExpression( block, i, color, context );
+
       if ( renderAsTriangles() )
       {
-        addPointToTriangulation( x, y, z, QColor( red, green, blue, alpha ), context );
+        addPointToTriangulation( x, y, z, color, context );
 
         // We don't want to render any points if we're rendering triangles and there is no preview painter
         if ( !context.renderContext().previewRenderPainter() )
           continue;
       }
 
-      drawPoint( x, y, QColor( red, green, blue, alpha ), context );
+      drawPoint( x, y, color, context );
       if ( renderElevation )
         drawPointToElevationMap( x, y, z, context );
 
@@ -153,13 +164,13 @@ QgsPointCloudRenderer *QgsPointCloudAttributeByRampRenderer::create( QDomElement
 {
   auto r = std::make_unique< QgsPointCloudAttributeByRampRenderer >();
 
-  r->setAttribute( element.attribute( QStringLiteral( "attribute" ), QStringLiteral( "Intensity" ) ) );
+  r->setAttribute( element.attribute( u"attribute"_s, u"Intensity"_s ) );
 
-  QDomElement elemShader = element.firstChildElement( QStringLiteral( "colorrampshader" ) );
+  QDomElement elemShader = element.firstChildElement( u"colorrampshader"_s );
   r->mColorRampShader.readXml( elemShader, context );
 
-  r->setMinimum( element.attribute( QStringLiteral( "min" ), QStringLiteral( "0" ) ).toDouble() );
-  r->setMaximum( element.attribute( QStringLiteral( "max" ), QStringLiteral( "100" ) ).toDouble() );
+  r->setMinimum( element.attribute( u"min"_s, u"0"_s ).toDouble() );
+  r->setMaximum( element.attribute( u"max"_s, u"100"_s ).toDouble() );
 
   r->restoreCommonProperties( element, context );
 
@@ -168,13 +179,13 @@ QgsPointCloudRenderer *QgsPointCloudAttributeByRampRenderer::create( QDomElement
 
 QDomElement QgsPointCloudAttributeByRampRenderer::save( QDomDocument &doc, const QgsReadWriteContext &context ) const
 {
-  QDomElement rendererElem = doc.createElement( QStringLiteral( "renderer" ) );
+  QDomElement rendererElem = doc.createElement( u"renderer"_s );
 
-  rendererElem.setAttribute( QStringLiteral( "type" ), QStringLiteral( "ramp" ) );
-  rendererElem.setAttribute( QStringLiteral( "min" ), mMin );
-  rendererElem.setAttribute( QStringLiteral( "max" ), mMax );
+  rendererElem.setAttribute( u"type"_s, u"ramp"_s );
+  rendererElem.setAttribute( u"min"_s, mMin );
+  rendererElem.setAttribute( u"max"_s, mMax );
 
-  rendererElem.setAttribute( QStringLiteral( "attribute" ), mAttribute );
+  rendererElem.setAttribute( u"attribute"_s, mAttribute );
 
   QDomElement elemShader = mColorRampShader.writeXml( doc, context );
   rendererElem.appendChild( elemShader );
@@ -184,9 +195,9 @@ QDomElement QgsPointCloudAttributeByRampRenderer::save( QDomDocument &doc, const
   return rendererElem;
 }
 
-QSet<QString> QgsPointCloudAttributeByRampRenderer::usedAttributes( const QgsPointCloudRenderContext & ) const
+QSet<QString> QgsPointCloudAttributeByRampRenderer::usedAttributes( const QgsPointCloudRenderContext &context ) const
 {
-  QSet<QString> res;
+  QSet<QString> res = QgsPointCloudRenderer::usedAttributes( context );
   res << mAttribute;
   return res;
 }
@@ -201,12 +212,15 @@ QList<QgsLayerTreeModelLegendNode *> QgsPointCloudAttributeByRampRenderer::creat
     case Qgis::ShaderInterpolationMethod::Linear:
       // for interpolated shaders we use a ramp legend node unless the settings flag
       // to use the continuous legend is not set, in that case we fall through
-      if ( mColorRampShader.sourceColorRamp() && ( ! mColorRampShader.legendSettings() || mColorRampShader.legendSettings()->useContinuousLegend() ) )
+      if ( mColorRampShader.sourceColorRamp() && ( !mColorRampShader.legendSettings() || mColorRampShader.legendSettings()->useContinuousLegend() ) )
       {
-        res << new QgsColorRampLegendNode( nodeLayer, mColorRampShader.sourceColorRamp()->clone(),
-                                           mColorRampShader.legendSettings() ? *mColorRampShader.legendSettings() : QgsColorRampLegendNodeSettings(),
-                                           mColorRampShader.minimumValue(),
-                                           mColorRampShader.maximumValue() );
+        res << new QgsColorRampLegendNode(
+          nodeLayer,
+          mColorRampShader.sourceColorRamp()->clone(),
+          mColorRampShader.legendSettings() ? *mColorRampShader.legendSettings() : QgsColorRampLegendNodeSettings(),
+          mColorRampShader.minimumValue(),
+          mColorRampShader.maximumValue()
+        );
         break;
       }
       [[fallthrough]];
@@ -273,9 +287,9 @@ std::unique_ptr<QgsPreparedPointCloudRendererData> QgsPointCloudAttributeByRampR
   data->attributeName = mAttribute;
   data->colorRampShader = mColorRampShader;
 
-  data->attributeIsX = mAttribute == QLatin1String( "X" );
-  data->attributeIsY = mAttribute == QLatin1String( "Y" );
-  data->attributeIsZ = mAttribute == QLatin1String( "Z" );
+  data->attributeIsX = mAttribute == "X"_L1;
+  data->attributeIsY = mAttribute == "Y"_L1;
+  data->attributeIsZ = mAttribute == "Z"_L1;
   return data;
 }
 

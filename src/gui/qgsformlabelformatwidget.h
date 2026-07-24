@@ -18,17 +18,19 @@
 
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
 
 /// @cond private
 
 #include "ui_qgsformlabelformatwidget.h"
-#include "qgsconditionalstyle.h"
-#include "qgsattributeeditorelement.h"
+
 #include "qgis_gui.h"
+#include "qgsattributeeditorelement.h"
+#include "qgsconditionalstyle.h"
 
 #include <QColor>
 #include <QFont>
+
+#define SIP_NO_FILE
 
 /**
  * \ingroup gui

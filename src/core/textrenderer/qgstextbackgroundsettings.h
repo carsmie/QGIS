@@ -16,17 +16,17 @@
 #ifndef QGSTEXTBACKGROUNDSETTINGS_H
 #define QGSTEXTBACKGROUNDSETTINGS_H
 
-#include "qgis_sip.h"
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
+#include "qgis_sip.h"
 #include "qgsmapunitscale.h"
 
-#include <QString>
-#include <QPointF>
-#include <QSizeF>
-#include <QPainter>
 #include <QDomElement>
+#include <QPainter>
+#include <QPointF>
 #include <QSharedDataPointer>
+#include <QSizeF>
+#include <QString>
 
 class QgsMarkerSymbol;
 class QgsFillSymbol;
@@ -45,18 +45,17 @@ class QgsTextBackgroundSettingsPrivate;
 class CORE_EXPORT QgsTextBackgroundSettings
 {
   public:
-
     /**
      * Background shape types.
      */
     enum ShapeType
     {
       ShapeRectangle = 0, //!< Rectangle
-      ShapeSquare, //!< Square - buffered sizes only
-      ShapeEllipse, //!< Ellipse
-      ShapeCircle, //!< Circle
-      ShapeSVG, //!< SVG file
-      ShapeMarkerSymbol, //!< Marker symbol
+      ShapeSquare,        //!< Square - buffered sizes only
+      ShapeEllipse,       //!< Ellipse
+      ShapeCircle,        //!< Circle
+      ShapeSVG,           //!< SVG file
+      ShapeMarkerSymbol,  //!< Marker symbol
     };
 
     /**
@@ -65,8 +64,8 @@ class CORE_EXPORT QgsTextBackgroundSettings
     enum SizeType
     {
       SizeBuffer = 0, //!< Shape size is determined by adding a buffer margin around text
-      SizeFixed, //!< Fixed size
-      SizePercent //!< Shape size is determined by percent of text size
+      SizeFixed,      //!< Fixed size
+      SizePercent     //!< Shape size is determined by percent of text size
     };
 
     /**
@@ -75,15 +74,17 @@ class CORE_EXPORT QgsTextBackgroundSettings
     enum RotationType
     {
       RotationSync = 0, //!< Shape rotation is synced with text rotation
-      RotationOffset, //!< Shape rotation is offset from text rotation
-      RotationFixed //!< Shape rotation is a fixed angle
+      RotationOffset,   //!< Shape rotation is offset from text rotation
+      RotationFixed     //!< Shape rotation is a fixed angle
     };
 
     QgsTextBackgroundSettings();
 
     QgsTextBackgroundSettings( const QgsTextBackgroundSettings &other );
+    SIP_SKIP QgsTextBackgroundSettings( QgsTextBackgroundSettings &&other );
 
     QgsTextBackgroundSettings &operator=( const QgsTextBackgroundSettings &other );
+    QgsTextBackgroundSettings &operator=( QgsTextBackgroundSettings &&other );
 
     ~QgsTextBackgroundSettings();
 
@@ -559,9 +560,7 @@ class CORE_EXPORT QgsTextBackgroundSettings
     QSet<QString> referencedFields( const QgsRenderContext &context ) const;
 
   private:
-
     QSharedDataPointer<QgsTextBackgroundSettingsPrivate> d;
-
 };
 
 #endif // QGSTEXTBACKGROUNDSETTINGS_H

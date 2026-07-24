@@ -16,10 +16,6 @@
 #ifndef QGSFIELDEXPRESSIONWIDGET_H
 #define QGSFIELDEXPRESSIONWIDGET_H
 
-#include <QColor>
-#include <QComboBox>
-#include <QToolButton>
-#include <QWidget>
 #include <memory>
 
 #include "qgis_gui.h"
@@ -28,6 +24,10 @@
 #include "qgsexpressioncontext.h"
 #include "qgsfieldproxymodel.h"
 
+#include <QColor>
+#include <QComboBox>
+#include <QToolButton>
+#include <QWidget>
 
 class QgsMapLayer;
 class QgsVectorLayer;
@@ -73,7 +73,7 @@ class GUI_EXPORT QgsFieldExpressionWidget : public QWidget
     void appendScope( QgsExpressionContextScope *scope SIP_TRANSFER );
 
     //! Returns the title used for the expression dialog
-    const QString expressionDialogTitle() { return mExpressionDialogTitle; }
+    QString expressionDialogTitle() const { return mExpressionDialogTitle; }
 
     //! setFilters allows filtering according to the type of field
     void setFilters( QgsFieldProxyModel::Filters filters );
@@ -187,22 +187,21 @@ class GUI_EXPORT QgsFieldExpressionWidget : public QWidget
     void setCustomPreviewGenerator( const QString &label, const QList<QPair<QString, QVariant>> &choices, SIP_PYCALLABLE );
     //%MethodCode
     Py_XINCREF( a2 );
-    Py_BEGIN_ALLOW_THREADS
-      sipCpp->setCustomPreviewGenerator( *a0, *a1, [a2]( const QVariant &value ) -> QgsExpressionContext {
-        QgsExpressionContext res;
-        SIP_BLOCK_THREADS
-        PyObject *s = sipCallMethod( NULL, a2, "D", &value, sipType_QVariant, NULL );
-        int state;
-        int sipIsError = 0;
-        QgsExpressionContext *t1 = reinterpret_cast<QgsExpressionContext *>( sipConvertToType( s, sipType_QgsExpressionContext, 0, SIP_NOT_NONE, &state, &sipIsError ) );
-        if ( sipIsError == 0 )
-        {
-          res = QgsExpressionContext( *t1 );
-        }
-        sipReleaseType( t1, sipType_QgsExpressionContext, state );
-        SIP_UNBLOCK_THREADS
-        return res;
-      } );
+    Py_BEGIN_ALLOW_THREADS sipCpp->setCustomPreviewGenerator( *a0, *a1, [a2]( const QVariant &value ) -> QgsExpressionContext {
+      QgsExpressionContext res;
+      SIP_BLOCK_THREADS
+      PyObject *s = sipCallMethod( NULL, a2, "D", &value, sipType_QVariant, NULL );
+      int state;
+      int sipIsError = 0;
+      QgsExpressionContext *t1 = reinterpret_cast<QgsExpressionContext *>( sipConvertToType( s, sipType_QgsExpressionContext, 0, SIP_NOT_NONE, &state, &sipIsError ) );
+      if ( sipIsError == 0 )
+      {
+        res = QgsExpressionContext( *t1 );
+      }
+      sipReleaseType( t1, sipType_QgsExpressionContext, state );
+      SIP_UNBLOCK_THREADS
+      return res;
+    } );
 
     Py_END_ALLOW_THREADS
     //%End

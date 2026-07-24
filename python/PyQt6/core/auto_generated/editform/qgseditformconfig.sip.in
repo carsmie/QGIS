@@ -24,31 +24,31 @@ Contains configuration settings for an editor form.
     static const QMetaObject staticMetaObject;
 
   public:
-
     struct GroupData
     {
-      GroupData();
-      GroupData( const QString &name, const QList<QString> &fields );
-      QString mName;
-      QList<QString> mFields;
+        GroupData();
+        GroupData( const QString &name, const QList<QString> &fields );
+        QString mName;
+        QList<QString> mFields;
     };
 
     struct TabData
     {
-      TabData();
-      TabData( const QString &name, const QList<QString> &fields, const QList<QgsEditFormConfig::GroupData> &groups );
-      QString mName;
-      QList<QString> mFields;
-      QList<QgsEditFormConfig::GroupData> mGroups;
+        TabData();
+        TabData( const QString &name, const QList<QString> &fields, const QList<QgsEditFormConfig::GroupData> &groups );
+        QString mName;
+        QList<QString> mFields;
+        QList<QgsEditFormConfig::GroupData> mGroups;
     };
 
 
     enum class DataDefinedProperty /BaseType=IntEnum/
-      {
+    {
       NoProperty,
       AllProperties,
       Alias,
       Editable,
+      CustomComment,
     };
 
     QgsEditFormConfig( const QgsEditFormConfig &o );
@@ -179,26 +179,50 @@ widget will receive its label on the left hand side. Labeling on top
 leaves more horizontal space for the widget itself.
 %End
 
-    bool reuseLastValue( int index ) const;
+ bool reuseLastValue( int index ) const;
 %Docstring
-If this returns ``True``, the widget at the given ``index`` will
-remember the previously entered value from this QGIS session when
-creating new features.
+If this returns ``True``, the widget at the given ``index`` will reuse
+the last value within a QGIS session when creating new features.
 
 .. seealso:: :py:func:`setReuseLastValue`
 
 .. versionadded:: 3.20
+
+.. deprecated:: 4.0
+
+   Use reuseLastValuePolicy instead.
 %End
 
-    void setReuseLastValue( int index, bool reuse );
+ void setReuseLastValue( int index, bool reuse );
 %Docstring
-Sets whether the widget at the given ``index`` will remember the
-previously entered value from this QGIS session when creating new
-features.
+Sets whether the widget at the given ``index`` will reuse the last value
+within a QGIS session when creating new features.
 
 .. seealso:: :py:func:`reuseLastValue`
 
 .. versionadded:: 3.20
+
+.. deprecated:: 4.0
+
+   Use setReuseLastValuePolicy instead.
+%End
+
+    Qgis::AttributeFormReuseLastValuePolicy reuseLastValuePolicy( int index ) const;
+%Docstring
+Returns the reuse of last value policy for an attribute ``index``.
+
+.. seealso:: :py:func:`setReuseLastValuePolicy`
+
+.. versionadded:: 4.0
+%End
+
+    void setReuseLastValuePolicy( int index, Qgis::AttributeFormReuseLastValuePolicy policy );
+%Docstring
+Sets the reuse of last value policy for an attribute ``index``.
+
+.. seealso:: :py:func:`reuseLastValuePolicy`
+
+.. versionadded:: 4.0
 %End
 
 
@@ -277,7 +301,9 @@ Read XML information Deserialize on project load
 Write XML information Serialize on project save
 %End
 
- QgsAttributeEditorElement *attributeEditorElementFromDomElement( QDomElement &elem, QgsAttributeEditorElement *parent, const QString &layerId = QString(), const QgsReadWriteContext &context = QgsReadWriteContext() ) /Deprecated="Since 3.18. Use QgsAttributeEditorElement.create instead."/;
+ QgsAttributeEditorElement *attributeEditorElementFromDomElement(
+      QDomElement &elem, QgsAttributeEditorElement *parent, const QString &layerId = QString(), const QgsReadWriteContext &context = QgsReadWriteContext()
+    ) /Deprecated="Since 3.18. Use QgsAttributeEditorElement.create instead."/;
 %Docstring
 Deserialize drag and drop designer elements.
 

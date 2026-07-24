@@ -18,31 +18,35 @@
 #ifndef QGSVECTORLAYER_H
 #define QGSVECTORLAYER_H
 
-#include "qgis_core.h"
-#include <QMap>
-#include <QSet>
-#include <QList>
-#include <QStringList>
-#include <QFont>
-#include <QMutex>
-
 #include "qgis.h"
-#include "qgsmaplayer.h"
+#include "qgis_core.h"
+#include "qgsabstractprofilesource.h"
+#include "qgsaggregatecalculator.h"
+#include "qgsattributetableconfig.h"
+#include "qgseditformconfig.h"
+#include "qgsexpressioncontext.h"
+#include "qgsexpressioncontextgenerator.h"
+#include "qgsexpressioncontextscopegenerator.h"
 #include "qgsfeature.h"
+#include "qgsfeatureiterator.h"
 #include "qgsfeaturerequest.h"
 #include "qgsfeaturesource.h"
 #include "qgsfields.h"
+#include "qgsmaplayer.h"
+#include "qgsstyleentityvisitor.h"
 #include "qgsvectordataprovider.h"
 #include "qgsvectorlayertoolscontext.h"
-#include "qgseditformconfig.h"
-#include "qgsattributetableconfig.h"
-#include "qgsaggregatecalculator.h"
-#include "qgsfeatureiterator.h"
-#include "qgsexpressioncontextgenerator.h"
-#include "qgsexpressioncontextscopegenerator.h"
-#include "qgsexpressioncontext.h"
-#include "qgsabstractprofilesource.h"
 #include "qgsvectorsimplifymethod.h"
+
+#include <QFont>
+#include <QList>
+#include <QMap>
+#include <QMutex>
+#include <QSet>
+#include <QString>
+#include <QStringList>
+
+using namespace Qt::StringLiterals;
 
 class QPainter;
 class QImage;
@@ -78,15 +82,15 @@ class QgsFeedback;
 class QgsAuxiliaryStorage;
 class QgsAuxiliaryLayer;
 class QgsGeometryOptions;
-class QgsStyleEntityVisitorInterface;
 class QgsVectorLayerSelectionProperties;
 class QgsVectorLayerTemporalProperties;
 class QgsFeatureRendererGenerator;
 class QgsVectorLayerElevationProperties;
+class QgsObjectEntityVisitorInterface;
+class QgsObjectVisitorContext;
 
 #ifndef SIP_RUN
-template<class T>
-class QgsSettingsEntryEnumFlag;
+template<class T> class QgsSettingsEntryEnumFlag;
 #endif
 class QgsSettingsEntryDouble;
 class QgsSettingsEntryBool;
@@ -95,7 +99,7 @@ class QgsSettingsEntryBool;
 typedef QList<int> QgsAttributeList;
 typedef QSet<int> QgsAttributeIds;
 
-// TODO QGIS4: Remove virtual from non-inherited methods (like isModified)
+// TODO QGIS 5: Remove virtual from non-inherited methods (like isModified)
 
 /**
  * \ingroup core
@@ -204,6 +208,7 @@ typedef QSet<int> QgsAttributeIds;
  * - InvertAxisOrientation=1: to invert axis order
  * - hideDownloadProgressDialog=1: to hide the download progress dialog
  * - featureMode=default/simpleFeatures/complexFeatures (QGIS >= 3.44)
+ * - outputformat=string: output format. Can be set for example to GML3 for some WFS 1.0 servers that can support GML3.
  *
  * The ‘filter’ key value can either be a QGIS expression
  * or an OGC XML filter. If the value is set to a QGIS expression the driver will
@@ -237,6 +242,7 @@ typedef QSet<int> QgsAttributeIds;
  * - pageSize=number: number of features to retrieve in a single request
  * - maxNumFeatures=number: maximum number of features to retrieve (possibly across several multiple paging requests)
  * - hideDownloadProgressDialog=1: to hide the download progress dialog.
+ * - outputformat=string: output format as a MIME type to ask the server to return features. e.g "application/geo+json", "application/flatgeobuf", "application/fg+json", etc. Assumes there is a GDAL driver for the requested format. (QGIS >= 4)
  *
  * \subsection delimitedtext Delimited text file data provider (delimitedtext)
  *
@@ -394,11 +400,16 @@ typedef QSet<int> QgsAttributeIds;
  *
  * \subsection grass Grass data provider (grass)
  *
- * Provider to display vector data in a GRASS GIS layer.
+ * Provider to display vector data in a GRASS layer.
  *
  * \see QgsVectorLayerUtils()
  */
-class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionContextGenerator, public QgsExpressionContextScopeGenerator, public QgsFeatureSink, public QgsFeatureSource, public QgsAbstractProfileSource
+class CORE_EXPORT QgsVectorLayer : public QgsMapLayer,
+                                   public QgsExpressionContextGenerator,
+                                   public QgsExpressionContextScopeGenerator,
+                                   public QgsFeatureSink,
+                                   public QgsFeatureSource,
+                                   public QgsAbstractProfileSource
 {
     Q_OBJECT
 
@@ -410,7 +421,6 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     Q_PROPERTY( QgsFields fields READ fields NOTIFY updatedFields )
 
   public:
-
     static const QgsSettingsEntryBool *settingsSimplifyLocal SIP_SKIP;
 
     static const QgsSettingsEntryDouble *settingsSimplifyMaxScale SIP_SKIP;
@@ -423,45 +433,40 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      */
     struct LayerOptions
     {
-
-      /**
+        /**
        * Constructor for LayerOptions.
        */
-      explicit LayerOptions( bool loadDefaultStyle = true,
-                             bool readExtentFromXml = false )
-        : loadDefaultStyle( loadDefaultStyle )
-        , readExtentFromXml( readExtentFromXml )
-      {}
+        explicit LayerOptions( bool loadDefaultStyle = true, bool readExtentFromXml = false )
+          : loadDefaultStyle( loadDefaultStyle )
+          , readExtentFromXml( readExtentFromXml )
+        {}
 
-      /**
+        /**
        * Constructor for LayerOptions.
        * \since QGIS 3.8
        */
-      explicit LayerOptions( const QgsCoordinateTransformContext &transformContext,
-                             bool loadDefaultStyle = true,
-                             bool readExtentFromXml = false
-                           )
-        : loadDefaultStyle( loadDefaultStyle )
-        , readExtentFromXml( readExtentFromXml )
-        , transformContext( transformContext )
-      {}
+        explicit LayerOptions( const QgsCoordinateTransformContext &transformContext, bool loadDefaultStyle = true, bool readExtentFromXml = false )
+          : loadDefaultStyle( loadDefaultStyle )
+          , readExtentFromXml( readExtentFromXml )
+          , transformContext( transformContext )
+        {}
 
-      //! Set to TRUE if the default layer style should be loaded
-      bool loadDefaultStyle = true;
+        //! Set to TRUE if the default layer style should be loaded
+        bool loadDefaultStyle = true;
 
-      /**
+        /**
        * If TRUE, the layer extent will be read from XML (i.e. stored in the
        * project file). If FALSE, the extent will be determined by the provider on layer load.
        */
-      bool readExtentFromXml = false;
+        bool readExtentFromXml = false;
 
-      /**
+        /**
        * Coordinate transform context
        * \since QGIS 3.8
        */
-      QgsCoordinateTransformContext transformContext = QgsCoordinateTransformContext();
+        QgsCoordinateTransformContext transformContext = QgsCoordinateTransformContext();
 
-      /**
+        /**
        * Fallback geometry type.
        *
        * This may be set for layers where the geometry type is known in advance, and where
@@ -472,9 +477,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
        * \see fallbackCrs
        * \since QGIS 3.8
        */
-      Qgis::WkbType fallbackWkbType = Qgis::WkbType::Unknown;
+        Qgis::WkbType fallbackWkbType = Qgis::WkbType::Unknown;
 
-      /**
+        /**
        * Fallback layer coordinate reference system.
        *
        * This may be set for layers where the coordinate reference system is known in advance, and where
@@ -485,9 +490,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
        * \see fallbackWkbType
        * \since QGIS 3.8
        */
-      QgsCoordinateReferenceSystem fallbackCrs;
+        QgsCoordinateReferenceSystem fallbackCrs;
 
-      /**
+        /**
        * Controls whether the layer is allowed to have an invalid/unknown CRS.
        *
        * If TRUE, then no validation will be performed on the layer's CRS and the layer
@@ -500,9 +505,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
        *
        * \since QGIS 3.10
        */
-      bool skipCrsValidation = false;
+        bool skipCrsValidation = false;
 
-      /**
+        /**
        * Controls whether the layer is forced to be load as Read Only
        *
        * If TRUE, then the layer's provider will only check read capabilities.
@@ -513,9 +518,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
        * others.
        * \since QGIS 3.28
        */
-      bool forceReadOnly = false;
+        bool forceReadOnly = false;
 
-      /**
+        /**
        * Controls whether the stored styles will be all loaded.
        *
        * If TRUE and the layer's provider supports style stored in the
@@ -527,7 +532,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
        *
        * \since QGIS 3.30
        */
-      bool loadAllStoredStyles = false;
+        bool loadAllStoredStyles = false;
     };
 
     /**
@@ -536,28 +541,30 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      */
     struct CORE_EXPORT DeleteContext
     {
-
-      /**
+        /**
        * Constructor for DeleteContext.
        */
-      explicit DeleteContext( bool cascade = false, QgsProject *project = nullptr ): cascade( cascade ), project( project ) {}
+        explicit DeleteContext( bool cascade = false, QgsProject *project = nullptr )
+          : cascade( cascade )
+          , project( project )
+        {}
 
-      /**
+        /**
        * Returns a list of all layers affected by the delete operation.
        *
        * If \a includeAuxiliaryLayers is FALSE then auxiliary layers will not be included in the
        * returned list.
        */
-      QList<QgsVectorLayer *> handledLayers( bool includeAuxiliaryLayers = true ) const;
+        QList<QgsVectorLayer *> handledLayers( bool includeAuxiliaryLayers = true ) const;
 
-      /**
+        /**
        * Returns a list of feature IDs from the specified \a layer affected by the delete operation.
        */
-      QgsFeatureIds handledFeatures( QgsVectorLayer *layer ) const;
+        QgsFeatureIds handledFeatures( QgsVectorLayer *layer ) const;
 
-      QMap<QgsVectorLayer *, QgsFeatureIds> mHandledFeatures SIP_SKIP;
-      bool cascade;
-      QgsProject *project;
+        QMap<QgsVectorLayer *, QgsFeatureIds> mHandledFeatures SIP_SKIP;
+        bool cascade;
+        QgsProject *project;
     };
 
     /**
@@ -573,8 +580,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \param providerLib  The name of the data provider, e.g., "memory", "postgres"
      * \param options layer load options
      */
-    explicit QgsVectorLayer( const QString &path = QString(), const QString &baseName = QString(),
-                             const QString &providerLib = "ogr", const QgsVectorLayer::LayerOptions &options = QgsVectorLayer::LayerOptions() );
+    explicit QgsVectorLayer(
+      const QString &path = QString(), const QString &baseName = QString(), const QString &providerLib = "ogr", const QgsVectorLayer::LayerOptions &options = QgsVectorLayer::LayerOptions()
+    );
 
     ~QgsVectorLayer() override;
 
@@ -582,21 +590,23 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     QgsVectorLayer &operator=( QgsVectorLayer const &rhs ) = delete;
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsVectorLayer: '%1' (%2)>" ).arg( sipCpp->name(), sipCpp->dataProvider() ? sipCpp->dataProvider()->name() : QStringLiteral( "Invalid" ) );
+    QString str = u"<QgsVectorLayer: '%1' (%2)>"_s.arg( sipCpp->name(), sipCpp->dataProvider() ? sipCpp->dataProvider()->name() : u"Invalid"_s );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
-    /**
+      /**
      * Returns a new instance equivalent to this one. A new provider is
      *  created for the same data source and renderers for features and diagrams
      *  are cloned too. Moreover, each attributes (transparency, extent, selected
      *  features and so on) are identical.
      * \returns a new layer instance
      */
-    QgsVectorLayer *clone() const override SIP_FACTORY;
+      QgsVectorLayer *clone() const override SIP_FACTORY;
 
     /**
      * Returns the permanent storage type for this layer as a friendly name.
@@ -661,14 +671,16 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      */
     QString displayExpression() const;
 
-    bool hasMapTips() const FINAL;
+    bool hasMapTips() const final;
 
-    QgsVectorDataProvider *dataProvider() FINAL;
-    const QgsVectorDataProvider *dataProvider() const FINAL SIP_SKIP;
+    QgsVectorDataProvider *dataProvider() final;
+    const QgsVectorDataProvider *dataProvider() const final SIP_SKIP;
     QgsMapLayerSelectionProperties *selectionProperties() override;
     QgsMapLayerTemporalProperties *temporalProperties() override;
     QgsMapLayerElevationProperties *elevationProperties() override;
-    QgsAbstractProfileSource *profileSource() override {return this;}
+    QgsAbstractProfileSource *profileSource() override { return this; }
+    QString profileSourceId() const override { return id(); }
+    QString profileSourceName() const override { return name(); }
     QgsAbstractProfileGenerator *createProfileGenerator( const QgsProfileRequest &request ) override SIP_FACTORY;
 
     /**
@@ -708,7 +720,8 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * Returns a const pointer on join buffer object.
      * \since QGIS 3.10
      */
-    const QgsVectorLayerJoinBuffer *joinBuffer() const { return mJoinBuffer; } SIP_SKIP;
+    const QgsVectorLayerJoinBuffer *joinBuffer() const { return mJoinBuffer; }
+    SIP_SKIP;
 
     const QList<QgsVectorLayerJoinInfo> vectorJoins() const;
 
@@ -719,7 +732,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \param layers set of QgsMapLayerDependency. Only user-defined dependencies will be added
      * \returns FALSE if a dependency cycle has been detected
      */
-    bool setDependencies( const QSet<QgsMapLayerDependency> &layers ) FINAL;
+    bool setDependencies( const QSet<QgsMapLayerDependency> &layers ) final;
 
     /**
      * Gets the list of dependencies. This includes data dependencies set by the user (\see setDataDependencies)
@@ -727,7 +740,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      *
      * \returns a set of QgsMapLayerDependency
      */
-    QSet<QgsMapLayerDependency> dependencies() const FINAL;
+    QSet<QgsMapLayerDependency> dependencies() const final;
 
     /**
      * Add a new field which is calculated by the expression specified
@@ -795,11 +808,11 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \param rect search rectangle
      * \param behavior selection type, allows adding to current selection, removing
      * from selection, etc.
-     * \see invertSelectionInRectangle(QgsRectangle & rect)
+     * \see invertSelectionInRectangle()
      * \see selectByExpression()
      * \see selectByIds()
      */
-    Q_INVOKABLE void selectByRect( QgsRectangle &rect, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection );
+    Q_INVOKABLE void selectByRect( const QgsRectangle &rect, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection );
 
     /**
      * Selects matching features using an expression.
@@ -818,10 +831,13 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \param ids feature IDs to select
      * \param behavior selection type, allows adding to current selection, removing
      * from selection, etc.
+     * \param validateIds (since QGIS 4.0) if TRUE, filters out invalid feature IDs before
+     * selection. Set to FALSE (default) for best performance. Enable validation when calling from
+     * Python or when ID validity is uncertain to avoid incorrect selection counts.
      * \see selectByRect()
      * \see selectByExpression()
      */
-    Q_INVOKABLE void selectByIds( const QgsFeatureIds &ids, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection );
+    Q_INVOKABLE void selectByIds( const QgsFeatureIds &ids, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection, bool validateIds = false );
 
     /**
      * Modifies the current selection on this layer
@@ -849,7 +865,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      *
      * \see   invertSelection()
      */
-    Q_INVOKABLE void invertSelectionInRectangle( QgsRectangle &rect );
+    Q_INVOKABLE void invertSelectionInRectangle( const QgsRectangle &rect );
 
     /**
      * Returns a copy of the user-selected features.
@@ -921,10 +937,10 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
 
     //! Sets diagram rendering object (takes ownership)
     void setDiagramRenderer( QgsDiagramRenderer *r SIP_TRANSFER );
-    const QgsDiagramRenderer *diagramRenderer() const { return mDiagramRenderer; }
+    const QgsDiagramRenderer *diagramRenderer() const { return mDiagramRenderer.get(); }
 
     void setDiagramLayerSettings( const QgsDiagramLayerSettings &s );
-    const QgsDiagramLayerSettings *diagramLayerSettings() const { return mDiagramLayerSettings; }
+    const QgsDiagramLayerSettings *diagramLayerSettings() const { return mDiagramLayerSettings.get(); }
 
     /**
      * Returns the feature renderer used for rendering the features in the layer in 2D
@@ -932,7 +948,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      *
      * \see setRenderer()
      */
-    QgsFeatureRenderer *renderer() { return mRenderer; }
+    QgsFeatureRenderer *renderer() { return mRenderer.get(); }
 
     /**
      * Returns the feature renderer used for rendering the features in the layer in 2D
@@ -941,7 +957,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see setRenderer()
      * \note not available in Python bindings
      */
-    const QgsFeatureRenderer *renderer() const SIP_SKIP { return mRenderer; }
+    const QgsFeatureRenderer *renderer() const SIP_SKIP { return mRenderer.get(); }
 
     /**
      * Sets the feature renderer which will be invoked to represent this layer in 2D map views.
@@ -986,30 +1002,30 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     Q_INVOKABLE Qgis::GeometryType geometryType() const;
 
     //! Returns the WKBType or WKBUnknown in case of error
-    Q_INVOKABLE Qgis::WkbType wkbType() const FINAL;
+    Q_INVOKABLE Qgis::WkbType wkbType() const final;
 
-    QgsCoordinateReferenceSystem sourceCrs() const FINAL;
-    QString sourceName() const FINAL;
+    QgsCoordinateReferenceSystem sourceCrs() const final;
+    QString sourceName() const final;
 
     /**
      * Reads vector layer specific state from project file Dom node.
      * \note Called by QgsMapLayer::readXml().
      */
-    bool readXml( const QDomNode &layer_node, QgsReadWriteContext &context ) FINAL;
+    bool readXml( const QDomNode &layer_node, QgsReadWriteContext &context ) final;
 
     /**
      * Writes vector layer specific state to project file Dom node.
      * \note Called by QgsMapLayer::writeXml().
      */
-    bool writeXml( QDomNode &layer_node, QDomDocument &doc, const QgsReadWriteContext &context ) const FINAL;
+    bool writeXml( QDomNode &layer_node, QDomDocument &doc, const QgsReadWriteContext &context ) const final;
 
-    QString encodedSource( const QString &source, const QgsReadWriteContext &context ) const FINAL;
-    QString decodedSource( const QString &source, const QString &provider, const QgsReadWriteContext &context ) const FINAL;
+    QString encodedSource( const QString &source, const QgsReadWriteContext &context ) const final;
+    QString decodedSource( const QString &source, const QString &provider, const QgsReadWriteContext &context ) const final;
 
     /**
      * Resolves references to other layers (kept as layer IDs after reading XML) into layer objects.
      */
-    void resolveReferences( QgsProject *project ) FINAL;
+    void resolveReferences( QgsProject *project ) final;
 
     /**
      * Loads the auxiliary layer for this vector layer. If there's no
@@ -1047,14 +1063,10 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      */
     const QgsAuxiliaryLayer *auxiliaryLayer() const SIP_SKIP;
 
-    bool readSymbology( const QDomNode &layerNode, QString &errorMessage,
-                        QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) FINAL;
-    bool readStyle( const QDomNode &node, QString &errorMessage,
-                    QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) FINAL;
-    bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage,
-                         const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const FINAL;
-    bool writeStyle( QDomNode &node, QDomDocument &doc, QString &errorMessage,
-                     const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const FINAL;
+    bool readSymbology( const QDomNode &layerNode, QString &errorMessage, QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) final;
+    bool readStyle( const QDomNode &node, QString &errorMessage, QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) final;
+    bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const final;
+    bool writeStyle( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const final;
 
     /**
      * Writes the symbology of the layer into the document provided in SLD 1.1 format
@@ -1077,7 +1089,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      */
     bool writeSld( QDomNode &node, QDomDocument &doc, QgsSldExportContext &context ) const;
 
-    bool readSld( const QDomNode &node, QString &errorMessage ) FINAL;
+    bool readSld( const QDomNode &node, QString &errorMessage ) final;
 
     /**
      * Number of features rendered with specified legend key. Features must be first
@@ -1104,9 +1116,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      *
      * \since QGIS 3.4
      */
-    Qgis::FeatureAvailability hasFeatures() const FINAL;
+    Qgis::FeatureAvailability hasFeatures() const final;
 
-    QString loadDefaultStyle( bool &resultFlag SIP_OUT ) FINAL;
+    QString loadDefaultStyle( bool &resultFlag SIP_OUT ) final;
 
     /**
      * Count features for symbols.
@@ -1142,15 +1154,12 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \param request feature request describing parameters of features to return
      * \returns iterator for matching features from provider
      */
-    QgsFeatureIterator getFeatures( const QgsFeatureRequest &request = QgsFeatureRequest() ) const FINAL;
+    QgsFeatureIterator getFeatures( const QgsFeatureRequest &request = QgsFeatureRequest() ) const final;
 
     /**
      * Queries the layer for features matching a given expression.
      */
-    inline QgsFeatureIterator getFeatures( const QString &expression )
-    {
-      return getFeatures( QgsFeatureRequest( expression ) );
-    }
+    inline QgsFeatureIterator getFeatures( const QString &expression ) { return getFeatures( QgsFeatureRequest( expression ) ); }
 
     /**
      * Queries the layer for the feature with the given id.
@@ -1172,20 +1181,14 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     /**
      * Queries the layer for the features with the given ids.
      */
-    inline QgsFeatureIterator getFeatures( const QgsFeatureIds &fids )
-    {
-      return getFeatures( QgsFeatureRequest( fids ) );
-    }
+    inline QgsFeatureIterator getFeatures( const QgsFeatureIds &fids ) { return getFeatures( QgsFeatureRequest( fids ) ); }
 
     /**
      * Queries the layer for the features which intersect the specified rectangle.
      */
-    inline QgsFeatureIterator getFeatures( const QgsRectangle &rectangle )
-    {
-      return getFeatures( QgsFeatureRequest( rectangle ) );
-    }
+    inline QgsFeatureIterator getFeatures( const QgsRectangle &rectangle ) { return getFeatures( QgsFeatureRequest( rectangle ) ); }
 
-    bool addFeature( QgsFeature &feature, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) FINAL;
+    bool addFeature( QgsFeature &feature, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) final;
 
     /**
      * Updates an existing \a feature in the layer, replacing the attributes and geometry for the feature
@@ -1276,13 +1279,26 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     Qgis::VectorEditResult deleteVertex( QgsFeatureId featureId, int vertex );
 
     /**
+     * Deletes a set of vertices from a feature.
+     * \param featureId ID of feature to remove vertices from
+     * \param vertices set of vertex indices to delete
+     * \note Calls to deleteVertices() are only valid for layers in which edits have been enabled
+     * by a call to startEditing(). Changes made to features using this method are not committed
+     * to the underlying data provider until a commitChanges() call is made. Any uncommitted
+     * changes can be discarded by calling rollBack().
+     *
+     * \since QGIS 4.2
+     */
+    Qgis::VectorEditResult deleteVertices( QgsFeatureId featureId, const QSet<int> &vertices );
+
+    /**
      * Deletes the selected features
      * \param deletedCount The number of successfully deleted features
      * \param context The chain of features who will be deleted for feedback and to avoid endless recursions
      *
      * \returns TRUE in case of success and FALSE otherwise
      */
-    Q_INVOKABLE bool deleteSelectedFeatures( int *deletedCount = nullptr, QgsVectorLayer::DeleteContext *context = nullptr );
+    Q_INVOKABLE bool deleteSelectedFeatures( int *deletedCount SIP_OUT = nullptr, QgsVectorLayer::DeleteContext *context = nullptr );
 
     /**
      * Adds a ring to polygon/multipolygon features
@@ -1302,7 +1318,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * by a call to startEditing(). Changes made to features using this method are not committed
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
-     * \deprecated QGIS 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
+     * \deprecated QGIS 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
      */
     Q_DECL_DEPRECATED Qgis::GeometryOperationResult addRing( const QVector<QgsPointXY> &ring, QgsFeatureId *featureId = nullptr ) SIP_DEPRECATED;
 
@@ -1367,34 +1383,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * by a call to startEditing(). Changes made to features using this method are not committed
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
-     * \deprecated QGIS 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
+     * \deprecated QGIS 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
      */
     Q_DECL_DEPRECATED Qgis::GeometryOperationResult addPart( const QList<QgsPointXY> &ring ) SIP_DEPRECATED;
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-
-    /**
-     * Adds a new part polygon to a multipart feature
-     * \returns Qgis::GeometryOperationResult
-     *
-     * - Success
-     * - LayerNotEditable
-     * - SelectionIsEmpty
-     * - SelectionIsGreaterThanOne
-     * - AddPartSelectedGeometryNotFound
-     * - AddPartNotMultiGeometry
-     * - InvalidBaseGeometry
-     * - InvalidInputGeometryType
-     *
-     * \note available in Python bindings as addPartV2
-     * \note Calls to addPart() are only valid for layers in which edits have been enabled
-     * by a call to startEditing(). Changes made to features using this method are not committed
-     * to the underlying data provider until a commitChanges() call is made. Any uncommitted
-     * changes can be discarded by calling rollBack().
-     * \deprecated QGIS 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
-     */
-    Q_DECL_DEPRECATED Qgis::GeometryOperationResult addPart( const QVector<QgsPointXY> &ring ) SIP_PYNAME( addPartV2 ) SIP_DEPRECATED;
-#endif
 
     /**
      * Adds a new part polygon to a multipart feature
@@ -1460,7 +1451,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * by a call to startEditing(). Changes made to features using this method are not committed
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
-     * \deprecated QGIS 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
+     * \deprecated QGIS 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
      */
     Q_DECL_DEPRECATED Qgis::GeometryOperationResult splitParts( const QVector<QgsPointXY> &splitLine, bool topologicalEditing = false ) SIP_DEPRECATED;
 
@@ -1503,7 +1494,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * by a call to startEditing(). Changes made to features using this method are not committed
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
-     * \deprecated QGIS 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
+     * \deprecated QGIS 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
      */
     Q_DECL_DEPRECATED Qgis::GeometryOperationResult splitFeatures( const QVector<QgsPointXY> &splitLine, bool topologicalEditing = false ) SIP_DEPRECATED;
 
@@ -1581,9 +1572,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * by a call to startEditing(). Changes made to features using this method are not committed
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
-     * \deprecated QGIS 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
+     * \deprecated QGIS 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY.
      */
-    Q_DECL_DEPRECATED int addTopologicalPoints( const QgsPointXY &p )  SIP_DEPRECATED;
+    Q_DECL_DEPRECATED int addTopologicalPoints( const QgsPointXY &p ) SIP_DEPRECATED;
 
     /**
      * Adds a vertex to segments which intersect point \a p but don't
@@ -1626,14 +1617,14 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \note Labels will only be rendered if labelsEnabled() returns TRUE.
      * \see labelsEnabled()
      */
-    const QgsAbstractVectorLayerLabeling *labeling() const SIP_SKIP { return mLabeling; }
+    const QgsAbstractVectorLayerLabeling *labeling() const SIP_SKIP { return mLabeling.get(); }
 
     /**
      * Access to labeling configuration. May be NULLPTR if labeling is not used.
      * \note Labels will only be rendered if labelsEnabled() returns TRUE.
      * \see labelsEnabled()
      */
-    QgsAbstractVectorLayerLabeling *labeling() { return mLabeling; }
+    QgsAbstractVectorLayerLabeling *labeling() { return mLabeling.get(); }
 
     /**
      * Sets labeling configuration. Takes ownership of the object.
@@ -1641,10 +1632,10 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     void setLabeling( QgsAbstractVectorLayerLabeling *labeling SIP_TRANSFER );
 
     //! Returns TRUE if the provider is in editing mode
-    bool isEditable() const FINAL;
+    bool isEditable() const final;
 
     //! Returns TRUE if this is a geometry layer and FALSE in case of NoGeometry (table only) or UnknownGeometry
-    bool isSpatial() const FINAL;
+    bool isSpatial() const final;
 
     //! Returns TRUE if the provider has been modified since the last commit
     bool isModified() const override;
@@ -1657,18 +1648,18 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     bool isAuxiliaryField( int index, int &srcIndex ) const;
 
     //! Synchronises with changes in the datasource
-    void reload() FINAL;
+    void reload() final;
 
     /**
      * Returns new instance of QgsMapLayerRenderer that will be used for rendering of given context
      */
-    QgsMapLayerRenderer *createMapRenderer( QgsRenderContext &rendererContext ) FINAL SIP_FACTORY;
+    QgsMapLayerRenderer *createMapRenderer( QgsRenderContext &rendererContext ) final SIP_FACTORY;
 
-    QgsRectangle extent() const FINAL;
-    QgsRectangle sourceExtent() const FINAL;
+    QgsRectangle extent() const final;
+    QgsRectangle sourceExtent() const final;
 
-    QgsBox3D extent3D() const FINAL;
-    QgsBox3D sourceExtent3D() const FINAL;
+    QgsBox3D extent3D() const final;
+    QgsBox3D sourceExtent3D() const final;
 
     /**
      * Returns the list of fields of this layer.
@@ -1676,7 +1667,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      *
      * \returns A list of fields
      */
-    QgsFields fields() const FINAL;
+    QgsFields fields() const final;
 
     /**
      * Returns list of attribute indexes. i.e. a list from 0 ... fieldCount()
@@ -1693,7 +1684,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * If you need only the count of committed features call this method on this layer's provider.
      * \returns the number of features on this layer or -1 if unknown.
      */
-    long long featureCount() const FINAL;
+    long long featureCount() const final;
 
     /**
      * Makes layer read-only (editing disabled) or not
@@ -1708,7 +1699,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \return FALSE if the layer is read only or the data provider has no editing capabilities
      * \since QGIS 3.18
      */
-    bool supportsEditing() const override;
+    Q_INVOKABLE bool supportsEditing() const override;
 
     /**
      * Changes a feature's \a geometry within the layer's edit buffer
@@ -1764,7 +1755,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see changeGeometry()
      * \see updateFeature()
      */
-    Q_INVOKABLE bool changeAttributeValue( QgsFeatureId fid, int field, const QVariant &newValue, const QVariant &oldValue = QVariant(), bool skipDefaultValues = false,  QgsVectorLayerToolsContext *context = nullptr );
+    Q_INVOKABLE bool changeAttributeValue(
+      QgsFeatureId fid, int field, const QVariant &newValue, const QVariant &oldValue = QVariant(), bool skipDefaultValues = false, QgsVectorLayerToolsContext *context = nullptr
+    );
 
     /**
      * Changes attributes' values for a feature (but does not immediately
@@ -1802,7 +1795,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see changeAttributeValue()
      *
      */
-    Q_INVOKABLE bool changeAttributeValues( QgsFeatureId fid, const QgsAttributeMap &newValues, const QgsAttributeMap &oldValues = QgsAttributeMap(), bool skipDefaultValues = false, QgsVectorLayerToolsContext *context = nullptr );
+    Q_INVOKABLE bool changeAttributeValues(
+      QgsFeatureId fid, const QgsAttributeMap &newValues, const QgsAttributeMap &oldValues = QgsAttributeMap(), bool skipDefaultValues = false, QgsVectorLayerToolsContext *context = nullptr
+    );
 
     /**
      * Add an attribute field (but does not commit it)
@@ -1813,19 +1808,48 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
      */
-    bool addAttribute( const QgsField &field );
+    Q_INVOKABLE bool addAttribute( const QgsField &field );
 
     /**
      * Sets an alias (a display name) for attributes to display in dialogs
      *
      */
-    void setFieldAlias( int index, const QString &aliasString );
+    Q_INVOKABLE void setFieldAlias( int index, const QString &aliasString );
 
     /**
      * Removes an alias (a display name) for attributes to display in dialogs
      *
      */
-    void removeFieldAlias( int index );
+    Q_INVOKABLE void removeFieldAlias( int index );
+
+    /**
+       * Sets the custom comment for the field.
+       * \param index attribute index
+       * \param customCommentString custom comment (can be empty as well)
+       * \since QGIS 4.2
+       */
+    Q_INVOKABLE void setFieldCustomComment( int index, const QString &customCommentString );
+
+    /**
+       * Removes the custom comment for the field.
+       * \param index attribute index
+       * \since QGIS 4.2
+       */
+    Q_INVOKABLE void removeFieldCustomComment( int index );
+
+    /**
+       * Returns the custom comment for the field.
+       * \param index attribute index
+       * \since QGIS 4.2
+       */
+    Q_INVOKABLE QString attributeCustomComment( int index ) const;
+
+    /**
+       * Returns a map of all the custom comments.
+       * Key is the attribute name and value the custom comment for that attribute
+       * \since QGIS 4.2
+       */
+    QgsStringMap attributeCustomComments() const;
 
     /**
      * Renames an attribute field  (but does not commit it).
@@ -1836,7 +1860,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
      */
-    bool renameAttribute( int index, const QString &newName );
+    Q_INVOKABLE bool renameAttribute( int index, const QString &newName );
 
     /**
      * Returns the alias of an attribute name or a null string if there is no alias.
@@ -1844,10 +1868,10 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see {attributeDisplayName( int attributeIndex )} which returns the field name
      *      if no alias is defined.
      */
-    QString attributeAlias( int index ) const;
+    Q_INVOKABLE QString attributeAlias( int index ) const;
 
     //! Convenience function that returns the attribute alias if defined or the field name else
-    QString attributeDisplayName( int index ) const;
+    Q_INVOKABLE QString attributeDisplayName( int index ) const;
 
     //! Returns a map of field name to attribute alias
     QgsStringMap attributeAliases() const;
@@ -1875,6 +1899,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      */
     void setFieldMergePolicy( int index, Qgis::FieldDomainMergePolicy policy );
 #else
+    // clang-format off
 
     /**
      * Sets a split \a policy for the field with the specified index.
@@ -1935,6 +1960,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
       sipCpp->setFieldMergePolicy( a0, a1 );
     }
     % End
+// clang-format on
 #endif
 
     /**
@@ -1969,7 +1995,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * to the underlying data provider until a commitChanges() call is made. Any uncommitted
      * changes can be discarded by calling rollBack().
      */
-    virtual bool deleteAttribute( int attr );
+    Q_INVOKABLE virtual bool deleteAttribute( int attr );
 
     /**
      * Deletes a list of attribute fields (but does not commit it)
@@ -1978,9 +2004,10 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \returns TRUE if at least one attribute has been deleted
      *
      */
-    bool deleteAttributes( const QList<int> &attrs );
+    Q_INVOKABLE bool deleteAttributes( const QList<int> &attrs );
 
-    bool addFeatures( QgsFeatureList &features, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) FINAL;
+    using QgsFeatureSink::addFeatures;
+    bool addFeatures( QgsFeatureList &features, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) final;
 
     /**
      * Deletes a feature from the layer (but does not commit it).
@@ -2131,8 +2158,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \returns calculated default value
      * \see setDefaultValueDefinition()
      */
-    QVariant defaultValue( int index, const QgsFeature &feature = QgsFeature(),
-                           QgsExpressionContext *context = nullptr ) const;
+    QVariant defaultValue( int index, const QgsFeature &feature = QgsFeature(), QgsExpressionContext *context = nullptr ) const;
 
     /**
      * Sets the definition of the expression to use when calculating the default value for a field.
@@ -2264,7 +2290,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see minimumValue()
      * \see maximumValue()
      */
-    QSet<QVariant> uniqueValues( int fieldIndex, int limit = -1 ) const FINAL;
+    Q_INVOKABLE QSet<QVariant> uniqueValues( int fieldIndex, int limit = -1 ) const final;
 
     /**
      * Returns unique string values of an attribute which contain a specified subset string. Subset
@@ -2279,8 +2305,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \param feedback optional feedback object for canceling request
      * \returns list of unique strings containing substring
      */
-    QStringList uniqueStringsMatching( int index, const QString &substring, int limit = -1,
-                                       QgsFeedback *feedback = nullptr ) const;
+    QStringList uniqueStringsMatching( int index, const QString &substring, int limit = -1, QgsFeedback *feedback = nullptr ) const;
 
     /**
      * Returns the minimum value for an attribute column or an invalid variant in case of error.
@@ -2296,7 +2321,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see minimumAndMaximumValue()
      * \see uniqueValues()
      */
-    QVariant minimumValue( int index ) const FINAL;
+    Q_INVOKABLE QVariant minimumValue( int index ) const final;
 
     /**
      * Returns the maximum value for an attribute column or an invalid variant in case of error.
@@ -2312,7 +2337,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see minimumAndMaximumValue()
      * \see uniqueValues()
      */
-    QVariant maximumValue( int index ) const FINAL;
+    Q_INVOKABLE QVariant maximumValue( int index ) const final;
 
 
     /**
@@ -2349,21 +2374,23 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \param error optional storage for error messages (not available in Python bindings)
      * \returns calculated aggregate value
      */
-    QVariant aggregate( Qgis::Aggregate aggregate,
-                        const QString &fieldOrExpression,
-                        const QgsAggregateCalculator::AggregateParameters &parameters = QgsAggregateCalculator::AggregateParameters(),
-                        QgsExpressionContext *context = nullptr,
-                        bool *ok = nullptr,
-                        QgsFeatureIds *fids = nullptr,
-                        QgsFeedback *feedback = nullptr,
-                        QString *error SIP_PYARGREMOVE = nullptr ) const;
+    QVariant aggregate(
+      Qgis::Aggregate aggregate,
+      const QString &fieldOrExpression,
+      const QgsAggregateCalculator::AggregateParameters &parameters = QgsAggregateCalculator::AggregateParameters(),
+      QgsExpressionContext *context = nullptr,
+      bool *ok = nullptr,
+      QgsFeatureIds *fids = nullptr,
+      QgsFeedback *feedback = nullptr,
+      QString *error SIP_PYARGREMOVE = nullptr
+    ) const;
 
     //! Sets the blending mode used for rendering each feature
     void setFeatureBlendMode( QPainter::CompositionMode blendMode );
     //! Returns the current blending mode for features
     QPainter::CompositionMode featureBlendMode() const;
 
-    QString htmlMetadata() const FINAL;
+    QString htmlMetadata() const final;
 
     /**
      * Sets the simplification settings for fast rendering of features
@@ -2401,9 +2428,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      */
     void setAttributeTableConfig( const QgsAttributeTableConfig &attributeTableConfig );
 
-    QgsExpressionContext createExpressionContext() const FINAL;
+    QgsExpressionContext createExpressionContext() const final;
 
-    QgsExpressionContextScope *createExpressionContextScope() const FINAL SIP_FACTORY;
+    QgsExpressionContextScope *createExpressionContextScope() const final SIP_FACTORY;
 
     /**
      * Returns the configuration of the form used to represent this vector layer.
@@ -2581,11 +2608,13 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      *
      * \since QGIS 3.8
      */
-    virtual void setTransformContext( const QgsCoordinateTransformContext &transformContext ) override;
+    void setTransformContext( const QgsCoordinateTransformContext &transformContext ) override;
 
     Qgis::SpatialIndexPresence hasSpatialIndex() const override;
 
     bool accept( QgsStyleEntityVisitorInterface *visitor ) const override;
+
+    bool accept( QgsObjectEntityVisitorInterface *visitor, const QgsObjectVisitorContext &context ) const override;
 
   signals:
 
@@ -2831,9 +2860,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
 
   protected:
     //! Sets the extent
-    void setExtent( const QgsRectangle &rect ) FINAL;
+    void setExtent( const QgsRectangle &rect ) final;
     //! Sets the extent
-    void setExtent3D( const QgsBox3D &rect ) FINAL;
+    void setExtent3D( const QgsBox3D &rect ) final;
 
   private slots:
     void invalidateSymbolCountedFlag();
@@ -2845,6 +2874,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     void onRelationsLoaded();
     void onSymbolsCounted();
     void onDirtyTransaction( const QString &sql, const QString &name );
+    void onDependencyAfterCommitChanges();
     void emitDataChanged();
 
   private:
@@ -2859,7 +2889,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * \see setReadOnly()
      * \see readOnlyChanged()
      */
-    bool isReadOnly() const FINAL;
+    bool isReadOnly() const final;
 
     /**
      * Bind layer to a specific data provider
@@ -2943,6 +2973,9 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     //! Map that stores the aliases for attributes. Key is the attribute name and value the alias for that attribute
     QgsStringMap mAttributeAliasMap;
 
+    //! Map that stores the custom comments for attributes. Key is the attribute name and value the custom comment for that attribute
+    QgsStringMap mAttributeCustomCommentMap;
+
     //! Map which stores default value expressions for fields
     QMap<QString, QgsDefaultValue> mDefaultExpressionMap;
 
@@ -2977,13 +3010,13 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     Qgis::WkbType mWkbType = Qgis::WkbType::Unknown;
 
     //! Renderer object which holds the information about how to display the features
-    QgsFeatureRenderer *mRenderer = nullptr;
+    std::unique_ptr<QgsFeatureRenderer> mRenderer;
 
     //! Simplification object which holds the information about how to simplify the features for fast rendering
     QgsVectorSimplifyMethod mSimplifyMethod;
 
     //! Labeling configuration
-    QgsAbstractVectorLayerLabeling *mLabeling = nullptr;
+    std::unique_ptr<QgsAbstractVectorLayerLabeling> mLabeling;
 
     //! True if labels are enabled
     bool mLabelsEnabled = false;
@@ -3009,13 +3042,13 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
     QgsVectorLayerJoinBuffer *mJoinBuffer = nullptr;
 
     //! stores information about expression fields on this layer
-    QgsExpressionFieldBuffer *mExpressionFieldBuffer = nullptr;
+    std::unique_ptr<QgsExpressionFieldBuffer> mExpressionFieldBuffer;
 
     //diagram rendering object. 0 if diagram drawing is disabled
-    QgsDiagramRenderer *mDiagramRenderer = nullptr;
+    std::unique_ptr<QgsDiagramRenderer> mDiagramRenderer;
 
     //stores infos about diagram placement (placement type, priority, position distance)
-    QgsDiagramLayerSettings *mDiagramLayerSettings = nullptr;
+    std::unique_ptr<QgsDiagramLayerSettings> mDiagramLayerSettings;
 
     mutable bool mValidExtent2D = false;
     mutable bool mLazyExtent2D = true;
@@ -3078,9 +3111,7 @@ class CORE_EXPORT QgsVectorLayer : public QgsMapLayer, public QgsExpressionConte
      * Stores the value from LayerOptions.loadAllStoredStyles
      */
     bool mLoadAllStoredStyle = false;
-
 };
-
 
 
 // clazy:excludeall=qstring-allocations

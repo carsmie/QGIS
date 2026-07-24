@@ -18,16 +18,17 @@
 #ifndef QGSZONALSTATISTICS_H
 #define QGSZONALSTATISTICS_H
 
-#include <QString>
-#include <QMap>
-
-#include <limits>
 #include <cfloat>
+#include <limits>
+#include <map>
 
 #include "qgis_analysis.h"
-#include "qgsfeedback.h"
 #include "qgscoordinatereferencesystem.h"
+#include "qgsfeedback.h"
 #include "qgsfields.h"
+
+#include <QMap>
+#include <QString>
 
 class QgsGeometry;
 class QgsVectorLayer;
@@ -54,7 +55,9 @@ class ANALYSIS_EXPORT QgsZonalStatistics
      * \warning Constructing QgsZonalStatistics using this method is not thread safe, and
      * the constructor which accepts a QgsRasterInterface should be used instead.
      */
-    QgsZonalStatistics( QgsVectorLayer *polygonLayer, QgsRasterLayer *rasterLayer, const QString &attributePrefix = QString(), int rasterBand = 1, Qgis::ZonalStatistics stats = Qgis::ZonalStatistic::Default );
+    QgsZonalStatistics(
+      QgsVectorLayer *polygonLayer, QgsRasterLayer *rasterLayer, const QString &attributePrefix = QString(), int rasterBand = 1, Qgis::ZonalStatistics stats = Qgis::ZonalStatistic::Default
+    );
 
     /**
      * Constructor for QgsZonalStatistics, using a QgsRasterInterface.
@@ -82,7 +85,16 @@ class ANALYSIS_EXPORT QgsZonalStatistics
      *
      * \since QGIS 3.2
      */
-    QgsZonalStatistics( QgsVectorLayer *polygonLayer, QgsRasterInterface *rasterInterface, const QgsCoordinateReferenceSystem &rasterCrs, double rasterUnitsPerPixelX, double rasterUnitsPerPixelY, const QString &attributePrefix = QString(), int rasterBand = 1, Qgis::ZonalStatistics stats = Qgis::ZonalStatistic::Default );
+    QgsZonalStatistics(
+      QgsVectorLayer *polygonLayer,
+      QgsRasterInterface *rasterInterface,
+      const QgsCoordinateReferenceSystem &rasterCrs,
+      double rasterUnitsPerPixelX,
+      double rasterUnitsPerPixelY,
+      const QString &attributePrefix = QString(),
+      int rasterBand = 1,
+      Qgis::ZonalStatistics stats = Qgis::ZonalStatistic::Default
+    );
 
 
     /**
@@ -113,7 +125,9 @@ class ANALYSIS_EXPORT QgsZonalStatistics
      * \since QGIS 3.16
      */
 #ifndef SIP_RUN
-    static QMap<Qgis::ZonalStatistic, QVariant> calculateStatistics( QgsRasterInterface *rasterInterface, const QgsGeometry &geometry, double cellSizeX, double cellSizeY, int rasterBand, Qgis::ZonalStatistics statistics );
+    static QMap<Qgis::ZonalStatistic, QVariant> calculateStatistics(
+      QgsRasterInterface *rasterInterface, const QgsGeometry &geometry, double cellSizeX, double cellSizeY, int rasterBand, Qgis::ZonalStatistics statistics
+    );
 #endif
 
     ///@cond PRIVATE
@@ -127,20 +141,22 @@ class ANALYSIS_EXPORT QgsZonalStatistics
      *
      * \since QGIS 3.16
      */
-    static QMap<int, QVariant> calculateStatisticsInt( QgsRasterInterface *rasterInterface, const QgsGeometry &geometry, double cellSizeX, double cellSizeY, int rasterBand, Qgis::ZonalStatistics statistics ) SIP_PYNAME( calculateStatistics );
+    static QMap<int, QVariant> calculateStatisticsInt(
+      QgsRasterInterface *rasterInterface, const QgsGeometry &geometry, double cellSizeX, double cellSizeY, int rasterBand, Qgis::ZonalStatistics statistics
+    ) SIP_PYNAME( calculateStatistics );
     /// @endcond
 
   private:
     QgsZonalStatistics() = default;
 
+#ifndef SIP_RUN
     class FeatureStats
     {
       public:
         FeatureStats( bool storeValues = false, bool storeValueCounts = false )
           : mStoreValues( storeValues )
           , mStoreValueCounts( storeValueCounts )
-        {
-        }
+        {}
 
         void reset()
         {
@@ -154,28 +170,35 @@ class ANALYSIS_EXPORT QgsZonalStatistics
 
         void addValue( double value, const QgsPointXY &point, double weight = 1.0 )
         {
-          if ( weight < 1.0 )
+          if ( !std::isnan( value ) )
           {
-            sum += value * weight;
-            count += weight;
+            if ( weight < 1.0 )
+            {
+              sum += value * weight;
+              count += weight;
+            }
+            else
+            {
+              sum += value;
+              ++count;
+            }
+            if ( value < min )
+            {
+              min = value;
+              minPoint = point;
+            }
+            if ( value > max )
+            {
+              max = value;
+              maxPoint = point;
+            }
           }
           else
           {
-            sum += value;
             ++count;
           }
-          if ( value < min )
-          {
-            min = value;
-            minPoint = point;
-          }
-          if ( value > max )
-          {
-            max = value;
-            maxPoint = point;
-          }
           if ( mStoreValueCounts )
-            valueCount.insert( value, valueCount.value( value, 0 ) + 1 );
+            ++valueCount[value];
           if ( mStoreValues )
             values.append( value );
         }
@@ -185,7 +208,11 @@ class ANALYSIS_EXPORT QgsZonalStatistics
         double min = std::numeric_limits<double>::max();
         QgsPointXY minPoint;
         QgsPointXY maxPoint;
-        QMap<double, int> valueCount;
+        struct CompareNaNAware
+        {
+            bool operator()( double lhs, double rhs ) const { return ( std::isnan( lhs ) && !std::isnan( rhs ) ) || lhs < rhs; }
+        };
+        std::map<double, int64_t, CompareNaNAware> valueCount;
         QList<double> values;
 
       private:
@@ -206,6 +233,7 @@ class ANALYSIS_EXPORT QgsZonalStatistics
     QgsVectorLayer *mPolygonLayer = nullptr;
     QString mAttributePrefix;
     Qgis::ZonalStatistics mStatistics = Qgis::ZonalStatistic::All;
+#endif
 };
 
 // clazy:excludeall=qstring-allocations

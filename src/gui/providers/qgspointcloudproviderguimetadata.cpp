@@ -15,30 +15,36 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsapplication.h"
-#include "qgssourceselectprovider.h"
-#include "qgspointcloudsourceselect.h"
 #include "qgspointcloudproviderguimetadata.h"
+
+#include "qgsapplication.h"
+#include "qgspointcloudsourceselect.h"
+#include "qgssourceselectprovider.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
 class QgsPointCloudSourceSelectProvider : public QgsSourceSelectProvider
 {
   public:
-    QString providerKey() const override { return QStringLiteral( "pointcloud" ); }
+    QString providerKey() const override { return u"pointcloud"_s; }
     QString text() const override { return QObject::tr( "Point Cloud" ); }
     int ordering() const override { return QgsSourceSelectProvider::OrderLocalProvider + 25; }
-    QIcon icon() const override { return QgsApplication::getThemeIcon( QStringLiteral( "/mActionAddPointCloudLayer.svg" ) ); }
-    QgsAbstractDataSourceWidget *createDataSourceWidget( QWidget *parent = nullptr, Qt::WindowFlags fl = Qt::Widget, QgsProviderRegistry::WidgetMode widgetMode = QgsProviderRegistry::WidgetMode::Embedded ) const override
+    QIcon icon() const override { return QgsApplication::getThemeIcon( u"/mActionAddPointCloudLayer.svg"_s ); }
+    QgsAbstractDataSourceWidget *createDataSourceWidget(
+      QWidget *parent = nullptr, Qt::WindowFlags fl = Qt::Widget, QgsProviderRegistry::WidgetMode widgetMode = QgsProviderRegistry::WidgetMode::Embedded
+    ) const override
     {
       return new QgsPointCloudSourceSelect( parent, fl, widgetMode );
     }
 };
 
 QgsPointCloudProviderGuiMetadata::QgsPointCloudProviderGuiMetadata()
-  : QgsProviderGuiMetadata( QStringLiteral( "pointcloud" ) )
-{
-}
+  : QgsProviderGuiMetadata( u"pointcloud"_s )
+{}
 
 QList<QgsSourceSelectProvider *> QgsPointCloudProviderGuiMetadata::sourceSelectProviders()
 {

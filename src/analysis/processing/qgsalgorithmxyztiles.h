@@ -18,13 +18,13 @@
 #ifndef QGSALGORITHMXYZTILES_H
 #define QGSALGORITHMXYZTILES_H
 
-#define SIP_NO_FILE
 
 #include "qgis_sip.h"
-#include "qgsprocessingalgorithm.h"
-
 #include "qgsmaprenderersequentialjob.h"
 #include "qgsmbtiles.h"
+#include "qgsprocessingalgorithm.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -33,7 +33,6 @@ int lon2tileX( const double lon, const int z );
 int lat2tileY( const double lat, const int z );
 double tileX2lon( const int x, const int z );
 double tileY2lat( const int y, const int z );
-void extent2TileXY( const QgsRectangle extent, const int zoom, int &xMin, int &yMin, int &xMax, int &yMax );
 
 struct Tile
 {
@@ -50,10 +49,7 @@ struct Tile
 
 struct MetaTile
 {
-    MetaTile()
-      : rows( 0 )
-      , cols( 0 )
-    {}
+    MetaTile() {}
 
     void addTile( const int row, const int col, Tile tileToAdd )
     {
@@ -76,10 +72,10 @@ struct MetaTile
     }
 
     QMap<QPair<int, int>, Tile> tiles;
-    int rows;
-    int cols;
+    int rows = 0;
+    int cols = 0;
 };
-QList<MetaTile> getMetatiles( const QgsRectangle extent, const int zoom, const int tileSize = 4 );
+QList<MetaTile> getMetatiles( const QgsRectangle extent, const int zoom, long long &tileCount, const int tileSize = 4 );
 
 
 /**
@@ -124,9 +120,10 @@ class QgsXyzTilesBaseAlgorithm : public QgsProcessingAlgorithm
     QgsCoordinateTransform mWgs2Mercator;
     QgsRectangle mWgs84Extent;
     QgsProcessingFeedback *mFeedback = nullptr;
-    long long mTotalTiles = 0;
-    long long mProcessedTiles = 0;
+    long long mTotalMetaTiles = 0;
+    long long mProcessedMetaTiles = 0;
     QgsCoordinateTransformContext mTransformContext;
+    QString mEllipsoid;
     QPointer<QEventLoop> mEventLoop;
     QList<MetaTile> mMetaTiles;
     QMap<QgsMapRendererSequentialJob *, MetaTile> mRendererJobs;

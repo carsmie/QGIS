@@ -16,18 +16,17 @@
 #ifndef QGSEXTENTWIDGET_H
 #define QGSEXTENTWIDGET_H
 
-#include "qgscollapsiblegroupbox.h"
-#include "qgsmaptool.h"
-#include "qgsmaptoolextent.h"
-#include "qgis_sip.h"
-
 #include "ui_qgsextentgroupboxwidget.h"
 
-#include "qgscoordinatereferencesystem.h"
-#include "qgsrectangle.h"
-#include "qgis_gui.h"
-
 #include <memory>
+
+#include "qgis_gui.h"
+#include "qgis_sip.h"
+#include "qgscoordinatereferencesystem.h"
+#include "qgsmaptool.h"
+#include "qgsmaptoolextent.h"
+#include "qgsrectangle.h"
+
 #include <QRegularExpression>
 
 class QgsBookmarkManagerProxyModel;
@@ -270,6 +269,8 @@ class GUI_EXPORT QgsExtentWidget : public QWidget, private Ui::QgsExtentGroupBox
 
     QgsRectangle mOriginalExtent;
     QgsCoordinateReferenceSystem mOriginalCrs;
+
+    QgsRectangle mOutputExtent;
 
     QMenu *mMenu = nullptr;
 

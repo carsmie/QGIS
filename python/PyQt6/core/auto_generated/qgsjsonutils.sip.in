@@ -25,7 +25,6 @@ GeoJSON spec if either the source vector layer or source CRS is set.
 #include "qgsjsonutils.h"
 %End
   public:
-
     QgsJsonExporter( QgsVectorLayer *vectorLayer = 0, int precision = 6 );
 %Docstring
 Constructor for QgsJsonExporter.
@@ -253,10 +252,9 @@ values.
 .. versionadded:: 3.40
 %End
 
-    QString exportFeature( const QgsFeature &feature,
-                           const QVariantMap &extraProperties = QVariantMap(),
-                           const QVariant &id = QVariant(),
-                           int indent = -1 ) const;
+    QString exportFeature(
+      const QgsFeature &feature, const QVariantMap &extraProperties = QVariantMap(), const QVariant &id = QVariant(), int indent = -1, const QVariantMap &extraMembers = QVariantMap()
+    ) const;
 %Docstring
 Returns a GeoJSON string representation of a feature.
 
@@ -267,6 +265,9 @@ Returns a GeoJSON string representation of a feature.
            feature's ID. If omitted, feature's ID is used.
 :param indent: number of indentation spaces for generated JSON (defaults
                to none)
+:param extraMembers: are optional foreign members as e.g. the layer name
+                     to pass as featureType. If omitted, it is not
+                     written (since QGIS 4.2)
 
 :return: GeoJSON string
 
@@ -274,7 +275,6 @@ Returns a GeoJSON string representation of a feature.
 
 .. seealso:: :py:func:`exportFeatureToJsonObject`
 %End
-
 
 
     QString exportFeatures( const QgsFeatureList &features, int indent = -1 ) const;
@@ -305,6 +305,20 @@ when the automatic geometry transformation is active (it is by default).
 .. versionadded:: 3.30
 %End
 
+    Qgis::GeoJsonProfile geoJsonProfile() const;
+%Docstring
+Returns the GeoJSON profile to use for export.
+
+.. versionadded:: 4.4
+%End
+
+    void setGeoJsonProfile( Qgis::GeoJsonProfile profile );
+%Docstring
+Sets the GeoJSON profile to use for export. Default profile is RFC7946.
+
+.. versionadded:: 4.4
+%End
+
 };
 
 
@@ -321,7 +335,6 @@ Helper utilities for working with JSON and GeoJSON conversions.
     static const QMetaObject staticMetaObject;
 
   public:
-
     static QgsFeatureList stringToFeatureList( const QString &string, const QgsFields &fields = QgsFields() );
 %Docstring
 Attempts to parse a GeoJSON ``string`` to a collection of features. It
@@ -365,8 +378,7 @@ quotations and escaping where required.
 :return: encoded value
 %End
 
-    static QString exportAttributes( const QgsFeature &feature, QgsVectorLayer *layer = 0,
-                                     const QVector<QVariant> &attributeWidgetCaches = QVector<QVariant>() );
+    static QString exportAttributes( const QgsFeature &feature, QgsVectorLayer *layer = 0, const QVector<QVariant> &attributeWidgetCaches = QVector<QVariant>() );
 %Docstring
 Exports all attributes from a :py:class:`QgsFeature` as a JSON map type.
 
@@ -415,6 +427,12 @@ Returns a null geometry if the geometry could not be parsed.
 .. versionadded:: 3.36
 %End
 
+    static QVariant geometryToGeoJsonVariant( const QgsGeometry &geometry );
+%Docstring
+Converts a ``geometry`` to a GeoJSON compatible variant.
+
+.. versionadded:: 4.4
+%End
 
 
 

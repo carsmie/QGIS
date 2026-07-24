@@ -19,8 +19,9 @@
 
 #include "qgsprovidermetadata.h"
 
-///@cond PRIVATE
 #define SIP_NO_FILE
+
+///@cond PRIVATE
 
 /**
  * This metadata class does not support creation of provider instances, because
@@ -38,6 +39,8 @@ class QgsVectorTileProviderMetadata : public QgsProviderMetadata
     // handling of stored connections
 
     QMap<QString, QgsAbstractProviderConnection *> connections( bool cached ) override;
+
+    using QgsProviderMetadata::createConnection;
     QgsAbstractProviderConnection *createConnection( const QString &name ) override;
     void deleteConnection( const QString &name ) override;
     void saveConnection( const QgsAbstractProviderConnection *connection, const QString &name ) override;

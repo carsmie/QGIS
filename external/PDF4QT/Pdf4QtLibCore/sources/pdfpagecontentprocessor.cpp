@@ -1,19 +1,24 @@
-//    Copyright (C) 2019-2022 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT.  If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "pdfpagecontentprocessor.h"
 #include "pdfdocument.h"
@@ -23,6 +28,7 @@
 #include "pdfexecutionpolicy.h"
 #include "pdfstreamfilters.h"
 
+#include <QScopeGuard>
 #include <QPainterPathStroker>
 #include <QtMath>
 
@@ -390,9 +396,11 @@ void PDFPageContentProcessor::performClipping(const QPainterPath& path, Qt::Fill
     Q_UNUSED(fillRule);
 }
 
-bool PDFPageContentProcessor::performOriginalImagePainting(const PDFImage& image)
+bool PDFPageContentProcessor::performOriginalImagePainting(const PDFImage& image, const PDFStream* stream, PDFObjectReference reference)
 {
     Q_UNUSED(image);
+    Q_UNUSED(stream);
+    Q_UNUSED(reference);
     return false;
 }
 
@@ -485,6 +493,12 @@ void PDFPageContentProcessor::performTextEnd(ProcessOrder order)
     Q_UNUSED(order);
 }
 
+void PDFPageContentProcessor::performProcessTextSequence(const TextSequence& textSequence, ProcessOrder order)
+{
+    Q_UNUSED(textSequence);
+    Q_UNUSED(order);
+}
+
 bool PDFPageContentProcessor::isContentKindSuppressed(ContentKind kind) const
 {
     Q_UNUSED(kind);
@@ -526,6 +540,15 @@ PDFPageContentProcessor::PDFTransparencyGroup PDFPageContentProcessor::parseTran
     }
 
     return group;
+}
+
+void PDFPageContentProcessor::performInterceptInstruction(Operator currentOperator,
+                                                          ProcessOrder processOrder,
+                                                          const QByteArray& operatorAsText)
+{
+    Q_UNUSED(currentOperator);
+    Q_UNUSED(processOrder);
+    Q_UNUSED(operatorAsText);
 }
 
 void PDFPageContentProcessor::processContent(const QByteArray& content)
@@ -670,7 +693,7 @@ void PDFPageContentProcessor::processContent(const QByteArray& content)
 
                         QByteArray buffer = content.mid(startDataPosition, dataLength);
                         PDFStream imageStream(std::move(*dictionary), std::move(buffer));
-                        paintXObjectImage(&imageStream);
+                        paintXObjectImage(&imageStream, PDFObjectReference());
                     }
                     else
                     {
@@ -738,6 +761,12 @@ void PDFPageContentProcessor::processForm(const QTransform& matrix,
                                           const QByteArray& content,
                                           PDFInteger formStructuralParent)
 {
+    if (isContentKindSuppressed(ContentKind::Forms))
+    {
+        // Process of forms is suppressed
+        return;
+    }
+
     PDFPageContentProcessorStateGuard guard(this);
     PDFTemporaryValueChange structuralParentChangeGuard(&m_structuralParentKey, formStructuralParent);
 
@@ -1128,6 +1157,9 @@ void PDFPageContentProcessor::processCommand(const QByteArray& command)
             break;
         }
     }
+
+    performInterceptInstruction(op, ProcessOrder::BeforeOperation, command);
+    auto callInterceptInstAtEnd = qScopeGuard([&, this](){ performInterceptInstruction(op, ProcessOrder::AfterOperation, command); });
 
     switch (op)
     {
@@ -1855,6 +1887,11 @@ bool PDFPageContentProcessor::isProcessingCancelled() const
     return m_operationControl && m_operationControl->isOperationCancelled();
 }
 
+bool PDFPageContentProcessor::isTextProcessing() const
+{
+    return m_textBeginEndState > 0;
+}
+
 void PDFPageContentProcessor::reportRenderErrorOnce(RenderErrorType type, QString message)
 {
     if (!m_onceReportedErrors.count(message))
@@ -2228,14 +2265,17 @@ void PDFPageContentProcessor::operatorEndSubpath()
 
 void PDFPageContentProcessor::operatorRectangle(PDFReal x, PDFReal y, PDFReal width, PDFReal height)
 {
-    const PDFReal xMin = qMin(x, x + width);
-    const PDFReal xMax = qMax(x, x + width);
-    const PDFReal yMin = qMin(y, y + height);
-    const PDFReal yMax = qMax(y, y + height);
-    const PDFReal correctedWidth = xMax - xMin;
-    const PDFReal correctedHeight = yMax - yMin;
-
-    m_currentPath.addRect(QRectF(xMin, yMin, correctedWidth, correctedHeight));
+    // Trace the rectangle in the order defined by the PDF specification (8.5.2.1),
+    // instead of normalizing it into a QRectF and using QPainterPath::addRect.
+    // addRect always emits the same winding direction, which would destroy the
+    // orientation encoded by the sign of width/height - orientation that PDF
+    // producers rely on to carve holes out of overlapping rectangles using the
+    // nonzero winding fill rule.
+    m_currentPath.moveTo(x, y);
+    m_currentPath.lineTo(x + width, y);
+    m_currentPath.lineTo(x + width, y + height);
+    m_currentPath.lineTo(x, y + height);
+    m_currentPath.closeSubpath();
 }
 
 void PDFPageContentProcessor::operatorPathStroke()
@@ -2718,7 +2758,7 @@ void PDFPageContentProcessor::operatorTextSetFontAndFontSize(PDFOperandName font
         {
             try
             {
-                PDFFontPointer font = m_fontCache->getFont(m_fontDictionary->get(fontName.name));
+                PDFFontPointer font = m_fontCache->getFont(m_fontDictionary->get(fontName.name), fontName.name);
 
                 m_graphicState.setTextFont(qMove(font));
                 m_graphicState.setTextFontSize(fontSize);
@@ -2947,7 +2987,7 @@ void PDFPageContentProcessor::operatorShadingPaintShape(PDFPageContentProcessor:
     processPathPainting(boundingRectPath, false, true, false, boundingRectPath.fillRule());
 }
 
-void PDFPageContentProcessor::paintXObjectImage(const PDFStream* stream)
+void PDFPageContentProcessor::paintXObjectImage(const PDFStream* stream, PDFObjectReference reference)
 {
     if (isContentKindSuppressed(ContentKind::Images))
     {
@@ -2973,7 +3013,7 @@ void PDFPageContentProcessor::paintXObjectImage(const PDFStream* stream)
 
     PDFImage pdfImage = PDFImage::createImage(m_document, stream, qMove(colorSpace), false, m_graphicState.getRenderingIntent(), this);
 
-    if (!performOriginalImagePainting(pdfImage))
+    if (!performOriginalImagePainting(pdfImage, stream, reference))
     {
         QImage image = pdfImage.getImage(m_CMS, this, m_operationControl);
 
@@ -2990,6 +3030,11 @@ void PDFPageContentProcessor::paintXObjectImage(const PDFStream* stream)
 
             if (!image.isNull())
             {
+                if (PDFImage::canBeConvertedToMonochromatic(image))
+                {
+                    image.convertTo(QImage::Format_Mono);
+                }
+
                 performImagePainting(image);
             }
             else
@@ -3007,6 +3052,12 @@ void PDFPageContentProcessor::reportWarningAboutColorOperatorsInUTP()
 
 void PDFPageContentProcessor::processForm(const PDFStream* stream)
 {
+    if (isContentKindSuppressed(ContentKind::Forms))
+    {
+        // Process of forms is suppressed
+        return;
+    }
+
     PDFDocumentDataLoaderDecorator loader(getDocument());
     const PDFDictionary* streamDictionary = stream->getDictionary();
 
@@ -3038,7 +3089,14 @@ void PDFPageContentProcessor::operatorPaintXObject(PDFOperandName name)
 
     if (m_xobjectDictionary)
     {
-        const PDFObject& object = m_document->getObject(m_xobjectDictionary->get(name.name));
+        const PDFObject& entry = m_xobjectDictionary->get(name.name);
+        PDFObjectReference reference;
+        if (entry.isReference())
+        {
+            reference = entry.getReference();
+        }
+
+        const PDFObject& object = m_document->getObject(entry);
         if (object.isStream())
         {
             const PDFStream* stream = object.getStream();
@@ -3065,7 +3123,7 @@ void PDFPageContentProcessor::operatorPaintXObject(PDFOperandName name)
             QByteArray subtype = loader.readNameFromDictionary(streamDictionary, "Subtype");
             if (subtype == "Image")
             {
-                paintXObjectImage(stream);
+                paintXObjectImage(stream, reference);
             }
             else if (subtype == "Form")
             {
@@ -3165,6 +3223,8 @@ void PDFPageContentProcessor::drawText(const TextSequence& textSequence)
         return;
     }
 
+    performProcessTextSequence(textSequence, ProcessOrder::BeforeOperation);
+
     const PDFRealizedFontPointer& font = getRealizedFont();
     if (font)
     {
@@ -3222,7 +3282,19 @@ void PDFPageContentProcessor::drawText(const TextSequence& textSequence)
                         if (!glyphPath.isEmpty())
                         {
                             QPainterPath transformedGlyph = textRenderingMatrix.map(glyphPath);
-                            processPathPainting(transformedGlyph, stroke, fill, true, transformedGlyph.fillRule());
+
+                            bool handledAsRealText = false;
+                            if (fill && !stroke && isHorizontalWritingSystem && !item.character.isNull() &&
+                                !getGraphicState()->getFillColorSpace()->asPatternColorSpace())
+                            {
+                                PDFRealTextDrawInfo realTextDrawInfo{ item.character, m_graphicState.getTextFont(), fontSize, textRenderingMatrix };
+                                handledAsRealText = performTextCharacterDrawing(realTextDrawInfo);
+                            }
+
+                            if (!handledAsRealText)
+                            {
+                                processPathPainting(transformedGlyph, stroke, fill, true, transformedGlyph.fillRule());
+                            }
 
                             if (clipped)
                             {
@@ -3340,6 +3412,8 @@ void PDFPageContentProcessor::drawText(const TextSequence& textSequence)
     {
         throw PDFRendererException(RenderErrorType::Error, PDFTranslationContext::tr("Invalid font, text can't be printed."));
     }
+
+    performProcessTextSequence(textSequence, ProcessOrder::AfterOperation);
 }
 
 PDFRealizedFontPointer PDFPageContentProcessor::getRealizedFontImpl()
@@ -3415,7 +3489,7 @@ bool PDFPageContentProcessor::isContentSuppressedByOC(PDFObjectReference ocgOrOc
     return false;
 }
 
-PDFPageContentProcessor::PDFPageContentProcessorState::PDFPageContentProcessorState() :
+PDFPageContentProcessorState::PDFPageContentProcessorState() :
     m_currentTransformationMatrix(),
     m_strokeColorSpace(),
     m_fillColorSpace(),
@@ -3456,55 +3530,60 @@ PDFPageContentProcessor::PDFPageContentProcessorState::PDFPageContentProcessorSt
     m_strokeColorOriginal = m_fillColorOriginal;
 }
 
-PDFPageContentProcessor::PDFPageContentProcessorState::~PDFPageContentProcessorState()
+PDFPageContentProcessorState::~PDFPageContentProcessorState()
 {
 
 }
 
-PDFPageContentProcessor::PDFPageContentProcessorState& PDFPageContentProcessor::PDFPageContentProcessorState::operator=(const PDFPageContentProcessor::PDFPageContentProcessorState& other)
+PDFPageContentProcessorState& PDFPageContentProcessorState::operator=(const PDFPageContentProcessorState& other)
 {
-    setCurrentTransformationMatrix(other.getCurrentTransformationMatrix());
-    setStrokeColorSpace(other.m_strokeColorSpace);
-    setFillColorSpace(other.m_fillColorSpace);
-    setStrokeColor(other.getStrokeColor(), other.getStrokeColorOriginal());
-    setFillColor(other.getFillColor(), other.getFillColorOriginal());
-    setLineWidth(other.getLineWidth());
-    setLineCapStyle(other.getLineCapStyle());
-    setLineJoinStyle(other.getLineJoinStyle());
-    setMitterLimit(other.getMitterLimit());
-    setLineDashPattern(other.getLineDashPattern());
-    setRenderingIntentName(other.getRenderingIntentName());
-    setFlatness(other.getFlatness());
-    setSmoothness(other.getSmoothness());
-    setTextCharacterSpacing(other.getTextCharacterSpacing());
-    setTextWordSpacing(other.getTextWordSpacing());
-    setTextHorizontalScaling(other.getTextHorizontalScaling());
-    setTextLeading(other.getTextLeading());
-    setTextFont(other.getTextFont());
-    setTextFontSize(other.getTextFontSize());
-    setTextRenderingMode(other.getTextRenderingMode());
-    setTextRise(other.getTextRise());
-    setTextKnockout(other.getTextKnockout());
-    setTextMatrix(other.getTextMatrix());
-    setTextLineMatrix(other.getTextLineMatrix());
-    setAlphaStroking(other.getAlphaStroking());
-    setAlphaFilling(other.getAlphaFilling());
-    setBlendMode(other.getBlendMode());
-    setRenderingIntent(other.getRenderingIntent());
-    setOverprintMode(other.getOverprintMode());
-    setAlphaIsShape(other.getAlphaIsShape());
-    setStrokeAdjustment(other.getStrokeAdjustment());
-    setSoftMask(other.getSoftMask());
-    setBlackPointCompensationMode(other.getBlackPointCompensationMode());
-    setBlackGenerationFunction(other.getBlackGenerationFunction());
-    setUndercolorRemovalFunction(other.getUndercolorRemovalFunction());
-    setTransferFunction(other.getTransferFunction());
-    setHalftone(other.getHalftone());
-    setHalftoneOrigin(other.getHalftoneOrigin());
+    setState(other);
     return *this;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setCurrentTransformationMatrix(const QTransform& currentTransformationMatrix)
+void PDFPageContentProcessorState::setState(const PDFPageContentProcessorState& state)
+{
+    setCurrentTransformationMatrix(state.getCurrentTransformationMatrix());
+    setStrokeColorSpace(state.m_strokeColorSpace);
+    setFillColorSpace(state.m_fillColorSpace);
+    setStrokeColor(state.getStrokeColor(), state.getStrokeColorOriginal());
+    setFillColor(state.getFillColor(), state.getFillColorOriginal());
+    setLineWidth(state.getLineWidth());
+    setLineCapStyle(state.getLineCapStyle());
+    setLineJoinStyle(state.getLineJoinStyle());
+    setMitterLimit(state.getMitterLimit());
+    setLineDashPattern(state.getLineDashPattern());
+    setRenderingIntentName(state.getRenderingIntentName());
+    setFlatness(state.getFlatness());
+    setSmoothness(state.getSmoothness());
+    setTextCharacterSpacing(state.getTextCharacterSpacing());
+    setTextWordSpacing(state.getTextWordSpacing());
+    setTextHorizontalScaling(state.getTextHorizontalScaling());
+    setTextLeading(state.getTextLeading());
+    setTextFont(state.getTextFont());
+    setTextFontSize(state.getTextFontSize());
+    setTextRenderingMode(state.getTextRenderingMode());
+    setTextRise(state.getTextRise());
+    setTextKnockout(state.getTextKnockout());
+    setTextMatrix(state.getTextMatrix());
+    setTextLineMatrix(state.getTextLineMatrix());
+    setAlphaStroking(state.getAlphaStroking());
+    setAlphaFilling(state.getAlphaFilling());
+    setBlendMode(state.getBlendMode());
+    setRenderingIntent(state.getRenderingIntent());
+    setOverprintMode(state.getOverprintMode());
+    setAlphaIsShape(state.getAlphaIsShape());
+    setStrokeAdjustment(state.getStrokeAdjustment());
+    setSoftMask(state.getSoftMask());
+    setBlackPointCompensationMode(state.getBlackPointCompensationMode());
+    setBlackGenerationFunction(state.getBlackGenerationFunction());
+    setUndercolorRemovalFunction(state.getUndercolorRemovalFunction());
+    setTransferFunction(state.getTransferFunction());
+    setHalftone(state.getHalftone());
+    setHalftoneOrigin(state.getHalftoneOrigin());
+}
+
+void PDFPageContentProcessorState::setCurrentTransformationMatrix(const QTransform& currentTransformationMatrix)
 {
     if (m_currentTransformationMatrix != currentTransformationMatrix)
     {
@@ -3513,7 +3592,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setCurrentTransforma
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setStrokeColorSpace(const QSharedPointer<PDFAbstractColorSpace>& strokeColorSpace)
+void PDFPageContentProcessorState::setStrokeColorSpace(const QSharedPointer<PDFAbstractColorSpace>& strokeColorSpace)
 {
     if (m_strokeColorSpace != strokeColorSpace)
     {
@@ -3522,7 +3601,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setStrokeColorSpace(
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setFillColorSpace(const QSharedPointer<PDFAbstractColorSpace>& fillColorSpace)
+void PDFPageContentProcessorState::setFillColorSpace(const QSharedPointer<PDFAbstractColorSpace>& fillColorSpace)
 {
     if (m_fillColorSpace != fillColorSpace)
     {
@@ -3531,7 +3610,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setFillColorSpace(co
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setStrokeColor(const QColor& strokeColor, const PDFColor& originalColor)
+void PDFPageContentProcessorState::setStrokeColor(const QColor& strokeColor, const PDFColor& originalColor)
 {
     if (m_strokeColor != strokeColor || m_strokeColorOriginal != originalColor)
     {
@@ -3541,7 +3620,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setStrokeColor(const
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setFillColor(const QColor& fillColor, const PDFColor& originalColor)
+void PDFPageContentProcessorState::setFillColor(const QColor& fillColor, const PDFColor& originalColor)
 {
     if (m_fillColor != fillColor || m_fillColorOriginal != originalColor)
     {
@@ -3551,7 +3630,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setFillColor(const Q
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setLineWidth(PDFReal lineWidth)
+void PDFPageContentProcessorState::setLineWidth(PDFReal lineWidth)
 {
     if (m_lineWidth != lineWidth)
     {
@@ -3560,7 +3639,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setLineWidth(PDFReal
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setLineCapStyle(Qt::PenCapStyle lineCapStyle)
+void PDFPageContentProcessorState::setLineCapStyle(Qt::PenCapStyle lineCapStyle)
 {
     if (m_lineCapStyle != lineCapStyle)
     {
@@ -3569,7 +3648,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setLineCapStyle(Qt::
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setLineJoinStyle(Qt::PenJoinStyle lineJoinStyle)
+void PDFPageContentProcessorState::setLineJoinStyle(Qt::PenJoinStyle lineJoinStyle)
 {
     if (m_lineJoinStyle != lineJoinStyle)
     {
@@ -3578,7 +3657,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setLineJoinStyle(Qt:
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setMitterLimit(PDFReal mitterLimit)
+void PDFPageContentProcessorState::setMitterLimit(PDFReal mitterLimit)
 {
     if (m_mitterLimit != mitterLimit)
     {
@@ -3587,7 +3666,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setMitterLimit(PDFRe
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setLineDashPattern(PDFLineDashPattern pattern)
+void PDFPageContentProcessorState::setLineDashPattern(PDFLineDashPattern pattern)
 {
     if (m_lineDashPattern != pattern)
     {
@@ -3596,7 +3675,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setLineDashPattern(P
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setRenderingIntentName(const QByteArray& renderingIntentName)
+void PDFPageContentProcessorState::setRenderingIntentName(const QByteArray& renderingIntentName)
 {
     if (m_renderingIntentName != renderingIntentName)
     {
@@ -3605,7 +3684,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setRenderingIntentNa
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setFlatness(PDFReal flatness)
+void PDFPageContentProcessorState::setFlatness(PDFReal flatness)
 {
     if (m_flatness != flatness)
     {
@@ -3614,7 +3693,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setFlatness(PDFReal 
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setSmoothness(PDFReal smoothness)
+void PDFPageContentProcessorState::setSmoothness(PDFReal smoothness)
 {
     if (m_smoothness != smoothness)
     {
@@ -3623,7 +3702,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setSmoothness(PDFRea
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextLeading(PDFReal textLeading)
+void PDFPageContentProcessorState::setTextLeading(PDFReal textLeading)
 {
     if (m_textLeading != textLeading)
     {
@@ -3632,7 +3711,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextLeading(PDFRe
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextFontSize(PDFReal textFontSize)
+void PDFPageContentProcessorState::setTextFontSize(PDFReal textFontSize)
 {
     if (m_textFontSize != textFontSize)
     {
@@ -3641,7 +3720,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextFontSize(PDFR
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextKnockout(bool textKnockout)
+void PDFPageContentProcessorState::setTextKnockout(bool textKnockout)
 {
     if (m_textKnockout != textKnockout)
     {
@@ -3650,7 +3729,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextKnockout(bool
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextLineMatrix(const QTransform& textLineMatrix)
+void PDFPageContentProcessorState::setTextLineMatrix(const QTransform& textLineMatrix)
 {
     if (m_textLineMatrix != textLineMatrix)
     {
@@ -3659,7 +3738,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextLineMatrix(co
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setAlphaStroking(PDFReal alpha)
+void PDFPageContentProcessorState::setAlphaStroking(PDFReal alpha)
 {
     if (m_alphaStroking != alpha)
     {
@@ -3668,7 +3747,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setAlphaStroking(PDF
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setAlphaFilling(PDFReal alpha)
+void PDFPageContentProcessorState::setAlphaFilling(PDFReal alpha)
 {
     if (m_alphaFilling != alpha)
     {
@@ -3677,7 +3756,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setAlphaFilling(PDFR
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setBlendMode(BlendMode mode)
+void PDFPageContentProcessorState::setBlendMode(BlendMode mode)
 {
     if (m_blendMode != mode)
     {
@@ -3686,7 +3765,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setBlendMode(BlendMo
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setRenderingIntent(RenderingIntent renderingIntent)
+void PDFPageContentProcessorState::setRenderingIntent(RenderingIntent renderingIntent)
 {
     if (m_renderingIntent != renderingIntent)
     {
@@ -3695,21 +3774,21 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setRenderingIntent(R
     }
 }
 
-QColor PDFPageContentProcessor::PDFPageContentProcessorState::getStrokeColorWithAlpha() const
+QColor PDFPageContentProcessorState::getStrokeColorWithAlpha() const
 {
     QColor color = getStrokeColor();
     color.setAlphaF(m_alphaStroking);
     return color;
 }
 
-QColor PDFPageContentProcessor::PDFPageContentProcessorState::getFillColorWithAlpha() const
+QColor PDFPageContentProcessorState::getFillColorWithAlpha() const
 {
     QColor color = getFillColor();
     color.setAlphaF(m_alphaFilling);
     return color;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setOverprintMode(PDFOverprintMode overprintMode)
+void PDFPageContentProcessorState::setOverprintMode(PDFOverprintMode overprintMode)
 {
     if (m_overprintMode != overprintMode)
     {
@@ -3718,7 +3797,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setOverprintMode(PDF
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setAlphaIsShape(bool alphaIsShape)
+void PDFPageContentProcessorState::setAlphaIsShape(bool alphaIsShape)
 {
     if (m_alphaIsShape != alphaIsShape)
     {
@@ -3727,12 +3806,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setAlphaIsShape(bool
     }
 }
 
-bool PDFPageContentProcessor::PDFPageContentProcessorState::getStrokeAdjustment() const
+bool PDFPageContentProcessorState::getStrokeAdjustment() const
 {
     return m_strokeAdjustment;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setStrokeAdjustment(bool strokeAdjustment)
+void PDFPageContentProcessorState::setStrokeAdjustment(bool strokeAdjustment)
 {
     if (m_strokeAdjustment != strokeAdjustment)
     {
@@ -3741,12 +3820,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setStrokeAdjustment(
     }
 }
 
-const PDFDictionary* PDFPageContentProcessor::PDFPageContentProcessorState::getSoftMask() const
+const PDFDictionary* PDFPageContentProcessorState::getSoftMask() const
 {
     return m_softMask;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setSoftMask(const PDFDictionary* softMask)
+void PDFPageContentProcessorState::setSoftMask(const PDFDictionary* softMask)
 {
     if (m_softMask != softMask)
     {
@@ -3755,12 +3834,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setSoftMask(const PD
     }
 }
 
-BlackPointCompensationMode PDFPageContentProcessor::PDFPageContentProcessorState::getBlackPointCompensationMode() const
+BlackPointCompensationMode PDFPageContentProcessorState::getBlackPointCompensationMode() const
 {
     return m_blackPointCompensationMode;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setBlackPointCompensationMode(BlackPointCompensationMode blackPointCompensationMode)
+void PDFPageContentProcessorState::setBlackPointCompensationMode(BlackPointCompensationMode blackPointCompensationMode)
 {
     if (m_blackPointCompensationMode != blackPointCompensationMode)
     {
@@ -3769,12 +3848,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setBlackPointCompens
     }
 }
 
-PDFObject PDFPageContentProcessor::PDFPageContentProcessorState::getHalftone() const
+PDFObject PDFPageContentProcessorState::getHalftone() const
 {
     return m_halftone;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setHalftone(const PDFObject& halftone)
+void PDFPageContentProcessorState::setHalftone(const PDFObject& halftone)
 {
     if (m_halftone != halftone)
     {
@@ -3783,12 +3862,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setHalftone(const PD
     }
 }
 
-QPointF PDFPageContentProcessor::PDFPageContentProcessorState::getHalftoneOrigin() const
+QPointF PDFPageContentProcessorState::getHalftoneOrigin() const
 {
     return m_halftoneOrigin;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setHalftoneOrigin(const QPointF& halftoneOrigin)
+void PDFPageContentProcessorState::setHalftoneOrigin(const QPointF& halftoneOrigin)
 {
     if (m_halftoneOrigin != halftoneOrigin)
     {
@@ -3797,12 +3876,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setHalftoneOrigin(co
     }
 }
 
-PDFObject PDFPageContentProcessor::PDFPageContentProcessorState::getTransferFunction() const
+PDFObject PDFPageContentProcessorState::getTransferFunction() const
 {
     return m_transferFunction;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTransferFunction(const PDFObject& transferFunction)
+void PDFPageContentProcessorState::setTransferFunction(const PDFObject& transferFunction)
 {
     if (m_transferFunction != transferFunction)
     {
@@ -3811,12 +3890,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTransferFunction(
     }
 }
 
-PDFObject PDFPageContentProcessor::PDFPageContentProcessorState::getUndercolorRemovalFunction() const
+PDFObject PDFPageContentProcessorState::getUndercolorRemovalFunction() const
 {
     return m_undercolorRemovalFunction;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setUndercolorRemovalFunction(const PDFObject& undercolorRemovalFunction)
+void PDFPageContentProcessorState::setUndercolorRemovalFunction(const PDFObject& undercolorRemovalFunction)
 {
     if (m_undercolorRemovalFunction != undercolorRemovalFunction)
     {
@@ -3825,12 +3904,12 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setUndercolorRemoval
     }
 }
 
-PDFObject PDFPageContentProcessor::PDFPageContentProcessorState::getBlackGenerationFunction() const
+PDFObject PDFPageContentProcessorState::getBlackGenerationFunction() const
 {
     return m_blackGenerationFunction;
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setBlackGenerationFunction(const PDFObject& blackGenerationFunction)
+void PDFPageContentProcessorState::setBlackGenerationFunction(const PDFObject& blackGenerationFunction)
 {
     if (m_blackGenerationFunction != blackGenerationFunction)
     {
@@ -3839,7 +3918,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setBlackGenerationFu
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextMatrix(const QTransform& textMatrix)
+void PDFPageContentProcessorState::setTextMatrix(const QTransform& textMatrix)
 {
     if (m_textMatrix != textMatrix)
     {
@@ -3848,7 +3927,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextMatrix(const 
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextRise(PDFReal textRise)
+void PDFPageContentProcessorState::setTextRise(PDFReal textRise)
 {
     if (m_textRise != textRise)
     {
@@ -3857,7 +3936,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextRise(PDFReal 
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextRenderingMode(TextRenderingMode textRenderingMode)
+void PDFPageContentProcessorState::setTextRenderingMode(TextRenderingMode textRenderingMode)
 {
     if (m_textRenderingMode != textRenderingMode)
     {
@@ -3866,7 +3945,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextRenderingMode
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextFont(const PDFFontPointer& textFont)
+void PDFPageContentProcessorState::setTextFont(const PDFFontPointer& textFont)
 {
     if (m_textFont != textFont)
     {
@@ -3875,7 +3954,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextFont(const PD
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextHorizontalScaling(PDFReal textHorizontalScaling)
+void PDFPageContentProcessorState::setTextHorizontalScaling(PDFReal textHorizontalScaling)
 {
     if (m_textHorizontalScaling != textHorizontalScaling)
     {
@@ -3884,7 +3963,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextHorizontalSca
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextWordSpacing(PDFReal textWordSpacing)
+void PDFPageContentProcessorState::setTextWordSpacing(PDFReal textWordSpacing)
 {
     if (m_textWordSpacing != textWordSpacing)
     {
@@ -3893,7 +3972,7 @@ void PDFPageContentProcessor::PDFPageContentProcessorState::setTextWordSpacing(P
     }
 }
 
-void PDFPageContentProcessor::PDFPageContentProcessorState::setTextCharacterSpacing(PDFReal textCharacterSpacing)
+void PDFPageContentProcessorState::setTextCharacterSpacing(PDFReal textCharacterSpacing)
 {
     if (m_textCharacterSpacing != textCharacterSpacing)
     {

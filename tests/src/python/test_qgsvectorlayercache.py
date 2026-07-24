@@ -10,7 +10,9 @@ __author__ = "Nyall Dawson"
 __date__ = "08/06/2017"
 __copyright__ = "Copyright 2017, The QGIS Project"
 
-from qgis.PyQt.QtCore import QDate, QDateTime, QTime
+import unittest
+
+from featuresourcetestbase import FeatureSourceTestCase
 from qgis.core import (
     NULL,
     QgsFeature,
@@ -18,16 +20,13 @@ from qgis.core import (
     QgsVectorLayer,
     QgsVectorLayerCache,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
-from featuresourcetestbase import FeatureSourceTestCase
+from qgis.PyQt.QtCore import QDate, QDateTime, QTime
+from qgis.testing import QgisTestCase, start_app
 
 start_app()
 
 
 class TestQgsVectorLayerCache(QgisTestCase, FeatureSourceTestCase):
-
     @classmethod
     def getSource(cls):
         cache = QgsVectorLayerCache(cls.vl, 100)
@@ -39,7 +38,7 @@ class TestQgsVectorLayerCache(QgisTestCase, FeatureSourceTestCase):
         super().setUpClass()
         # Create test layer for FeatureSourceTestCase
         cls.vl = QgsVectorLayer(
-            "Point?crs=epsg:4326&field=pk:integer&field=cnt:integer&field=name:string(0)&field=name2:string(0)&field=num_char:string&field=dt:datetime&field=date:date&field=time:time&key=pk",
+            "Point?crs=epsg:4326&field=pk:integer&field=cnt:integer&field=name:string(0)&field=name2:string(0)&field=num_char:string&field=dt:datetime&field=date:date&field=time:time",
             "test",
             "memory",
         )

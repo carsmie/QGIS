@@ -16,11 +16,11 @@
 #ifndef QGSGPSTOOLBAR_H
 #define QGSGPSTOOLBAR_H
 
-#include <QToolBar>
-#include <QPointer>
-#include <QElapsedTimer>
-
 #include "qgscoordinatereferencesystem.h"
+
+#include <QElapsedTimer>
+#include <QPointer>
+#include <QToolBar>
 
 class QgsAppGpsConnection;
 class QgsMapCanvas;
@@ -62,6 +62,7 @@ class QgsGpsToolBar : public QToolBar
     void updateLocationLabel();
     void destinationLayerChanged( QgsVectorLayer *lyr );
     void destinationMenuAboutToShow();
+    void onCanvasCrsChanged();
 
   private:
     void createLocationWidget();

@@ -21,14 +21,14 @@ __copyright__ = "(C) 2012, Victor Olaya"
 
 import os
 
-from qgis.PyQt.QtXml import QDomDocument
-
 from qgis.core import (
     QgsProcessingAlgorithm,
-    QgsProcessingParameterRasterLayer,
-    QgsProcessingParameterFile,
     QgsProcessingOutputRasterLayer,
+    QgsProcessingParameterFile,
+    QgsProcessingParameterRasterLayer,
 )
+from qgis.PyQt.QtXml import QDomDocument
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
@@ -70,6 +70,14 @@ class SetRasterStyle(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Set style for raster layer")
+
+    def shortDescription(self):
+        return self.tr("Applies the style from a QML file to a raster layer.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm sets the style of a raster layer. The style must be defined in a QML file."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)

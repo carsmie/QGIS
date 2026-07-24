@@ -10,6 +10,7 @@
 
 
 
+
 typedef QPointF QwtDoublePoint;
 
 
@@ -35,6 +36,7 @@ values.
 %End
 
     ~QgsHistogramWidget();
+
 
     QgsVectorLayer *layer();
 %Docstring

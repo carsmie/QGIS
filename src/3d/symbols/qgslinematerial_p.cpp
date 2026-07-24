@@ -14,13 +14,14 @@
  ***************************************************************************/
 
 #include "qgslinematerial_p.h"
-#include "moc_qgslinematerial_p.cpp"
+
+#include "qgs3dutils.h"
 
 #include <QColor>
 #include <QSizeF>
+#include <QString>
 #include <QUrl>
 #include <QVector3D>
-
 #include <Qt3DRender/QBlendEquation>
 #include <Qt3DRender/QBlendEquationArguments>
 #include <Qt3DRender/QCamera>
@@ -30,13 +31,17 @@
 #include <Qt3DRender/QRenderPass>
 #include <Qt3DRender/QTechnique>
 
+#include "moc_qgslinematerial_p.cpp"
+
+using namespace Qt::StringLiterals;
+
 /// @cond PRIVATE
 
 
 QgsLineMaterial::QgsLineMaterial()
   : mParameterThickness( new Qt3DRender::QParameter( "THICKNESS", 10, this ) )
   , mParameterMiterLimit( new Qt3DRender::QParameter( "MITER_LIMIT", -1, this ) ) // 0.75
-  , mParameterLineColor( new Qt3DRender::QParameter( "lineColor", QColor( 0, 255, 0 ), this ) )
+  , mParameterLineColor( new Qt3DRender::QParameter( "lineColor", QVariant(), this ) )
   , mParameterUseVertexColors( new Qt3DRender::QParameter( "useVertexColors", false, this ) )
   , mParameterWindowScale( new Qt3DRender::QParameter( "WIN_SCALE", QSizeF(), this ) )
 {
@@ -46,20 +51,21 @@ QgsLineMaterial::QgsLineMaterial()
   addParameter( mParameterUseVertexColors );
   addParameter( mParameterWindowScale );
 
+  setLineColor( QColor( 0, 255, 0 ) );
   //Parameter { name: "tex0"; value: txt },
   //Parameter { name: "useTex"; value: false },
 
   Qt3DRender::QShaderProgram *shaderProgram = new Qt3DRender::QShaderProgram( this );
-  shaderProgram->setVertexShaderCode( Qt3DRender::QShaderProgram::loadSource( QUrl( QStringLiteral( "qrc:/shaders/lines.vert" ) ) ) );
-  shaderProgram->setFragmentShaderCode( Qt3DRender::QShaderProgram::loadSource( QUrl( QStringLiteral( "qrc:/shaders/lines.frag" ) ) ) );
-  shaderProgram->setGeometryShaderCode( Qt3DRender::QShaderProgram::loadSource( QUrl( QStringLiteral( "qrc:/shaders/lines.geom" ) ) ) );
+  shaderProgram->setVertexShaderCode( Qt3DRender::QShaderProgram::loadSource( QUrl( u"qrc:/shaders/lines.vert"_s ) ) );
+  shaderProgram->setFragmentShaderCode( Qt3DRender::QShaderProgram::loadSource( QUrl( u"qrc:/shaders/lines.frag"_s ) ) );
+  shaderProgram->setGeometryShaderCode( Qt3DRender::QShaderProgram::loadSource( QUrl( u"qrc:/shaders/lines.geom"_s ) ) );
 
   Qt3DRender::QRenderPass *renderPass = new Qt3DRender::QRenderPass( this );
   renderPass->setShaderProgram( shaderProgram );
 
   // without this filter the default forward renderer would not render this
   Qt3DRender::QFilterKey *filterKey = new Qt3DRender::QFilterKey;
-  filterKey->setName( QStringLiteral( "renderingStyle" ) );
+  filterKey->setName( u"renderingStyle"_s );
   filterKey->setValue( "forward" );
 
   Qt3DRender::QTechnique *technique = new Qt3DRender::QTechnique;
@@ -78,12 +84,7 @@ QgsLineMaterial::QgsLineMaterial()
 
 void QgsLineMaterial::setLineColor( const QColor &color )
 {
-  mParameterLineColor->setValue( color );
-}
-
-QColor QgsLineMaterial::lineColor() const
-{
-  return mParameterLineColor->value().value<QColor>();
+  mParameterLineColor->setValue( Qgs3DUtils::srgbToLinear( color ) );
 }
 
 void QgsLineMaterial::setUseVertexColors( bool enabled )
@@ -91,19 +92,9 @@ void QgsLineMaterial::setUseVertexColors( bool enabled )
   mParameterUseVertexColors->setValue( enabled );
 }
 
-bool QgsLineMaterial::useVertexColors() const
-{
-  return mParameterUseVertexColors->value().toBool();
-}
-
 void QgsLineMaterial::setLineWidth( float width )
 {
   mParameterThickness->setValue( width );
-}
-
-float QgsLineMaterial::lineWidth() const
-{
-  return mParameterThickness->value().toFloat();
 }
 
 void QgsLineMaterial::setViewportSize( const QSizeF &viewportSize )

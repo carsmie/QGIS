@@ -8,6 +8,7 @@
 
 
 
+
 class QgsPaintEffectWidget /External/;
 
 class QgsPaintEffectAbstractMetadata
@@ -26,7 +27,6 @@ Stores metadata about a paint effect class.
 #include "qgspainteffectregistry.h"
 %End
   public:
-
     QgsPaintEffectAbstractMetadata( const QString &name, const QString &visibleName );
 %Docstring
 Construct a new QgsPaintEffectAbstractMetadata
@@ -73,7 +73,6 @@ Create configuration widget for paint effect of this class. Can return
 %End
 
   protected:
-
 };
 
 
@@ -92,7 +91,6 @@ rather accessed through :py:func:`QgsApplication.paintEffectRegistry()`.
 #include "qgspainteffectregistry.h"
 %End
   public:
-
     QgsPaintEffectRegistry();
     ~QgsPaintEffectRegistry();
 

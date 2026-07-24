@@ -15,9 +15,10 @@
 #ifndef QGSBROWSERPROXYMODEL_H
 #define QGSBROWSERPROXYMODEL_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
+
 #include <QSortFilterProxyModel>
 
 class QgsBrowserModel;
@@ -33,12 +34,11 @@ class CORE_EXPORT QgsBrowserProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
   public:
-
     //! Filter syntax options
     enum FilterSyntax
     {
-      Normal, //!< Standard string filtering
-      Wildcards, //!< Wildcard filtering
+      Normal,            //!< Standard string filtering
+      Wildcards,         //!< Wildcard filtering
       RegularExpression, //!< Regular expression filtering
     };
 
@@ -196,7 +196,6 @@ class CORE_EXPORT QgsBrowserProxyModel : public QSortFilterProxyModel
     void setShowLayers( bool showLayers );
 
   protected:
-
     // It would be better to apply the filer only to expanded (visible) items, but using mapFromSource() + view here was causing strange errors
     bool filterAcceptsRow( int sourceRow, const QModelIndex &sourceParent ) const override;
 
@@ -208,7 +207,7 @@ class CORE_EXPORT QgsBrowserProxyModel : public QSortFilterProxyModel
   private:
     QStringList mHiddenDataItemsKeys;
     QStringList mShownDataItemsKeys;
-    QString mFilter; //filter string provided
+    QString mFilter;                     //filter string provided
     QVector<QRegularExpression> mREList; //list of filters, separated by "|"
     FilterSyntax mPatternSyntax = Normal;
     Qt::CaseSensitivity mCaseSensitivity = Qt::CaseInsensitive;
@@ -237,7 +236,6 @@ class CORE_EXPORT QgsBrowserProxyModel : public QSortFilterProxyModel
 
     //! Root item accepts provider key.
     bool filterRootAcceptsProviderKey( const QModelIndex &sourceIndex ) const;
-
 
 
     // QAbstractItemModel interface

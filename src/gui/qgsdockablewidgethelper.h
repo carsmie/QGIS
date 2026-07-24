@@ -16,19 +16,23 @@
 #ifndef QGSDOCKABLEWIDGETHELPER_H
 #define QGSDOCKABLEWIDGETHELPER_H
 
+#include "qgis.h"
 #include "qgis_gui.h"
+#include "qgsgui.h"
+#include "qgssettingsentryenumflag.h"
+#include "qgssettingsentryimpl.h"
 
 #include <QDialog>
-#include <QToolButton>
-#include <QMainWindow>
 #include <QDomElement>
+#include <QMainWindow>
 #include <QPointer>
-
-#include "qgssettingsentryimpl.h"
-#include "qgssettingsentryenumflag.h"
-#include "qgsgui.h"
+#include <QString>
+#include <QToolButton>
 
 #define SIP_NO_FILE
+
+using namespace Qt::StringLiterals;
+
 
 class QgsDockWidget;
 
@@ -54,7 +58,7 @@ class GUI_EXPORT QgsNonRejectableDialog : public QDialog
  */
 class GUI_EXPORT QgsDockableWidgetHelper : public QObject
 {
-    static inline QgsSettingsTreeNode *sTtreeDockConfigs = QgsGui::sTtreeWidgetGeometry->createNamedListNode( QStringLiteral( "docks" ) ) SIP_SKIP;
+    static inline QgsSettingsTreeNode *sTtreeDockConfigs = QgsGui::sTtreeWidgetGeometry->createNamedListNode( u"docks"_s ) SIP_SKIP;
 
     static const QgsSettingsEntryBool *sSettingsIsDocked SIP_SKIP;
     static const QgsSettingsEntryVariant *sSettingsDockGeometry SIP_SKIP;
@@ -63,13 +67,6 @@ class GUI_EXPORT QgsDockableWidgetHelper : public QObject
 
     Q_OBJECT
   public:
-    enum class OpeningMode : int
-    {
-      RespectSetting, //! Respect the setting used
-      ForceDocked,    //! Force the widget to be docked, despite its settings
-      ForceDialog,    //! Force the widget to be shown in a dialog, despite its settings
-    };
-
     enum class Option : int
     {
       RaiseTab = 1 << 1,        //!< Raise Tab
@@ -93,16 +90,18 @@ class GUI_EXPORT QgsDockableWidgetHelper : public QObject
       QMainWindow *ownerWindow,
       const QString &dockId,
       const QStringList &tabifyWith = QStringList(),
-      OpeningMode openingMode = OpeningMode::RespectSetting,
+      Qgis::DockableWidgetInitialState openingMode = Qgis::DockableWidgetInitialState::RestorePreviousState,
       bool defaultIsDocked = false,
       Qt::DockWidgetArea defaultDockArea = Qt::DockWidgetArea::RightDockWidgetArea,
       Options options = Options()
     );
 
-    ~QgsDockableWidgetHelper();
+    ~QgsDockableWidgetHelper() override;
 
-    //! Returns if the widget is docked
-    //! \since 3.42
+    /**
+     * Returns if the widget is docked
+     * \since QGIS 3.42
+     */
     bool isDocked() const { return mIsDocked; }
 
     //! Reads the dimensions of both the dock widget and the top level window
@@ -130,6 +129,13 @@ class GUI_EXPORT QgsDockableWidgetHelper : public QObject
     QString dockObjectName() const;
 
     /**
+     * Sets the setting key \a id to use for storing previous state settings for the widget.
+     *
+     * Set to an empty string to prevent any storage of the widget's state.
+     */
+    void setSettingKeyDockId( const QString &id );
+
+    /**
      * Returns TRUE if the widget is a visible dialog or a user-visible
      * dock widget.
      */
@@ -148,7 +154,6 @@ class GUI_EXPORT QgsDockableWidgetHelper : public QObject
 
     bool eventFilter( QObject *watched, QEvent *event ) override;
 
-    static std::function<void( Qt::DockWidgetArea, QDockWidget *, const QStringList &, bool )> sAddTabifiedDockWidgetFunction;
     static std::function<QString()> sAppStylesheetFunction;
 
     static QMainWindow *sOwnerWindow;
@@ -164,6 +169,16 @@ class GUI_EXPORT QgsDockableWidgetHelper : public QObject
     void toggleDockMode( bool docked );
 
     void setUserVisible( bool visible );
+
+    /**
+     * Rejects the widget.
+     *
+     * If the widget is shown as a dialog, calls QDialog::reject(). If it's shown as dock widget,
+     * the widget is closed.
+     *
+     * \since QGIS 4.2
+     */
+    void reject();
 
   private:
     void setupDockWidget( const QStringList &tabSiblings = QStringList() );
@@ -189,8 +204,9 @@ class GUI_EXPORT QgsDockableWidgetHelper : public QObject
     // Unique identifier of dock
     QString mUuid;
 
+    QString mSettingKeyDockId;
 
-    const QString mSettingKeyDockId;
+    friend class TestQgsDockableWidgetHelper;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QgsDockableWidgetHelper::Options )

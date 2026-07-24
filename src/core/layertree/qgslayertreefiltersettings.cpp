@@ -14,13 +14,18 @@
  ***************************************************************************/
 
 #include "qgslayertreefiltersettings.h"
-#include "qgsmapsettings.h"
-#include "qgslayertreeutils.h"
-#include "qgslayertree.h"
-#include "qgsmaplayerlistutils_p.h"
-#include "qgsreferencedgeometry.h"
+
 #include "qgscoordinatetransform.h"
+#include "qgslayertree.h"
+#include "qgslayertreeutils.h"
 #include "qgslogger.h"
+#include "qgsmaplayerlistutils_p.h"
+#include "qgsmapsettings.h"
+#include "qgsreferencedgeometry.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsLayerTreeFilterSettings::QgsLayerTreeFilterSettings( const QgsMapSettings &settings )
   : mMapSettings( std::make_unique<QgsMapSettings>( settings ) )
@@ -37,12 +42,13 @@ QgsLayerTreeFilterSettings::QgsLayerTreeFilterSettings( const QgsLayerTreeFilter
   , mFlags( other.mFlags )
   , mLayers( other.mLayers )
   , mLayerExtents( other.mLayerExtents )
-{
-
-}
+{}
 
 QgsLayerTreeFilterSettings &QgsLayerTreeFilterSettings::operator=( const QgsLayerTreeFilterSettings &other )
 {
+  if ( &other == this )
+    return *this;
+
   mLayerFilterExpressions = other.mLayerFilterExpressions;
   mMapSettings.reset( other.mMapSettings ? new QgsMapSettings( *other.mMapSettings ) : nullptr );
   mFilterPolygon = other.mFilterPolygon;
@@ -115,11 +121,11 @@ void QgsLayerTreeFilterSettings::addVisibleExtentForLayer( QgsMapLayer *layer, c
   {
     QgsGeometry transformedPoly = polygon;
     transformedPoly.transform( polygonToLayerTransform );
-    mLayerExtents[ layer->id() ].append( transformedPoly );
+    mLayerExtents[layer->id()].append( transformedPoly );
   }
   catch ( QgsCsException & )
   {
-    QgsDebugError( QStringLiteral( "Error transforming polygon to layer CRS for legend filtering" ) );
+    QgsDebugError( u"Error transforming polygon to layer CRS for legend filtering"_s );
   }
   if ( !mLayers.contains( layer ) )
     mLayers << layer;
@@ -146,7 +152,7 @@ QgsGeometry QgsLayerTreeFilterSettings::combinedVisibleExtentForLayer( const Qgs
     }
     catch ( QgsCsException & )
     {
-      QgsDebugError( QStringLiteral( "Error transforming map extent to layer CRS for legend filtering" ) );
+      QgsDebugError( u"Error transforming map extent to layer CRS for legend filtering"_s );
     }
   }
 

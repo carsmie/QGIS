@@ -52,10 +52,6 @@ if(QGISPOSTFIX)
   )
 endif()
 
-
-# require c++17
-target_compile_features(qgis_quick PRIVATE cxx_std_17)
-
 target_link_libraries(qgis_quick
     ${QT_VERSION_BASE}::Quick
     ${QT_VERSION_BASE}::Qml
@@ -64,9 +60,6 @@ target_link_libraries(qgis_quick
     ${QT_VERSION_BASE}::Positioning
     qgis_core)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Android")
-  target_link_libraries(qgis_quick ${QT_VERSION_BASE}::AndroidExtras)
-endif()
 target_compile_definitions(qgis_quick PRIVATE "-DQT_NO_FOREACH")
 
 GENERATE_EXPORT_HEADER(

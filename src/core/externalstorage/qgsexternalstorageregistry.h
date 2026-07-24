@@ -19,8 +19,8 @@
 #include "qgis_core.h"
 #include "qgis_sip.h"
 
-#include <QList>
 #include <QHash>
+#include <QList>
 
 class QgsExternalStorage;
 
@@ -36,7 +36,6 @@ class QgsExternalStorage;
 class CORE_EXPORT QgsExternalStorageRegistry
 {
   public:
-
     /**
      * Constructor - creates a registry of external storage backends
      */

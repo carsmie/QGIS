@@ -13,12 +13,14 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsapplication.h"
+#include "qgscopyfiletask.h"
 #include "qgssimplecopyexternalstorage_p.h"
 
-#include "qgscopyfiletask.h"
-#include "qgsapplication.h"
-
 #include <QFileInfo>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
@@ -28,22 +30,15 @@ QgsSimpleCopyExternalStorageStoredContent::QgsSimpleCopyExternalStorageStoredCon
 
   mCopyTask = new QgsCopyFileTask( filePath, url );
 
-  connect( mCopyTask, &QgsTask::taskCompleted, this, [this]
-  {
+  connect( mCopyTask, &QgsTask::taskCompleted, this, [this] {
     mUrl = mCopyTask->destination();
     setStatus( Qgis::ContentStatus::Finished );
     emit stored();
   } );
 
-  connect( mCopyTask, &QgsTask::taskTerminated, this, [this]
-  {
-    reportError( mCopyTask->errorString() );
-  } );
+  connect( mCopyTask, &QgsTask::taskTerminated, this, [this] { reportError( mCopyTask->errorString() ); } );
 
-  connect( mCopyTask, &QgsTask::progressChanged, this, [this]( double progress )
-  {
-    emit progressChanged( progress );
-  } );
+  connect( mCopyTask, &QgsTask::progressChanged, this, [this]( double progress ) { emit progressChanged( progress ); } );
 }
 
 void QgsSimpleCopyExternalStorageStoredContent::store()
@@ -58,8 +53,7 @@ void QgsSimpleCopyExternalStorageStoredContent::cancel()
     return;
 
   disconnect( mCopyTask, &QgsTask::taskTerminated, this, nullptr );
-  connect( mCopyTask, &QgsTask::taskTerminated, this, [this]
-  {
+  connect( mCopyTask, &QgsTask::taskTerminated, this, [this] {
     setStatus( Qgis::ContentStatus::Canceled );
     emit canceled();
   } );
@@ -74,8 +68,7 @@ QString QgsSimpleCopyExternalStorageStoredContent::url() const
 
 QgsSimpleCopyExternalStorageFetchedContent::QgsSimpleCopyExternalStorageFetchedContent( const QString &filePath )
   : mFilePath( filePath )
-{
-}
+{}
 
 void QgsSimpleCopyExternalStorageFetchedContent::fetch()
 {
@@ -99,7 +92,7 @@ QString QgsSimpleCopyExternalStorageFetchedContent::filePath() const
 
 QString QgsSimpleCopyExternalStorage::type() const
 {
-  return QStringLiteral( "SimpleCopy" );
+  return u"SimpleCopy"_s;
 };
 
 QString QgsSimpleCopyExternalStorage::displayName() const

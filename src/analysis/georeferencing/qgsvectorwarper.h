@@ -18,9 +18,9 @@
 
 #include "qgis_analysis.h"
 #include "qgis_sip.h"
-#include "qgsgcptransformer.h"
-#include "qgsgcppoint.h"
 #include "qgsfeatureiterator.h"
+#include "qgsgcppoint.h"
+#include "qgsgcptransformer.h"
 #include "qgstaskmanager.h"
 #include "qgsvectorlayerfeatureiterator.h"
 
@@ -87,7 +87,9 @@ class ANALYSIS_EXPORT QgsVectorWarperTask : public QgsTask
      * \param layer source layer
      * \param fileName filename for destination layer
      */
-    QgsVectorWarperTask( QgsGcpTransformerInterface::TransformMethod method, const QList<QgsGcpPoint> &points, const QgsCoordinateReferenceSystem &destinationCrs, QgsVectorLayer *layer, const QString &fileName );
+    QgsVectorWarperTask(
+      QgsGcpTransformerInterface::TransformMethod method, const QList<QgsGcpPoint> &points, const QgsCoordinateReferenceSystem &destinationCrs, QgsVectorLayer *layer, const QString &fileName
+    );
 
     void cancel() override;
 

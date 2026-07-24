@@ -17,15 +17,16 @@
 #ifndef QGSSTYLEV2EXPORTIMPORTDIALOG_H
 #define QGSSTYLEV2EXPORTIMPORTDIALOG_H
 
-#include <QDialog>
-#include <QUrl>
-
 #include "ui_qgsstyleexportimportdialogbase.h"
+
+#include <memory>
+
 #include "qgis_gui.h"
 #include "qgis_sip.h"
 #include "qgshelp.h"
 
-#include <memory>
+#include <QDialog>
+#include <QUrl>
 
 class QgsStyle;
 class QgsStyleGroupSelectionDialog;
@@ -154,7 +155,7 @@ class GUI_EXPORT QgsStyleExportImportDialog : public QDialog, private Ui::QgsSty
     void moveStyles( QModelIndexList *selection, QgsStyle *src, QgsStyle *dst );
 
     QgsStyleGroupSelectionDialog *mGroupSelectionDlg = nullptr;
-    QTemporaryFile *mTempFile = nullptr;
+    std::unique_ptr<QTemporaryFile> mTempFile;
 
     QString mFileName;
     Mode mDialogMode;

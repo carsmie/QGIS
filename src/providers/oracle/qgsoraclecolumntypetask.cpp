@@ -16,11 +16,13 @@ email                : jef at norbit dot de
  ***************************************************************************/
 
 #include "qgsoraclecolumntypetask.h"
-#include "moc_qgsoraclecolumntypetask.cpp"
+
 #include "qgslogger.h"
 #include "qgsoracleconnpool.h"
 
 #include <QMetaType>
+
+#include "moc_qgsoraclecolumntypetask.cpp"
 
 QgsOracleColumnTypeTask::QgsOracleColumnTypeTask( const QString &name, const QString &limitToSchema, bool useEstimatedMetadata, bool allowGeometrylessTables )
   : QgsTask( tr( "Scanning tables for %1" ).arg( name ) )
@@ -34,11 +36,12 @@ QgsOracleColumnTypeTask::QgsOracleColumnTypeTask( const QString &name, const QSt
 
 bool QgsOracleColumnTypeTask::run()
 {
-  QString conninfo = QgsOracleConn::toPoolName( QgsOracleConn::connUri( mName ) );
+  const QString conninfo = QgsOracleConn::toPoolName( QgsOracleConn::connUri( mName ) );
   QgsOracleConn *conn = QgsOracleConnPool::instance()->acquireConnection( conninfo );
   if ( !conn )
   {
-    QgsDebugError( "Connection failed - " + conninfo );
+    mError = tr( "Connection failed" );
+    QgsDebugError( mError );
     return false;
   }
 
@@ -46,20 +49,18 @@ bool QgsOracleColumnTypeTask::run()
   QVector<QgsOracleLayerProperty> layerProperties;
   if ( !conn->supportedLayers( layerProperties, mSchema, QgsOracleConn::geometryColumnsOnly( mName ), QgsOracleConn::userTablesOnly( mName ), mAllowGeometrylessTables ) || layerProperties.isEmpty() )
   {
+    mError = tr( "Failed to retrieve supported layers" );
     return false;
   }
 
   int i = 0, n = layerProperties.size();
-  for ( QVector<QgsOracleLayerProperty>::iterator it = layerProperties.begin(),
-                                                  end = layerProperties.end();
-        it != end; ++it )
+  for ( QVector<QgsOracleLayerProperty>::iterator it = layerProperties.begin(), end = layerProperties.end(); it != end; ++it )
   {
     QgsOracleLayerProperty &layerProperty = *it;
     if ( !isCanceled() )
     {
       setProgress( ( i * 100. ) / n );
-      emit progressMessage( tr( "Scanning column %1.%2.%3…" )
-                              .arg( layerProperty.ownerName, layerProperty.tableName, layerProperty.geometryColName ) );
+      emit progressMessage( tr( "Scanning column %1.%2.%3…" ).arg( layerProperty.ownerName, layerProperty.tableName, layerProperty.geometryColName ) );
       conn->retrieveLayerTypes( layerProperty, mUseEstimatedMetadata, QgsOracleConn::onlyExistingTypes( mName ) );
     }
 

@@ -65,6 +65,7 @@ try:
     QgsProcessingUtils.tempFolder = staticmethod(QgsProcessingUtils.tempFolder)
     QgsProcessingUtils.generateTempFilename = staticmethod(QgsProcessingUtils.generateTempFilename)
     QgsProcessingUtils.formatHelpMapAsHtml = staticmethod(QgsProcessingUtils.formatHelpMapAsHtml)
+    QgsProcessingUtils.parameterDefinitionIndex = staticmethod(QgsProcessingUtils.parameterDefinitionIndex)
     QgsProcessingUtils.outputDefinitionIndex = staticmethod(QgsProcessingUtils.outputDefinitionIndex)
     QgsProcessingUtils.convertToCompatibleFormat = staticmethod(QgsProcessingUtils.convertToCompatibleFormat)
     QgsProcessingUtils.convertToCompatibleFormatAndLayerName = staticmethod(QgsProcessingUtils.convertToCompatibleFormatAndLayerName)
@@ -72,12 +73,15 @@ try:
     QgsProcessingUtils.fieldNamesToIndices = staticmethod(QgsProcessingUtils.fieldNamesToIndices)
     QgsProcessingUtils.indicesToFields = staticmethod(QgsProcessingUtils.indicesToFields)
     QgsProcessingUtils.defaultVectorExtension = staticmethod(QgsProcessingUtils.defaultVectorExtension)
+    QgsProcessingUtils.defaultRasterFormat = staticmethod(QgsProcessingUtils.defaultRasterFormat)
     QgsProcessingUtils.defaultRasterExtension = staticmethod(QgsProcessingUtils.defaultRasterExtension)
     QgsProcessingUtils.defaultPointCloudExtension = staticmethod(QgsProcessingUtils.defaultPointCloudExtension)
     QgsProcessingUtils.defaultVectorTileExtension = staticmethod(QgsProcessingUtils.defaultVectorTileExtension)
     QgsProcessingUtils.removePointerValuesFromMap = staticmethod(QgsProcessingUtils.removePointerValuesFromMap)
     QgsProcessingUtils.preprocessQgisProcessParameters = staticmethod(QgsProcessingUtils.preprocessQgisProcessParameters)
     QgsProcessingUtils.resolveDefaultEncoding = staticmethod(QgsProcessingUtils.resolveDefaultEncoding)
+    QgsProcessingUtils.supportedImageFormats = staticmethod(QgsProcessingUtils.supportedImageFormats)
+    QgsProcessingUtils.supportedImageFileFilters = staticmethod(QgsProcessingUtils.supportedImageFileFilters)
     QgsProcessingUtils.__group__ = ['processing']
 except (NameError, AttributeError):
     pass

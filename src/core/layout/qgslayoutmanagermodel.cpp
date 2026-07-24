@@ -14,10 +14,13 @@
  ***************************************************************************/
 
 #include "qgslayoutmanagermodel.h"
-#include "moc_qgslayoutmanagermodel.cpp"
-#include "qgsproject.h"
+
 #include "qgslayoutmanager.h"
+#include "qgsproject.h"
+
 #include <QMessageBox>
+
+#include "moc_qgslayoutmanagermodel.cpp"
 
 //
 // QgsLayoutManagerModel
@@ -51,8 +54,7 @@ void QgsLayoutManagerModel::setAllowEmptyLayout( bool allowEmpty )
 
 QgsLayoutManagerProxyModel::QgsLayoutManagerProxyModel( QObject *parent )
   : QgsProjectStoredObjectManagerProxyModel( parent )
-{
-}
+{}
 
 bool QgsLayoutManagerProxyModel::filterAcceptsRowInternal( int sourceRow, const QModelIndex &sourceParent ) const
 {
@@ -67,8 +69,6 @@ bool QgsLayoutManagerProxyModel::filterAcceptsRowInternal( int sourceRow, const 
   if ( !layout )
     return model->allowEmptyLayout();
 
-  // clang-tidy false positive
-  // NOLINTBEGIN(bugprone-branch-clone)
   switch ( layout->layoutType() )
   {
     case QgsMasterLayoutInterface::PrintLayout:
@@ -76,7 +76,6 @@ bool QgsLayoutManagerProxyModel::filterAcceptsRowInternal( int sourceRow, const 
     case QgsMasterLayoutInterface::Report:
       return mFilters & FilterReports;
   }
-  // NOLINTEND(bugprone-branch-clone)
   return false;
 }
 

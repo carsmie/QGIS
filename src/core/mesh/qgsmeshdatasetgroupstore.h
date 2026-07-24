@@ -18,10 +18,11 @@
 #ifndef QGSMESHDATASETGROUPSTORE_H
 #define QGSMESHDATASETGROUPSTORE_H
 
-#define SIP_NO_FILE
 
 #include "qgsmeshdataprovider.h"
 #include "qgsmeshdataset.h"
+
+#define SIP_NO_FILE
 
 class QgsMeshLayer;
 
@@ -35,12 +36,11 @@ class QgsMeshLayer;
  *
  * \since QGIS 3.16
  */
-class QgsMeshExtraDatasetStore: public QgsMeshDatasetSourceInterface
+class QgsMeshExtraDatasetStore : public QgsMeshDatasetSourceInterface
 {
   public:
-
     //! Adds a dataset group, returns the index of the added dataset group
-    int addDatasetGroup( QgsMeshDatasetGroup *datasetGroup );
+    int addDatasetGroup( std::unique_ptr< QgsMeshDatasetGroup > datasetGroup );
 
     //! Removes the dataset group with the local \a index
     void removeDatasetGroup( int index );
@@ -73,19 +73,19 @@ class QgsMeshExtraDatasetStore: public QgsMeshDatasetSourceInterface
     //! Not implemented, always returns empty list
     QStringList extraDatasets() const override;
 
+    using QgsMeshDatasetSourceInterface::persistDatasetGroup;
     //! Not implemented, always returns true
-    bool persistDatasetGroup( const QString &outputFilePath,
-                              const QString &outputDriver,
-                              const QgsMeshDatasetGroupMetadata &meta,
-                              const QVector<QgsMeshDataBlock> &datasetValues,
-                              const QVector<QgsMeshDataBlock> &datasetActive,
-                              const QVector<double> &times ) override;
+    bool persistDatasetGroup(
+      const QString &outputFilePath,
+      const QString &outputDriver,
+      const QgsMeshDatasetGroupMetadata &meta,
+      const QVector<QgsMeshDataBlock> &datasetValues,
+      const QVector<QgsMeshDataBlock> &datasetActive,
+      const QVector<double> &times
+    ) override;
 
     //! Not implemented, always returns true
-    bool persistDatasetGroup( const QString &outputFilePath,
-                              const QString &outputDriver,
-                              QgsMeshDatasetSourceInterface *source,
-                              int datasetGroupIndex ) override;
+    bool persistDatasetGroup( const QString &outputFilePath, const QString &outputDriver, QgsMeshDatasetSourceInterface *source, int datasetGroupIndex ) override;
 
     //! Writes the store's information in a DOM document
     QDomElement writeXml( int groupIndex, QDomDocument &doc, const QgsReadWriteContext &context );
@@ -118,7 +118,7 @@ class QgsMeshExtraDatasetStore: public QgsMeshDatasetSourceInterface
  *
  * \since QGIS 3.16
  */
-class QgsMeshDatasetGroupStore: public QObject
+class QgsMeshDatasetGroupStore : public QObject
 {
     Q_OBJECT
 
@@ -136,10 +136,11 @@ class QgsMeshDatasetGroupStore: public QObject
     bool addPersistentDatasets( const QString &path );
 
     /**
-     * Adds a extra dataset \a group, take ownership, returns True if the group is effectivly added.
-     * If returns False, the ownership is not taken
+     * Adds a extra dataset \a group, take ownership, returns True if the group is effectively added.
+     *
+     * If returns False, the object will be immediately deleted.
      */
-    bool addDatasetGroup( QgsMeshDatasetGroup *group );
+    bool addDatasetGroup( std::unique_ptr< QgsMeshDatasetGroup > group );
 
     //! Saves on a file with \a filePath the dataset groups index with \a groupIndex with the specified \a driver
     bool saveDatasetGroup( QString filePath, int groupIndex, QString driver );
@@ -198,9 +199,7 @@ class QgsMeshDatasetGroupStore: public QObject
     bool isFaceActive( const QgsMeshDatasetIndex &index, int faceIndex ) const;
 
     //! Returns the global dataset index of the dataset int the dataset group with \a groupIndex, corresponding to the relative \a time and the check \a method
-    QgsMeshDatasetIndex datasetIndexAtTime( qint64 time,
-                                            int groupIndex,
-                                            QgsMeshDataProviderTemporalCapabilities::MatchingTemporalDatasetMethod method ) const;
+    QgsMeshDatasetIndex datasetIndexAtTime( qint64 time, int groupIndex, QgsMeshDataProviderTemporalCapabilities::MatchingTemporalDatasetMethod method ) const;
 
     /**
      * Returns the global dataset index of the dataset int the dataset group with \a groupIndex, that is between relative times \a time1 and \a time2
@@ -261,7 +260,7 @@ class QgsMeshDatasetGroupStore: public QObject
     QgsMeshLayer *mLayer = nullptr;
     QgsMeshDataProvider *mPersistentProvider = nullptr;
     QgsMeshExtraDatasetStore mExtraDatasets;
-    QMap < int, DatasetGroup> mRegistry;
+    QMap< int, DatasetGroup> mRegistry;
     QList<int> mPersistentExtraDatasetGroupIndexes;
     QMap<QString, int> mGroupNameToGlobalIndex;
     std::unique_ptr<QgsMeshDatasetGroupTreeItem> mDatasetGroupTreeRootItem;

@@ -18,11 +18,15 @@
 #ifndef QGSLAYOUTSIZE_H
 #define QGSLAYOUTSIZE_H
 
-#include "qgis_core.h"
-#include "qgis.h"
 #include "qgsconfig.h"
-#include <QSizeF>
 
+#include "qgis.h"
+#include "qgis_core.h"
+
+#include <QSizeF>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup core
@@ -42,7 +46,6 @@
 class CORE_EXPORT QgsLayoutSize
 {
   public:
-
     /**
      * Constructor for QgsLayoutSize.
      * \param width width
@@ -180,19 +183,23 @@ class CORE_EXPORT QgsLayoutSize
     QgsLayoutSize operator/=( double v );
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsLayoutSize: %1 x %2 %3 >" ).arg( sipCpp->width() ).arg( sipCpp->height() ).arg( QgsUnitTypes::toAbbreviatedString( sipCpp->units() ) );
+    QString str = u"<QgsLayoutSize: %1 x %2 %3 >"_s.arg( sipCpp->width() ).arg( sipCpp->height() ).arg( QgsUnitTypes::toAbbreviatedString( sipCpp->units() ) );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
-  private:
+    // clang-format off
+    private:
+    // clang-format on
 
-    double mWidth = 0.0;
+    double mWidth
+    = 0.0;
     double mHeight = 0.0;
     Qgis::LayoutUnit mUnits = Qgis::LayoutUnit::Millimeters;
-
 };
 
 #endif // QGSLAYOUTSIZE_H

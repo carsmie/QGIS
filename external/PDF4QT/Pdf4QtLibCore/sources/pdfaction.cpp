@@ -1,25 +1,32 @@
-//    Copyright (C) 2019-2022 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT.  If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "pdfaction.h"
 #include "pdfdocument.h"
 #include "pdfexception.h"
 #include "pdfencoding.h"
 #include "pdfdbgheap.h"
+
+#include <limits>
 
 namespace pdf
 {
@@ -420,13 +427,14 @@ PDFDestination PDFDestination::parse(const PDFObjectStorage* storage, PDFObject 
         QByteArray name = loader.readName(array->getItem(1));
 
         size_t currentIndex = 2;
+        const PDFReal defaultNumber = std::numeric_limits<PDFReal>::quiet_NaN();
         auto readNumber = [&]()
         {
             if (currentIndex < array->getCount())
             {
-                return loader.readNumber(array->getItem(currentIndex++), 0.0);
+                return loader.readNumber(array->getItem(currentIndex++), defaultNumber);
             }
-            return 0.0;
+            return defaultNumber;
         };
 
         if (name == "XYZ")
@@ -617,7 +625,7 @@ bool PDFDestination::hasLeft() const
         case DestinationType::FitV:
         case DestinationType::FitBV:
         case DestinationType::FitR:
-            return true;
+            return !qIsNaN(m_left);
 
         default:
             break;
@@ -634,7 +642,7 @@ bool PDFDestination::hasTop() const
         case DestinationType::FitH:
         case DestinationType::FitBH:
         case DestinationType::FitR:
-            return true;
+            return !qIsNaN(m_top);
 
         default:
             break;
@@ -648,7 +656,7 @@ bool PDFDestination::hasRight() const
     switch (m_destinationType)
     {
         case DestinationType::FitR:
-            return true;
+            return !qIsNaN(m_right);
 
         default:
             break;
@@ -662,7 +670,7 @@ bool PDFDestination::hasBottom() const
     switch (m_destinationType)
     {
         case DestinationType::FitR:
-            return true;
+            return !qIsNaN(m_bottom);
 
         default:
             break;
@@ -676,7 +684,7 @@ bool PDFDestination::hasZoom() const
     switch (m_destinationType)
     {
         case DestinationType::XYZ:
-            return true;
+            return !qIsNaN(m_zoom);
 
         default:
             break;

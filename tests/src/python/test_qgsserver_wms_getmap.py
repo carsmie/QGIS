@@ -24,30 +24,28 @@ import urllib.parse
 import urllib.request
 
 import osgeo.gdal  # NOQA
-
 from lxml import etree as et
 from qgis.core import (
     Qgis,
-    QgsFeature,
-    QgsGeometry,
-    QgsProject,
-    QgsVectorLayer,
-    QgsVectorLayerTemporalProperties,
     QgsDateTimeRange,
-    QgsTextFormat,
-    QgsPalLayerSettings,
-    QgsRasterLayer,
-    QgsVectorLayerSimpleLabeling,
+    QgsFeature,
     QgsFontUtils,
+    QgsGeometry,
+    QgsPalLayerSettings,
+    QgsProject,
+    QgsRasterLayer,
+    QgsTextFormat,
+    QgsVectorLayer,
+    QgsVectorLayerSimpleLabeling,
+    QgsVectorLayerTemporalProperties,
 )
+from qgis.PyQt.QtCore import QDate, QDateTime, Qt, QTime
+from qgis.PyQt.QtGui import QColor, QImage
 from qgis.server import (
-    QgsServer,
     QgsBufferServerRequest,
     QgsBufferServerResponse,
+    QgsServer,
 )
-
-from qgis.PyQt.QtCore import QDate, QDateTime, QTime, Qt
-from qgis.PyQt.QtGui import QColor, QImage
 from qgis.testing import unittest
 from test_qgsserver import QgsServerTestBase
 from utilities import unitTestDataPath
@@ -1467,7 +1465,7 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
         self._img_diff_error(r, h, "WMS_GetMap_Filter_OGC")
 
         # empty filter
-        filter = '(<ogc:Filter xmlns="http://www.opengis.net/ogc">' "</ogc:Filter>)"
+        filter = '(<ogc:Filter xmlns="http://www.opengis.net/ogc"></ogc:Filter>)'
         qs = "?" + "&".join(
             [
                 "%s=%s" % i
@@ -1758,6 +1756,44 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
 
         r, h = self._result(self._execute_request(qs))
         self._img_diff_error(r, h, "WMS_GetMap_Highlight")
+
+    def test_wms_getmap_highlight_frame(self):
+        # highlight layer with label frame
+        qs = "?" + "&".join(
+            [
+                "%s=%s" % i
+                for i in list(
+                    {
+                        "MAP": urllib.parse.quote(self.projectPath),
+                        "SERVICE": "WMS",
+                        "VERSION": "1.1.1",
+                        "REQUEST": "GetMap",
+                        "LAYERS": "Country_Labels",
+                        "HIGHLIGHT_GEOM": "POLYGON((-15000000 10000000, -15000000 6110620, 2500000 6110620, 2500000 10000000, -15000000 10000000))",
+                        "HIGHLIGHT_SYMBOL": '<StyledLayerDescriptor><UserStyle><Name>Highlight</Name><FeatureTypeStyle><Rule><Name>Symbol</Name><LineSymbolizer><Stroke><SvgParameter name="stroke">%23ea1173</SvgParameter><SvgParameter name="stroke-opacity">1</SvgParameter><SvgParameter name="stroke-width">1.6</SvgParameter></Stroke></LineSymbolizer></Rule></FeatureTypeStyle></UserStyle></StyledLayerDescriptor>',
+                        "HIGHLIGHT_LABELSTRING": "Highlight Layer!",
+                        "HIGHLIGHT_LABELFONT": "QGIS Vera Sans",
+                        "HIGHLIGHT_LABELSIZE": "20",
+                        "HIGHLIGHT_LABELCOLOR": "%2300FF0000",
+                        "HIGHLIGHT_LABELBUFFERCOLOR": "%232300FF00",
+                        "HIGHLIGHT_LABELBUFFERSIZE": "1.5",
+                        "HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR": "%23FF0000",
+                        "HIGHLIGHT_LABELFRAMEOUTLINECOLOR": "%2300FFFF",
+                        "HIGHLIGHT_LABELFRAMESIZE": 5,
+                        "HIGHLIGHT_LABELFRAMEOUTLINEWIDTH": 2,
+                        "STYLES": "",
+                        "FORMAT": "image/png",
+                        "BBOX": "-16817707,-4710778,5696513,14587125",
+                        "HEIGHT": "500",
+                        "WIDTH": "500",
+                        "CRS": "EPSG:3857",
+                    }.items()
+                )
+            ]
+        )
+
+        r, h = self._result(self._execute_request(qs))
+        self._img_diff_error(r, h, "WMS_GetMap_Highlight_Label_Frame")
 
     def test_wms_getmap_highlight_point(self):
         # checks SLD stroke-width works for Points See issue 19795 comments
@@ -3061,22 +3097,22 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
 
         rl1.temporalProperties().setFixedTemporalRange(
             QgsDateTimeRange(
-                QDateTime.fromString("2025-01-12T12:34:56", Qt.DateFormat.ISODate),
-                QDateTime.fromString("2025-01-15T09:12:34", Qt.DateFormat.ISODate),
+                QDateTime.fromString("2025-01-12T12:34:56Z", Qt.DateFormat.ISODate),
+                QDateTime.fromString("2025-01-15T09:12:34Z", Qt.DateFormat.ISODate),
             )
         )
 
         rl2.temporalProperties().setFixedTemporalRange(
             QgsDateTimeRange(
-                QDateTime.fromString("2025-01-12T00:00:00", Qt.DateFormat.ISODate),
-                QDateTime.fromString("2025-01-12T00:00:00", Qt.DateFormat.ISODate),
+                QDateTime.fromString("2025-01-12T00:00:00Z", Qt.DateFormat.ISODate),
+                QDateTime.fromString("2025-01-12T00:00:00Z", Qt.DateFormat.ISODate),
             )
         )
 
         rl3.temporalProperties().setFixedTemporalRange(
             QgsDateTimeRange(
-                QDateTime.fromString("2025-01-13T00:00:00", Qt.DateFormat.ISODate),
-                QDateTime.fromString("2025-01-13T00:00:00", Qt.DateFormat.ISODate),
+                QDateTime.fromString("2025-01-13T00:00:00Z", Qt.DateFormat.ISODate),
+                QDateTime.fromString("2025-01-13T00:00:00Z", Qt.DateFormat.ISODate),
             )
         )
 
@@ -3124,7 +3160,9 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
         # range date time
         date_dimension = get_time_dim("test_date_1")
         self.assertEqual(date_dimension.attrib, {"units": "ISO8601", "name": "TIME"})
-        self.assertEqual(date_dimension.text, "2025-01-12T12:34:56/2025-01-15T09:12:34")
+        self.assertEqual(
+            date_dimension.text, "2025-01-12T12:34:56Z/2025-01-15T09:12:34Z"
+        )
 
         # instant date
         date_dimension = get_time_dim("test_date_2")
@@ -3150,7 +3188,7 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
         self.assertEqual(date_dimension.attrib, {"units": "ISO8601", "name": "TIME"})
         self.assertEqual(
             date_dimension.text,
-            "2025-01-12T12:34:56/2025-01-15T09:12:34,2025-01-12T00:00:00",
+            "2025-01-12T12:34:56Z/2025-01-15T09:12:34Z,2025-01-12T00:00:00Z",
         )
 
         # Test different cases for group recursivity
@@ -3159,7 +3197,7 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
         self.assertEqual(date_dimension.attrib, {"units": "ISO8601", "name": "TIME"})
         self.assertEqual(
             date_dimension.text,
-            "2025-01-12T00:00:00",
+            "2025-01-12T00:00:00Z",
         )
 
         date_dimension = get_time_dim("SubGroupWithoutTimeDimension")
@@ -3169,7 +3207,7 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
         self.assertEqual(date_dimension.attrib, {"units": "ISO8601", "name": "TIME"})
         self.assertEqual(
             date_dimension.text,
-            "2025-01-12T00:00:00",
+            "2025-01-12T00:00:00Z",
         )
 
         date_dimension = get_time_dim("OtherSubGroupWithoutTimeDimension")
@@ -3179,7 +3217,7 @@ class TestQgsServerWMSGetMap(QgsServerTestBase):
         """Test if OPACITIES is also applied to labels"""
 
         layer = QgsVectorLayer(
-            "Point?crs=epsg:4326&field=pk:integer&field=name:string&key=pk",
+            "Point?crs=epsg:4326&field=pk:integer&field=name:string",
             "test",
             "memory",
         )

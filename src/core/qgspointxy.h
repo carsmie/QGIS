@@ -18,17 +18,19 @@
 #ifndef QGSPOINTXY_H
 #define QGSPOINTXY_H
 
-#include "qgis_core.h"
-#include "qgsvector.h"
-#include "qgsgeometryutils_base.h"
+#include <iostream>
 
 #include "qgis.h"
+#include "qgis_core.h"
+#include "qgsgeometryutils_base.h"
+#include "qgsvector.h"
 
-#include <iostream>
-#include <QString>
-#include <QPoint>
 #include <QObject>
+#include <QPoint>
+#include <QString>
 #include <qglobal.h>
+
+using namespace Qt::StringLiterals;
 
 class QgsPoint;
 
@@ -64,10 +66,11 @@ class CORE_EXPORT QgsPointXY
     Q_PROPERTY( double y READ y WRITE setY )
 
   public:
-
     QgsPointXY() = default;
 
+    // clang-format off
     QgsPointXY( const QgsPointXY &p ) SIP_HOLDGIL;
+    // clang-format on
 
     /**
      * Create a point from x,y coordinates
@@ -347,9 +350,10 @@ class CORE_EXPORT QgsPointXY
     }
 
 #ifdef SIP_RUN
+// clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsPointXY: %1>" ).arg( sipCpp->asWkt() );
+    QString str = u"<QgsPointXY: %1>"_s.arg( sipCpp->asWkt() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
 
@@ -380,6 +384,7 @@ class CORE_EXPORT QgsPointXY
     % MethodCode
     sipRes = qHash( *sipCpp );
     % End
+// clang-format on
 #endif
 
   private:
@@ -393,7 +398,7 @@ class CORE_EXPORT QgsPointXY
     //! is point empty?
     bool mIsEmpty = true;
 
-    friend uint qHash( const QgsPointXY &pnt );
+    friend size_t qHash( const QgsPointXY &pnt );
 
 }; // class QgsPointXY
 
@@ -406,11 +411,11 @@ inline std::ostream &operator << ( std::ostream &os, const QgsPointXY &p ) SIP_S
   return os;
 }
 
-inline uint qHash( const QgsPointXY &p ) SIP_SKIP
+inline size_t qHash( const QgsPointXY &p ) SIP_SKIP
 {
-  uint hash;
-  const uint h1 = qHash( static_cast< quint64 >( p.mX ) );
-  const uint h2 = qHash( static_cast< quint64 >( p.mY ) );
+  size_t hash;
+  const size_t h1 = qHash( static_cast< quint64 >( p.mX ) );
+  const size_t h2 = qHash( static_cast< quint64 >( p.mY ) );
   hash = h1 ^ ( h2 << 1 );
   return hash;
 }

@@ -11,29 +11,28 @@ __date__ = "2020-06"
 __copyright__ = "Copyright 2020, The QGIS Project"
 
 import os
+import unittest
 
-from qgis.PyQt.QtCore import QSize, QDate, QTime, QDateTime
 from qgis.core import (
     Qgis,
+    QgsContrastEnhancement,
     QgsCoordinateReferenceSystem,
+    QgsDateTimeRange,
+    QgsDoubleRange,
     QgsGeometry,
     QgsInterval,
+    QgsLineSymbol,
     QgsMapClippingRegion,
     QgsMapSettings,
-    QgsRasterLayer,
-    QgsRectangle,
-    QgsDoubleRange,
-    QgsSingleBandGrayRenderer,
-    QgsRasterContourRenderer,
-    QgsContrastEnhancement,
-    QgsRasterLayerElevationProperties,
     QgsProperty,
-    QgsDateTimeRange,
-    QgsLineSymbol,
+    QgsRasterContourRenderer,
+    QgsRasterLayer,
+    QgsRasterLayerElevationProperties,
+    QgsRectangle,
+    QgsSingleBandGrayRenderer,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QDate, QDateTime, QSize, QTime
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 # Convenience instances in case you may need them
@@ -43,7 +42,6 @@ TEST_DATA_DIR = unitTestDataPath()
 
 
 class TestQgsRasterLayerRenderer(QgisTestCase):
-
     @classmethod
     def control_path_prefix(cls):
         return "rasterlayerrenderer"
@@ -702,7 +700,7 @@ class TestQgsRasterLayerRenderer(QgisTestCase):
         map_settings.setIsTemporal(True)
         map_settings.setTemporalRange(
             QgsDateTimeRange(
-                QDateTime(QDate(2024, 1, 1), QTime(0, 0, 0)),
+                QDateTime(QDate(2024, 1, 3), QTime(0, 0, 0)),
                 QDateTime(QDate(2024, 1, 5), QTime(23, 59, 59)),
             )
         )
@@ -710,6 +708,15 @@ class TestQgsRasterLayerRenderer(QgisTestCase):
             self.render_map_settings_check(
                 "Temporal range filter on map settings on represents temporal values mode",
                 "represents_temporal_values_filter",
+                map_settings,
+            )
+        )
+
+        raster_layer.temporalProperties().setAccumulatePixels(True)
+        self.assertTrue(
+            self.render_map_settings_check(
+                "Temporal range filter on map settings on represents temporal values mode",
+                "represents_temporal_values_filter_accumulate_pixels",
                 map_settings,
             )
         )

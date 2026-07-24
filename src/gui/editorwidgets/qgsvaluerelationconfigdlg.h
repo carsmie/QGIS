@@ -18,8 +18,8 @@
 
 #include "ui_qgsvaluerelationconfigdlgbase.h"
 
-#include "qgseditorconfigwidget.h"
 #include "qgis_gui.h"
+#include "qgseditorconfigwidget.h"
 
 SIP_NO_FILE
 
@@ -29,7 +29,8 @@ SIP_NO_FILE
  * \brief Configuration widget for value relation widgets.
  * \note not available in Python bindings
  */
-class GUI_EXPORT QgsValueRelationConfigDlg : public QgsEditorConfigWidget, private Ui::QgsValueRelationConfigDlgBase
+class GUI_EXPORT QgsValueRelationConfigDlg : public QgsEditorConfigWidget,
+                                             private Ui::QgsValueRelationConfigDlgBase
 {
     Q_OBJECT
 

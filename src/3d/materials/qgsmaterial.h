@@ -16,13 +16,14 @@
 #ifndef QGSMATERIAL_H
 #define QGSMATERIAL_H
 
-#define SIP_NO_FILE
 
 #include "qgis_3d.h"
 
-#include <Qt3DRender/QMaterial>
 #include <QList>
 #include <QVector4D>
+#include <Qt3DRender/QMaterial>
+
+#define SIP_NO_FILE
 
 namespace Qt3DRender
 {
@@ -62,6 +63,24 @@ class _3D_EXPORT QgsMaterial : public Qt3DRender::QMaterial
      */
     void disableClipping();
 
+    /**
+     * Returns TRUE if the material should cast shadows.
+     *
+     * By default QgsMaterials casts shadows.
+     *
+     * \see setCastsShadows()
+     * \since QGIS 4.2
+     */
+    bool castsShadows() const;
+
+    /**
+     * Sets whether the material should cast shadows.
+     *
+     * \see castsShadows()
+     * \since QGIS 4.2
+     */
+    void setCastsShadows( bool enabled );
+
   private:
     //! The name of the QParameter which contains the plane equations
     static const QString CLIP_PLANE_ARRAY_PARAMETER_NAME;
@@ -71,8 +90,9 @@ class _3D_EXPORT QgsMaterial : public Qt3DRender::QMaterial
     static const QString CLIP_PLANE_DEFINE;
 
     bool mClippingEnabled = false;
+    bool mCastsShadows = true;
 
-    friend class TestQgs3dMaterial;
+    friend class TestQgs3DMaterial;
 };
 
 #endif // QGSMATERIAL_H

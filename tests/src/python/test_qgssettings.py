@@ -11,12 +11,12 @@ the Free Software Foundation; either version 2 of the License, or
 
 import os
 import tempfile
+import unittest
 from pathlib import Path
 
-from qgis.PyQt.QtCore import QSettings, QVariant
-from qgis.core import Qgis, QgsMapLayerProxyModel, QgsSettings, QgsTolerance, NULL
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.core import NULL, Qgis, QgsMapLayerProxyModel, QgsSettings, QgsTolerance
+from qgis.PyQt.QtCore import QT_VERSION_STR, QSettings, QVariant
+from qgis.testing import QgisTestCase, start_app
 
 __author__ = "Alessandro Pasotti"
 __date__ = "02/02/2017"
@@ -27,7 +27,6 @@ start_app()
 
 
 class TestQgsSettings(QgisTestCase):
-
     cnt = 0
 
     def setUp(self):
@@ -638,9 +637,14 @@ class TestQgsSettings(QgisTestCase):
         self.assertEqual(self.settings.flagValue("flag", pointAndLine), pointAndPolygon)
         self.settings.setValue("flag", "dummy_setting")
         self.assertEqual(self.settings.flagValue("flag", pointAndLine), pointAndLine)
-        self.assertEqual(
-            type(self.settings.flagValue("enum", pointAndLine)), Qgis.LayerFilters
-        )
+        if int(QT_VERSION_STR.split(".")[0]) >= 6:
+            self.assertEqual(
+                type(self.settings.flagValue("enum", pointAndLine)), Qgis.LayerFilter
+            )
+        else:
+            self.assertEqual(
+                type(self.settings.flagValue("enum", pointAndLine)), Qgis.LayerFilters
+            )
 
     def test_overwriteDefaultValues(self):
         """Test that unchanged values are not stored"""

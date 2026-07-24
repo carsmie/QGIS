@@ -16,15 +16,19 @@
  ***************************************************************************/
 
 #include "qgslayoutserializableobject.h"
-#include "qgsreadwritecontext.h"
+
 #include "qgslayout.h"
 #include "qgsproject.h"
+#include "qgsreadwritecontext.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
-class QgsLayoutSerializableObjectUndoCommand: public QgsAbstractLayoutUndoCommand
+class QgsLayoutSerializableObjectUndoCommand : public QgsAbstractLayoutUndoCommand
 {
   public:
-
     QgsLayoutSerializableObjectUndoCommand( QgsLayoutSerializableObject *object, const QString &text, int id, QUndoCommand *parent SIP_TRANSFERTHIS = nullptr )
       : QgsAbstractLayoutUndoCommand( text, id, parent )
       , mObject( object )
@@ -49,11 +53,10 @@ class QgsLayoutSerializableObjectUndoCommand: public QgsAbstractLayoutUndoComman
     }
 
   protected:
-
     void saveState( QDomDocument &stateDoc ) const override
     {
       stateDoc.clear();
-      QDomElement documentElement = stateDoc.createElement( QStringLiteral( "UndoState" ) );
+      QDomElement documentElement = stateDoc.createElement( u"UndoState"_s );
       mObject->writeXml( documentElement, stateDoc, QgsReadWriteContext() );
       stateDoc.appendChild( documentElement );
     }
@@ -69,7 +72,6 @@ class QgsLayoutSerializableObjectUndoCommand: public QgsAbstractLayoutUndoComman
     }
 
   private:
-
     QgsLayoutSerializableObject *mObject = nullptr;
 };
 ///@endcond

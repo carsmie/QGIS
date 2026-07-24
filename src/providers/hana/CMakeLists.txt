@@ -80,26 +80,22 @@ add_library(provider_hana_a STATIC ${HANA_SRCS} ${HANA_HDRS})
 set_target_properties(provider_hana PROPERTIES UNITY_BUILD ${ENABLE_UNITY_BUILDS})
 set_target_properties(provider_hana_a PROPERTIES UNITY_BUILD ${ENABLE_UNITY_BUILDS})
 
-# require c++17
-target_compile_features(provider_hana PRIVATE cxx_std_17)
-target_compile_features(provider_hana_a PRIVATE cxx_std_17)
-
 target_compile_definitions(provider_hana
     PRIVATE
-        $<TARGET_PROPERTY:odbccpp_static,INTERFACE_COMPILE_DEFINITIONS>)
+        $<TARGET_PROPERTY:odbccpp,INTERFACE_COMPILE_DEFINITIONS>)
 target_compile_definitions(provider_hana_a
     PRIVATE
-        $<TARGET_PROPERTY:odbccpp_static,INTERFACE_COMPILE_DEFINITIONS>)
+        $<TARGET_PROPERTY:odbccpp,INTERFACE_COMPILE_DEFINITIONS>)
 
 target_link_libraries(provider_hana
   qgis_core
-  odbccpp_static
+  odbccpp
   ${ODBC_LIBRARIES}
 )
 
 target_link_libraries(provider_hana_a
   qgis_core
-  odbccpp_static
+  odbccpp
   ${ODBC_LIBRARIES}
 )
 
@@ -111,6 +107,15 @@ if (WITH_GUI)
   target_link_libraries (provider_hana
     qgis_gui
   )
+endif()
+
+if(HAVE_WFLAG_SUGGEST_OVERRIDE)
+  target_compile_options(provider_hana PRIVATE -Wno-suggest-override)
+  target_compile_options(provider_hana_a PRIVATE -Wno-suggest-override)
+endif()
+if(HAVE_WFLAG_SUGGEST_DESTRUCTOR_OVERRIDE)
+  target_compile_options(provider_hana PRIVATE -Wno-suggest-destructor-override)
+  target_compile_options(provider_hana_a PRIVATE -Wno-suggest-destructor-override)
 endif()
 
 # clang-tidy

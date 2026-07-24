@@ -18,8 +18,8 @@
 
 #include "ui_qgstexteditconfigdlg.h"
 
-#include "qgseditorconfigwidget.h"
 #include "qgis_gui.h"
+#include "qgseditorconfigwidget.h"
 
 SIP_NO_FILE
 
@@ -30,7 +30,8 @@ SIP_NO_FILE
  * \note not available in Python bindings
  */
 
-class GUI_EXPORT QgsTextEditConfigDlg : public QgsEditorConfigWidget, private Ui::QgsTextEditConfigDlg
+class GUI_EXPORT QgsTextEditConfigDlg : public QgsEditorConfigWidget,
+                                        private Ui::QgsTextEditConfigDlg
 {
     Q_OBJECT
 

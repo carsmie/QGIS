@@ -13,16 +13,15 @@
 
 #include "ui_qgsprojectionselectorbase.h"
 
-#include <QSet>
-#include <QStringList>
-
-#include "qgis_sip.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgscoordinatereferencesystemmodel.h"
 #include "qgsrecentcoordinatereferencesystemsmodel.h"
 
 #include <QIdentityProxyModel>
+#include <QSet>
+#include <QStringList>
 #include <QStyledItemDelegate>
 
 class QResizeEvent;
@@ -84,7 +83,10 @@ class GUI_EXPORT QgsProjectionSelectionTreeWidget : public QWidget, private Ui::
      * shown in the widget. The default is to show all horizontal and compound CRS in order to match
      * the behavior of older QGIS releases. The \a filter can be altered to also include vertical CRS if desired.
      */
-    QgsProjectionSelectionTreeWidget( QWidget *parent SIP_TRANSFERTHIS = nullptr, QgsCoordinateReferenceSystemProxyModel::Filters filters = QgsCoordinateReferenceSystemProxyModel::FilterHorizontal | QgsCoordinateReferenceSystemProxyModel::FilterCompound );
+    QgsProjectionSelectionTreeWidget(
+      QWidget *parent SIP_TRANSFERTHIS = nullptr,
+      QgsCoordinateReferenceSystemProxyModel::Filters filters = QgsCoordinateReferenceSystemProxyModel::FilterHorizontal | QgsCoordinateReferenceSystemProxyModel::FilterCompound
+    );
 
     ~QgsProjectionSelectionTreeWidget() override;
 

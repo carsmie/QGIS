@@ -18,17 +18,18 @@
 #ifndef QGSLABELINGGUI_H
 #define QGSLABELINGGUI_H
 
-#include "qgspallabeling.h"
-#include "qgstextformatwidget.h"
-#include "qgspropertyoverridebutton.h"
 #include "qgis_gui.h"
+#include "qgspallabeling.h"
+#include "qgspropertyoverridebutton.h"
+#include "qgstextformatwidget.h"
+
+#define SIP_NO_FILE
 
 class QDialogButtonBox;
 
 class QgsMeshLayer;
 class QgsVectorTileLayer;
 
-#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -151,7 +152,9 @@ class GUI_EXPORT QgsLabelSettingsDialog : public QDialog
     Q_OBJECT
 
   public:
-    QgsLabelSettingsDialog( const QgsPalLayerSettings &settings, QgsVectorLayer *layer, QgsMapCanvas *mapCanvas, QWidget *parent SIP_TRANSFERTHIS = nullptr, Qgis::GeometryType geomType = Qgis::GeometryType::Unknown );
+    QgsLabelSettingsDialog(
+      const QgsPalLayerSettings &settings, QgsVectorLayer *layer, QgsMapCanvas *mapCanvas, QWidget *parent SIP_TRANSFERTHIS = nullptr, Qgis::GeometryType geomType = Qgis::GeometryType::Unknown
+    );
 
     QgsPalLayerSettings settings() const { return mWidget->layerSettings(); }
 

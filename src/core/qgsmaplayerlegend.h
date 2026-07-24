@@ -17,10 +17,11 @@
 #define QGSMAPLAYERLEGEND_H
 
 #include <memory>
-#include <QObject>
 
 #include "qgis.h"
 #include "qgis_sip.h"
+
+#include <QObject>
 
 class QDomDocument;
 class QDomElement;
@@ -49,7 +50,6 @@ class CORE_EXPORT QgsMapLayerLegend : public QObject
 {
     Q_OBJECT
   public:
-
     //! Constructor for QgsMapLayerLegend
     explicit QgsMapLayerLegend( QObject *parent SIP_TRANSFERTHIS = nullptr );
 
@@ -122,7 +122,6 @@ class CORE_EXPORT QgsMapLayerLegend : public QObject
     void itemsChanged();
 
   private:
-
     Qgis::MapLayerLegendFlags mFlags;
 };
 

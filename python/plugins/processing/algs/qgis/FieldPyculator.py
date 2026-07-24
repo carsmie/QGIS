@@ -21,21 +21,22 @@ __copyright__ = "(C) 2012, Victor Olaya & NextGIS"
 
 import sys
 
-from qgis.PyQt.QtCore import QMetaType
 from qgis.core import (
     Qgis,
-    QgsProcessingException,
+    QgsFeatureSink,
     QgsField,
     QgsFields,
-    QgsFeatureSink,
     QgsProcessing,
-    QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterString,
+    QgsProcessingException,
     QgsProcessingParameterEnum,
-    QgsProcessingParameterNumber,
     QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterNumber,
+    QgsProcessingParameterString,
     QgsVariantUtils,
 )
+from qgis.PyQt.QtCore import QMetaType
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
@@ -140,6 +141,18 @@ class FieldsPyculator(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Advanced Python field calculator")
+
+    def shortDescription(self):
+        return self.tr(
+            "Adds a new attribute to a vector layer, with values calculated "
+            "by applying a Python expression to each feature."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm adds a new attribute to a vector layer, with values calculated "
+            "by applying an expression to each feature. The expression is defined as a Python function."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -284,8 +297,10 @@ class FieldsPyculator(QgisAlgorithm):
             attrs.append(new_ns[self.RESULT_VAR_NAME])
             feat.setAttributes(attrs)
             sink.addFeature(feat, QgsFeatureSink.Flag.FastInsert)
+            feedback.featureAddedToSink(self.OUTPUT)
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}
 
     def checkParameterValues(self, parameters, context):

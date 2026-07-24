@@ -21,9 +21,10 @@
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgslayoutitemmapitem.h"
-#include <QString>
+
 #include <QObject>
 #include <QPainter>
+#include <QString>
 
 class QDomDocument;
 class QDomElement;
@@ -41,7 +42,6 @@ class QgsFillSymbol;
 class CORE_EXPORT QgsLayoutItemMapOverviewStack : public QgsLayoutItemMapItemStack
 {
   public:
-
     /**
      * Constructor for QgsLayoutItemMapOverviewStack, attached to the specified
      * \a map.
@@ -111,7 +111,6 @@ class CORE_EXPORT QgsLayoutItemMapOverviewStack : public QgsLayoutItemMapItemSta
      * \since QGIS 3.6
      */
     QList< QgsMapLayer * > modifyMapLayerList( const QList< QgsMapLayer * > &layers );
-
 };
 
 /**
@@ -126,7 +125,6 @@ class CORE_EXPORT QgsLayoutItemMapOverview : public QgsLayoutItemMapItem
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsLayoutItemMapOverview.
      * \param name friendly display name for overview
@@ -171,7 +169,7 @@ class CORE_EXPORT QgsLayoutItemMapOverview : public QgsLayoutItemMapItem
      * \see setFrameSymbol()
      * \note not available in Python bindings
      */
-    const QgsFillSymbol *frameSymbol() const; SIP_SKIP
+    const QgsFillSymbol *frameSymbol() const SIP_SKIP;
 
     /**
      * Retrieves the blending mode used for drawing the overview.
@@ -240,7 +238,6 @@ class CORE_EXPORT QgsLayoutItemMapOverview : public QgsLayoutItemMapItem
     void overviewExtentChanged();
 
   private:
-
     QgsLayoutItemMapOverview() = delete;
 
     QString mFrameMapUuid;
@@ -262,7 +259,6 @@ class CORE_EXPORT QgsLayoutItemMapOverview : public QgsLayoutItemMapItem
 
     //! Creates default overview symbol
     void createDefaultFrameSymbol();
-
 };
 
 #endif // QgsLayoutItemMapOVERVIEW_H

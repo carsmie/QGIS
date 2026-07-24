@@ -16,9 +16,9 @@
 #ifndef QGSVTPKTILES_H
 #define QGSVTPKTILES_H
 
-#include "qgis_core.h"
+#include <sqlite3.h>
 
-#include "sqlite3.h"
+#include "qgis_core.h"
 #include "qgsvectortilematrixset.h"
 
 #include <QVariantMap>
@@ -114,7 +114,6 @@ class CORE_EXPORT QgsVtpkTiles
     QByteArray tileData( int z, int x, int y );
 
   private:
-
 #ifdef SIP_RUN
     QgsVtpkTiles( const QgsVtpkTiles &other );
 #endif

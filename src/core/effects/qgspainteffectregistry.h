@@ -18,8 +18,9 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include <QDomElement>
+
 #include <QDomDocument>
+#include <QDomElement>
 #include <QMap>
 #include <QVariantMap>
 
@@ -39,7 +40,6 @@ class QgsPaintEffectWidget SIP_EXTERNAL;
 class CORE_EXPORT QgsPaintEffectAbstractMetadata
 {
   public:
-
     /**
      * Construct a new QgsPaintEffectAbstractMetadata
      * \param name unique string representing paint effect class
@@ -80,7 +80,6 @@ class CORE_EXPORT QgsPaintEffectAbstractMetadata
   protected:
     QString mName;
     QString mVisibleName;
-
 };
 
 typedef QgsPaintEffect *( *QgsPaintEffectCreateFunc )( const QVariantMap & ) SIP_SKIP;
@@ -95,9 +94,7 @@ typedef QgsPaintEffectWidget *( *QgsPaintEffectWidgetFunc )() SIP_SKIP;
  */
 class CORE_EXPORT QgsPaintEffectMetadata : public QgsPaintEffectAbstractMetadata SIP_SKIP
 {
-
   public:
-
     /**
      * Create effect metadata from static functions
      * \param name unique string representing paint effect class
@@ -106,12 +103,10 @@ class CORE_EXPORT QgsPaintEffectMetadata : public QgsPaintEffectAbstractMetadata
      * \param pfWidget widget creation function
      * \note not available in Python bindings
      */
-    QgsPaintEffectMetadata( const QString &name, const QString &visibleName,
-                            QgsPaintEffectCreateFunc pfCreate,
-                            QgsPaintEffectWidgetFunc pfWidget = nullptr ) SIP_SKIP
-  : QgsPaintEffectAbstractMetadata( name, visibleName )
-    , mCreateFunc( pfCreate )
-    , mWidgetFunc( pfWidget )
+    QgsPaintEffectMetadata( const QString &name, const QString &visibleName, QgsPaintEffectCreateFunc pfCreate, QgsPaintEffectWidgetFunc pfWidget = nullptr ) SIP_SKIP
+      : QgsPaintEffectAbstractMetadata( name, visibleName ),
+        mCreateFunc( pfCreate ),
+        mWidgetFunc( pfWidget )
     {}
 
     /**
@@ -172,7 +167,6 @@ class CORE_EXPORT QgsPaintEffectMetadata : public QgsPaintEffectAbstractMetadata
 class CORE_EXPORT QgsPaintEffectRegistry
 {
   public:
-
     QgsPaintEffectRegistry();
     ~QgsPaintEffectRegistry();
 

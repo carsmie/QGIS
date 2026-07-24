@@ -1,19 +1,24 @@
-//    Copyright (C) 2020-2022 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT. If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "pdfobjecteditormodel.h"
 #include "pdfdocumentbuilder.h"
@@ -601,6 +606,11 @@ PDFObjectEditorAnnotationsModel::PDFObjectEditorAnnotationsModel(QObject* parent
 
     // Free text annotation
     createQuaddingAttribute("Q", tr("Free text"), tr("Style"), tr("Alignment"), FreeText);
+    m_freeTextFontAttribute = createAttribute(ObjectEditorAttributeType::Font, "DA", tr("Free text"), tr("Style"), tr("Font"), PDFObject::createString("Helvetica"), FreeText);
+    m_freeTextFontSizeAttribute = createAttribute(ObjectEditorAttributeType::Double, "DA", tr("Free text"), tr("Style"), tr("Size"), PDFObject::createReal(10.0), FreeText);
+    m_attributes.back().minValue = 1.0;
+    m_attributes.back().maxValue = 512.0;
+    m_freeTextTextColorAttribute = createAttribute(ObjectEditorAttributeType::Color, "DA", tr("Free text"), tr("Style"), tr("Text color"), getDefaultColor(), FreeText);
 
     createAttribute(ObjectEditorAttributeType::ComboBox, "IT", tr("Free text"), tr("Style"), tr("Intent"), PDFObject::createName("FreeText"), FreeText);
     PDFObjectEditorModelAttributeEnumItems freeTextIntent;
@@ -658,7 +668,7 @@ PDFObjectEditorAnnotationsModel::PDFObjectEditorAnnotationsModel(QObject* parent
         PDFObjectFactory factory;
         factory << stampType;
 
-        stampNameEnumItems.emplace_back(PDFStampAnnotation::getText(stampType), stampIndex++, factory.takeObject());
+        stampNameEnumItems.emplace_back(PDFStampAnnotation::getText(stampType, false), stampIndex++, factory.takeObject());
     }
     m_attributes.back().enumItems = qMove(stampNameEnumItems);
 
@@ -683,6 +693,132 @@ PDFObjectEditorAnnotationsModel::PDFObjectEditorAnnotationsModel(QObject* parent
     createQuaddingAttribute("Q", tr("Redact"), tr("Appearance"), tr("Alignment"), Redact);
 
     initialize();
+}
+
+PDFObject PDFObjectEditorAnnotationsModel::getValue(size_t index, bool resolveArrayIndex) const
+{
+    if (isFreeTextDefaultAppearanceAttribute(index))
+    {
+        return getFreeTextDefaultAppearanceAttributeValue(index);
+    }
+
+    return BaseClass::getValue(index, resolveArrayIndex);
+}
+
+PDFObject PDFObjectEditorAnnotationsModel::writeAttributeValueToObject(size_t attribute, PDFObject object, PDFObject value) const
+{
+    if (isFreeTextDefaultAppearanceAttribute(attribute))
+    {
+        return writeFreeTextDefaultAppearanceAttributeValue(attribute, qMove(object), qMove(value));
+    }
+
+    return BaseClass::writeAttributeValueToObject(attribute, qMove(object), qMove(value));
+}
+
+bool PDFObjectEditorAnnotationsModel::isFreeTextDefaultAppearanceAttribute(size_t attribute) const
+{
+    return attribute == m_freeTextFontAttribute ||
+           attribute == m_freeTextFontSizeAttribute ||
+           attribute == m_freeTextTextColorAttribute;
+}
+
+PDFObject PDFObjectEditorAnnotationsModel::getFreeTextDefaultAppearanceAttributeValue(size_t attribute) const
+{
+    const PDFDictionary* dictionary = nullptr;
+    if (m_editedObject.isDictionary())
+    {
+        dictionary = m_editedObject.getDictionary();
+    }
+    else if (m_storage)
+    {
+        dictionary = m_storage->getDictionaryFromObject(m_editedObject);
+    }
+    const PDFAnnotationDefaultAppearance appearance = PDFDocumentBuilder::getDefaultFreeTextAppearance(dictionary);
+
+    if (attribute == m_freeTextFontAttribute)
+    {
+        return PDFObject::createString(PDFDocumentBuilder::decodeFreeTextFontName(appearance.getFontName()).toUtf8());
+    }
+
+    if (attribute == m_freeTextFontSizeAttribute)
+    {
+        const PDFReal fontSize = appearance.getFontSize();
+        return PDFObject::createReal(fontSize > 0.0 ? fontSize : 10.0);
+    }
+
+    if (attribute == m_freeTextTextColorAttribute)
+    {
+        return PDFDocumentBuilder::createPDFColor(appearance.getFontColor());
+    }
+
+    return PDFObject();
+}
+
+PDFObject PDFObjectEditorAnnotationsModel::writeFreeTextDefaultAppearanceAttributeValue(size_t attribute, PDFObject object, PDFObject value) const
+{
+    const PDFDictionary* dictionary = nullptr;
+    if (object.isDictionary())
+    {
+        dictionary = object.getDictionary();
+    }
+    else if (m_storage)
+    {
+        dictionary = m_storage->getDictionaryFromObject(object);
+    }
+    PDFAnnotationDefaultAppearance appearance = PDFDocumentBuilder::getDefaultFreeTextAppearance(dictionary);
+
+    QString fontFamily = PDFDocumentBuilder::decodeFreeTextFontName(appearance.getFontName());
+
+    PDFReal fontSize = appearance.getFontSize();
+    if (fontSize <= 0.0)
+    {
+        fontSize = 10.0;
+    }
+
+    QColor color = appearance.getFontColor().isValid() ? appearance.getFontColor() : QColor(Qt::black);
+
+    if (attribute == m_freeTextFontAttribute)
+    {
+        QString newFont = fontFamily;
+        if (m_storage)
+        {
+            PDFDocumentDataLoaderDecorator loader(m_storage);
+            newFont = loader.readTextString(value, newFont);
+        }
+        else if (value.isString())
+        {
+            newFont = QString::fromUtf8(value.getString());
+        }
+        fontFamily = newFont;
+    }
+    else if (attribute == m_freeTextFontSizeAttribute)
+    {
+        if (value.isReal())
+        {
+            fontSize = value.getReal();
+        }
+        else if (value.isInt())
+        {
+            fontSize = value.getInteger();
+        }
+        else if (m_storage)
+        {
+            PDFDocumentDataLoaderDecorator loader(m_storage);
+            fontSize = loader.readNumber(value, fontSize);
+        }
+        fontSize = qMax(fontSize, PDFReal(1.0));
+    }
+    else if (attribute == m_freeTextTextColorAttribute)
+    {
+        color = PDFDocumentBuilder::readColorFromPDFObject(m_storage, value, color);
+    }
+
+    PDFFreeTextStyle style;
+    style.fontFamily = fontFamily;
+    style.fontSize = fontSize;
+    style.textColor = color;
+    const QByteArray defaultAppearance = PDFDocumentBuilder::createFreeTextDefaultAppearance(style);
+    return BaseClass::writeAttributeValueToObject(attribute, qMove(object), PDFObject::createString(defaultAppearance));
 }
 
 size_t PDFObjectEditorAnnotationsModel::createQuaddingAttribute(QByteArray attributeName, QString category, QString subcategory, QString name, uint32_t typeFlags)

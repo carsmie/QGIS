@@ -16,17 +16,17 @@
  ***************************************************************************/
 
 #include "qgsinterpolator.h"
+
 #include "qgsfeatureiterator.h"
+#include "qgsfeedback.h"
+#include "qgsgeometry.h"
+#include "qgsvariantutils.h"
 #include "qgsvectordataprovider.h"
 #include "qgsvectorlayer.h"
-#include "qgsgeometry.h"
-#include "qgsfeedback.h"
-#include "qgsvariantutils.h"
 
 QgsInterpolator::QgsInterpolator( const QList<LayerData> &layerData )
   : mLayerData( layerData )
-{
-}
+{}
 
 QgsInterpolator::Result QgsInterpolator::cacheBaseData( QgsFeedback *feedback )
 {

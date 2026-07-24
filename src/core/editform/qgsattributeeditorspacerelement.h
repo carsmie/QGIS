@@ -16,8 +16,8 @@
 #ifndef QGSATTRIBUTEEDITORSPACERELEMENT_H
 #define QGSATTRIBUTEEDITORSPACERELEMENT_H
 
-#include "qgsattributeeditorelement.h"
 #include "qgis_core.h"
+#include "qgsattributeeditorelement.h"
 
 /**
  * \ingroup core
@@ -28,7 +28,6 @@
 class CORE_EXPORT QgsAttributeEditorSpacerElement : public QgsAttributeEditorElement
 {
   public:
-
     /**
      * Creates a new element which represents a spacer
      *

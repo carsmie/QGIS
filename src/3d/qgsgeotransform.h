@@ -27,15 +27,15 @@
 // version without notice, or even be removed.
 //
 
-#define SIP_NO_FILE
-
-#include <Qt3DCore/QTransform>
 
 #include "qgsvector3d.h"
 
+#include <Qt3DCore/QTransform>
+
+#define SIP_NO_FILE
 
 /**
- * Specialied kind of QTransform that:
+ * Specialized kind of QTransform that:
  *
  * - stores translation as QgsVector3D, i.e. in double precision
  * - reacts to map scene's origin shifts and updates the QTransform accordingly

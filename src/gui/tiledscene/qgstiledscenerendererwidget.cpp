@@ -13,13 +13,13 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgstiledscenerendererwidget.h"
+
 #include "moc_qgstiledscenerendererwidget.cpp"
 
 QgsTiledSceneRendererWidget::QgsTiledSceneRendererWidget( QgsTiledSceneLayer *layer, QgsStyle *style )
   : mLayer( layer )
   , mStyle( style )
-{
-}
+{}
 
 void QgsTiledSceneRendererWidget::setContext( const QgsSymbolWidgetContext &context )
 {

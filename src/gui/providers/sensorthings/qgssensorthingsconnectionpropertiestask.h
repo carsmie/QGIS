@@ -17,10 +17,34 @@
 #define QGSSENSORTHINGSCONNECTIONPROPERTIESTASK_H
 
 ///@cond PRIVATE
+
+#include "qgis.h"
+#include "qgssensorthingsutils.h"
+#include "qgstaskmanager.h"
+
 #define SIP_NO_FILE
 
-#include "qgstaskmanager.h"
-#include "qgis.h"
+class QgsSensorThingsConnectionCapabilitiesTask : public QgsTask
+{
+    Q_OBJECT
+  public:
+    QgsSensorThingsConnectionCapabilitiesTask( const QString &uri );
+    void cancel() final;
+
+    /**
+   * Returns the retrieved service capabilities.
+   */
+    QgsSensorThingsUtils::ServiceCapabilities capabilities() const { return mCapabilities; };
+
+  protected:
+    bool run() final;
+
+  private:
+    QString mUri;
+    std::unique_ptr<QgsFeedback> mFeedback;
+    QgsSensorThingsUtils::ServiceCapabilities mCapabilities;
+};
+
 
 class QgsSensorThingsConnectionPropertiesTask : public QgsTask
 {

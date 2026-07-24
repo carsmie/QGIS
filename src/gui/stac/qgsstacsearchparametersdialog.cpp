@@ -14,19 +14,24 @@
  ***************************************************************************/
 
 #include "qgsstacsearchparametersdialog.h"
-#include "moc_qgsstacsearchparametersdialog.cpp"
+
 #include "qgsgui.h"
 #include "qgsmapcanvas.h"
 #include "qgsprojecttimesettings.h"
 #include "qgsstaccollection.h"
 #include "qgsstaccontroller.h"
 
+#include <QMenu>
 #include <QPushButton>
 #include <QScrollBar>
-#include <QStandardItemModel>
 #include <QSortFilterProxyModel>
-#include <QMenu>
+#include <QStandardItemModel>
+#include <QString>
 #include <QTextDocument>
+
+#include "moc_qgsstacsearchparametersdialog.cpp"
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
@@ -110,7 +115,7 @@ void QgsStacSearchParametersDialog::reject()
   {
     const QModelIndex index = mCollectionsModel->index( i, 0 );
     const bool isChecked = mSelectedCollections.contains( mCollectionsModel->data( index, Qt::UserRole ).toString() );
-    mCollectionsModel->setData( index, isChecked ? Qt::Checked : Qt::Unchecked, Qt::CheckStateRole );
+    ( void ) mCollectionsModel->setData( index, isChecked ? Qt::Checked : Qt::Unchecked, Qt::CheckStateRole );
   }
   QDialog::reject();
 }
@@ -151,7 +156,7 @@ QgsGeometry QgsStacSearchParametersDialog::spatialExtent() const
   }
   catch ( QgsCsException &e )
   {
-    QgsDebugError( QStringLiteral( "Could not transform extent to WGS84: %1" ).arg( e.what() ) );
+    QgsDebugError( u"Could not transform extent to WGS84: %1"_s.arg( e.what() ) );
   }
 
   return geom.intersection( QgsGeometry::fromRect( QgsRectangle( -180., -90., 180., 90. ) ) );
@@ -188,7 +193,8 @@ void QgsStacSearchParametersDialog::appendCollections( const QVector<QgsStacColl
   {
     descr.setMarkdown( c->description() );
 
-    QStandardItem *i = new QStandardItem( c->title() );
+    // While title() is more human readable, it is not required by the stac spec, so if missing we fall back to using id()
+    QStandardItem *i = new QStandardItem( c->title().isEmpty() ? c->id() : c->title() );
     i->setData( c->id(), Qt::UserRole );
     i->setData( descr.toHtml(), Qt::ToolTipRole );
     i->setCheckable( true );
@@ -212,12 +218,12 @@ QString QgsStacSearchParametersDialog::activeFiltersPreview()
 
   if ( mSpatialFilterEnabled )
   {
-    str += QStringLiteral( ", " ) + tr( "Spatial Extent" );
+    str += u", "_s + tr( "Spatial Extent" );
   }
 
   if ( mTemporalFilterEnabled && !( mTemporalFrom.isNull() && mTemporalTo.isNull() ) )
   {
-    str += QStringLiteral( ", " ) + tr( "Temporal Range" );
+    str += u", "_s + tr( "Temporal Range" );
   }
   return str;
 }
@@ -244,7 +250,7 @@ void QgsStacSearchParametersDialog::onCollectionsListViewScroll( int value )
 {
   if ( !mCollectionsUrl.isEmpty() && value == mCollectionsListView->verticalScrollBar()->maximum() )
   {
-    QgsDebugMsgLevel( QStringLiteral( "Scrolled to end, fetching next page" ), 3 );
+    QgsDebugMsgLevel( u"Scrolled to end, fetching next page"_s, 3 );
     mStac->fetchCollectionsAsync( mCollectionsUrl );
   }
 }

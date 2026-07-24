@@ -45,18 +45,18 @@
 ****************************************************************************/
 
 
-#include <QtTest/QTest>
-#include <QObject>
-#include <QStringListModel>
-#include <QSortFilterProxyModel>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
-#include <QStandardItemModel>
-#include <QRegularExpression>
+#include <dynamictreemodel.h>
 
 #include "modeltest.h"
-#include "dynamictreemodel.h"
 
+#include <QObject>
+#include <QRegularExpression>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
+#include <QStringListModel>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QtTest/QTest>
 
 class tst_ModelTest : public QObject
 {
@@ -83,20 +83,16 @@ class tst_ModelTest : public QObject
 
 
 void tst_ModelTest::initTestCase()
-{
-}
+{}
 
 void tst_ModelTest::cleanupTestCase()
-{
-}
+{}
 
 void tst_ModelTest::init()
-{
-}
+{}
 
 void tst_ModelTest::cleanup()
-{
-}
+{}
 /*
   tests
 */
@@ -199,12 +195,10 @@ class AccessibleProxyModel : public QSortFilterProxyModel
     Q_OBJECT
   public:
     explicit AccessibleProxyModel( QObject *parent = 0 )
-      : QSortFilterProxyModel( parent ) {}
+      : QSortFilterProxyModel( parent )
+    {}
 
-    QModelIndexList persistent()
-    {
-      return persistentIndexList();
-    }
+    QModelIndexList persistent() { return persistentIndexList(); }
 };
 
 class ObservingObject : public QObject
@@ -212,7 +206,8 @@ class ObservingObject : public QObject
     Q_OBJECT
   public:
     ObservingObject( AccessibleProxyModel *proxy, QObject *parent = 0 )
-      : QObject( parent ), m_proxy( proxy )
+      : QObject( parent )
+      , m_proxy( proxy )
     {
       connect( m_proxy, SIGNAL( layoutAboutToBeChanged() ), SLOT( storePersistent() ) );
       connect( m_proxy, SIGNAL( layoutChanged() ), SLOT( checkPersistent() ) );
@@ -237,7 +232,7 @@ class ObservingObject : public QObject
 
     void storePersistent()
     {
-      foreach ( const QModelIndex &idx, m_persistentProxyIndexes )
+      for ( const QModelIndex &idx : m_persistentProxyIndexes )
         Q_ASSERT( idx.isValid() ); // This is called from layoutAboutToBeChanged. Persistent indexes should be valid
 
       Q_ASSERT( m_proxy->persistent().isEmpty() );

@@ -30,13 +30,14 @@
 #ifndef LABELPOSITION_H
 #define LABELPOSITION_H
 
-#define SIP_NO_FILE
 
-
-#include "qgis_core.h"
-#include "pointset.h"
-#include "palrtree.h"
 #include <fstream>
+
+#include "palrtree.h"
+#include "pointset.h"
+#include "qgis_core.h"
+
+#define SIP_NO_FILE
 
 namespace pal
 {
@@ -58,7 +59,6 @@ namespace pal
       friend class PolygonCostCalculator;
 
     public:
-
       /**
        * \brief Label directions in relation to line or polygon ring directions
        */
@@ -82,12 +82,18 @@ namespace pal
        * \param directionToLine whether the label direction is reversed from the line or polygon ring direction
        * \param quadrant relative position of label to feature
        */
-      LabelPosition( int id, double x1, double y1,
-                     double w, double h,
-                     double alpha, double cost,
-                     FeaturePart *feature,
-                     LabelDirectionToLine directionToLine = LabelDirectionToLine::SameDirection,
-                     Qgis::LabelQuadrantPosition quadrant = Qgis::LabelQuadrantPosition::Over );
+      LabelPosition(
+        int id,
+        double x1,
+        double y1,
+        double w,
+        double h,
+        double alpha,
+        double cost,
+        FeaturePart *feature,
+        LabelDirectionToLine directionToLine = LabelDirectionToLine::SameDirection,
+        Qgis::LabelQuadrantPosition quadrant = Qgis::LabelQuadrantPosition::Over
+      );
 
       LabelPosition( const LabelPosition &other );
 
@@ -214,7 +220,8 @@ namespace pal
       {
         probFeat = probFid;
         id = lpId;
-        if ( mNextPart ) mNextPart->setProblemIds( probFid, lpId );
+        if ( mNextPart )
+          mNextPart->setProblemIds( probFid, lpId );
       }
 
       /**
@@ -318,7 +325,7 @@ namespace pal
        *
        * \see upsideDownCharCount()
        */
-      void setUpsideDownCharCount( int count ) { mUpsideDownCharCount = count ; }
+      void setUpsideDownCharCount( int count ) { mUpsideDownCharCount = count; }
 
       /**
        * Returns the number of upside down characters for this label position.
@@ -382,15 +389,14 @@ namespace pal
       double angleDifferential();
 
     protected:
-
       int id;
 
       FeaturePart *feature = nullptr;
 
       // bug # 1 (maxence 10/23/2008)
-      int probFeat;
+      int probFeat = 0;
 
-      int nbOverlap;
+      int nbOverlap = 0;
 
       //! Rotation in radians
       double alpha;
@@ -398,13 +404,12 @@ namespace pal
       double w;
       double h;
 
-      int partId;
+      int partId = -1;
 
 
-      bool upsideDown;
+      bool upsideDown = false;
 
     private:
-
       Qgis::LabelQuadrantPosition mQuadrant = Qgis::LabelQuadrantPosition::AboveLeft;
 
       LabelDirectionToLine mDirectionToLine = LabelDirectionToLine::SameDirection;
@@ -426,9 +431,9 @@ namespace pal
       mutable QgsRectangle mBoundsForConflictIndex;
 
       double mCost;
-      bool mHasObstacleConflict;
+      bool mHasObstacleConflict = false;
       bool mHasHardConflict = false;
-      int mUpsideDownCharCount;
+      int mUpsideDownCharCount = 0;
 
       /**
        * Calculates the total number of parts for this label position
@@ -453,6 +458,6 @@ namespace pal
       LabelPosition &operator=( const LabelPosition & ) = delete;
   };
 
-} // end namespace
+} //namespace pal
 
 #endif

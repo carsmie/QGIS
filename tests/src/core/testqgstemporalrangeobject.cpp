@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "qgstest.h"
+
 #include <QObject>
 
 //qgis includes...
@@ -66,8 +67,7 @@ void TestQgsTemporalRangeObject::init()
 }
 
 void TestQgsTemporalRangeObject::cleanup()
-{
-}
+{}
 
 void TestQgsTemporalRangeObject::cleanupTestCase()
 {

@@ -18,8 +18,9 @@
 #ifndef QGSPROCESSINGMODELCONFIG_H
 #define QGSPROCESSINGMODELCONFIG_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
+
 #include <QSet>
 
 #define SIP_NO_FILE
@@ -37,7 +38,6 @@ class QgsMapLayerStore;
 class CORE_EXPORT QgsProcessingModelInitialRunConfig
 {
   public:
-
     QgsProcessingModelInitialRunConfig();
     ~QgsProcessingModelInitialRunConfig();
 
@@ -146,15 +146,12 @@ class CORE_EXPORT QgsProcessingModelInitialRunConfig
     void setPreviousLayerStore( std::unique_ptr< QgsMapLayerStore > store );
 
   private:
-
     QSet<QString> mChildAlgorithmSubset;
     QVariantMap mInitialChildInputs;
     QVariantMap mInitialChildOutputs;
     QSet< QString > mPreviouslyExecutedChildren;
 
     std::unique_ptr< QgsMapLayerStore > mModelInitialLayerStore;
-
-
 };
 
 #endif // QGSPROCESSINGMODELCONFIG_H

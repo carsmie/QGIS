@@ -13,17 +13,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QObject>
-
 #include "qgsclassificationequalinterval.h"
+
 #include "qgsapplication.h"
 
-const QString QgsClassificationEqualInterval::METHOD_ID = QStringLiteral( "EqualInterval" );
+#include <QObject>
+#include <QString>
+
+using namespace Qt::StringLiterals;
+
+const QString QgsClassificationEqualInterval::METHOD_ID = u"EqualInterval"_s;
 
 QgsClassificationEqualInterval::QgsClassificationEqualInterval()
   : QgsClassificationMethod( SymmetricModeAvailable, 0 /*codeComplexity*/ )
-{
-}
+{}
 
 QString QgsClassificationEqualInterval::name() const
 {
@@ -35,8 +38,7 @@ QString QgsClassificationEqualInterval::id() const
   return METHOD_ID;
 }
 
-QList<double> QgsClassificationEqualInterval::calculateBreaks( double &minimum, double &maximum,
-    const QList<double> &values, int nclasses, QString &error )
+QList<double> QgsClassificationEqualInterval::calculateBreaks( double &minimum, double &maximum, const QList<double> &values, int nclasses, QString &error )
 {
   Q_UNUSED( values )
   Q_UNUSED( error )
@@ -62,7 +64,7 @@ QList<double> QgsClassificationEqualInterval::calculateBreaks( double &minimum, 
   else // symmetric mode
   {
     const double distBelowSymmetricValue = std::abs( minimum - symmetryPoint() );
-    const double distAboveSymmetricValue = std::abs( maximum - symmetryPoint() ) ;
+    const double distAboveSymmetricValue = std::abs( maximum - symmetryPoint() );
 
     if ( symmetryAstride() )
     {
@@ -77,7 +79,7 @@ QList<double> QgsClassificationEqualInterval::calculateBreaks( double &minimum, 
     const double step = 2 * std::min( distBelowSymmetricValue, distAboveSymmetricValue ) / nclasses;
 
     breaks.reserve( nclasses );
-    double value = ( distBelowSymmetricValue < distAboveSymmetricValue ) ?  minimum : maximum - nclasses * step;
+    double value = ( distBelowSymmetricValue < distAboveSymmetricValue ) ? minimum : maximum - nclasses * step;
 
     for ( int i = 0; i < nclasses; i++ )
     {
@@ -102,4 +104,3 @@ QIcon QgsClassificationEqualInterval::icon() const
 {
   return QgsApplication::getThemeIcon( "classification_methods/mClassificationEqualInterval.svg" );
 }
-

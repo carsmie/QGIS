@@ -15,62 +15,90 @@
 
 #include "qgsskyboxsettings.h"
 
-#include <QDomDocument>
-
+#include "qgsabstract3dmapbackgroundsettings.h"
 #include "qgsreadwritecontext.h"
 #include "qgssymbollayerutils.h"
 
-QgsSkyboxSettings::QgsSkyboxSettings( const QgsSkyboxSettings &other )
-  : mSkyboxType( other.mSkyboxType )
-  , mPanoramicTexturePath( other.mPanoramicTexturePath )
-  , mCubeMapFacesPaths( other.mCubeMapFacesPaths )
+#include <QDomDocument>
+#include <QString>
+
+using namespace Qt::StringLiterals;
+
+QgsSkyboxSettings *QgsSkyboxSettings::clone() const
 {
+  return new QgsSkyboxSettings( *this );
 }
+
+
+QgsSkyboxSettings::QgsSkyboxSettings( const QgsSkyboxSettings &other )
+#if ENABLE_PANORAMIC_SKYBOX
+  : mPanoramicTexturePath( other.mPanoramicTexturePath )
+  , mCubeMapping( other.mCubeMapping )
+#else
+  : mCubeMapping( other.mCubeMapping )
+#endif
+  , mCubeMapFacesPaths( other.mCubeMapFacesPaths )
+  , mEnableEnvironmentalLighting( other.mEnableEnvironmentalLighting )
+  , mEnvironmentalLightStrength( other.mEnvironmentalLightStrength )
+{}
 
 QgsSkyboxSettings &QgsSkyboxSettings::operator=( QgsSkyboxSettings const &rhs )
 {
-  this->mSkyboxType = rhs.mSkyboxType;
+  if ( &rhs == this )
+    return *this;
+
+#if ENABLE_PANORAMIC_SKYBOX
   this->mPanoramicTexturePath = rhs.mPanoramicTexturePath;
-  this->mCubeMapFacesPaths = rhs.mCubeMapFacesPaths;
+#endif
+  mCubeMapFacesPaths = rhs.mCubeMapFacesPaths;
+  mCubeMapping = rhs.mCubeMapping;
+  mEnableEnvironmentalLighting = rhs.mEnableEnvironmentalLighting;
+  mEnvironmentalLightStrength = rhs.mEnvironmentalLightStrength;
   return *this;
 }
 
 void QgsSkyboxSettings::readXml( const QDomElement &element, const QgsReadWriteContext &context )
 {
   const QgsPathResolver &pathResolver = context.pathResolver();
-  const QString skyboxTypeStr = element.attribute( QStringLiteral( "skybox-type" ) );
-  if ( skyboxTypeStr == QLatin1String( "Distinct Faces" ) )
-    mSkyboxType = QgsSkyboxEntity::DistinctTexturesSkybox;
-  else if ( skyboxTypeStr == QLatin1String( "Panoramic Texture" ) )
-    mSkyboxType = QgsSkyboxEntity::PanoramicSkybox;
-  mPanoramicTexturePath = pathResolver.readPath( element.attribute( QStringLiteral( "panoramic-texture-path" ) ) );
+#if ENABLE_PANORAMIC_SKYBOX
+  mPanoramicTexturePath = pathResolver.readPath( element.attribute( u"panoramic-texture-path"_s ) );
+#endif
   mCubeMapFacesPaths.clear();
-  mCubeMapFacesPaths[QStringLiteral( "posX" )] = pathResolver.readPath( element.attribute( QStringLiteral( "posX-texture-path" ) ) );
-  mCubeMapFacesPaths[QStringLiteral( "posY" )] = pathResolver.readPath( element.attribute( QStringLiteral( "posY-texture-path" ) ) );
-  mCubeMapFacesPaths[QStringLiteral( "posZ" )] = pathResolver.readPath( element.attribute( QStringLiteral( "posZ-texture-path" ) ) );
-  mCubeMapFacesPaths[QStringLiteral( "negX" )] = pathResolver.readPath( element.attribute( QStringLiteral( "negX-texture-path" ) ) );
-  mCubeMapFacesPaths[QStringLiteral( "negY" )] = pathResolver.readPath( element.attribute( QStringLiteral( "negY-texture-path" ) ) );
-  mCubeMapFacesPaths[QStringLiteral( "negZ" )] = pathResolver.readPath( element.attribute( QStringLiteral( "negZ-texture-path" ) ) );
+  mCubeMapFacesPaths[u"posX"_s] = pathResolver.readPath( element.attribute( u"posX-texture-path"_s ) );
+  mCubeMapFacesPaths[u"posY"_s] = pathResolver.readPath( element.attribute( u"posY-texture-path"_s ) );
+  mCubeMapFacesPaths[u"posZ"_s] = pathResolver.readPath( element.attribute( u"posZ-texture-path"_s ) );
+  mCubeMapFacesPaths[u"negX"_s] = pathResolver.readPath( element.attribute( u"negX-texture-path"_s ) );
+  mCubeMapFacesPaths[u"negY"_s] = pathResolver.readPath( element.attribute( u"negY-texture-path"_s ) );
+  mCubeMapFacesPaths[u"negZ"_s] = pathResolver.readPath( element.attribute( u"negZ-texture-path"_s ) );
+  mCubeMapping = qgsEnumKeyToValue( element.attribute( u"mapping"_s ), Qgis::SkyboxCubeMapping::NativeZUp );
+
+  mEnableEnvironmentalLighting = element.attribute( u"environmental-lighting"_s, u"1"_s ).toInt();
+  mEnvironmentalLightStrength = element.attribute( u"environment-light-strength"_s, u"1"_s ).toDouble();
 }
 
 void QgsSkyboxSettings::writeXml( QDomElement &element, const QgsReadWriteContext &context ) const
 {
-  switch ( mSkyboxType )
-  {
-    case QgsSkyboxEntity::DistinctTexturesSkybox:
-      element.setAttribute( QStringLiteral( "skybox-type" ), QStringLiteral( "Distinct Faces" ) );
-      break;
-    case QgsSkyboxEntity::PanoramicSkybox:
-      element.setAttribute( QStringLiteral( "skybox-type" ), QStringLiteral( "Panoramic Texture" ) );
-      break;
-  }
-
   const QgsPathResolver &pathResolver = context.pathResolver();
-  element.setAttribute( QStringLiteral( "panoramic-texture-path" ), pathResolver.writePath( mPanoramicTexturePath ) );
-  element.setAttribute( QStringLiteral( "posX-texture-path" ), pathResolver.writePath( mCubeMapFacesPaths[QStringLiteral( "posX" )] ) );
-  element.setAttribute( QStringLiteral( "posY-texture-path" ), pathResolver.writePath( mCubeMapFacesPaths[QStringLiteral( "posY" )] ) );
-  element.setAttribute( QStringLiteral( "posZ-texture-path" ), pathResolver.writePath( mCubeMapFacesPaths[QStringLiteral( "posZ" )] ) );
-  element.setAttribute( QStringLiteral( "negX-texture-path" ), pathResolver.writePath( mCubeMapFacesPaths[QStringLiteral( "negX" )] ) );
-  element.setAttribute( QStringLiteral( "negY-texture-path" ), pathResolver.writePath( mCubeMapFacesPaths[QStringLiteral( "negY" )] ) );
-  element.setAttribute( QStringLiteral( "negZ-texture-path" ), pathResolver.writePath( mCubeMapFacesPaths[QStringLiteral( "negZ" )] ) );
+#if ENABLE_PANORAMIC_SKYBOX
+  element.setAttribute( u"panoramic-texture-path"_s, pathResolver.writePath( mPanoramicTexturePath ) );
+#endif
+  element.setAttribute( u"posX-texture-path"_s, pathResolver.writePath( mCubeMapFacesPaths[u"posX"_s] ) );
+  element.setAttribute( u"posY-texture-path"_s, pathResolver.writePath( mCubeMapFacesPaths[u"posY"_s] ) );
+  element.setAttribute( u"posZ-texture-path"_s, pathResolver.writePath( mCubeMapFacesPaths[u"posZ"_s] ) );
+  element.setAttribute( u"negX-texture-path"_s, pathResolver.writePath( mCubeMapFacesPaths[u"negX"_s] ) );
+  element.setAttribute( u"negY-texture-path"_s, pathResolver.writePath( mCubeMapFacesPaths[u"negY"_s] ) );
+  element.setAttribute( u"negZ-texture-path"_s, pathResolver.writePath( mCubeMapFacesPaths[u"negZ"_s] ) );
+  element.setAttribute( u"mapping"_s, qgsEnumValueToKey( mCubeMapping ) );
+  element.setAttribute( u"environmental-lighting"_s, mEnableEnvironmentalLighting ? u"1"_s : u"0"_s );
+  element.setAttribute( u"environment-light-strength"_s, mEnvironmentalLightStrength );
+}
+
+Qgis::SkyboxCubeMapping QgsSkyboxSettings::cubeMapping() const
+{
+  return mCubeMapping;
+}
+
+void QgsSkyboxSettings::setCubeMapping( Qgis::SkyboxCubeMapping mapping )
+{
+  mCubeMapping = mapping;
 }

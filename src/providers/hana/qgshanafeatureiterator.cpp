@@ -14,21 +14,26 @@
  * (at your option) any later version.
  *
  ***************************************************************************/
+#include "qgshanafeatureiterator.h"
+
 #include "qgsexception.h"
 #include "qgsgeometry.h"
+#include "qgsgeometryengine.h"
 #include "qgsgeometryfactory.h"
 #include "qgshanaconnection.h"
+#include "qgshanacrsutils.h"
 #include "qgshanaexception.h"
 #include "qgshanaexpressioncompiler.h"
-#include "qgshanafeatureiterator.h"
 #include "qgshanaprimarykeys.h"
 #include "qgshanaprovider.h"
-#include "qgshanacrsutils.h"
 #include "qgshanautils.h"
 #include "qgslogger.h"
 #include "qgsmessagelog.h"
 #include "qgssettings.h"
-#include "qgsgeometryengine.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 namespace
 {
@@ -63,17 +68,13 @@ namespace
   {
     QString typeName = field.typeName();
     QString fieldName = QgsHanaUtils::quotedIdentifier( field.name() );
-    if ( field.type() == QMetaType::Type::QString && ( typeName == QLatin1String( "ST_GEOMETRY" ) || typeName == QLatin1String( "ST_POINT" ) ) )
-      return QStringLiteral( "%1.ST_ASWKT()" ).arg( fieldName );
+    if ( field.type() == QMetaType::Type::QString && ( typeName == "ST_GEOMETRY"_L1 || typeName == "ST_POINT"_L1 ) )
+      return u"%1.ST_ASWKT()"_s.arg( fieldName );
     return fieldName;
   }
 } // namespace
 
-QgsHanaFeatureIterator::QgsHanaFeatureIterator(
-  QgsHanaFeatureSource *source,
-  bool ownSource,
-  const QgsFeatureRequest &request
-)
+QgsHanaFeatureIterator::QgsHanaFeatureIterator( QgsHanaFeatureSource *source, bool ownSource, const QgsFeatureRequest &request )
   : QgsAbstractFeatureIteratorFromSource<QgsHanaFeatureSource>( source, ownSource, request )
   , mDatabaseVersion( source->mDatabaseVersion )
   , mConnection( source->mUri )
@@ -150,7 +151,15 @@ bool QgsHanaFeatureIterator::close()
 
   if ( mResultSet )
   {
-    mResultSet->close();
+    try
+    {
+      mResultSet->close();
+    }
+    catch ( QgsHanaException &e )
+    {
+      QgsDebugError( u"An error occurred while closing the HANA result set: %1"_s.arg( e.what() ) );
+    }
+
     mResultSet.reset();
   }
 
@@ -271,11 +280,9 @@ bool QgsHanaFeatureIterator::nextFeatureFilterExpression( QgsFeature &feature )
 QString QgsHanaFeatureIterator::getBBOXFilter() const
 {
   if ( mDatabaseVersion.majorVersion() == 1 )
-    return QStringLiteral( "%1.ST_SRID(%2).ST_IntersectsRect(ST_GeomFromText(?, ?), ST_GeomFromText(?, ?)) = 1" )
-      .arg( QgsHanaUtils::quotedIdentifier( mSource->mGeometryColumn ), QString::number( mSource->mSrid ) );
+    return u"%1.ST_SRID(%2).ST_IntersectsRect(ST_GeomFromText(?, ?), ST_GeomFromText(?, ?)) = 1"_s.arg( QgsHanaUtils::quotedIdentifier( mSource->mGeometryColumn ), QString::number( mSource->mSrid ) );
   else
-    return QStringLiteral( "%1.ST_IntersectsRectPlanar(ST_GeomFromText(?, ?), ST_GeomFromText(?, ?)) = 1" )
-      .arg( QgsHanaUtils::quotedIdentifier( mSource->mGeometryColumn ) );
+    return u"%1.ST_IntersectsRectPlanar(ST_GeomFromText(?, ?), ST_GeomFromText(?, ?)) = 1"_s.arg( QgsHanaUtils::quotedIdentifier( mSource->mGeometryColumn ) );
 }
 
 QgsRectangle QgsHanaFeatureIterator::getFilterRect() const
@@ -302,9 +309,7 @@ bool QgsHanaFeatureIterator::prepareOrderBy( const QList<QgsFeatureRequest::Orde
 
 QString QgsHanaFeatureIterator::buildSqlQuery( const QgsFeatureRequest &request )
 {
-  const bool geometryRequested = ( request.flags() & Qgis::FeatureRequestFlag::NoGeometry ) == 0
-                                 || !mFilterRect.isNull()
-                                 || request.spatialFilterType() == Qgis::SpatialFilterType::DistanceWithin;
+  const bool geometryRequested = ( request.flags() & Qgis::FeatureRequestFlag::NoGeometry ) == 0 || !mFilterRect.isNull() || request.spatialFilterType() == Qgis::SpatialFilterType::DistanceWithin;
   bool limitAtProvider = ( request.limit() >= 0 ) && mRequest.spatialFilterType() != Qgis::SpatialFilterType::DistanceWithin;
 
   QgsRectangle filterRect = mFilterRect;
@@ -316,7 +321,7 @@ QString QgsHanaFeatureIterator::buildSqlQuery( const QgsFeatureRequest &request 
 #if 0
   mOrderByCompiled = true;
 
-  if ( QgsSettings().value( QStringLiteral( "qgis/compileExpressions" ), true ).toBool() )
+  if ( QgsSettings().value( u"qgis/compileExpressions"_s, true ).toBool() )
   {
     const auto constOrderBy = request.orderBy();
     for ( const QgsFeatureRequest::OrderByClause &clause : constOrderBy )
@@ -327,8 +332,8 @@ QString QgsHanaFeatureIterator::buildSqlQuery( const QgsFeatureRequest &request 
       {
         QString part;
         part = compiler.result();
-        part += clause.ascending() ? QStringLiteral( " ASC" ) : QStringLiteral( " DESC" );
-        part += clause.nullsFirst() ? QStringLiteral( " NULLS FIRST" ) : QStringLiteral( " NULLS LAST" );
+        part += clause.ascending() ? u" ASC"_s : u" DESC"_s;
+        part += clause.nullsFirst() ? u" NULLS FIRST"_s : u" NULLS LAST"_s;
         orderByParts << part;
       }
       else
@@ -407,14 +412,14 @@ QString QgsHanaFeatureIterator::buildSqlQuery( const QgsFeatureRequest &request 
     {
       QString fidWhereClause = QgsHanaPrimaryKeyUtils::buildWhereClause( request.filterFid(), mSource->mFields, mSource->mPrimaryKeyType, mSource->mPrimaryKeyAttrs, *mSource->mPrimaryKeyCntx );
       if ( fidWhereClause.isEmpty() )
-        throw QgsHanaException( QStringLiteral( "Key values for feature %1 not found." ).arg( request.filterFid() ) );
+        throw QgsHanaException( u"Key values for feature %1 not found."_s.arg( request.filterFid() ) );
       sqlFilter.push_back( fidWhereClause );
     }
     else if ( request.filterType() == Qgis::FeatureRequestFilterType::Fids && !mRequest.filterFids().isEmpty() )
     {
       QString fidsWhereClause = QgsHanaPrimaryKeyUtils::buildWhereClause( request.filterFids(), mSource->mFields, mSource->mPrimaryKeyType, mSource->mPrimaryKeyAttrs, *mSource->mPrimaryKeyCntx );
       if ( fidsWhereClause.isEmpty() )
-        throw QgsHanaException( QStringLiteral( "Key values for features not found." ) );
+        throw QgsHanaException( u"Key values for features not found."_s );
       sqlFilter.push_back( fidsWhereClause );
     }
   }
@@ -424,7 +429,7 @@ QString QgsHanaFeatureIterator::buildSqlQuery( const QgsFeatureRequest &request 
   mCompileStatus = NoCompilation;
   if ( request.filterType() == Qgis::FeatureRequestFilterType::Expression )
   {
-    if ( QgsSettings().value( QStringLiteral( "qgis/compileExpressions" ), true ).toBool() )
+    if ( QgsSettings().value( u"qgis/compileExpressions"_s, true ).toBool() )
     {
       QgsHanaExpressionCompiler compiler = QgsHanaExpressionCompiler( mSource, request.flags() & Qgis::FeatureRequestFlag::IgnoreStaticNodesDuringExpressionCompilation );
       QgsSqlExpressionCompiler::Result result = compiler.compile( request.filterExpression() );
@@ -445,10 +450,7 @@ QString QgsHanaFeatureIterator::buildSqlQuery( const QgsFeatureRequest &request 
         }
         break;
         case QgsSqlExpressionCompiler::Result::Fail:
-          QgsDebugError( QStringLiteral( "Unable to compile filter expression: '%1'" )
-                           .arg( request.filterExpression()->expression() )
-                           .toStdString()
-                           .c_str() );
+          QgsDebugError( u"Unable to compile filter expression: '%1'"_s.arg( request.filterExpression()->expression() ).toStdString().c_str() );
           break;
         case QgsSqlExpressionCompiler::Result::None:
           break;
@@ -465,16 +467,16 @@ QString QgsHanaFeatureIterator::buildSqlQuery( const QgsFeatureRequest &request 
     }
   }
 
-  QString sql = QStringLiteral( "SELECT %1 FROM %2" ).arg( sqlFields.isEmpty() ? QStringLiteral( "*" ) : sqlFields.join( ',' ), mSource->mQuery );
+  QString sql = u"SELECT %1 FROM %2"_s.arg( sqlFields.isEmpty() ? u"*"_s : sqlFields.join( ',' ), mSource->mQuery );
 
   if ( !sqlFilter.isEmpty() )
-    sql += QStringLiteral( " WHERE (%1)" ).arg( sqlFilter.join( QLatin1String( ") AND (" ) ) );
+    sql += u" WHERE (%1)"_s.arg( sqlFilter.join( ") AND ("_L1 ) );
 
   if ( !orderByParts.isEmpty() )
-    sql += QStringLiteral( " ORDER BY %1 " ).arg( orderByParts.join( ',' ) );
+    sql += u" ORDER BY %1 "_s.arg( orderByParts.join( ',' ) );
 
   if ( limitAtProvider )
-    sql += QStringLiteral( " LIMIT %1" ).arg( mRequest.limit() );
+    sql += u" LIMIT %1"_s.arg( mRequest.limit() );
 
   QgsDebugMsgLevel( "Query: " + sql, 4 );
 
@@ -486,8 +488,8 @@ QVariantList QgsHanaFeatureIterator::buildSqlQueryParameters() const
   if ( !( mFilterRect.isNull() || mFilterRect.isEmpty() ) && mSource->isSpatial() && mHasGeometryColumn )
   {
     QgsRectangle filterRect = getFilterRect();
-    QString ll = QStringLiteral( "POINT(%1 %2)" ).arg( QString::number( filterRect.xMinimum() ), QString::number( filterRect.yMinimum() ) );
-    QString ur = QStringLiteral( "POINT(%1 %2)" ).arg( QString::number( filterRect.xMaximum() ), QString::number( filterRect.yMaximum() ) );
+    QString ll = u"POINT(%1 %2)"_s.arg( QString::number( filterRect.xMinimum() ), QString::number( filterRect.yMinimum() ) );
+    QString ur = u"POINT(%1 %2)"_s.arg( QString::number( filterRect.xMaximum() ), QString::number( filterRect.yMaximum() ) );
     return { ll, mSource->mSrid, ur, mSource->mSrid };
   }
   return QVariantList();

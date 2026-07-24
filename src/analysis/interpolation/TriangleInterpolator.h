@@ -18,13 +18,13 @@
 #define TINTERPOLATOR_H
 
 #include "Vector3D.h"
-
-#include "qgis_sip.h"
 #include "qgis_analysis.h"
+#include "qgis_sip.h"
+
+#define SIP_NO_FILE
 
 class QgsPoint;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup analysis

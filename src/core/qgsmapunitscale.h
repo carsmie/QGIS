@@ -18,8 +18,8 @@
 #ifndef QGSMAPUNITSCALE_H
 #define QGSMAPUNITSCALE_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 
 class QgsRenderContext;
 
@@ -36,7 +36,6 @@ class QgsRenderContext;
 class CORE_EXPORT QgsMapUnitScale
 {
   public:
-
     /**
      * Constructor for QgsMapUnitScale
      * \param minScale minimum allowed scale, or 0.0 if no minimum scale set
@@ -94,14 +93,8 @@ class CORE_EXPORT QgsMapUnitScale
              && qgsDoubleNear( maxSizeMM, other.maxSizeMM );
     }
 
-    bool operator!=( const QgsMapUnitScale &other ) const
-    {
-      return !operator==( other );
-    }
+    bool operator!=( const QgsMapUnitScale &other ) const { return !operator==( other ); }
 };
 
 
 #endif // QGSMAPUNITSCALE_H
-
-
-

@@ -16,17 +16,18 @@
 #ifndef QGS3DANIMATIONSETTINGS_H
 #define QGS3DANIMATIONSETTINGS_H
 
-#include "qgsvector3d.h"
 #include "qgis_3d.h"
+#include "qgsvector3d.h"
 
 #include <QEasingCurve>
 #include <QVector>
+
+#define SIP_NO_FILE
 
 class QDomDocument;
 class QDomElement;
 class QgsReadWriteContext;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup qgis_3d

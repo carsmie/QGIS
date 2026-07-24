@@ -13,20 +13,25 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgstiledscenerendererpropertieswidget.h"
-#include "moc_qgstiledscenerendererpropertieswidget.cpp"
 
 #include "qgis.h"
-#include "qgstiledscenerendererregistry.h"
 #include "qgsapplication.h"
-#include "qgssymbolwidgetcontext.h"
-#include "qgstiledscenerendererwidget.h"
-#include "qgstiledscenelayer.h"
-#include "qgstiledscenerenderer.h"
-#include "qgstiledscenetexturerendererwidget.h"
-#include "qgstiledscenewireframerendererwidget.h"
 #include "qgslogger.h"
 #include "qgsproject.h"
 #include "qgsprojectutils.h"
+#include "qgssymbolwidgetcontext.h"
+#include "qgstiledscenelayer.h"
+#include "qgstiledscenerenderer.h"
+#include "qgstiledscenerendererregistry.h"
+#include "qgstiledscenerendererwidget.h"
+#include "qgstiledscenetexturerendererwidget.h"
+#include "qgstiledscenewireframerendererwidget.h"
+
+#include <QString>
+
+#include "moc_qgstiledscenerendererpropertieswidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 static bool initTiledSceneRenderer( const QString &name, QgsTiledSceneRendererWidgetFunc f, const QString &iconName = QString() )
 {
@@ -54,8 +59,8 @@ void QgsTiledSceneRendererPropertiesWidget::initRendererWidgetFunctions()
   if ( sInitialized )
     return;
 
-  initTiledSceneRenderer( QStringLiteral( "texture" ), QgsTiledSceneTextureRendererWidget::create, QStringLiteral( "styleicons/tiledscenetexture.svg" ) );
-  initTiledSceneRenderer( QStringLiteral( "wireframe" ), QgsTiledSceneWireframeRendererWidget::create, QStringLiteral( "styleicons/tiledscenewireframe.svg" ) );
+  initTiledSceneRenderer( u"texture"_s, QgsTiledSceneTextureRendererWidget::create, u"styleicons/tiledscenetexture.svg"_s );
+  initTiledSceneRenderer( u"wireframe"_s, QgsTiledSceneWireframeRendererWidget::create, u"styleicons/tiledscenewireframe.svg"_s );
 
   sInitialized = true;
 }
@@ -87,7 +92,9 @@ QgsTiledSceneRendererPropertiesWidget::QgsTiledSceneRendererPropertiesWidget( Qg
   connect( mBlendModeComboBox, static_cast<void ( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ), this, &QgsTiledSceneRendererPropertiesWidget::emitWidgetChanged );
   connect( mOpacityWidget, &QgsOpacityWidget::opacityChanged, this, &QgsTiledSceneRendererPropertiesWidget::emitWidgetChanged );
 
-  mMaxErrorUnitWidget->setUnits( { Qgis::RenderUnit::Millimeters, Qgis::RenderUnit::MetersInMapUnits, Qgis::RenderUnit::MapUnits, Qgis::RenderUnit::Pixels, Qgis::RenderUnit::Points, Qgis::RenderUnit::Inches } );
+  mMaxErrorUnitWidget->setUnits(
+    { Qgis::RenderUnit::Millimeters, Qgis::RenderUnit::MetersInMapUnits, Qgis::RenderUnit::MapUnits, Qgis::RenderUnit::Pixels, Qgis::RenderUnit::Points, Qgis::RenderUnit::Inches }
+  );
   mMaxErrorSpinBox->setClearValue( 3 );
 
   connect( mMaxErrorSpinBox, qOverload<double>( &QgsDoubleSpinBox::valueChanged ), this, &QgsTiledSceneRendererPropertiesWidget::emitWidgetChanged );
@@ -150,7 +157,10 @@ void QgsTiledSceneRendererPropertiesWidget::apply()
   else if ( !cboRenderers->currentData().toString().isEmpty() )
   {
     QDomElement elem;
-    mLayer->setRenderer( QgsApplication::tiledSceneRendererRegistry()->rendererMetadata( cboRenderers->currentData().toString() )->createRenderer( elem, QgsReadWriteContext() ) );
+    if ( QgsTiledSceneRendererAbstractMetadata *metadata = QgsApplication::tiledSceneRendererRegistry()->rendererMetadata( cboRenderers->currentData().toString() ) )
+    {
+      mLayer->setRenderer( metadata->createRenderer( elem, QgsReadWriteContext() ) );
+    }
   }
 
   mLayer->renderer()->setMaximumScreenError( mMaxErrorSpinBox->value() );
@@ -161,7 +171,7 @@ void QgsTiledSceneRendererPropertiesWidget::rendererChanged()
 {
   if ( cboRenderers->currentIndex() == -1 )
   {
-    QgsDebugError( QStringLiteral( "No current item -- this should never happen!" ) );
+    QgsDebugError( u"No current item -- this should never happen!"_s );
     return;
   }
 

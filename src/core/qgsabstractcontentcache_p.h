@@ -20,10 +20,13 @@
 
 #include "qgsabstractcontentcache.h"
 #include "qgssetrequestinitiator_p.h"
-#include <QRegularExpression>
 
-template<class T>
-QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QByteArray &missingContent, const QByteArray &fetchingContent, bool blocking ) const
+#include <QRegularExpression>
+#include <QString>
+
+using namespace Qt::StringLiterals;
+
+template<class T> QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QByteArray &missingContent, const QByteArray &fetchingContent, bool blocking ) const
 {
   // is it a path to local file?
   QFile file( path );
@@ -40,7 +43,7 @@ QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QB
   }
 
   // maybe it's an embedded base64 string
-  if ( path.startsWith( QLatin1String( "base64:" ), Qt::CaseInsensitive ) )
+  if ( path.startsWith( "base64:"_L1, Qt::CaseInsensitive ) )
   {
     const QByteArray base64 = path.mid( 7 ).toLocal8Bit(); // strip 'base64:' prefix
     return QByteArray::fromBase64( base64, QByteArray::OmitTrailingEquals );
@@ -62,7 +65,7 @@ QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QB
   }
 
   // maybe it's a url...
-  if ( !path.contains( QLatin1String( "://" ) ) ) // otherwise short, relative SVG paths might be considered URLs
+  if ( !path.contains( "://"_L1 ) ) // otherwise short, relative SVG paths might be considered URLs
   {
     return missingContent;
   }
@@ -74,7 +77,7 @@ QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QB
   }
 
   // check whether it's a url pointing to a local file
-  if ( url.scheme().compare( QLatin1String( "file" ), Qt::CaseInsensitive ) == 0 )
+  if ( url.scheme().compare( "file"_L1, Qt::CaseInsensitive ) == 0 )
   {
     file.setFileName( url.toLocalFile() );
     if ( file.exists() )
@@ -120,7 +123,7 @@ QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QB
           if ( mRemoteContentCache.contains( path ) )
           {
             // We got the file!
-            return *mRemoteContentCache[ path ];
+            return *mRemoteContentCache[path];
           }
         }
       }
@@ -134,26 +137,26 @@ QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QB
   if ( mRemoteContentCache.contains( path ) )
   {
     // already fetched this content - phew. Just return what we already got.
-    return *mRemoteContentCache[ path ];
+    return *mRemoteContentCache[path];
   }
 
   mPendingRemoteUrls.insert( path );
   //fire up task to fetch content in background
   QNetworkRequest request( url );
-  QgsSetRequestInitiatorClass( request, QStringLiteral( "QgsAbstractContentCache<%1>" ).arg( mTypeString ) );
+  QgsSetRequestInitiatorClass( request, u"QgsAbstractContentCache<%1>"_s.arg( mTypeString ) );
   request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );
   request.setAttribute( QNetworkRequest::CacheSaveControlAttribute, true );
 
   QgsNetworkContentFetcherTask *task = new QgsNetworkContentFetcherTask( request );
-  connect( task, &QgsNetworkContentFetcherTask::fetched, this, [this, task, path, missingContent]
-  {
+  connect( task, &QgsNetworkContentFetcherTask::fetched, this, [this, task, path, missingContent] {
     const QMutexLocker locker( &mMutex );
 
     QNetworkReply *reply = task->reply();
     if ( !reply )
     {
       // canceled
-      QMetaObject::invokeMethod( const_cast< QgsAbstractContentCacheBase * >( qobject_cast< const QgsAbstractContentCacheBase * >( this ) ), "onRemoteContentFetched", Qt::QueuedConnection, Q_ARG( QString, path ), Q_ARG( bool, false ) );
+      QMetaObject::
+        invokeMethod( const_cast< QgsAbstractContentCacheBase * >( qobject_cast< const QgsAbstractContentCacheBase * >( this ) ), "onRemoteContentFetched", Qt::QueuedConnection, Q_ARG( QString, path ), Q_ARG( bool, false ) );
       return;
     }
 
@@ -190,7 +193,8 @@ QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QB
       if ( !ba.isEmpty() )
         mRemoteContentCache.insert( path, new QByteArray( ba ) );
     }
-    QMetaObject::invokeMethod( const_cast< QgsAbstractContentCacheBase * >( qobject_cast< const QgsAbstractContentCacheBase * >( this ) ), "onRemoteContentFetched", Qt::QueuedConnection, Q_ARG( QString, path ), Q_ARG( bool, true ) );
+    QMetaObject::
+      invokeMethod( const_cast< QgsAbstractContentCacheBase * >( qobject_cast< const QgsAbstractContentCacheBase * >( this ) ), "onRemoteContentFetched", Qt::QueuedConnection, Q_ARG( QString, path ), Q_ARG( bool, true ) );
   } );
 
   QgsApplication::taskManager()->addTask( task );
@@ -203,7 +207,7 @@ QByteArray QgsAbstractContentCache<T>::getContent( const QString &path, const QB
       if ( mRemoteContentCache.contains( path ) )
       {
         // We got the file!
-        return *mRemoteContentCache[ path ];
+        return *mRemoteContentCache[path];
       }
     }
   }

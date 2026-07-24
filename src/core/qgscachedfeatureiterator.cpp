@@ -14,10 +14,11 @@
  ***************************************************************************/
 
 #include "qgscachedfeatureiterator.h"
-#include "qgsvectorlayercache.h"
+
 #include "qgsexception.h"
-#include "qgsvectorlayer.h"
 #include "qgsgeometryengine.h"
+#include "qgsvectorlayer.h"
+#include "qgsvectorlayercache.h"
 
 QgsCachedFeatureIterator::QgsCachedFeatureIterator( QgsVectorLayerCache *vlCache, const QgsFeatureRequest &featureRequest )
   : QgsAbstractFeatureIterator( featureRequest )
@@ -170,7 +171,7 @@ bool QgsCachedFeatureWriterIterator::fetchFeature( QgsFeature &f )
   if ( mFeatIt.nextFeature( f ) )
   {
     // As long as features can be fetched from the provider: Write them to cache
-    mVectorLayerCache->cacheFeature( f, ! mRequest.flags().testFlag( Qgis::FeatureRequestFlag::SubsetOfAttributes ) );
+    mVectorLayerCache->cacheFeature( f, !mRequest.flags().testFlag( Qgis::FeatureRequestFlag::SubsetOfAttributes ) );
     mFids.insert( f.id() );
     geometryToDestinationCrs( f, mTransform );
     return true;

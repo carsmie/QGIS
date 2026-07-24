@@ -10,7 +10,6 @@
 
 
 
-
 class QgsFieldModel : QAbstractItemModel
 {
 %Docstring(signature="appended")
@@ -26,7 +25,6 @@ a layer and its fields.
 #include "qgsfieldmodel.h"
 %End
   public:
-
 
     enum class CustomRole /BaseType=IntEnum/
     {
@@ -63,7 +61,7 @@ Sets whether custom expressions are accepted and displayed in the model.
 .. seealso:: :py:func:`setExpression`
 %End
 
-    bool allowExpression();
+    bool allowExpression() const;
 %Docstring
 Returns ``True`` if the model allows custom expressions to be created
 and displayed.
@@ -131,16 +129,20 @@ Returns the layer associated with the model.
     virtual QVariant data( const QModelIndex &index, int role ) const;
 
 
-    static QString fieldToolTip( const QgsField &field );
+    static QString fieldToolTip( const QgsField &field, const QString &predefinedComment = QString() );
 %Docstring
 Returns a HTML formatted tooltip string for a ``field``, containing
-details like the field name, alias and type.
+details like the field name, alias, type and comment. A predefined
+comment can be passed overriding the field comment (e.g. when it's data
+defined)
 %End
 
-    static QString fieldToolTipExtended( const QgsField &field, const QgsVectorLayer *layer );
+    static QString fieldToolTipExtended( const QgsField &field, const QgsVectorLayer *layer, const QString &predefinedComment = QString() );
 %Docstring
 Returns a HTML formatted tooltip string for a ``field``, containing
-details like the field name, alias, type and expression.
+details like the field name, alias, type, comment and expression. A
+predefined comment can be passed overriding the field comment (e.g. when
+it's data defined)
 
 .. versionadded:: 3.14
 %End

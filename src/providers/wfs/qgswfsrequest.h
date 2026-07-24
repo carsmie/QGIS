@@ -15,15 +15,15 @@
 #ifndef QGSWFSREQUEST_H
 #define QGSWFSREQUEST_H
 
-#include <QObject>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QAuthenticator>
-
-#include "qgswfsdatasourceuri.h"
 #include "qgsbasenetworkrequest.h"
 #include "qgswfscapabilities.h"
+#include "qgswfsdatasourceuri.h"
+
+#include <QAuthenticator>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QObject>
+#include <QUrl>
 
 //! Abstract base class for a WFS request.
 class QgsWfsRequest : public QgsBaseNetworkRequest
@@ -38,11 +38,7 @@ class QgsWfsRequest : public QgsBaseNetworkRequest
   protected:
     QDomDocument createPostDocument() const;
     QDomElement createRootPostElement(
-      const QgsWfsCapabilities &capabilities,
-      const QString &wfsVersion,
-      QDomDocument &postDocument,
-      const QString &name,
-      const QStringList &typeNamesForNamespaces = QStringList()
+      const QgsWfsCapabilities &capabilities, const QString &wfsVersion, QDomDocument &postDocument, const QString &name, const QStringList &typeNamesForNamespaces = QStringList()
     ) const;
 
     //! URI

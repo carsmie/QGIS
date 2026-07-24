@@ -20,24 +20,25 @@ __date__ = "August 2013"
 __copyright__ = "(C) 2013, Alexander Bruy"
 
 from osgeo import gdal
-from qgis.PyQt.QtCore import QMetaType
 from qgis.core import (
     QgsFeature,
+    QgsFeatureRequest,
     QgsFeatureSink,
-    QgsFields,
     QgsField,
+    QgsFields,
     QgsGeometry,
     QgsPointXY,
-    QgsWkbTypes,
     QgsProcessing,
     QgsProcessingException,
-    QgsFeatureRequest,
-    QgsProcessingParameterRasterLayer,
-    QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterRasterLayer,
+    QgsWkbTypes,
 )
-from processing.tools import raster
+from qgis.PyQt.QtCore import QMetaType
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
+from processing.tools import raster
 
 gdal.UseExceptions()
 
@@ -83,6 +84,17 @@ class PointsFromLines(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Generate points (pixel centroids) along line")
+
+    def shortDescription(self):
+        return self.tr(
+            "Generates points corresponding to centroids of raster pixels intersecting a line layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm generates a point vector layer from an input raster and line layer. "
+            "The points correspond to the pixel centroids that intersect the line layer."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT_VECTOR, context)
@@ -165,6 +177,7 @@ class PointsFromLines(QgisAlgorithm):
             feedback.setProgress(int(current * total))
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}
 
     def buildLine(self, startX, startY, endX, endY, geoTransform, writer, feature):

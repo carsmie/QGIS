@@ -17,21 +17,24 @@
 #ifndef QGSSENSORTHINGSSUBSETEDITOR_H
 #define QGSSENSORTHINGSSUBSETEDITOR_H
 
-#include "qgis.h"
 #include "ui_qgssensorthingssubseteditorbase.h"
-#include "qgssubsetstringeditorinterface.h"
+
+#include "qgis.h"
 #include "qgsfields.h"
-#include <QVariantMap>
+#include "qgssubsetstringeditorinterface.h"
+
 #include <QPointer>
+#include <QVariantMap>
+
+#define SIP_NO_FILE
 
 class QgsVectorLayer;
 class QgsCodeEditor;
 class QgsFieldProxyModel;
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
-class QgsSensorThingsSubsetEditor : public QgsSubsetStringEditorInterface, protected Ui::QgsSensorThingsSubsetEditorBase
+class QgsSensorThingsSubsetEditor : public QgsSubsetStringEditorInterface, private Ui::QgsSensorThingsSubsetEditorBase
 {
     Q_OBJECT
 

@@ -16,10 +16,13 @@
 #ifndef QGSVECTOR3D_H
 #define QGSVECTOR3D_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 
+#include <QString>
 #include <QVector3D>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup core
@@ -34,14 +37,22 @@ class CORE_EXPORT QgsVector3D
 
     //! Constructs a vector from given coordinates
     QgsVector3D( double x, double y, double z )
-      : mX( x ), mY( y ), mZ( z ) {}
+      : mX( x )
+      , mY( y )
+      , mZ( z )
+    {}
 
     //! Constructs a vector from single-precision QVector3D
     QgsVector3D( const QVector3D &v )
-      : mX( v.x() ), mY( v.y() ), mZ( v.z() ) {}
+      : mX( v.x() )
+      , mY( v.y() )
+      , mZ( v.z() )
+    {}
 
+    // clang-format off
     //! Returns TRUE if all three coordinates are zero
     bool isNull() const SIP_HOLDGIL { return mX == 0 && mY == 0 && mZ == 0; }
+    // clang-format on
 
     //! Returns X coordinate
     double x() const SIP_HOLDGIL { return mX; }
@@ -92,6 +103,19 @@ class CORE_EXPORT QgsVector3D
       return QgsVector3D( mX + other.mX, mY + other.mY, mZ + other.mZ );
     }
 
+    /**
+     * Adds another vector to this vector in place.
+     *
+     * \since QGIS 4.0
+     */
+    QgsVector3D &operator+=( const QgsVector3D &other ) SIP_HOLDGIL
+    {
+      mX += other.mX;
+      mY += other.mY;
+      mZ += other.mZ;
+      return *this;
+    }
+
     //! Returns difference of two vectors
     QgsVector3D operator-( const QgsVector3D &other ) const SIP_HOLDGIL
     {
@@ -135,10 +159,24 @@ class CORE_EXPORT QgsVector3D
                           v1.x() * v2.y() - v1.y() * v2.x() );
     }
 
-    //! Returns the length of the vector
+    /**
+     * Returns the length of the vector.
+     * \see lengthSquared()
+     */
     double length() const SIP_HOLDGIL
     {
       return sqrt( mX * mX + mY * mY + mZ * mZ );
+    }
+
+    /**
+     * Returns the squared length of the vector.
+     * \see length()
+     *
+     * \since QGIS 4.0
+     */
+    double lengthSquared() const SIP_HOLDGIL
+    {
+      return mX * mX + mY * mY + mZ * mZ;
     }
 
     //! Normalizes the current vector in place.
@@ -195,11 +233,13 @@ class CORE_EXPORT QgsVector3D
     QVector3D toVector3D() const SIP_HOLDGIL { return QVector3D( static_cast< float >( mX ), static_cast< float >( mY ), static_cast< float >( mZ ) ); }
 
 #ifdef SIP_RUN
+// clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsVector3D: %1>" ).arg( sipCpp->toString() );
+    QString str = u"<QgsVector3D: %1>"_s.arg( sipCpp->toString() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
   private:
     double mX = 0, mY = 0, mZ = 0;

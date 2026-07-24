@@ -20,20 +20,17 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-
-#include <QMap>
-#include <QString>
-#include <QVariant>
-#include <QList>
-#include <QVector>
-#include <QSet>
-#include <QExplicitlySharedDataPointer>
-
-
 #include "qgsfields.h"
 #include "qgsunsetattributevalue.h"
 #include "qgsvariantutils.h"
 
+#include <QExplicitlySharedDataPointer>
+#include <QList>
+#include <QMap>
+#include <QSet>
+#include <QString>
+#include <QVariant>
+#include <QVector>
 
 class QgsRectangle;
 class QgsFeature;
@@ -59,7 +56,6 @@ typedef QMap<int, QgsField> QgsFieldMap;
 class QgsAttributes : public QVector<QVariant>
 {
   public:
-
     QgsAttributes() = default;
 
     /**
@@ -138,12 +134,13 @@ class QgsAttributes : public QVector<QVariant>
 };
 
 //! Hash for QgsAttributes
-CORE_EXPORT uint qHash( const QgsAttributes &attributes );
+CORE_EXPORT size_t qHash( const QgsAttributes &attributes );
 
 #endif
 
 #ifdef SIP_PYQT5_RUN
 #ifdef SIP_RUN
+// clang-format off
 typedef QVector<QVariant> QgsAttributes;
 
 % MappedType QgsAttributes
@@ -303,11 +300,13 @@ typedef QVector<QVariant> QgsAttributes;
   return sipGetState( sipTransferObj );
   % End
 };
+// clang-format on
 #endif
 #endif
 
 #ifdef SIP_PYQT6_RUN
 #ifdef SIP_RUN
+// clang-format off
 typedef QVector<QVariant> QgsAttributes;
 
 % MappedType QgsAttributes
@@ -458,6 +457,7 @@ typedef QVector<QVariant> QgsAttributes;
   return sipGetState( sipTransferObj );
   % End
 };
+// clang-format on
 #endif
 #endif
 #endif // QGSATTRIBUTES_H

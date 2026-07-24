@@ -13,34 +13,38 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsapplication.h"
 #include "qgsattributetablemodel.h"
-#include "moc_qgsattributetablemodel.cpp"
-
-#include "qgsactionmanager.h"
-#include "qgseditorwidgetregistry.h"
-#include "qgsexpression.h"
-#include "qgsfeatureiterator.h"
-#include "qgsconditionalstyle.h"
-#include "qgsfields.h"
-#include "qgsfieldformatter.h"
-#include "qgslogger.h"
-#include "qgsmaplayeraction.h"
-#include "qgsvectorlayer.h"
-#include "qgsvectordataprovider.h"
-#include "qgsfieldformatterregistry.h"
-#include "qgsgui.h"
-#include "qgsexpressionnodeimpl.h"
-#include "qgsfieldmodel.h"
-#include "qgsexpressioncontextutils.h"
-#include "qgsstringutils.h"
-#include "qgsvectorlayerutils.h"
-#include "qgsvectorlayercache.h"
-
-#include <QVariant>
-#include <QUuid>
 
 #include <limits>
+
+#include "qgsactionmanager.h"
+#include "qgsapplication.h"
+#include "qgsconditionalstyle.h"
+#include "qgseditorwidgetregistry.h"
+#include "qgsexpression.h"
+#include "qgsexpressioncontextutils.h"
+#include "qgsexpressionnodeimpl.h"
+#include "qgsfeatureiterator.h"
+#include "qgsfieldformatter.h"
+#include "qgsfieldformatterregistry.h"
+#include "qgsfieldmodel.h"
+#include "qgsfields.h"
+#include "qgsgui.h"
+#include "qgslogger.h"
+#include "qgsmaplayeraction.h"
+#include "qgsstringutils.h"
+#include "qgsvectordataprovider.h"
+#include "qgsvectorlayer.h"
+#include "qgsvectorlayercache.h"
+#include "qgsvectorlayerutils.h"
+
+#include <QString>
+#include <QUuid>
+#include <QVariant>
+
+#include "moc_qgsattributetablemodel.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsAttributeTableModel::QgsAttributeTableModel( QgsVectorLayerCache *layerCache, QObject *parent )
   : QAbstractTableModel( parent )
@@ -81,7 +85,7 @@ QgsAttributeTableModel::QgsAttributeTableModel( QgsVectorLayerCache *layerCache,
 
 bool QgsAttributeTableModel::loadFeatureAtId( QgsFeatureId fid ) const
 {
-  QgsDebugMsgLevel( QStringLiteral( "loading feature %1" ).arg( fid ), 3 );
+  QgsDebugMsgLevel( u"loading feature %1"_s.arg( fid ), 3 );
 
   if ( fid == std::numeric_limits<int>::min() )
   {
@@ -93,7 +97,7 @@ bool QgsAttributeTableModel::loadFeatureAtId( QgsFeatureId fid ) const
 
 bool QgsAttributeTableModel::loadFeatureAtId( QgsFeatureId fid, int fieldIdx ) const
 {
-  QgsDebugMsgLevel( QStringLiteral( "loading feature %1 with field %2" ).arg( fid ).arg( fieldIdx ), 3 );
+  QgsDebugMsgLevel( u"loading feature %1 with field %2"_s.arg( fid ).arg( fieldIdx ), 3 );
 
   if ( mLayerCache->cacheSubsetOfAttributes().contains( fieldIdx ) )
   {
@@ -135,7 +139,7 @@ void QgsAttributeTableModel::featuresDeleted( const QgsFeatureIds &fids )
   const auto constFids = fids;
   for ( const QgsFeatureId fid : constFids )
   {
-    QgsDebugMsgLevel( QStringLiteral( "(%2) fid: %1, size: %3" ).arg( fid ).arg( qgsEnumValueToKey( mFeatureRequest.filterType() ) ).arg( mIdRowMap.size() ), 4 );
+    QgsDebugMsgLevel( u"(%2) fid: %1, size: %3"_s.arg( fid ).arg( qgsEnumValueToKey( mFeatureRequest.filterType() ) ).arg( mIdRowMap.size() ), 4 );
 
     const int row = idToRow( fid );
     if ( row != -1 )
@@ -196,10 +200,7 @@ bool QgsAttributeTableModel::removeRows( int row, int count, const QModelIndex &
     beginRemoveRows( parent, row, row + count - 1 );
   }
 
-#ifdef QGISDEBUG
-  if ( 3 <= QgsLogger::debugLevel() )
-    QgsDebugMsgLevel( QStringLiteral( "remove %2 rows at %1 (rows %3, ids %4)" ).arg( row ).arg( count ).arg( mRowIdMap.size() ).arg( mIdRowMap.size() ), 3 );
-#endif
+  QgsDebugMsgLevel( u"remove %2 rows at %1 (rows %3, ids %4)"_s.arg( row ).arg( count ).arg( mRowIdMap.size() ).arg( mIdRowMap.size() ), 3 );
 
   if ( mBulkEditCommandRunning && !mResettingModel )
   {
@@ -232,17 +233,17 @@ bool QgsAttributeTableModel::removeRows( int row, int count, const QModelIndex &
 #ifdef QGISDEBUG
   if ( 4 <= QgsLogger::debugLevel() )
   {
-    QgsDebugMsgLevel( QStringLiteral( "after removal rows %1, ids %2" ).arg( mRowIdMap.size() ).arg( mIdRowMap.size() ), 4 );
-    QgsDebugMsgLevel( QStringLiteral( "id->row" ), 4 );
+    QgsDebugMsgLevel( u"after removal rows %1, ids %2"_s.arg( mRowIdMap.size() ).arg( mIdRowMap.size() ), 4 );
+    QgsDebugMsgLevel( u"id->row"_s, 4 );
     for ( QHash<QgsFeatureId, int>::const_iterator it = mIdRowMap.constBegin(); it != mIdRowMap.constEnd(); ++it )
     {
-      QgsDebugMsgLevel( QStringLiteral( "%1->%2" ).arg( FID_TO_STRING( it.key() ) ).arg( *it ), 4 );
+      QgsDebugMsgLevel( u"%1->%2"_s.arg( FID_TO_STRING( it.key() ) ).arg( *it ), 4 );
     }
 
-    QgsDebugMsgLevel( QStringLiteral( "row->id" ), 4 );
+    QgsDebugMsgLevel( u"row->id"_s, 4 );
     for ( QHash<int, QgsFeatureId>::const_iterator it = mRowIdMap.constBegin(); it != mRowIdMap.constEnd(); ++it )
     {
-      QgsDebugMsgLevel( QStringLiteral( "%1->%2" ).arg( it.key() ).arg( FID_TO_STRING( *it ) ), 4 );
+      QgsDebugMsgLevel( u"%1->%2"_s.arg( it.key() ).arg( FID_TO_STRING( *it ) ), 4 );
     }
   }
 #endif
@@ -257,7 +258,7 @@ bool QgsAttributeTableModel::removeRows( int row, int count, const QModelIndex &
 
 void QgsAttributeTableModel::featureAdded( QgsFeatureId fid )
 {
-  QgsDebugMsgLevel( QStringLiteral( "(%2) fid: %1" ).arg( fid ).arg( qgsEnumValueToKey( mFeatureRequest.filterType() ) ), 4 );
+  QgsDebugMsgLevel( u"(%2) fid: %1"_s.arg( fid ).arg( qgsEnumValueToKey( mFeatureRequest.filterType() ) ), 4 );
   bool featOk = true;
 
   if ( mFeat.id() != fid )
@@ -352,7 +353,7 @@ void QgsAttributeTableModel::attributeValueChanged( QgsFeatureId fid, int idx, c
     mAttributeValueChanges.insert( QPair<QgsFeatureId, int>( fid, idx ), value );
     return;
   }
-  QgsDebugMsgLevel( QStringLiteral( "(%4) fid: %1, idx: %2, value: %3" ).arg( fid ).arg( idx ).arg( value.toString() ).arg( qgsEnumValueToKey( mFeatureRequest.filterType() ) ), 2 );
+  QgsDebugMsgLevel( u"(%4) fid: %1, idx: %2, value: %3"_s.arg( fid ).arg( idx ).arg( value.toString() ).arg( qgsEnumValueToKey( mFeatureRequest.filterType() ) ), 2 );
 
   for ( SortCache &cache : mSortCaches )
   {
@@ -433,8 +434,6 @@ void QgsAttributeTableModel::loadAttributes()
 
   QgsAttributeList attributes;
 
-  mWidgetDatas.clear();
-
   for ( int idx = 0; idx < fields.count(); ++idx )
   {
     attributes << idx;
@@ -453,6 +452,7 @@ void QgsAttributeTableModel::loadAttributes()
 
   mFieldCount = attributes.size();
   mAttributes = attributes;
+  mWidgetDatas.clear();
   mWidgetDatas.resize( mFieldCount );
 
   for ( SortCache &cache : mSortCaches )
@@ -572,7 +572,7 @@ int QgsAttributeTableModel::idToRow( QgsFeatureId id ) const
 {
   if ( !mIdRowMap.contains( id ) )
   {
-    QgsDebugError( QStringLiteral( "idToRow: id %1 not in the map" ).arg( id ) );
+    QgsDebugError( u"idToRow: id %1 not in the map"_s.arg( id ) );
     return -1;
   }
 
@@ -603,7 +603,7 @@ QgsFeatureId QgsAttributeTableModel::rowToId( const int row ) const
 {
   if ( !mRowIdMap.contains( row ) )
   {
-    QgsDebugError( QStringLiteral( "rowToId: row %1 not in the map" ).arg( row ) );
+    QgsDebugError( u"rowToId: row %1 not in the map"_s.arg( row ) );
     // return negative infinite (to avoid collision with newly added features)
     return std::numeric_limits<int>::min();
   }
@@ -675,7 +675,9 @@ QVariant QgsAttributeTableModel::headerData( int section, Qt::Orientation orient
 
 QVariant QgsAttributeTableModel::data( const QModelIndex &index, int role ) const
 {
-  if ( !index.isValid() || !mLayer || ( role != Qt::TextAlignmentRole && role != Qt::DisplayRole && role != Qt::ToolTipRole && role != Qt::EditRole && role != static_cast<int>( CustomRole::FeatureId ) && role != static_cast<int>( CustomRole::FieldIndex ) && role != Qt::BackgroundRole && role != Qt::ForegroundRole && role != Qt::DecorationRole && role != Qt::FontRole && role < static_cast<int>( CustomRole::Sort ) ) )
+  if ( !index.isValid()
+       || !mLayer
+       || ( role != Qt::TextAlignmentRole && role != Qt::DisplayRole && role != Qt::ToolTipRole && role != Qt::EditRole && role != static_cast<int>( CustomRole::FeatureId ) && role != static_cast<int>( CustomRole::FieldIndex ) && role != Qt::BackgroundRole && role != Qt::ForegroundRole && role != Qt::DecorationRole && role != Qt::FontRole && role < static_cast<int>( CustomRole::Sort ) ) )
     return QVariant();
 
   const QgsFeatureId rowId = rowToId( index.row() );
@@ -695,9 +697,13 @@ QVariant QgsAttributeTableModel::data( const QModelIndex &index, int role ) cons
   {
     const unsigned long cacheIndex = role - static_cast<int>( CustomRole::Sort );
     if ( cacheIndex < mSortCaches.size() )
+    {
       return mSortCaches.at( cacheIndex ).sortCache.value( rowId );
+    }
     else
+    {
       return QVariant();
+    }
   }
 
   const QgsField field = mLayer->fields().at( fieldId );
@@ -738,6 +744,10 @@ QVariant QgsAttributeTableModel::data( const QModelIndex &index, int role ) cons
     {
       const WidgetData &widgetData = getWidgetData( index.column() );
       QString tooltip = widgetData.fieldFormatter->representValue( mLayer, fieldId, widgetData.config, widgetData.cache, val );
+      if ( tooltip != val.toString() )
+      {
+        tooltip = tr( "%1 (%2)" ).arg( tooltip, val.toString() );
+      }
       if ( val.userType() == QMetaType::Type::QString && QgsStringUtils::isUrl( val.toString() ) )
       {
         tooltip = tr( "%1 (Ctrl+click to open)" ).arg( tooltip );
@@ -800,7 +810,7 @@ QVariant QgsAttributeTableModel::data( const QModelIndex &index, int role ) cons
       {
         if ( role == Qt::BackgroundRole && style.validBackgroundColor() )
           return style.backgroundColor();
-        if ( role == Qt::ForegroundRole )
+        if ( role == Qt::ForegroundRole && style.validTextColor() )
           return style.textColor();
         if ( role == Qt::DecorationRole )
           return style.icon();
@@ -899,7 +909,7 @@ void QgsAttributeTableModel::bulkEditCommandEnded()
     }
   }
 
-  QgsDebugMsgLevel( QStringLiteral( "Bulk edit command ended modified rows over (%3), cache size is %1, starting %2 update." ).arg( mLayerCache->cacheSize() ).arg( fullModelUpdate ? QStringLiteral( "full" ) : QStringLiteral( "incremental" ) ).arg( rowCount() ), 3 );
+  QgsDebugMsgLevel( u"Bulk edit command ended modified rows over (%3), cache size is %1, starting %2 update."_s.arg( mLayerCache->cacheSize() ).arg( fullModelUpdate ? u"full"_s : u"incremental"_s ).arg( rowCount() ), 3 );
 
   // Remove added rows on rollback
   if ( mIsCleaningUpAfterRollback )
@@ -994,6 +1004,9 @@ void QgsAttributeTableModel::prefetchColumnData( int column )
 
 void QgsAttributeTableModel::prefetchSortData( const QString &expressionString, unsigned long cacheIndex )
 {
+  if ( !mLayer )
+    return;
+
   if ( cacheIndex >= mSortCaches.size() )
   {
     mSortCaches.resize( cacheIndex + 1 );
@@ -1037,7 +1050,9 @@ void QgsAttributeTableModel::prefetchSortData( const QString &expressionString, 
     widgetData = getWidgetData( cache.sortFieldIndex );
   }
 
-  const QgsFeatureRequest request = QgsFeatureRequest( mFeatureRequest ).setFlags( cache.sortCacheExpression.needsGeometry() ? Qgis::FeatureRequestFlag::NoFlags : Qgis::FeatureRequestFlag::NoGeometry ).setSubsetOfAttributes( cache.sortCacheAttributes );
+  const QgsFeatureRequest request = QgsFeatureRequest( mFeatureRequest )
+                                      .setFlags( cache.sortCacheExpression.needsGeometry() ? Qgis::FeatureRequestFlag::NoFlags : Qgis::FeatureRequestFlag::NoGeometry )
+                                      .setSubsetOfAttributes( cache.sortCacheAttributes );
 
   QgsFeatureIterator it = mLayerCache->getFeatures( request );
 

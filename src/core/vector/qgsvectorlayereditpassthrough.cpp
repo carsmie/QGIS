@@ -14,14 +14,15 @@
  ***************************************************************************/
 
 #include "qgsvectorlayereditpassthrough.h"
-#include "moc_qgsvectorlayereditpassthrough.cpp"
-#include "qgsvectorlayer.h"
-#include "qgsvectordataprovider.h"
-#include "qgsvectorlayerundopassthroughcommand.h"
+
 #include "qgstransaction.h"
+#include "qgsvectordataprovider.h"
+#include "qgsvectorlayer.h"
+#include "qgsvectorlayerundopassthroughcommand.h"
+
+#include "moc_qgsvectorlayereditpassthrough.cpp"
 
 QgsVectorLayerEditPassthrough::QgsVectorLayerEditPassthrough( QgsVectorLayer *layer )
-  : mModified( false )
 {
   L = layer;
 }
@@ -82,7 +83,7 @@ bool QgsVectorLayerEditPassthrough::changeGeometry( QgsFeatureId fid, const QgsG
   return modify( new QgsVectorLayerUndoPassthroughCommandChangeGeometry( this, fid, geom ) );
 }
 
-bool QgsVectorLayerEditPassthrough::changeAttributeValue( QgsFeatureId fid, int field, const QVariant &newValue, const QVariant &/*oldValue*/ )
+bool QgsVectorLayerEditPassthrough::changeAttributeValue( QgsFeatureId fid, int field, const QVariant &newValue, const QVariant & /*oldValue*/ )
 {
   return modify( new QgsVectorLayerUndoPassthroughCommandChangeAttribute( this, fid, field, newValue ) );
 }

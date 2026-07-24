@@ -16,10 +16,11 @@
 #ifndef QGSDBQUERYLOG_H
 #define QGSDBQUERYLOG_H
 
-#include "qgis_core.h"
 #include "qgis.h"
-#include <QString>
+#include "qgis_core.h"
+
 #include <QDateTime>
+#include <QString>
 
 /**
  * \ingroup core
@@ -31,7 +32,6 @@
 class CORE_EXPORT QgsDatabaseQueryLogEntry
 {
   public:
-
     /**
      * Constructor for QgsDatabaseQueryLogEntry.
      */
@@ -96,7 +96,6 @@ class CORE_EXPORT QgsDatabaseQueryLogEntry
     bool canceled = false;
 
   private:
-
     static QAtomicInt sQueryId;
 };
 
@@ -121,12 +120,11 @@ Q_DECLARE_METATYPE( QgsDatabaseQueryLogEntry );
  *
  * \since QGIS 3.24
  */
-class CORE_EXPORT QgsDatabaseQueryLog: public QObject
+class CORE_EXPORT QgsDatabaseQueryLog : public QObject
 {
     Q_OBJECT
 
   public:
-
     /**
      * Creates a new query log.
      *
@@ -200,9 +198,7 @@ class CORE_EXPORT QgsDatabaseQueryLog: public QObject
     void queryFinished( const QgsDatabaseQueryLogEntry &query ) SIP_SKIP;
 
   private:
-
     static bool sEnabled;
-
 };
 
 #ifndef SIP_RUN
@@ -213,9 +209,7 @@ class CORE_EXPORT QgsDatabaseQueryLog: public QObject
  */
 class QgsDatabaseQueryLogWrapper
 {
-
   public:
-
     QgsDatabaseQueryLogWrapper( const QString &query, const QString &uri, const QString &provider, const QString &initiatorClass, const QString &origin )
       : mEntry( query )
     {
@@ -226,35 +220,18 @@ class QgsDatabaseQueryLogWrapper
       QgsDatabaseQueryLog::log( mEntry );
     }
 
-    ~QgsDatabaseQueryLogWrapper( )
-    {
-      QgsDatabaseQueryLog::finished( mEntry );
-    }
+    ~QgsDatabaseQueryLogWrapper() { QgsDatabaseQueryLog::finished( mEntry ); }
 
-    void setFetchedRows( long long fetchedRows )
-    {
-      mEntry.fetchedRows = fetchedRows;
-    }
+    void setFetchedRows( long long fetchedRows ) { mEntry.fetchedRows = fetchedRows; }
 
-    void setQuery( const QString &query )
-    {
-      mEntry.query = query;
-    }
+    void setQuery( const QString &query ) { mEntry.query = query; }
 
-    void setError( const QString &error )
-    {
-      mEntry.error = error;
-    }
+    void setError( const QString &error ) { mEntry.error = error; }
 
-    void setCanceled( )
-    {
-      mEntry.canceled = true;
-    }
+    void setCanceled() { mEntry.canceled = true; }
 
   private:
-
     QgsDatabaseQueryLogEntry mEntry;
-
 };
 
 ///@endcond

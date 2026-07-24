@@ -14,23 +14,21 @@
  ***************************************************************************/
 
 #include "qgsvectortiledataprovider.h"
-#include "moc_qgsvectortiledataprovider.cpp"
+
 #include "qgsthreadingutils.h"
 #include "qgsvectortileloader.h"
 
-#include <QNetworkRequest>
 #include <QImage>
+#include <QNetworkRequest>
 
+#include "moc_qgsvectortiledataprovider.cpp"
 
 int QgsVectorTileDataProvider::DATA_COLUMN = QNetworkRequest::User + 1;
 int QgsVectorTileDataProvider::DATA_ROW = QNetworkRequest::User + 2;
 int QgsVectorTileDataProvider::DATA_ZOOM = QNetworkRequest::User + 3;
 int QgsVectorTileDataProvider::DATA_SOURCE_ID = QNetworkRequest::User + 4;
 
-QgsVectorTileDataProvider::QgsVectorTileDataProvider(
-  const QString &uri,
-  const ProviderOptions &options,
-  Qgis::DataProviderReadFlags flags )
+QgsVectorTileDataProvider::QgsVectorTileDataProvider( const QString &uri, const ProviderOptions &options, Qgis::DataProviderReadFlags flags )
   : QgsDataProvider( uri, options, flags )
   , mShared( new QgsVectorTileDataProviderSharedData )
 {}
@@ -110,7 +108,6 @@ QImage QgsVectorTileDataProvider::spriteImage() const
 
   return QImage();
 }
-
 
 
 QgsVectorTileDataProviderSharedData::QgsVectorTileDataProviderSharedData()

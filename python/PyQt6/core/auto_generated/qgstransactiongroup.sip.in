@@ -8,6 +8,8 @@
 
 
 
+
+
 class QgsTransactionGroup : QObject
 {
 %Docstring(signature="appended")
@@ -18,7 +20,6 @@ Represents a transaction group.
 #include "qgstransactiongroup.h"
 %End
   public:
-
     explicit QgsTransactionGroup( QObject *parent = 0 );
 %Docstring
 Constructor for QgsTransactionGroup

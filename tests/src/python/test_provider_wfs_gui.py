@@ -14,8 +14,11 @@ import hashlib
 import shutil
 import sys
 import tempfile
+import unittest
 
-from qgis.PyQt.QtCore import QCoreApplication, QEventLoop, Qt
+from qgis.core import QgsSettings
+from qgis.gui import QgsGui
+from qgis.PyQt.QtCore import QEventLoop, Qt
 from qgis.PyQt.QtTest import QTest
 from qgis.PyQt.QtWidgets import (
     QApplication,
@@ -25,22 +28,23 @@ from qgis.PyQt.QtWidgets import (
     QTextEdit,
     QWidget,
 )
-from qgis.core import QgsSettings
-from qgis.gui import QgsGui
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.testing import QgisTestCase, start_app
 
 
 def sanitize(endpoint, x):
     if len(endpoint + x) > 256:
-        return endpoint + hashlib.md5(x.encode()).hexdigest()
-    return endpoint + x.replace("?", "_").replace("&", "_").replace("<", "_").replace(
+        # print('Before: ' + endpoint + x)
+        x = x.replace("/", "_").encode()
+        ret = endpoint + hashlib.md5(x).hexdigest()
+        # print('After:  ' + ret)
+        return ret
+    ret = endpoint + x.replace("?", "_").replace("&", "_").replace("<", "_").replace(
         ">", "_"
     ).replace('"', "_").replace("'", "_").replace(" ", "_").replace(":", "_").replace(
         "/", "_"
-    ).replace(
-        "\n", "_"
-    )
+    ).replace("\n", "_")
+    # print('Sanitize: ' + x)
+    return ret
 
 
 def find_window(name):
@@ -51,15 +55,10 @@ def find_window(name):
 
 
 class TestPyQgsWFSProviderGUI(QgisTestCase):
-
     @classmethod
     def setUpClass(cls):
         """Run before all tests"""
         super().setUpClass()
-        QCoreApplication.setOrganizationName("QGIS_Test")
-        QCoreApplication.setOrganizationDomain("QGIS_TestPyQgsWFSProviderGUI.com")
-        QCoreApplication.setApplicationName("QGIS_TestPyQgsWFSProviderGUI")
-        QgsSettings().clear()
         start_app()
 
         cls.basetestpath = tempfile.mkdtemp().replace("\\", "/")
@@ -251,7 +250,7 @@ class TestPyQgsWFSProviderGUI(QgisTestCase):
         QTest.mouseClick(buttonAdd, Qt.MouseButton.LeftButton)
         self.assertEqual(
             self.addWfsLayer_uri,
-            " pagingEnabled='default' preferCoordinatesForWfsT11='false' restrictToRequestBBOX='1' srsname='EPSG:4326' typename='my:typename' url='"
+            " forceInitialGetFeature='false' pagingEnabled='default' preferCoordinatesForWfsT11='false' restrictToRequestBBOX='1' srsname='EPSG:4326' typename='my:typename' url='"
             + "http://"
             + expected_endpoint
             + "' version='auto'",
@@ -296,6 +295,27 @@ class TestPyQgsWFSProviderGUI(QgisTestCase):
 </xsd:schema>
 """
             )
+        with open(
+            sanitize(
+                endpoint,
+                "?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=my:typename&COUNT=1&SRSNAME=urn:ogc:def:crs:EPSG::4326",
+            ),
+            "wb",
+        ) as f:
+            f.write(
+                b"""
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:my="http://my"
+                       numberMatched="2" numberReturned="1" timeStamp="2016-03-25T14:51:48.998Z">
+  <wfs:member>
+    <my:typename gml:id="typename.100">
+      <my:geometryProperty><gml:Point srsName="urn:ogc:def:crs:EPSG::4326" gml:id="typename.geom.0"><gml:pos>66.33 -70.332</gml:pos></gml:Point></my:geometryProperty>
+    </my:typename>
+  </wfs:member>
+</wfs:FeatureCollection>"""
+            )
+
         QTest.mouseClick(buttonBuildQuery, Qt.MouseButton.LeftButton)
 
         # Check that the combos are properly initialized
@@ -330,9 +350,35 @@ class TestPyQgsWFSProviderGUI(QgisTestCase):
         self.assertIsNotNone(mWhereEditor)
         mWhereEditor.setText("1 = 1")
 
+        print("before acept")
+        with open(
+            sanitize(
+                endpoint,
+                """?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=my:typename&COUNT=1&SRSNAME=urn:ogc:def:crs:EPSG::4326&FILTER=<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+ <fes:PropertyIsEqualTo>
+  <fes:Literal>1</fes:Literal>
+  <fes:Literal>1</fes:Literal>
+ </fes:PropertyIsEqualTo>
+</fes:Filter>
+""",
+            ),
+            "wb",
+        ) as f:
+            f.write(
+                b"""
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:my="http://my"
+                       numberMatched="2" numberReturned="1" timeStamp="2016-03-25T14:51:48.998Z">
+  <wfs:member>
+    <my:typename gml:id="typename.100">
+      <my:geometryProperty><gml:Point srsName="urn:ogc:def:crs:EPSG::4326" gml:id="typename.geom.0"><gml:pos>66.33 -70.332</gml:pos></gml:Point></my:geometryProperty>
+    </my:typename>
+  </wfs:member>
+</wfs:FeatureCollection>"""
+            )
+
         dialog.accept()
-        # Wait for object to be destroyed
-        dialog = self.wait_object_destruction(dialog)
 
         # Add layer
         buttonAdd = self.get_button_add(main_dialog)
@@ -344,7 +390,7 @@ class TestPyQgsWFSProviderGUI(QgisTestCase):
         QTest.mouseClick(buttonAdd, Qt.MouseButton.LeftButton)
         self.assertEqual(
             self.addWfsLayer_uri,
-            " pagingEnabled='default' preferCoordinatesForWfsT11='false' restrictToRequestBBOX='1' srsname='EPSG:4326' typename='my:typename' url='"
+            " forceInitialGetFeature='false' pagingEnabled='default' preferCoordinatesForWfsT11='false' restrictToRequestBBOX='1' srsname='EPSG:4326' typename='my:typename' url='"
             + "http://"
             + expected_endpoint
             + "' version='auto' sql=SELECT * FROM typename WHERE 1 = 1",

@@ -19,11 +19,11 @@
 #ifndef QGSMESHLAYERELEVATIONPROPERTIES_H
 #define QGSMESHLAYERELEVATIONPROPERTIES_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsmaplayerelevationproperties.h"
 #include "qgsmeshdataset.h"
-#include "qgis.h"
 
 class QgsLineSymbol;
 class QgsFillSymbol;
@@ -37,11 +37,9 @@ class QgsFillSymbol;
  */
 class CORE_EXPORT QgsMeshLayerElevationProperties : public QgsMapLayerElevationProperties
 {
-
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsMeshLayerElevationProperties, with the specified \a parent object.
      */
@@ -194,7 +192,6 @@ class CORE_EXPORT QgsMeshLayerElevationProperties : public QgsMapLayerElevationP
     void setElevationLimit( double limit );
 
   private:
-
     void setDefaultProfileLineSymbol( const QColor &color );
     void setDefaultProfileFillSymbol( const QColor &color );
 

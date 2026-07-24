@@ -14,16 +14,19 @@
  ***************************************************************************/
 
 #include "qgsgeometrycheckcontext.h"
+
 #include <QThread>
 
-QgsGeometryCheckContext::QgsGeometryCheckContext( int precision, const QgsCoordinateReferenceSystem &mapCrs, const QgsCoordinateTransformContext &transformContext, const QgsProject *project )
+QgsGeometryCheckContext::QgsGeometryCheckContext(
+  int precision, const QgsCoordinateReferenceSystem &mapCrs, const QgsCoordinateTransformContext &transformContext, const QgsProject *project, const int uniqueIdFieldIndex
+)
   : tolerance( std::pow( 10, -precision ) )
   , reducedTolerance( std::pow( 10, -precision / 2 ) )
   , mapCrs( mapCrs )
   , transformContext( transformContext )
+  , uniqueIdFieldIndex( uniqueIdFieldIndex )
   , mProject( project )
-{
-}
+{}
 
 const QgsProject *QgsGeometryCheckContext::project() const
 {

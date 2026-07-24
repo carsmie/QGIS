@@ -21,15 +21,15 @@ __copyright__ = "(C) 2012, Victor Olaya"
 
 import os
 
-from qgis.PyQt.QtGui import QIcon
-
 from qgis.core import (
-    QgsRasterFileWriter,
     QgsProcessingException,
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterNumber,
     QgsProcessingParameterRasterDestination,
+    QgsProcessingParameterRasterLayer,
+    QgsRasterFileWriter,
 )
+from qgis.PyQt.QtGui import QIcon
+
 from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 from processing.tools.system import isWindows
@@ -95,7 +95,7 @@ class rgb2pct(GdalAlgorithm):
             )
         input_details = GdalUtils.gdal_connection_details_from_layer(raster)
 
-        output_format = QgsRasterFileWriter.driverForExtension(os.path.splitext(out)[1])
+        output_format = self.outputFormat(parameters, self.OUTPUT, context)
         if not output_format:
             raise QgsProcessingException(self.tr("Output format is invalid"))
 

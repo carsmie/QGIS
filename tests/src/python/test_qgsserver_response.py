@@ -20,7 +20,6 @@ from qgis.server import QgsBufferServerResponse
 
 
 class QgsServerResponseTest(unittest.TestCase):
-
     def test_responseHeaders(self):
         """Test response headers"""
         headers = {"header-key-1": "header-value-1", "header-key-2": "header-value-2"}
@@ -34,6 +33,38 @@ class QgsServerResponseTest(unittest.TestCase):
         response.setHeader("header-key-1", "header-value-1")
         for k, v in response.headers().items():
             self.assertEqual(headers[k], v)
+
+    def test_fullHeaders(self):
+
+        headers = (
+            ("header-key-1", "key-1-value-1"),
+            ("header-key-1", "key-1-value-2"),
+            ("header-key-2", "key-2-value-1"),
+        )
+
+        response = QgsBufferServerResponse()
+        for k, v in headers:
+            response.addHeader(k, v)
+
+        self.assertEqual(
+            response.fullHeaders(),
+            {
+                "header-key-1": ["key-1-value-1", "key-1-value-2"],
+                "header-key-2": ["key-2-value-1"],
+            },
+        )
+        self.assertEqual(
+            response.fullHeader("header-key-1"), ["key-1-value-1", "key-1-value-2"]
+        )
+        self.assertEqual(
+            response.headers(),
+            {"header-key-1": "key-1-value-2", "header-key-2": "key-2-value-1"},
+        )
+        self.assertEqual(response.header("header-key-1"), "key-1-value-2")
+
+        # Test that setHeader overrides the previous value
+        response.setHeader("header-key-1", "key-1-value-3")
+        self.assertEqual(response.fullHeader("header-key-1"), ["key-1-value-3"])
 
     def test_statusCode(self):
         """Test return status HTTP code"""

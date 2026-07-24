@@ -17,14 +17,15 @@
 #ifndef QGSAUTHGUIUTILS_H
 #define QGSAUTHGUIUTILS_H
 
-#include <QColor>
 #include "qgis_gui.h"
+
+#include <QColor>
+
+#define SIP_NO_FILE
 
 class QTreeWidgetItem;
 class QWidget;
 class QgsMessageBar;
-
-#define SIP_NO_FILE
 
 
 /**

@@ -13,12 +13,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgstest.h"
-
 #include <cmath>
 
 #include "qgscoordinatereferencesystem.h"
+#include "qgstest.h"
 #include "qgstilingscheme.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup UnitTests
@@ -29,7 +32,8 @@ class TestQgsTilingScheme : public QgsTest
     Q_OBJECT
   public:
     TestQgsTilingScheme()
-      : QgsTest( QStringLiteral( "Test QgsTilingScheme" ) ) {}
+      : QgsTest( u"Test QgsTilingScheme"_s )
+    {}
 
   private slots:
     void initTestCase();    // will be called before the first testfunction is executed.
@@ -42,8 +46,7 @@ class TestQgsTilingScheme : public QgsTest
 
 //runs before all tests
 void TestQgsTilingScheme::initTestCase()
-{
-}
+{}
 
 //runs after all tests
 void TestQgsTilingScheme::cleanupTestCase()

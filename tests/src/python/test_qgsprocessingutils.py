@@ -12,13 +12,13 @@ __author__ = "Germán Carrillo"
 __date__ = "7.3.2022"
 __copyright__ = "Copyright 2022, The QGIS Project"
 
-from qgis.core import QgsField, QgsFields, QgsProcessingUtils
 import unittest
-from qgis.testing import start_app, QgisTestCase
+
+from qgis.core import QgsField, QgsFields, QgsProcessingUtils
+from qgis.testing import QgisTestCase, start_app
 
 
 class TestQgsProcessingUtils(QgisTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -160,6 +160,22 @@ class TestQgsProcessingUtils(QgisTestCase):
         expected_names = ["ID", "FK", "joined_ID", "joined_ID_2", "joined_COUNT"]
         obtained_names = [field.name() for field in combined]
         self.assertEqual(expected_names, obtained_names)
+
+    def test_supportedImageFormats(self):
+        formats = QgsProcessingUtils.supportedImageFormats()
+        self.assertTrue(len(formats) > 0)
+        self.assertEqual(formats[0], "PNG")
+        self.assertNotIn("SVG", formats)
+        remaining_formats = formats[1:]
+        self.assertEqual(remaining_formats, sorted(remaining_formats))
+
+    def test_supportedImageFileFilters(self):
+        filters = QgsProcessingUtils.supportedImageFileFilters()
+        self.assertTrue(len(filters) > 0)
+        self.assertTrue(filters.startswith("PNG format (*.png *.PNG)"))
+        self.assertIn(";;", filters)
+        self.assertNotIn("SVG", filters)
+        self.assertNotIn("svg", filters)
 
 
 if __name__ == "__main__":

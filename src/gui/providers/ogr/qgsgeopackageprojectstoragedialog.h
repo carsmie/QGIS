@@ -15,13 +15,15 @@
 #ifndef QGSGEOPACKAGEPROJECTSTORAGEDIALOG_H
 #define QGSGEOPACKAGEPROJECTSTORAGEDIALOG_H
 
-#include <QDialog>
-
 #include "ui_qgsgeopackageprojectstoragedialog.h"
+
 #include "qgis_sip.h"
 
-///@cond PRIVATE
+#include <QDialog>
+
 #define SIP_NO_FILE
+
+///@cond PRIVATE
 
 class QgsGeoPackageProjectStorageDialog : public QDialog, private Ui::QgsGeoPackageProjectStorageDialog
 {

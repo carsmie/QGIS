@@ -14,6 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsgrassdatafile.h"
+
 #include "moc_qgsgrassdatafile.cpp"
 
 #ifdef Q_OS_UNIX
@@ -22,8 +23,7 @@
 
 QgsGrassDataFile::QgsGrassDataFile( QObject *parent )
   : QFile( parent )
-{
-}
+{}
 
 bool QgsGrassDataFile::open( FILE *fh )
 {

@@ -19,8 +19,8 @@
 #ifndef QGSTILEDSCENETILE_H
 #define QGSTILEDSCENETILE_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsmatrix4x4.h"
 #include "qgstiledsceneboundingvolume.h"
 
@@ -35,7 +35,6 @@
 class CORE_EXPORT QgsTiledSceneTile
 {
   public:
-
     /**
      * Constructor for an invalid tile.
      *
@@ -185,7 +184,6 @@ class CORE_EXPORT QgsTiledSceneTile
     double mGeometricError = 0;
     QUrl mBaseUrl;
     QVariantMap mMetadata;
-
 };
 
 #endif // QGSTILEDSCENETILE_H

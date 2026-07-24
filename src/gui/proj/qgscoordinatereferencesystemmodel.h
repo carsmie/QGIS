@@ -17,14 +17,14 @@
 #ifndef QGSCOORDINATEREFERENCESYSTEMMODEL_H
 #define QGSCOORDINATEREFERENCESYSTEMMODEL_H
 
+#include "qgis.h"
 #include "qgis_gui.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgscoordinatereferencesystemregistry.h"
 
 #include <QAbstractItemModel>
-#include <QSortFilterProxyModel>
 #include <QIcon>
+#include <QSortFilterProxyModel>
 
 class QgsCoordinateReferenceSystem;
 class QgsCoordinateReferenceSystemModelGroupNode;
@@ -79,8 +79,10 @@ class GUI_EXPORT QgsCoordinateReferenceSystemModelNode
     /**
      * Adds a child \a node to this node, transferring ownership of the node
      * to this node.
+     *
+     * Returns the newly added node.
      */
-    void addChildNode( QgsCoordinateReferenceSystemModelNode *node );
+    QgsCoordinateReferenceSystemModelNode *addChildNode( std::unique_ptr< QgsCoordinateReferenceSystemModelNode > node );
 
     /**
      * Deletes all child nodes from this node.
@@ -264,10 +266,12 @@ class GUI_EXPORT QgsCoordinateReferenceSystemModel : public QAbstractItemModel
       Deprecated SIP_MONKEYPATCH_COMPAT_NAME( RoleDeprecated ) = Qt::UserRole + 3, //!< TRUE if the CRS is deprecated
       Type SIP_MONKEYPATCH_COMPAT_NAME( RoleType ) = Qt::UserRole + 4,             //!< The coordinate reference system type
       GroupId SIP_MONKEYPATCH_COMPAT_NAME( RoleGroupId ) = Qt::UserRole + 5,       //!< The node ID (for group nodes)
-      Wkt SIP_MONKEYPATCH_COMPAT_NAME( RoleWkt ) = Qt::UserRole + 6,               //!< The coordinate reference system's WKT representation. This is only used for non-standard CRS (i.e. those not present in the database).
-      Proj SIP_MONKEYPATCH_COMPAT_NAME( RoleProj ) = Qt::UserRole + 7,             //!< The coordinate reference system's PROJ representation. This is only used for non-standard CRS (i.e. those not present in the database).
-      Group = Qt::UserRole + 8,                                                    //!< Group name. \since QGIS 3.42
-      Projection = Qt::UserRole + 9,                                               //!< Projection name. \since QGIS 3.42
+      // clang-format off
+      Wkt SIP_MONKEYPATCH_COMPAT_NAME( RoleWkt ) = Qt::UserRole + 6, //!< The coordinate reference system's WKT representation. This is only used for non-standard CRS (i.e. those not present in the database).
+      Proj SIP_MONKEYPATCH_COMPAT_NAME( RoleProj ) = Qt::UserRole + 7, //!< The coordinate reference system's PROJ representation. This is only used for non-standard CRS (i.e. those not present in the database).
+      // clang-format on
+      Group = Qt::UserRole + 8,      //!< Group name. \since QGIS 3.42
+      Projection = Qt::UserRole + 9, //!< Projection name. \since QGIS 3.42
     };
     Q_ENUM( CustomRole )
     // *INDENT-ON*
@@ -335,9 +339,10 @@ class GUI_EXPORT QgsCoordinateReferenceSystemProxyModel : public QSortFilterProx
     //! Available filter flags for filtering the model
     enum Filter SIP_ENUM_BASETYPE( IntFlag )
     {
-      FilterHorizontal = 1 << 1, //!< Include horizontal CRS (excludes compound CRS containing a horizontal component)
-      FilterVertical = 1 << 2,   //!< Include vertical CRS (excludes compound CRS containing a vertical component)
-      FilterCompound = 1 << 3,   //!< Include compound CRS
+      FilterHorizontal = 1 << 1,            //!< Include horizontal CRS (excludes compound CRS containing a horizontal component)
+      FilterVertical = 1 << 2,              //!< Include vertical CRS (excludes compound CRS containing a vertical component)
+      FilterCompound = 1 << 3,              //!< Include compound CRS
+      FilterTopocentricCompatible = 1 << 4, //!< Include all CRS types compatible with topocentric CRS (all except projected CRS) \since QGIS 4.2
     };
     Q_DECLARE_FLAGS( Filters, Filter )
     Q_FLAG( Filters )

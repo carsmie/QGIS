@@ -18,10 +18,10 @@
 #ifndef QGSPROCESSINGMODELPARAMETER_H
 #define QGSPROCESSINGMODELPARAMETER_H
 
-#include "qgis_core.h"
 #include "qgis.h"
-#include "qgsprocessingmodelcomponent.h"
+#include "qgis_core.h"
 #include "qgsprocessingmodelcomment.h"
+#include "qgsprocessingmodelcomponent.h"
 
 ///@cond NOT_STABLE
 
@@ -33,7 +33,6 @@
 class CORE_EXPORT QgsProcessingModelParameter : public QgsProcessingModelComponent
 {
   public:
-
     /**
      * Constructor for QgsProcessingModelParameter. The parameter name should match one of the
      * parameters from the parent model.
@@ -73,11 +72,9 @@ class CORE_EXPORT QgsProcessingModelParameter : public QgsProcessingModelCompone
     void setComment( const QgsProcessingModelComment &comment ) override { mComment = comment; }
 
   private:
-
     QString mParameterName;
 
     QgsProcessingModelComment mComment;
-
 };
 
 ///@endcond

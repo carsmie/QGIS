@@ -17,15 +17,21 @@
  ***************************************************************************/
 
 #include "qgsnetworkcontentfetcher.h"
-#include "moc_qgsnetworkcontentfetcher.cpp"
-#include "qgsnetworkaccessmanager.h"
-#include "qgssetrequestinitiator_p.h"
-#include "qgsmessagelog.h"
+
 #include "qgsapplication.h"
 #include "qgsauthmanager.h"
+#include "qgsmessagelog.h"
+#include "qgsnetworkaccessmanager.h"
+#include "qgssetrequestinitiator_p.h"
 #include "qgsvariantutils.h"
+
 #include <QNetworkReply>
+#include <QString>
 #include <QTextCodec>
+
+#include "moc_qgsnetworkcontentfetcher.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsNetworkContentFetcher::~QgsNetworkContentFetcher()
 {
@@ -34,13 +40,15 @@ QgsNetworkContentFetcher::~QgsNetworkContentFetcher()
     //cancel running request
     mReply->abort();
   }
-
 }
 
-void QgsNetworkContentFetcher::fetchContent( const QUrl &url, const QString &authcfg )
+void QgsNetworkContentFetcher::fetchContent( const QUrl &url, const QString &authcfg, const QgsHttpHeaders &headers )
 {
   QNetworkRequest req( url );
-  QgsSetRequestInitiatorClass( req, QStringLiteral( "QgsNetworkContentFetcher" ) );
+  QgsSetRequestInitiatorClass( req, u"QgsNetworkContentFetcher"_s );
+
+  // Apply custom headers
+  headers.updateNetworkRequest( req );
 
   fetchContent( req, authcfg );
 }
@@ -76,8 +84,7 @@ void QgsNetworkContentFetcher::fetchContent( const QNetworkRequest &r, const QSt
   connect( mReply.get(), &QNetworkReply::finished, this, [this] { contentLoaded(); } );
   connect( mReply.get(), &QNetworkReply::downloadProgress, this, &QgsNetworkContentFetcher::downloadProgress );
 
-  auto onError = [this]( QNetworkReply::NetworkError code )
-  {
+  auto onError = [this]( QNetworkReply::NetworkError code ) {
     // could have been canceled in the meantime
     if ( mReply )
       emit errorOccurred( code, mReply->errorString() );

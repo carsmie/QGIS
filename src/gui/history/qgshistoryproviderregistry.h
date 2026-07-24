@@ -16,18 +16,17 @@
 #ifndef QGSHISTORYPROVIDERREGISTRY_H
 #define QGSHISTORYPROVIDERREGISTRY_H
 
+#include "qgis.h"
 #include "qgis_gui.h"
 #include "qgis_sip.h"
-#include "qgis.h"
+#include "qgssqliteutils.h"
 
-#include <QObject>
-#include <QMap>
-#include <QString>
 #include <QDateTime>
+#include <QMap>
+#include <QObject>
+#include <QString>
 #include <QVariant>
 #include <QVector>
-
-#include "qgssqliteutils.h"
 
 class QgsAbstractHistoryProvider;
 class QgsHistoryEntry;
@@ -170,7 +169,9 @@ class GUI_EXPORT QgsHistoryProviderRegistry : public QObject
      *
      * The optional \a providerId and \a backends arguments can be used to filter entries.
      */
-    QList<QgsHistoryEntry> queryEntries( const QDateTime &start = QDateTime(), const QDateTime &end = QDateTime(), const QString &providerId = QString(), Qgis::HistoryProviderBackends backends = Qgis::HistoryProviderBackend::LocalProfile ) const;
+    QList<QgsHistoryEntry> queryEntries(
+      const QDateTime &start = QDateTime(), const QDateTime &end = QDateTime(), const QString &providerId = QString(), Qgis::HistoryProviderBackends backends = Qgis::HistoryProviderBackend::LocalProfile
+    ) const;
 
     /**
      * Returns the path to user's local history database.

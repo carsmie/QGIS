@@ -13,18 +13,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QTreeWidget>
-#include <QVBoxLayout>
-#include <QPointer>
-#include <QScreen>
-
 #include "qgssymbollayerselectionwidget.h"
-#include "moc_qgssymbollayerselectionwidget.cpp"
+
+#include "qgsguiutils.h"
+#include "qgsstyleentityvisitor.h"
 #include "qgsvectorlayer.h"
 #include "symbology/qgsrenderer.h"
-#include "qgsstyleentityvisitor.h"
 #include "symbology/qgssymbollayerutils.h"
-#include "qgsguiutils.h"
+
+#include <QPointer>
+#include <QScreen>
+#include <QTreeWidget>
+#include <QVBoxLayout>
+
+#include "moc_qgssymbollayerselectionwidget.cpp"
 
 QgsSymbolLayerSelectionWidget::QgsSymbolLayerSelectionWidget( QWidget *parent )
   : QWidget( parent )
@@ -84,7 +86,8 @@ void QgsSymbolLayerSelectionWidget::setLayer( const QgsVectorLayer *layer )
           indexPath.append( idx );
 
           QTreeWidgetItem *slItem = new QTreeWidgetItem();
-          const QIcon slIcon = QgsSymbolLayerUtils::symbolLayerPreviewIcon( sl, Qgis::RenderUnit::Millimeters, QSize( iconSize, iconSize ), QgsMapUnitScale(), symbol->type(), nullptr, QgsScreenProperties( mScreen.data() ) );
+          const QIcon slIcon
+            = QgsSymbolLayerUtils::symbolLayerPreviewIcon( sl, Qgis::RenderUnit::Millimeters, QSize( iconSize, iconSize ), QgsMapUnitScale(), symbol->type(), nullptr, QgsScreenProperties( mScreen.data() ) );
           slItem->setData( 0, Qt::UserRole, idx );
           slItem->setIcon( 0, slIcon );
           auto flags = slItem->flags();

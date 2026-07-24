@@ -16,9 +16,9 @@
 #ifndef QGSMAPCLIPPINGUTILS_H
 #define QGSMAPCLIPPINGUTILS_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 
 #include <QList>
 #include <QPainterPath>
@@ -39,7 +39,6 @@ class QgsMapClippingRegion;
 class CORE_EXPORT QgsMapClippingUtils
 {
   public:
-
     /**
      * Collects the list of map clipping regions from a \a context which apply to a map \a layer.
      */

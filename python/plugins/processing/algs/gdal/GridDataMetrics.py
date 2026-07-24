@@ -21,20 +21,20 @@ __copyright__ = "(C) 2013, Alexander Bruy"
 
 import os
 
-from qgis.PyQt.QtGui import QIcon
-
 from qgis.core import (
-    QgsRasterFileWriter,
     QgsProcessing,
     QgsProcessingException,
     QgsProcessingParameterDefinition,
-    QgsProcessingParameterFeatureSource,
     QgsProcessingParameterEnum,
+    QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
     QgsProcessingParameterNumber,
-    QgsProcessingParameterString,
     QgsProcessingParameterRasterDestination,
+    QgsProcessingParameterString,
+    QgsRasterFileWriter,
 )
+from qgis.PyQt.QtGui import QIcon
+
 from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 
@@ -163,7 +163,7 @@ class GridDataMetrics(GdalAlgorithm):
         )
 
         # backwards compatibility parameter
-        # TODO QGIS 4: remove parameter and related logic
+        # TODO QGIS 5: remove parameter and related logic
         options_param = QgsProcessingParameterString(
             self.OPTIONS,
             self.tr("Additional creation options"),
@@ -276,7 +276,7 @@ class GridDataMetrics(GdalAlgorithm):
         out = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
         self.setOutputValue(self.OUTPUT, out)
 
-        output_format = QgsRasterFileWriter.driverForExtension(os.path.splitext(out)[1])
+        output_format = self.outputFormat(parameters, self.OUTPUT, context)
         if not output_format:
             raise QgsProcessingException(self.tr("Output format is invalid"))
 

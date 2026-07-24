@@ -15,13 +15,12 @@
 
 #include "qgsuuidwidgetfactory.h"
 
-#include "qgsuuidwidgetwrapper.h"
 #include "qgsdummyconfigdlg.h"
+#include "qgsuuidwidgetwrapper.h"
 
-QgsUuidWidgetFactory::QgsUuidWidgetFactory( const QString &name )
-  : QgsEditorWidgetFactory( name )
-{
-}
+QgsUuidWidgetFactory::QgsUuidWidgetFactory( const QString &name, const QIcon &icon )
+  : QgsEditorWidgetFactory( name, icon )
+{}
 
 
 QgsEditorWidgetWrapper *QgsUuidWidgetFactory::create( QgsVectorLayer *vl, int fieldIdx, QWidget *editor, QWidget *parent ) const

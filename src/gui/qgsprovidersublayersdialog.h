@@ -16,14 +16,15 @@
 #ifndef QGSPROVIDERSUBLAYERSDIALOG_H
 #define QGSPROVIDERSUBLAYERSDIALOG_H
 
-#include <QDialog>
-#include <QCheckBox>
-#include <QPointer>
+#include "ui_qgsprovidersublayersdialogbase.h"
 
 #include "qgis_gui.h"
-#include "ui_qgsprovidersublayersdialogbase.h"
 #include "qgsprovidersublayerdetails.h"
 #include "qgsprovidersublayermodel.h"
+
+#include <QCheckBox>
+#include <QDialog>
+#include <QPointer>
 
 class QgsProviderSublayerModel;
 class QgsProviderSublayerProxyModel;
@@ -72,7 +73,15 @@ class GUI_EXPORT QgsProviderSublayersDialog : public QDialog, private Ui::QgsPro
     /**
      * Constructor.
      */
-    QgsProviderSublayersDialog( const QString &uri, const QString &providerKey, const QString &filePath, const QList<QgsProviderSublayerDetails> initialDetails = QList<QgsProviderSublayerDetails>(), const QList<Qgis::LayerType> &acceptableTypes = QList<Qgis::LayerType>(), QWidget *parent SIP_TRANSFERTHIS = nullptr, Qt::WindowFlags fl = Qt::WindowFlags() );
+    QgsProviderSublayersDialog(
+      const QString &uri,
+      const QString &providerKey,
+      const QString &filePath,
+      const QList<QgsProviderSublayerDetails> initialDetails = QList<QgsProviderSublayerDetails>(),
+      const QList<Qgis::LayerType> &acceptableTypes = QList<Qgis::LayerType>(),
+      QWidget *parent SIP_TRANSFERTHIS = nullptr,
+      Qt::WindowFlags fl = Qt::WindowFlags()
+    );
 
     /**
      * Set list of non-layer items (e.g. embedded QGIS project items).

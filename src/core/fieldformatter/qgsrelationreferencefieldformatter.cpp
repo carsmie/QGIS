@@ -15,13 +15,17 @@
  ***************************************************************************/
 #include "qgsrelationreferencefieldformatter.h"
 
-#include "qgsmessagelog.h"
-#include "qgsrelation.h"
 #include "qgsexpressioncontext.h"
+#include "qgsexpressioncontextutils.h"
+#include "qgsmessagelog.h"
 #include "qgsproject.h"
+#include "qgsrelation.h"
 #include "qgsrelationmanager.h"
 #include "qgsvectorlayer.h"
-#include "qgsexpressioncontextutils.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsRelationReferenceFieldFormatter::QgsRelationReferenceFieldFormatter()
 {
@@ -30,26 +34,43 @@ QgsRelationReferenceFieldFormatter::QgsRelationReferenceFieldFormatter()
 
 QString QgsRelationReferenceFieldFormatter::id() const
 {
-  return QStringLiteral( "RelationReference" );
+  return u"RelationReference"_s;
 }
 
 QString QgsRelationReferenceFieldFormatter::representValue( QgsVectorLayer *layer, int fieldIndex, const QVariantMap &config, const QVariant &cache, const QVariant &value ) const
 {
   if ( cache.isValid() )
   {
-    return cache.value<QMap<QVariant, QString>>().value( value );
+    // See regression #66339: the value type should be converted to the type of the key in the cache,
+    // otherwise we might not find the value in the cache, even if it is there, because of type mismatch.
+    // This can happen for example when the value is a int and the key in the cache is a long long.
+    const QMap<QVariant, QString> cacheMap = cache.value<QMap<QVariant, QString>>();
+    if ( cacheMap.size() > 0 )
+    {
+      const QMetaType keyType = value.metaType();
+      const QMetaType cacheKeyType = cacheMap.firstKey().metaType();
+      if ( keyType != cacheKeyType && value.canConvert( cacheKeyType ) )
+      {
+        QVariant key = value;
+        if ( key.convert( cacheKeyType ) )
+        {
+          return cacheMap.value( key );
+        }
+      }
+    }
+    return cacheMap.value( value );
   }
 
   const QString fieldName = fieldIndex < layer->fields().size() ? layer->fields().at( fieldIndex ).name() : QObject::tr( "<unknown>" );
 
   // Some sanity checks
-  if ( !config.contains( QStringLiteral( "Relation" ) ) )
+  if ( !config.contains( u"Relation"_s ) )
   {
     QgsMessageLog::logMessage( QObject::tr( "Layer %1, field %2: Missing Relation in configuration" ).arg( layer->name(), fieldName ) );
     return value.toString();
   }
 
-  const QString relationName = config[QStringLiteral( "Relation" )].toString();
+  const QString relationName = config[u"Relation"_s].toString();
   const QgsRelation relation = QgsProject::instance()->relationManager()->relation( relationName ); // skip-keyword-check
   if ( !relation.isValid() )
   {
@@ -78,7 +99,7 @@ QString QgsRelationReferenceFieldFormatter::representValue( QgsVectorLayer *laye
   // Attributes from the referencing layer
   QgsAttributes attrs = QgsAttributes( layer->fields().count() );
   // Set the value on the foreign key field of the referencing record
-  attrs[ referencingFieldIdx ] = value;
+  attrs[referencingFieldIdx] = value;
 
   const QgsFeatureRequest request = relation.getReferencedFeatureRequest( attrs );
   QgsFeature feature;
@@ -111,13 +132,13 @@ QVariant QgsRelationReferenceFieldFormatter::createCache( QgsVectorLayer *layer,
   const QString fieldName = fieldIndex < layer->fields().size() ? layer->fields().at( fieldIndex ).name() : QObject::tr( "<unknown>" );
 
   // Some sanity checks
-  if ( !config.contains( QStringLiteral( "Relation" ) ) )
+  if ( !config.contains( u"Relation"_s ) )
   {
     QgsMessageLog::logMessage( QObject::tr( "Layer %1, field %2: Missing Relation in configuration" ).arg( layer->name(), fieldName ) );
     return QVariant();
   }
-  const QString relationName = config[QStringLiteral( "Relation" )].toString();
-  const QgsRelation relation = QgsProject::instance()->relationManager()->relation( config[QStringLiteral( "Relation" )].toString() ); // skip-keyword-check
+  const QString relationName = config[u"Relation"_s].toString();
+  const QgsRelation relation = QgsProject::instance()->relationManager()->relation( config[u"Relation"_s].toString() ); // skip-keyword-check
   if ( !relation.isValid() )
   {
     QgsMessageLog::logMessage( QObject::tr( "Layer %1, field %2: Invalid relation %3" ).arg( layer->name(), fieldName, relationName ) );
@@ -139,7 +160,9 @@ QVariant QgsRelationReferenceFieldFormatter::createCache( QgsVectorLayer *layer,
   const int referencedFieldIdx = referencedLayer->fields().lookupField( relation.fieldPairs().at( 0 ).second );
   if ( referencedFieldIdx == -1 )
   {
-    QgsMessageLog::logMessage( QObject::tr( "Layer %1, field %2: Invalid referenced field (%3) configured in relation %4" ).arg( layer->name(), fieldName, relation.fieldPairs().at( 0 ).second, relation.name() ) );
+    QgsMessageLog::logMessage(
+      QObject::tr( "Layer %1, field %2: Invalid referenced field (%3) configured in relation %4" ).arg( layer->name(), fieldName, relation.fieldPairs().at( 0 ).second, relation.name() )
+    );
     return QVariant();
   }
 
@@ -179,18 +202,17 @@ QList<QgsVectorLayerRef> QgsRelationReferenceFieldFormatter::layerDependencies( 
   // Old projects, create before the weak relations were introduced and stored with the
   // widget configuration do not have the referenced layer details but only the "Relation" id,
   // for these projects automatic loading of broken references is not supported.
-  if ( config.value( QStringLiteral( "ReferencedLayerId" ) ).toString().isEmpty() )
+  if ( config.value( u"ReferencedLayerId"_s ).toString().isEmpty() )
   {
     return {};
   }
 
-  const QList<QgsVectorLayerRef> result {{
-      QgsVectorLayerRef(
-        config.value( QStringLiteral( "ReferencedLayerId" ) ).toString(),
-        config.value( QStringLiteral( "ReferencedLayerName" ) ).toString(),
-        config.value( QStringLiteral( "ReferencedLayerDataSource" ) ).toString(),
-        config.value( QStringLiteral( "ReferencedLayerProviderKey" ) ).toString() )
-    }};
+  const QList<QgsVectorLayerRef> result { { QgsVectorLayerRef(
+    config.value( u"ReferencedLayerId"_s ).toString(),
+    config.value( u"ReferencedLayerName"_s ).toString(),
+    config.value( u"ReferencedLayerDataSource"_s ).toString(),
+    config.value( u"ReferencedLayerProviderKey"_s ).toString()
+  ) } };
   return result;
 }
 
@@ -199,10 +221,10 @@ QVariantList QgsRelationReferenceFieldFormatter::availableValues( const QVariant
   QVariantList values;
   if ( auto *lProject = context.project() )
   {
-    const QgsVectorLayer *referencedLayer = lProject->relationManager()->relation( config[QStringLiteral( "Relation" )].toString() ).referencedLayer();
+    const QgsVectorLayer *referencedLayer = lProject->relationManager()->relation( config[u"Relation"_s].toString() ).referencedLayer();
     if ( referencedLayer )
     {
-      const int fieldIndex =  lProject->relationManager()->relation( config[QStringLiteral( "Relation" )].toString() ).referencedFields().first();
+      const int fieldIndex = lProject->relationManager()->relation( config[u"Relation"_s].toString() ).referencedFields().first();
       values = qgis::setToList( referencedLayer->uniqueValues( fieldIndex, countLimit ) );
     }
   }

@@ -18,11 +18,14 @@
 #ifndef QGSNINECELLFILTER_H
 #define QGSNINECELLFILTER_H
 
-#include <QString>
-#include "gdal.h"
+#include "qgsconfig.h"
+
+#include <gdal.h>
+
 #include "qgis_analysis.h"
 #include "qgsogrutils.h"
-#include "qgsconfig.h"
+
+#include <QString>
 
 class QgsFeedback;
 
@@ -151,15 +154,9 @@ class ANALYSIS_EXPORT QgsNineCellFilter
      *        by OpenCL program
      * \param params vector of parameters passed to OpenCL algorithm
      */
-    virtual void addExtraRasterParams( std::vector<float> &params )
-    {
-      Q_UNUSED( params )
-    }
+    virtual void addExtraRasterParams( std::vector<float> &params ) { Q_UNUSED( params ) }
 
-    virtual const QString openClProgramBaseName() const
-    {
-      return QString();
-    }
+    virtual const QString openClProgramBaseName() const { return QString(); }
 
 #endif
 

@@ -14,28 +14,29 @@
  ***************************************************************************/
 
 #include "qgspenstylecombobox.h"
-#include "moc_qgspenstylecombobox.cpp"
 
 #include "qgsapplication.h"
 #include "qgsguiutils.h"
 
-#include <QList>
-#include <QPair>
-
 #include <QAbstractItemView>
+#include <QList>
 #include <QPainter>
+#include <QPair>
 #include <QPen>
+
+#include "moc_qgspenstylecombobox.cpp"
 
 QgsPenStyleComboBox::QgsPenStyleComboBox( QWidget *parent )
   : QComboBox( parent )
 {
   QList<QPair<Qt::PenStyle, QString>> styles;
-  styles << qMakePair( Qt::SolidLine, tr( "Solid Line" ) )
-         << qMakePair( Qt::NoPen, tr( "No Line" ) )
-         << qMakePair( Qt::DashLine, tr( "Dash Line" ) )
-         << qMakePair( Qt::DotLine, tr( "Dot Line" ) )
-         << qMakePair( Qt::DashDotLine, tr( "Dash Dot Line" ) )
-         << qMakePair( Qt::DashDotDotLine, tr( "Dash Dot Dot Line" ) );
+  styles
+    << qMakePair( Qt::SolidLine, tr( "Solid Line" ) )
+    << qMakePair( Qt::NoPen, tr( "No Line" ) )
+    << qMakePair( Qt::DashLine, tr( "Dash Line" ) )
+    << qMakePair( Qt::DotLine, tr( "Dot Line" ) )
+    << qMakePair( Qt::DashDotLine, tr( "Dash Dot Line" ) )
+    << qMakePair( Qt::DashDotDotLine, tr( "Dash Dot Dot Line" ) );
 
   const int iconSize = QgsGuiUtils::scaleIconSize( 16 );
   setIconSize( QSize( iconSize * 2, iconSize ) );

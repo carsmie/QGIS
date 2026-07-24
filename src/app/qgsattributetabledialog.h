@@ -17,14 +17,16 @@
 #ifndef QGSATTRIBUTETABLEDIALOG_H_
 #define QGSATTRIBUTETABLEDIALOG_H_
 
-#include <QDialog>
-#include <QModelIndex>
-#include <QItemSelectionModel>
+#include "ui_qgsattributetabledialog.h"
 
 #include <ctime>
 
 #include "qgis_app.h"
-#include "ui_qgsattributetabledialog.h"
+#include "qgsattributetableconfig.h"
+
+#include <QDialog>
+#include <QItemSelectionModel>
+#include <QModelIndex>
 
 class QPushButton;
 class QLineEdit;
@@ -35,12 +37,38 @@ class QgsAttributeTableFilterModel;
 class QgsRubberBand;
 struct QgsStoredExpression;
 class QgsDockableWidgetHelper;
+template<class T> class QgsSettingsEntryEnumFlag;
 
 class APP_EXPORT QgsAttributeTableDialog : public QDialog, private Ui::QgsAttributeTableDialog, private QgsExpressionContextGenerator
 {
     Q_OBJECT
 
   public:
+    static const QgsSettingsEntryEnumFlag<QgsAttributeTableConfig::AddFeatureMethod> *settingsDefaultAddFeatureMethod SIP_SKIP;
+
+    //! Settings entry autosize columns by default when opening attribute table
+    static const QgsSettingsEntryBool *settingsAutosizeAttributeTable SIP_SKIP;
+
+    //! Settings entry whether attribute tables are docked by default
+    static const QgsSettingsEntryBool *settingsAttributeTableDefaultDocked SIP_SKIP;
+
+    /**
+     * Initial attribute table view used when opening the dialog.
+     *
+     * Mirrors QgsDualView::ViewMode but adds a sentinel value to
+     * mean "reuse the view last used in the dialog".
+     */
+    enum InitialView
+    {
+      RememberLast = -1,                              //!< Reuse the view last used in the dialog
+      AttributeTable = QgsDualView::AttributeTable,   //!< Table layout
+      AttributeEditor = QgsDualView::AttributeEditor, //!< Form layout
+    };
+    Q_ENUM( InitialView )
+
+    //! Settings entry for the initial attribute table view (table, form or remember last)
+    static const QgsSettingsEntryEnumFlag<QgsAttributeTableDialog::InitialView> *settingsAttributeTableInitialView SIP_SKIP;
+
     /**
      * Constructor
      * \param layer layer pointer
@@ -48,7 +76,14 @@ class APP_EXPORT QgsAttributeTableDialog : public QDialog, private Ui::QgsAttrib
      * \param parent parent object
      * \param flags window flags
      */
-    QgsAttributeTableDialog( QgsVectorLayer *layer, QgsAttributeTableFilterModel::FilterMode initialMode = QgsAttributeTableFilterModel::ShowAll, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Window, bool *initiallyDocked = nullptr, const QString &filterExpression = QString() );
+    QgsAttributeTableDialog(
+      QgsVectorLayer *layer,
+      QgsAttributeTableFilterModel::FilterMode initialMode = QgsAttributeTableFilterModel::ShowAll,
+      QWidget *parent = nullptr,
+      Qt::WindowFlags flags = Qt::Window,
+      bool *initiallyDocked = nullptr,
+      const QString &filterExpression = QString()
+    );
     ~QgsAttributeTableDialog() override;
 
     QgsExpressionContext createExpressionContext() const override;
@@ -183,7 +218,6 @@ class APP_EXPORT QgsAttributeTableDialog : public QDialog, private Ui::QgsAttrib
     /**
      * add feature
      */
-    void mActionAddFeature_triggered();
     void mActionAddFeatureViaAttributeTable_triggered();
     void mActionAddFeatureViaAttributeForm_triggered();
 
@@ -223,10 +257,12 @@ class APP_EXPORT QgsAttributeTableDialog : public QDialog, private Ui::QgsAttrib
     void formFilterSet( const QString &filter, QgsAttributeForm::FilterType type );
     void showContextMenu( QgsActionMenu *menu, QgsFeatureId fid );
     void updateLayerModifiedActions();
+    void zoomToFeature( QgsFeatureId fid );
 
   private:
     QMenu *mMenuActions = nullptr;
     QToolButton *mActionFeatureActions = nullptr;
+    QToolButton *mAddFeatureButton = nullptr;
 
     QDialog *mDialog = nullptr;
 
@@ -239,6 +275,10 @@ class APP_EXPORT QgsAttributeTableDialog : public QDialog, private Ui::QgsAttrib
 
     QAction *mActionDockUndock = nullptr;
     QgsDockableWidgetHelper *mDockableWidgetHelper = nullptr;
+
+    // For testability
+    void addAttribute( const QgsField &field );
+    void removeAttributes( const QList<int> &attributes );
 
     friend class TestQgsAttributeTable;
 };

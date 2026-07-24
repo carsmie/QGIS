@@ -4,7 +4,7 @@
     ---------------------
     begin                : July 2017
     copyright            : (C) 2017 by Loïc Bartoletti
-    email                : lbartoletti at tuxfamily dot org
+    email                : lituus at free dot fr
  ***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,11 +17,11 @@
 #ifndef QGSMAPTOOLSHAPECIRCLE2TANGENTSPOINT_H
 #define QGSMAPTOOLSHAPECIRCLE2TANGENTSPOINT_H
 
-#include "qgspointlocator.h"
 #include "qgsmaptoolshapecircleabstract.h"
-#include "qspinbox.h"
 #include "qgsmaptoolshaperegistry.h"
+#include "qgspointlocator.h"
 
+#include <qspinbox.h>
 
 class QSpinBox;
 
@@ -47,7 +47,8 @@ class QgsMapToolShapeCircle2TangentsPoint : public QgsMapToolShapeCircleAbstract
 
   public:
     QgsMapToolShapeCircle2TangentsPoint( QgsMapToolCapture *parentTool )
-      : QgsMapToolShapeCircleAbstract( QgsMapToolShapeCircle2TangentsPointMetadata::TOOL_ID, parentTool ) {}
+      : QgsMapToolShapeCircleAbstract( QgsMapToolShapeCircle2TangentsPointMetadata::TOOL_ID, parentTool )
+    {}
     ~QgsMapToolShapeCircle2TangentsPoint() override;
 
     bool cadCanvasReleaseEvent( QgsMapMouseEvent *e, QgsMapToolCapture::CaptureMode mode ) override;

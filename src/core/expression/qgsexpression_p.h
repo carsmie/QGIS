@@ -17,13 +17,14 @@
 #ifndef QGSEXPRESSIONPRIVATE_H
 #define QGSEXPRESSIONPRIVATE_H
 
-#include <QString>
 #include <memory>
 
-#include "qgsexpression.h"
-#include "qgsdistancearea.h"
 #include "qgis.h"
+#include "qgsdistancearea.h"
+#include "qgsexpression.h"
 #include "qgsexpressionnode.h"
+
+#include <QString>
 
 ///@cond
 
@@ -58,10 +59,7 @@ class QgsExpressionPrivate
         mDaTransformContext = std::make_unique<QgsCoordinateTransformContext>( *other.mDaTransformContext.get() );
     }
 
-    ~QgsExpressionPrivate()
-    {
-
-    }
+    ~QgsExpressionPrivate() {}
 
     QAtomicInt ref;
 
@@ -85,7 +83,7 @@ class QgsExpressionPrivate
     //! Whether prepare() has been called before evaluate()
     bool mIsPrepared = false;
 
-    QgsExpressionPrivate &operator= ( const QgsExpressionPrivate & ) = delete;
+    QgsExpressionPrivate &operator=( const QgsExpressionPrivate & ) = delete;
 };
 
 

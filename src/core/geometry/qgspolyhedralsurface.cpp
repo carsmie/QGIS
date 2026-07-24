@@ -16,24 +16,29 @@
  ***************************************************************************/
 
 #include "qgspolyhedralsurface.h"
+
+#include <memory>
+#include <nlohmann/json.hpp>
+
 #include "qgsapplication.h"
 #include "qgscurve.h"
 #include "qgsfeedback.h"
 #include "qgsgeometryutils.h"
+#include "qgsgeos.h"
 #include "qgslinestring.h"
 #include "qgslogger.h"
+#include "qgsmultilinestring.h"
 #include "qgsmultipolygon.h"
 #include "qgsmultisurface.h"
 #include "qgspolygon.h"
 #include "qgsvertexid.h"
 #include "qgswkbptr.h"
-#include "qgsmultilinestring.h"
-#include "qgsgeos.h"
 
 #include <QPainter>
 #include <QPainterPath>
-#include <memory>
-#include <nlohmann/json.hpp>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsPolyhedralSurface::QgsPolyhedralSurface()
 {
@@ -70,7 +75,7 @@ QgsPolyhedralSurface *QgsPolyhedralSurface::createEmptyWithSameType() const
 
 QString QgsPolyhedralSurface::geometryType() const
 {
-  return QStringLiteral( "PolyhedralSurface" );
+  return u"PolyhedralSurface"_s;
 }
 
 int QgsPolyhedralSurface::dimension() const
@@ -151,13 +156,13 @@ bool QgsPolyhedralSurface::fromWkb( QgsConstWkbPtr &wkbPtr )
     Qgis::WkbType flatPolygonType = QgsWkbTypes::flatType( polygonType );
     if ( flatPolygonType == Qgis::WkbType::Polygon )
     {
-      currentPatch.reset( new QgsPolygon() );
+      currentPatch = std::make_unique<QgsPolygon>();
     }
     else
     {
       return false;
     }
-    currentPatch->fromWkb( wkbPtr );  // also updates wkbPtr
+    currentPatch->fromWkb( wkbPtr ); // also updates wkbPtr
     mPatches.append( currentPatch.release() );
   }
 
@@ -177,11 +182,10 @@ bool QgsPolyhedralSurface::fromWkt( const QString &wkt )
 
   QString secondWithoutParentheses = parts.second;
   secondWithoutParentheses = secondWithoutParentheses.remove( '(' ).remove( ')' ).simplified().remove( ' ' );
-  if ( ( parts.second.compare( QLatin1String( "EMPTY" ), Qt::CaseInsensitive ) == 0 ) ||
-       secondWithoutParentheses.isEmpty() )
+  if ( ( parts.second.compare( "EMPTY"_L1, Qt::CaseInsensitive ) == 0 ) || secondWithoutParentheses.isEmpty() )
     return true;
 
-  QString defaultChildWkbType = QStringLiteral( "Polygon%1%2" ).arg( is3D() ? QStringLiteral( "Z" ) : QString(), isMeasure() ? QStringLiteral( "M" ) : QString() );
+  QString defaultChildWkbType = u"Polygon%1%2"_s.arg( is3D() ? u"Z"_s : QString(), isMeasure() ? u"M"_s : QString() );
 
   const QStringList blocks = QgsGeometryUtils::wktGetChildBlocks( parts.second, defaultChildWkbType );
   for ( const QString &childWkt : blocks )
@@ -254,10 +258,10 @@ QString QgsPolyhedralSurface::asWkt( int precision ) const
   QString wkt = wktTypeStr();
 
   if ( isEmpty() )
-    wkt += QLatin1String( " EMPTY" );
+    wkt += " EMPTY"_L1;
   else
   {
-    wkt += QLatin1String( " (" );
+    wkt += " ("_L1;
     for ( const QgsPolygon *patch : mPatches )
     {
       QString childWkt = patch->asWkt( precision );
@@ -279,18 +283,18 @@ QString QgsPolyhedralSurface::asWkt( int precision ) const
 
 QDomElement QgsPolyhedralSurface::asGml2( QDomDocument &, int, const QString &, const AxisOrder ) const
 {
-  QgsDebugError( QStringLiteral( "gml version 2 does not support PolyhedralSurface geometry" ) );
+  QgsDebugError( u"gml version 2 does not support PolyhedralSurface geometry"_s );
   return QDomElement();
 }
 
 QDomElement QgsPolyhedralSurface::asGml3( QDomDocument &doc, int precision, const QString &ns, const QgsAbstractGeometry::AxisOrder axisOrder ) const
 {
-  QDomElement elemPolyhedralSurface = doc.createElementNS( ns, QStringLiteral( "PolyhedralSurface" ) );
+  QDomElement elemPolyhedralSurface = doc.createElementNS( ns, u"PolyhedralSurface"_s );
 
   if ( isEmpty() )
     return elemPolyhedralSurface;
 
-  QDomElement elemPolygonPatches = doc.createElementNS( ns, QStringLiteral( "polygonPatches" ) );
+  QDomElement elemPolygonPatches = doc.createElementNS( ns, u"polygonPatches"_s );
 
   for ( QgsPolygon *patch : mPatches )
   {
@@ -304,8 +308,10 @@ QDomElement QgsPolyhedralSurface::asGml3( QDomDocument &doc, int precision, cons
   return elemPolyhedralSurface;
 }
 
-json QgsPolyhedralSurface::asJsonObject( int precision ) const
+json QgsPolyhedralSurface::asJsonObject( int precision, Qgis::GeoJsonProfile profile ) const
 {
+  // JSON-FG profile is not supported yet for PolyhedralSurface geometry
+  Q_UNUSED( profile );
   // GeoJSON format does not support PolyhedralSurface geometry
   // Return a multipolygon instead;
   std::unique_ptr<QgsMultiPolygon> multiPolygon( toMultiPolygon() );
@@ -314,7 +320,7 @@ json QgsPolyhedralSurface::asJsonObject( int precision ) const
 
 QString QgsPolyhedralSurface::asKml( int ) const
 {
-  QgsDebugError( QStringLiteral( "kml format does not support PolyhedralSurface geometry" ) );
+  QgsDebugError( u"kml format does not support PolyhedralSurface geometry"_s );
   return QString( "" );
 }
 
@@ -337,10 +343,7 @@ void QgsPolyhedralSurface::normalize()
       }
 
       // sort rings
-      std::sort( interiorRings.begin(), interiorRings.end(), []( const QgsCurve * a, const QgsCurve * b )
-      {
-        return a->compareTo( b ) > 0;
-      } );
+      std::sort( interiorRings.begin(), interiorRings.end(), []( const QgsCurve *a, const QgsCurve *b ) { return a->compareTo( b ) > 0; } );
 
       patch->removeInteriorRings();
       for ( QgsCurve *curve : interiorRings )
@@ -356,6 +359,18 @@ double QgsPolyhedralSurface::area() const
   for ( const QgsPolygon *patch : mPatches )
   {
     area += patch->area();
+  }
+
+  return area;
+}
+
+double QgsPolyhedralSurface::area3D() const
+{
+  // sum area 3D of patches
+  double area = 0.0;
+  for ( const QgsPolygon *patch : mPatches )
+  {
+    area += patch->area3D();
   }
 
   return area;
@@ -642,7 +657,7 @@ bool QgsPolyhedralSurface::isEmpty() const
 double QgsPolyhedralSurface::closestSegment( const QgsPoint &pt, QgsPoint &segmentPt, QgsVertexId &vertexAfter, int *leftOf, double epsilon ) const
 {
   QVector<QgsPolygon *> segmentList = mPatches;
-  return QgsGeometryUtils::closestSegmentFromComponents( segmentList, QgsGeometryUtils::Part, pt, segmentPt,  vertexAfter, leftOf, epsilon );
+  return QgsGeometryUtils::closestSegmentFromComponents( segmentList, QgsGeometryUtils::Part, pt, segmentPt, vertexAfter, leftOf, epsilon );
 }
 
 bool QgsPolyhedralSurface::nextVertex( QgsVertexId &vId, QgsPoint &vertex ) const
@@ -744,6 +759,58 @@ bool QgsPolyhedralSurface::deleteVertex( QgsVertexId vId )
   }
 
   return success;
+}
+
+bool QgsPolyhedralSurface::deleteVertices( const QSet<QgsVertexId> &positions )
+{
+  QMap<int, QSet<QgsVertexId>> partVertices;
+  for ( QgsVertexId pos : positions )
+  {
+    if ( !hasVertex( pos ) )
+    {
+      return false;
+    }
+
+    partVertices[pos.part].insert( QgsVertexId( 0, pos.ring, pos.vertex ) );
+  }
+
+  QMapIterator<int, QSet<QgsVertexId>> partVerticesIt( partVertices );
+  partVerticesIt.toBack();
+  while ( partVerticesIt.hasPrevious() )
+  {
+    partVerticesIt.previous();
+
+    int part = partVerticesIt.key();
+    QSet<QgsVertexId> vertexMap = partVerticesIt.value();
+    QgsPolygon *patch = mPatches.at( part );
+
+    if ( !patch->deleteVertices( vertexMap ) )
+    {
+      Q_ASSERT( false );
+      return false;
+    }
+
+    if ( !patch->exteriorRing() )
+    {
+      delete mPatches.takeAt( part );
+    }
+  }
+
+  clearCache();
+  return true;
+}
+
+bool QgsPolyhedralSurface::hasVertex( QgsVertexId id ) const
+{
+  size_t parts = partCount();
+  if ( id.part < 0 || static_cast<size_t>( id.part ) >= parts )
+    return false;
+
+  QgsAbstractGeometry *geom = mPatches.at( id.part );
+  if ( !geom )
+    return false;
+
+  return geom->hasVertex( QgsVertexId( 0, id.ring, id.vertex ) );
 }
 
 bool QgsPolyhedralSurface::hasCurvedSegments() const
@@ -937,7 +1004,7 @@ QgsMultiPolygon *QgsPolyhedralSurface::toMultiPolygon() const
   return multiPolygon.release();
 }
 
-void QgsPolyhedralSurface::filterVertices( const std::function<bool ( const QgsPoint & )> &filter )
+void QgsPolyhedralSurface::filterVertices( const std::function<bool( const QgsPoint & )> &filter )
 {
   for ( QgsPolygon *patch : std::as_const( mPatches ) )
   {
@@ -1017,7 +1084,7 @@ bool QgsPolyhedralSurface::isValid( QString &error, Qgis::GeometryValidityFlags 
     const bool valid = geos.isValid( &error, flags & Qgis::GeometryValidityFlag::AllowSelfTouchingHoles, nullptr );
     if ( !valid )
     {
-      error = QStringLiteral( "Polygon %1 is invalid: %2" ).arg( QString::number( i ), error );
+      error = u"Polygon %1 is invalid: %2"_s.arg( QString::number( i ), error );
       break;
     }
   }

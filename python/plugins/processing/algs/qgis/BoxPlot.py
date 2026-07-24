@@ -22,18 +22,18 @@ __copyright__ = "(C) 2017, Matteo Ghetta"
 import warnings
 
 from qgis.core import (
+    QgsFeatureRequest,
     QgsProcessingException,
+    QgsProcessingParameterEnum,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
-    QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
-    QgsFeatureRequest,
     QgsProcessingParameterString,
 )
+from qgis.PyQt.QtCore import QCoreApplication
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import vector
-
-from qgis.PyQt.QtCore import QCoreApplication
 
 
 class BoxPlot(QgisAlgorithm):
@@ -119,6 +119,11 @@ class BoxPlot(QgisAlgorithm):
 
     def shortDescription(self):
         return self.tr("Creates a box plot from a category and a layer field.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a box plot from a category and a layer field."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         try:

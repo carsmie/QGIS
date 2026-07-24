@@ -18,16 +18,18 @@
 #ifndef QGSPOINTCLOUDEXTENTRENDERERWIDGET_H
 #define QGSPOINTCLOUDEXTENTRENDERERWIDGET_H
 
-#include "qgspointcloudrendererwidget.h"
 #include "ui_qgspointcloudextentrendererwidgetbase.h"
+
 #include "qgis_gui.h"
+#include "qgspointcloudrendererwidget.h"
+
+#define SIP_NO_FILE
 
 class QgsContrastEnhancement;
 class QgsPointCloudLayer;
 class QgsStyle;
 class QgsPointCloudExtentRenderer;
 
-#define SIP_NO_FILE
 
 ///@cond PRIVATE
 

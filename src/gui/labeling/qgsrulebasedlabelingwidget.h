@@ -16,16 +16,16 @@
 #define QGSRULEBASEDLABELINGWIDGET_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
-
-#include <QWidget>
-
-#include "qgspanelwidget.h"
 
 #include "ui_qgsrulebasedlabelingwidget.h"
 
-#include "qgsrulebasedlabeling.h"
 #include "qgis_gui.h"
+#include "qgspanelwidget.h"
+#include "qgsrulebasedlabeling.h"
+
+#include <QWidget>
+
+#define SIP_NO_FILE
 
 class QgsMapCanvas;
 class QgsVectorLayer;
@@ -114,7 +114,7 @@ class GUI_EXPORT QgsRuleBasedLabelingWidget : public QgsPanelWidget, private Ui:
     ~QgsRuleBasedLabelingWidget() override;
 
     //! Gives access to the internal root of the rule tree
-    const QgsRuleBasedLabeling::Rule *rootRule() const { return mRootRule; }
+    const QgsRuleBasedLabeling::Rule *rootRule() const { return mRootRule.get(); }
 
     void setDockMode( bool dockMode ) override;
 
@@ -134,7 +134,7 @@ class GUI_EXPORT QgsRuleBasedLabelingWidget : public QgsPanelWidget, private Ui:
     QgsVectorLayer *mLayer = nullptr;
     QgsMapCanvas *mCanvas = nullptr;
 
-    QgsRuleBasedLabeling::Rule *mRootRule = nullptr;
+    std::unique_ptr<QgsRuleBasedLabeling::Rule> mRootRule;
     QgsRuleBasedLabelingModel *mModel = nullptr;
 
     QAction *mCopyAction = nullptr;
@@ -199,7 +199,7 @@ class GUI_EXPORT QgsLabelingRulePropsWidget : public QgsPanelWidget, private Ui:
     QgsVectorLayer *mLayer = nullptr;
 
     QgsLabelingGui *mLabelingGui = nullptr;
-    QgsPalLayerSettings *mSettings; // a clone of original settings
+    std::unique_ptr<QgsPalLayerSettings> mSettings; // a clone of original settings
 
     QgsMapCanvas *mMapCanvas = nullptr;
 };

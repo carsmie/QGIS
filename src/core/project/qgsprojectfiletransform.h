@@ -19,10 +19,10 @@
 #define QGSPROJECTFILETRANSFORM_H
 
 #include "qgis_core.h"
-#include <QString>
-#include <QDomDocument>
 #include "qgsprojectversion.h"
 
+#include <QDomDocument>
+#include <QString>
 
 class QgsRasterLayer;
 class QgsMapLayer;
@@ -46,8 +46,7 @@ class CORE_EXPORT QgsProjectFileTransform
      * \param domDocument The Dom document to use as content
      * \param version Version number
      */
-    QgsProjectFileTransform( QDomDocument &domDocument,
-                             const QgsProjectVersion &version )
+    QgsProjectFileTransform( QDomDocument &domDocument, const QgsProjectVersion &version )
     {
       mDom = domDocument;
       mCurrentVersion = version;
@@ -87,7 +86,6 @@ class CORE_EXPORT QgsProjectFileTransform
     Q_DECL_DEPRECATED static void fixOldSymbolLayerReferences( const QMap<QString, QgsMapLayer *> &mapLayers );
 
   private:
-
     QDomDocument mDom;
     QgsProjectVersion mCurrentVersion;
 };

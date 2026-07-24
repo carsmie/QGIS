@@ -14,15 +14,16 @@
  ***************************************************************************/
 
 #include "qgsrangewidgetfactory.h"
+
 #include "qgsrangeconfigdlg.h"
 #include "qgsrangewidgetwrapper.h"
 #include "qgsvectorlayer.h"
+
 #include <QDial>
 
-QgsRangeWidgetFactory::QgsRangeWidgetFactory( const QString &name )
-  : QgsEditorWidgetFactory( name )
-{
-}
+QgsRangeWidgetFactory::QgsRangeWidgetFactory( const QString &name, const QIcon &icon )
+  : QgsEditorWidgetFactory( name, icon )
+{}
 
 QgsEditorWidgetWrapper *QgsRangeWidgetFactory::create( QgsVectorLayer *vl, int fieldIdx, QWidget *editor, QWidget *parent ) const
 {

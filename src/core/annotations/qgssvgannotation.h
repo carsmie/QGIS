@@ -18,21 +18,21 @@
 #ifndef QGSSVGANNOTATION_H
 #define QGSSVGANNOTATION_H
 
-#include "qgsannotation.h"
-#include <QSvgRenderer>
 #include "qgis_core.h"
+#include "qgsannotation.h"
+
+#include <QSvgRenderer>
 
 /**
  * \class QgsSvgAnnotation
  * \ingroup core
  * \brief An annotation which renders the contents of an SVG file.
  */
-class CORE_EXPORT QgsSvgAnnotation: public QgsAnnotation
+class CORE_EXPORT QgsSvgAnnotation : public QgsAnnotation
 {
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsSvgAnnotation.
      */
@@ -61,7 +61,6 @@ class CORE_EXPORT QgsSvgAnnotation: public QgsAnnotation
     static QgsSvgAnnotation *create() SIP_FACTORY { return new QgsSvgAnnotation(); }
 
   protected:
-
     void renderAnnotation( QgsRenderContext &context, QSizeF size ) const override;
 
   private:

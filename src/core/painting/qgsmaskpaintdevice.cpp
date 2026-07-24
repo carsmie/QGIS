@@ -14,6 +14,7 @@
  ***************************************************************************/
 
 #include "qgsmaskpaintdevice.h"
+
 #include "qgspainting.h"
 
 ///@cond PRIVATE
@@ -21,8 +22,7 @@
 QgsMaskPaintEngine::QgsMaskPaintEngine( bool usePathStroker )
   : QPaintEngine( QPaintEngine::AllFeatures )
   , mUsePathStroker( usePathStroker )
-{
-}
+{}
 
 QPainterPath QgsMaskPaintEngine::maskPainterPath() const
 {

@@ -16,34 +16,41 @@
  ***************************************************************************/
 
 #include "qgsimagecache.h"
-#include "moc_qgsimagecache.cpp"
+
+#include <memory>
 
 #include "qgis.h"
+#include "qgsabstractcontentcache_p.h"
 #include "qgsimageoperation.h"
 #include "qgslogger.h"
-#include "qgsnetworkaccessmanager.h"
 #include "qgsmessagelog.h"
+#include "qgsnetworkaccessmanager.h"
 #include "qgsnetworkcontentfetchertask.h"
-#include "qgssettings.h"
-#include "qgsabstractcontentcache_p.h"
+#include "qgssettingsentryimpl.h"
+#include "qgssettingstree.h"
 
 #include <QApplication>
+#include <QBuffer>
 #include <QCoreApplication>
 #include <QCursor>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFile>
-#include <QImage>
-#include <QPainter>
-#include <QPicture>
 #include <QFileInfo>
+#include <QImage>
+#include <QImageReader>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QBuffer>
-#include <QImageReader>
+#include <QPainter>
+#include <QPicture>
+#include <QString>
 #include <QSvgRenderer>
 #include <QTemporaryDir>
 #include <QUuid>
+
+#include "moc_qgsimagecache.cpp"
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
@@ -54,8 +61,7 @@ QgsImageCacheEntry::QgsImageCacheEntry( const QString &path, QSize size, const b
   , opacity( opacity )
   , targetDpi( dpi )
   , frameNumber( frameNumber )
-{
-}
+{}
 
 bool QgsImageCacheEntry::isEqual( const QgsAbstractContentCacheEntry *other ) const
 {
@@ -85,17 +91,20 @@ int QgsImageCacheEntry::dataSize() const
 
 void QgsImageCacheEntry::dump() const
 {
-  QgsDebugMsgLevel( QStringLiteral( "path: %1, size %2x%3" ).arg( path ).arg( size.width() ).arg( size.height() ), 3 );
+  QgsDebugMsgLevel( u"path: %1, size %2x%3"_s.arg( path ).arg( size.width() ).arg( size.height() ), 3 );
 }
 
 ///@endcond
 
+const QgsSettingsEntryInteger *QgsImageCache::settingsMaxImageCacheSize
+  = new QgsSettingsEntryInteger( u"max-image-size"_s, QgsSettingsTree::sTreeNetworkCache, 0, u"Maximum size (in bytes) of the image cache. If 0, a default value is calculated based on the system memory."_s, Qgis::SettingsOptions(), 0 /* minimum */ );
+
 QgsImageCache::QgsImageCache( QObject *parent )
   : QgsAbstractContentCache< QgsImageCacheEntry >( parent, QObject::tr( "Image" ) )
 {
-  mTemporaryDir.reset( new QTemporaryDir() );
+  mTemporaryDir = std::make_unique<QTemporaryDir>();
 
-  const int bytes = QgsSettings().value( QStringLiteral( "/qgis/maxImageCacheSize" ), 0 ).toInt();
+  const int bytes = settingsMaxImageCacheSize->value();
   if ( bytes > 0 )
   {
     mMaxCacheSize = bytes;
@@ -114,9 +123,9 @@ QgsImageCache::QgsImageCache( QObject *parent )
     }
   }
 
-  mMissingSvg = QStringLiteral( "<svg width='10' height='10'><text x='5' y='10' font-size='10' text-anchor='middle'>?</text></svg>" ).toLatin1();
+  mMissingSvg = u"<svg width='10' height='10'><text x='5' y='10' font-size='10' text-anchor='middle'>?</text></svg>"_s.toLatin1();
 
-  const QString downloadingSvgPath = QgsApplication::defaultThemePath() + QStringLiteral( "downloading_svg.svg" );
+  const QString downloadingSvgPath = QgsApplication::defaultThemePath() + u"downloading_svg.svg"_s;
   if ( QFile::exists( downloadingSvgPath ) )
   {
     QFile file( downloadingSvgPath );
@@ -128,7 +137,7 @@ QgsImageCache::QgsImageCache( QObject *parent )
 
   if ( mFetchingSvg.isEmpty() )
   {
-    mFetchingSvg = QStringLiteral( "<svg width='10' height='10'><text x='5' y='10' font-size='10' text-anchor='middle'>?</text></svg>" ).toLatin1();
+    mFetchingSvg = u"<svg width='10' height='10'><text x='5' y='10' font-size='10' text-anchor='middle'>?</text></svg>"_s.toLatin1();
   }
 
   connect( this, &QgsAbstractContentCacheBase::remoteContentFetched, this, &QgsImageCache::remoteImageFetched );
@@ -143,7 +152,9 @@ QImage QgsImageCache::pathAsImage( const QString &f, const QSize size, const boo
   return pathAsImagePrivate( f, size, keepAspectRatio, opacity, fitsInCache, blocking, targetDpi, frameNumber, isMissing, totalFrameCount, nextFrameDelayMs );
 }
 
-QImage QgsImageCache::pathAsImagePrivate( const QString &f, const QSize size, const bool keepAspectRatio, const double opacity, bool &fitsInCache, bool blocking, double targetDpi, int frameNumber, bool *isMissing, int &totalFrameCount, int &nextFrameDelayMs )
+QImage QgsImageCache::pathAsImagePrivate(
+  const QString &f, const QSize size, const bool keepAspectRatio, const double opacity, bool &fitsInCache, bool blocking, double targetDpi, int frameNumber, bool *isMissing, int &totalFrameCount, int &nextFrameDelayMs
+)
 {
   QString file = f.trimmed();
   if ( isMissing )
@@ -157,7 +168,7 @@ QImage QgsImageCache::pathAsImagePrivate( const QString &f, const QSize size, co
   const auto extractedAnimationIt = mExtractedAnimationPaths.constFind( file );
   if ( extractedAnimationIt != mExtractedAnimationPaths.constEnd() )
   {
-    file = QDir( extractedAnimationIt.value() ).filePath( QStringLiteral( "frame_%1.png" ).arg( frameNumber ) );
+    file = QDir( extractedAnimationIt.value() ).filePath( u"frame_%1.png"_s.arg( frameNumber ) );
     frameNumber = -1;
   }
 
@@ -165,9 +176,9 @@ QImage QgsImageCache::pathAsImagePrivate( const QString &f, const QSize size, co
 
   QString base64String;
   QString mimeType;
-  if ( parseBase64DataUrl( file, &mimeType, &base64String ) && mimeType.startsWith( QLatin1String( "image/" ) ) )
+  if ( parseBase64DataUrl( file, &mimeType, &base64String ) && mimeType.startsWith( "image/"_L1 ) )
   {
-    file = QStringLiteral( "base64:%1" ).arg( base64String );
+    file = u"base64:%1"_s.arg( base64String );
   }
 
   QgsImageCacheEntry *currentEntry = findExistingEntry( new QgsImageCacheEntry( file, size, keepAspectRatio, opacity, targetDpi, frameNumber ) );
@@ -272,7 +283,7 @@ int QgsImageCache::totalFrameCount( const QString &path, bool blocking )
   int nextFrameDelayMs = 0;
   bool fitsInCache = false;
   bool isMissing = false;
-  ( void )pathAsImagePrivate( file, QSize(), true, 1.0, fitsInCache, blocking, 96, 0, &isMissing, res, nextFrameDelayMs );
+  ( void ) pathAsImagePrivate( file, QSize(), true, 1.0, fitsInCache, blocking, 96, 0, &isMissing, res, nextFrameDelayMs );
 
   return res;
 }
@@ -315,9 +326,9 @@ void QgsImageCache::prepareAnimation( const QString &path )
   {
     const QString basePart = QFileInfo( path ).baseName();
     int id = 1;
-    filePath = mTemporaryDir->filePath( QStringLiteral( "%1_%2" ).arg( basePart ).arg( id ) );
+    filePath = mTemporaryDir->filePath( u"%1_%2"_s.arg( basePart ).arg( id ) );
     while ( QFile::exists( filePath ) )
-      filePath = mTemporaryDir->filePath( QStringLiteral( "%1_%2" ).arg( basePart ).arg( ++id ) );
+      filePath = mTemporaryDir->filePath( u"%1_%2"_s.arg( basePart ).arg( ++id ) );
 
     reader = std::make_unique< QImageReader >( path );
   }
@@ -335,7 +346,7 @@ void QgsImageCache::prepareAnimation( const QString &path )
 
       buffer = std::make_unique< QBuffer >( &ba );
       buffer->open( QIODevice::ReadOnly );
-      reader = std::make_unique< QImageReader> ( buffer.get() );
+      reader = std::make_unique< QImageReader>( buffer.get() );
     }
   }
 
@@ -353,16 +364,18 @@ void QgsImageCache::prepareAnimation( const QString &path )
     if ( frame.isNull() )
       break;
 
-    mImageDelays[ path ].append( reader->nextImageDelay() );
+    mImageDelays[path].append( reader->nextImageDelay() );
 
-    const QString framePath = frameDirectory.filePath( QStringLiteral( "frame_%1.png" ).arg( frameNumber++ ) );
+    const QString framePath = frameDirectory.filePath( u"frame_%1.png"_s.arg( frameNumber++ ) );
     frame.save( framePath, "PNG" );
   }
 
   mTotalFrameCounts.insert( path, frameNumber );
 }
 
-QImage QgsImageCache::renderImage( const QString &path, QSize size, const bool keepAspectRatio, const double opacity, double targetDpi, int frameNumber, bool &isBroken, int &totalFrameCount, int &nextFrameDelayMs, bool blocking ) const
+QImage QgsImageCache::renderImage(
+  const QString &path, QSize size, const bool keepAspectRatio, const double opacity, double targetDpi, int frameNumber, bool &isBroken, int &totalFrameCount, int &nextFrameDelayMs, bool blocking
+) const
 {
   QImage im;
   isBroken = false;
@@ -495,12 +508,137 @@ QImage QgsImageCache::renderImage( const QString &path, QSize size, const bool k
     }
   }
 
-  if ( !im.hasAlphaChannel()
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-       && im.format() != QImage::Format_CMYK8888
+  if ( !im.hasAlphaChannel() )
+  {
+    // different logic below depending on whether caller has explicitly
+    // asked for opacity reduction or not
+    if ( opacity < 1.0 )
+    {
+      // dropping the opacity, so image MUST have an alpha channel
+      switch ( im.format() )
+      {
+        case QImage::Format_Invalid:
+        case QImage::NImageFormats:
+          // don't auto-add alpha for these
+          break;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 8, 0 )
+        case QImage::Format_CMYK8888:
+          // never auto-add alpha for CMYK -- this is not supported
+          break;
 #endif
-     )
-    im = im.convertToFormat( QImage::Format_ARGB32 );
+
+        case QImage::Format_RGBX64:
+        case QImage::Format_RGBA64:
+        case QImage::Format_RGBA64_Premultiplied:
+        case QImage::Format_Grayscale16:
+          // 64 bit source, convert to 64 bit Premultiplied
+          im = im.convertToFormat( QImage::Format_RGBA64_Premultiplied );
+          break;
+
+        case QImage::Format_RGBX16FPx4:
+        case QImage::Format_RGBA16FPx4:
+        case QImage::Format_RGBA16FPx4_Premultiplied:
+          // 16 bit floating point source, convert to 64 bit Premultiplied
+          im = im.convertToFormat( QImage::Format_RGBA16FPx4_Premultiplied );
+          break;
+
+        case QImage::Format_RGBX32FPx4:
+        case QImage::Format_RGBA32FPx4:
+        case QImage::Format_RGBA32FPx4_Premultiplied:
+          // 32 bit floating point source, convert to 64 bit Premultiplied
+          im = im.convertToFormat( QImage::Format_RGBA32FPx4_Premultiplied );
+          break;
+
+        case QImage::Format_Mono:
+        case QImage::Format_MonoLSB:
+        case QImage::Format_Indexed8:
+        case QImage::Format_RGB32:
+        case QImage::Format_ARGB32:
+        case QImage::Format_ARGB32_Premultiplied:
+        case QImage::Format_RGB16:
+        case QImage::Format_ARGB8565_Premultiplied:
+        case QImage::Format_RGB666:
+        case QImage::Format_ARGB6666_Premultiplied:
+        case QImage::Format_RGB555:
+        case QImage::Format_ARGB8555_Premultiplied:
+        case QImage::Format_RGB888:
+        case QImage::Format_RGB444:
+        case QImage::Format_ARGB4444_Premultiplied:
+        case QImage::Format_RGBX8888:
+        case QImage::Format_RGBA8888:
+        case QImage::Format_RGBA8888_Premultiplied:
+        case QImage::Format_BGR30:
+        case QImage::Format_A2BGR30_Premultiplied:
+        case QImage::Format_RGB30:
+        case QImage::Format_A2RGB30_Premultiplied:
+        case QImage::Format_Alpha8:
+        case QImage::Format_Grayscale8:
+        case QImage::Format_BGR888:
+          im = im.convertToFormat( QImage::Format_ARGB32 );
+          break;
+      }
+    }
+    else
+    {
+      // for RGB images only, we automatically add an alpha channel.
+      // this is partly to maintain api, but mostly for convenience
+      // so that painting operations on the result "just work"
+      // without every caller needing to worry about adding alpha
+      // channels
+
+      // for non-rgb (or for HDR image formats) we don't auto-add alpha
+      // channels -- this would be a lossy operation
+      switch ( im.format() )
+      {
+        case QImage::Format_Invalid:
+        case QImage::Format_RGBX64:
+        case QImage::Format_RGBA64:
+        case QImage::Format_RGBA64_Premultiplied:
+        case QImage::Format_Grayscale16:
+        case QImage::Format_RGBX16FPx4:
+        case QImage::Format_RGBA16FPx4:
+        case QImage::Format_RGBA16FPx4_Premultiplied:
+        case QImage::Format_RGBX32FPx4:
+        case QImage::Format_RGBA32FPx4:
+        case QImage::Format_RGBA32FPx4_Premultiplied:
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 8, 0 )
+        case QImage::Format_CMYK8888:
+#endif
+        case QImage::NImageFormats:
+          // don't auto-add alpha for these
+          break;
+
+        case QImage::Format_Mono:
+        case QImage::Format_MonoLSB:
+        case QImage::Format_Indexed8:
+        case QImage::Format_RGB32:
+        case QImage::Format_ARGB32:
+        case QImage::Format_ARGB32_Premultiplied:
+        case QImage::Format_RGB16:
+        case QImage::Format_ARGB8565_Premultiplied:
+        case QImage::Format_RGB666:
+        case QImage::Format_ARGB6666_Premultiplied:
+        case QImage::Format_RGB555:
+        case QImage::Format_ARGB8555_Premultiplied:
+        case QImage::Format_RGB888:
+        case QImage::Format_RGB444:
+        case QImage::Format_ARGB4444_Premultiplied:
+        case QImage::Format_RGBX8888:
+        case QImage::Format_RGBA8888:
+        case QImage::Format_RGBA8888_Premultiplied:
+        case QImage::Format_BGR30:
+        case QImage::Format_A2BGR30_Premultiplied:
+        case QImage::Format_RGB30:
+        case QImage::Format_A2RGB30_Premultiplied:
+        case QImage::Format_Alpha8:
+        case QImage::Format_Grayscale8:
+        case QImage::Format_BGR888:
+          im = im.convertToFormat( QImage::Format_ARGB32 );
+          break;
+      }
+    }
+  }
 
   if ( opacity < 1.0 )
     QgsImageOperation::multiplyOpacity( im, opacity );
@@ -537,9 +675,7 @@ template class QgsAbstractContentCache<QgsImageCacheEntry>; // clazy:exclude=mis
 
 QgsImageSizeCacheEntry::QgsImageSizeCacheEntry( const QString &path )
   : QgsAbstractContentCacheEntry( path )
-{
-
-}
+{}
 
 int QgsImageSizeCacheEntry::dataSize() const
 {
@@ -548,14 +684,13 @@ int QgsImageSizeCacheEntry::dataSize() const
 
 void QgsImageSizeCacheEntry::dump() const
 {
-  QgsDebugMsgLevel( QStringLiteral( "path: %1" ).arg( path ), 3 );
+  QgsDebugMsgLevel( u"path: %1"_s.arg( path ), 3 );
 }
 
 bool QgsImageSizeCacheEntry::isEqual( const QgsAbstractContentCacheEntry *other ) const
 {
   const QgsImageSizeCacheEntry *otherImage = dynamic_cast< const QgsImageSizeCacheEntry * >( other );
-  if ( !otherImage
-       || otherImage->path != path )
+  if ( !otherImage || otherImage->path != path )
     return false;
 
   return true;
@@ -587,9 +722,9 @@ QSize QgsImageSizeCache::originalSize( const QString &f, bool blocking )
 
   QString base64String;
   QString mimeType;
-  if ( parseBase64DataUrl( file, &mimeType, &base64String ) && mimeType.startsWith( QLatin1String( "image/" ) ) )
+  if ( parseBase64DataUrl( file, &mimeType, &base64String ) && mimeType.startsWith( "image/"_L1 ) )
   {
-    file = QStringLiteral( "base64:%1" ).arg( base64String );
+    file = u"base64:%1"_s.arg( base64String );
   }
 
   QgsImageSizeCacheEntry *currentEntry = findExistingEntry( new QgsImageSizeCacheEntry( file ) );

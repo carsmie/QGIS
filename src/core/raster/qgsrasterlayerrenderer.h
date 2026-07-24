@@ -16,10 +16,11 @@
 #ifndef QGSRASTERLAYERRENDERER_H
 #define QGSRASTERLAYERRENDERER_H
 
-#define SIP_NO_FILE
 
-#include "qgsmaplayerrenderer.h"
 #include "qgsmapclippingregion.h"
+#include "qgsmaplayerrenderer.h"
+
+#define SIP_NO_FILE
 
 class QPainter;
 
@@ -51,10 +52,11 @@ class CORE_EXPORT QgsRasterLayerRendererFeedback : public QgsRasterBlockFeedback
 
     //! when notified of new data in data provider it launches a preview draw of the raster
     void onNewData() override;
+
   private:
-    QgsRasterLayerRenderer *mR = nullptr;   //!< Parent renderer instance
-    int mMinimalPreviewInterval;  //!< In milliseconds
-    QTime mLastPreview;           //!< When last preview has been generated
+    QgsRasterLayerRenderer *mR = nullptr; //!< Parent renderer instance
+    int mMinimalPreviewInterval = 250;    //!< In milliseconds
+    QTime mLastPreview;                   //!< When last preview has been generated
 };
 
 ///@endcond
@@ -76,12 +78,11 @@ class CORE_EXPORT QgsRasterLayerRenderer : public QgsMapLayerRenderer
     bool forceRasterRender() const override;
 
   private:
-
     void prepareLabeling( QgsRasterLayer *layer );
     void drawLabeling();
 
     QString mLayerName;
-    QgsRasterViewPort *mRasterViewPort = nullptr;
+    std::unique_ptr<QgsRasterViewPort> mRasterViewPort;
 
     double mLayerOpacity = 1.0;
     std::unique_ptr<QgsRasterPipe> mPipe;
@@ -90,7 +91,7 @@ class CORE_EXPORT QgsRasterLayerRenderer : public QgsMapLayerRenderer
     Qgis::RasterInterfaceCapabilities mInterfaceCapabilities;
 
     //! feedback class for cancellation and preview generation
-    QgsRasterLayerRendererFeedback *mFeedback = nullptr;
+    std::unique_ptr<QgsRasterLayerRendererFeedback> mFeedback;
 
     QList< QgsMapClippingRegion > mClippingRegions;
 

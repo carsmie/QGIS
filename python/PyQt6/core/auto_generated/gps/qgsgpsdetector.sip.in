@@ -13,6 +13,7 @@
 
 
 
+
 class QgsGpsDetector : QObject
 {
 %Docstring(signature="appended")
@@ -23,7 +24,6 @@ Detects connected GPS device ports.
 #include "qgsgpsdetector.h"
 %End
   public:
-
 
     QgsGpsDetector( const QString &portName = QString(), bool useUnsafeSignals = true );
 %Docstring

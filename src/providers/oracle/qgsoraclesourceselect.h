@@ -17,16 +17,16 @@
 #ifndef QGSORACLESOURCESELECT_H
 #define QGSORACLESOURCESELECT_H
 
+#include "qgsabstractdbsourceselect.h"
 #include "qgsguiutils.h"
 #include "qgshelp.h"
 #include "qgsoracleconnpool.h"
 #include "qgsproviderregistry.h"
-#include "qgsabstractdbsourceselect.h"
 
-#include <QMap>
-#include <QPair>
 #include <QIcon>
 #include <QItemDelegate>
+#include <QMap>
+#include <QPair>
 
 class QPushButton;
 class QgsOracleColumnTypeTask;
@@ -43,10 +43,7 @@ class QgsOracleSourceSelectDelegate : public QItemDelegate
       : QItemDelegate( parent )
     {}
 
-    ~QgsOracleSourceSelectDelegate() override
-    {
-      setConn( nullptr );
-    }
+    ~QgsOracleSourceSelectDelegate() override { setConn( nullptr ); }
 
     QWidget *createEditor( QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index ) const override;
     void setModelData( QWidget *editor, QAbstractItemModel *model, const QModelIndex &index ) const override;

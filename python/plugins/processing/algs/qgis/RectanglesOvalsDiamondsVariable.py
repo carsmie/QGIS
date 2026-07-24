@@ -21,23 +21,23 @@ __copyright__ = "(C) 2012, Victor Olaya"
 
 import math
 
-from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (
     NULL,
-    QgsWkbTypes,
     QgsFeature,
     QgsFeatureSink,
     QgsGeometry,
     QgsPointXY,
     QgsProcessing,
-    QgsProcessingException,
     QgsProcessingAlgorithm,
-    QgsProcessingParameterField,
-    QgsProcessingParameterFeatureSource,
+    QgsProcessingException,
     QgsProcessingParameterEnum,
-    QgsProcessingParameterNumber,
     QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterField,
+    QgsProcessingParameterNumber,
+    QgsWkbTypes,
 )
+from qgis.PyQt.QtCore import QCoreApplication
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
@@ -128,6 +128,18 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
     def displayName(self):
         return self.tr("Rectangles, ovals, diamonds (variable)")
 
+    def shortDescription(self):
+        return self.tr(
+            "Creates rectangle, oval or diamond-shaped polygons from the input point layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates rectangle, oval or diamond-shaped polygons "
+            "from the input point layer using specified width, height and (optional) rotation values. "
+            "Multipart inputs should be promoted to singleparts first."
+        )
+
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
         if source is None:
@@ -164,6 +176,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
             self.ovals(sink, source, width, height, rotation, segments, feedback)
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}
 
     def rectangles(self, sink, source, width, height, rotation, feedback):
@@ -188,7 +201,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "width or height. " "Skipping…",
+                            "Feature {} has empty width or height. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -196,7 +209,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "angle. " "Skipping…",
+                            "Feature {} has empty angle. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -243,7 +256,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "width or height. " "Skipping…",
+                            "Feature {} has empty width or height. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -289,7 +302,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "width or height. " "Skipping…",
+                            "Feature {} has empty width or height. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -297,7 +310,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "angle. " "Skipping…",
+                            "Feature {} has empty angle. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -343,7 +356,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "width or height. " "Skipping…",
+                            "Feature {} has empty width or height. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -388,7 +401,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "width or height. " "Skipping…",
+                            "Feature {} has empty width or height. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -396,7 +409,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "angle. " "Skipping…",
+                            "Feature {} has empty angle. Skipping…",
                         ).format(feat.id())
                     )
                     continue
@@ -441,7 +454,7 @@ class RectanglesOvalsDiamondsVariable(QgisAlgorithm):
                     feedback.pushInfo(
                         QCoreApplication.translate(
                             "RectanglesOvalsDiamondsVariable",
-                            "Feature {} has empty " "width or height. " "Skipping…",
+                            "Feature {} has empty width or height. Skipping…",
                         ).format(feat.id())
                     )
                     continue

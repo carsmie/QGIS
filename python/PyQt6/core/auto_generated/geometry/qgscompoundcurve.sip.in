@@ -9,7 +9,9 @@
 
 
 
-class QgsCompoundCurve: QgsCurve
+
+
+class QgsCompoundCurve : QgsCurve
 {
 %Docstring(signature="appended")
 Compound curve geometry type.
@@ -88,7 +90,9 @@ approximation of the curve.
 
     virtual bool removeDuplicateNodes( double epsilon = 4 * DBL_EPSILON, bool useZValues = false );
 
+
     virtual bool boundingBoxIntersects( const QgsBox3D &box3d ) const /HoldGIL/;
+
 
     virtual const QgsAbstractGeometry *simplifiedTypeRef() const /HoldGIL/;
 
@@ -165,11 +169,15 @@ Converts the vertex at the given position from/to circular
 
     virtual bool deleteVertex( QgsVertexId position );
 
+    virtual bool deleteVertices( const QSet<QgsVertexId> &positions );
+
     virtual double closestSegment( const QgsPoint &pt, QgsPoint &segmentPt /Out/, QgsVertexId &vertexAfter /Out/, int *leftOf /Out/ = 0, double epsilon = 4 * DBL_EPSILON ) const;
 
     virtual bool pointAt( int node, QgsPoint &point, Qgis::VertexType &type ) const;
 
     virtual void sumUpArea( double &sum /Out/ ) const;
+
+    virtual void sumUpArea3D( double &sum /Out/ ) const;
 
 
     void close();
@@ -182,6 +190,8 @@ Appends first point if not already closed.
     virtual double vertexAngle( QgsVertexId vertex ) const;
 
     virtual double segmentLength( QgsVertexId startVertex ) const;
+
+    virtual double distanceBetweenVertices( QgsVertexId fromVertex, QgsVertexId toVertex ) const;
 
     virtual QgsCompoundCurve *reversed() const /Factory/;
 

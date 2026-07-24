@@ -20,11 +20,10 @@ __date__ = "March 2019"
 __copyright__ = "(C) 2019, Nyall Dawson"
 
 import os
+import unittest
 
-from qgis.PyQt.QtCore import QSize
-from qgis.PyQt.QtGui import QColor, QImage, QPainter
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import (
+    Qgis,
     QgsFeature,
     QgsFillSymbol,
     QgsGeometry,
@@ -45,9 +44,10 @@ from qgis.core import (
     QgsUnitTypes,
     QgsVectorLayer,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QSize
+from qgis.PyQt.QtGui import QColor, QImage, QPainter
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 start_app()
@@ -55,7 +55,6 @@ TEST_DATA_DIR = unitTestDataPath()
 
 
 class TestQgsHashedLineSymbolLayer(QgisTestCase):
-
     @classmethod
     def control_path_prefix(cls):
         return "symbol_hashline"
@@ -565,6 +564,51 @@ class TestQgsHashedLineSymbolLayer(QgisTestCase):
         self.assertTrue(
             self.render_map_settings_check(
                 "hashline_ddopacity", "hashline_ddopacity", ms
+            )
+        )
+
+    def testBlankSegments(self):
+        """
+        Test with data defined blank segments
+
+        Blank segments are more intensively tested in marker line test because it relies on the same code
+        """
+
+        # rendering test
+        s = QgsFillSymbol()
+        s.deleteSymbolLayer(0)
+
+        sl = QgsHashedLineSymbolLayer()
+        sl.setAverageAngleLength(0)
+        sl.setPlacements(Qgis.MarkerLinePlacement.Interval)
+        sl.setDataDefinedProperty(
+            QgsSymbolLayer.Property.BlankSegments,
+            QgsProperty.fromExpression("'(((2.90402 7.36,11.8776 30.4499)))'"),
+        )
+
+        simple_line = QgsSimpleLineSymbolLayer()
+        simple_line.setColor(QColor(0, 255, 0))
+        simple_line.setWidth(1)
+        line_symbol = QgsLineSymbol()
+        line_symbol.changeSymbolLayer(0, simple_line)
+        sl.setSubSymbol(line_symbol)
+        sl.setHashLength(3)
+        sl.setAverageAngleLength(0)
+
+        s.appendSymbolLayer(sl)
+
+        g = QgsGeometry.fromWkt(
+            "Polygon((0 0, 10 0, 10 3, 12 4, 8 5, 12 6, 8 7, 10 8, 10 10, 0 10, 0 0))"
+        )
+
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "line_hash_blanksegments",
+                "line_hash_blanksegments",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
             )
         )
 

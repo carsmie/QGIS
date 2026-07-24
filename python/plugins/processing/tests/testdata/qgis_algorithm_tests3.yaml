@@ -1142,7 +1142,7 @@ tests:
         name: points_weighted.gml
         compare: false
 
-  - algorithm: qgis:randomextractwithinsubsets
+  - algorithm: native:randomextractwithinsubsets
     name: Random extract within subset (subset smaller than number)
     params:
       FIELD: id2
@@ -1157,7 +1157,7 @@ tests:
         name: points.gml
         compare: false
 
-  - algorithm: qgis:heatmapkerneldensityestimation
+  - algorithm: native:heatmapkerneldensityestimation
     name: Heatmap (Kernel density estimation)
     params:
       DECAY: 0.0
@@ -2466,7 +2466,100 @@ tests:
         name: expected/transect_multi_both_2_30.gml
         type: vector
 
-  - algorithm: qgis:distancematrix
+  - algorithm: native:transectfixeddistance
+    name: Test (native:transectfixeddistance)
+    params:
+      ANGLE: 90.0
+      INPUT:
+        name: custom/transect_single.gml
+        type: vector
+      INTERVAL: 0.20
+      LENGTH: 1.0
+      SIDE: 2
+    results:
+      OUTPUT:
+        name: expected/transect_fixed_single_both.gml
+        type: vector
+
+  # Tests for DIRECTION parameter
+  # DIRECTION: 0 = Left to Right (default), 1 = Right to Left (hydraulic convention)
+  - algorithm: native:transect
+    name: Transect single left 90.0 0.5m right to left direction
+    params:
+      ANGLE: 90.0
+      LENGTH: 0.5
+      INPUT:
+        name: custom/transect_single.gml
+        type: vector
+      SIDE: 0
+      DIRECTION: 1
+    results:
+      OUTPUT:
+        name: expected/transect_single_left_05_swapped.gml
+        type: vector
+
+  - algorithm: native:transect
+    name: Transect single right 90.0 1m right to left direction
+    params:
+      ANGLE: 90.0
+      LENGTH: 1.0
+      INPUT:
+        name: custom/transect_single.gml
+        type: vector
+      SIDE: 1
+      DIRECTION: 1
+    results:
+      OUTPUT:
+        name: expected/transect_single_right_1_swapped.gml
+        type: vector
+
+  - algorithm: native:transect
+    name: Transect multi left 90.0 0.5m right to left direction
+    params:
+      ANGLE: 90.0
+      LENGTH: 0.5
+      INPUT:
+        name: custom/transect_multi.gml
+        type: vector
+      SIDE: 0
+      DIRECTION: 1
+    results:
+      OUTPUT:
+        name: expected/transect_multi_left_05_swapped.gml
+        type: vector
+
+  - algorithm: native:transect
+    name: Transect multi right 90.0 1m right to left direction
+    params:
+      ANGLE: 90.0
+      LENGTH: 1.0
+      INPUT:
+        name: custom/transect_multi.gml
+        type: vector
+      SIDE: 1
+      DIRECTION: 1
+    results:
+      OUTPUT:
+        name: expected/transect_multi_right_1_swapped.gml
+        type: vector
+
+  - algorithm: native:transectfixeddistance
+    name: Test (native:transectfixeddistance) right to left direction
+    params:
+      ANGLE: 90.0
+      INPUT:
+        name: custom/transect_single.gml
+        type: vector
+      INTERVAL: 0.20
+      LENGTH: 1.0
+      SIDE: 2
+      DIRECTION: 1
+    results:
+      OUTPUT:
+        name: expected/transect_fixed_single_both_swapped.gml
+        type: vector
+
+  - algorithm: native:distancematrix
     name: Linear (N*k x 3) distance matrix
     params:
       INPUT:
@@ -2490,7 +2583,7 @@ tests:
           fields:
             fid: skip
 
-  - algorithm: qgis:distancematrix
+  - algorithm: native:distancematrix
     name: Linear (N*k x 3) distance matrix, nearest 3 points
     params:
       INPUT:
@@ -2514,7 +2607,7 @@ tests:
           fields:
             fid: skip
 
-  - algorithm: qgis:distancematrix
+  - algorithm: native:distancematrix
     name: Linear (N*k x 3) distance matrix, different layers
     params:
       INPUT:
@@ -2538,7 +2631,7 @@ tests:
           fields:
             fid: skip
 
-  - algorithm: qgis:distancematrix
+  - algorithm: native:distancematrix
     name: Standard (N x T) distance matrix
     params:
       INPUT:
@@ -2561,7 +2654,7 @@ tests:
               precision: 7
             fid: skip
 
-  - algorithm: qgis:distancematrix
+  - algorithm: native:distancematrix
     name: Summary distance matrix (mean, std. dev., min, max)
     params:
       INPUT:
@@ -2584,7 +2677,7 @@ tests:
               precision: 7
             fid: skip
 
-  - algorithm: qgis:distancematrix
+  - algorithm: native:distancematrix
     name: Summary matrix different layers
     params:
       INPUT:

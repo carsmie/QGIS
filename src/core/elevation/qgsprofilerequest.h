@@ -17,13 +17,13 @@
 #ifndef QGSPROFILEREQUEST_H
 #define QGSPROFILEREQUEST_H
 
+#include <memory>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgscoordinatetransformcontext.h"
 #include "qgsexpressioncontext.h"
-
-#include <memory>
 
 class QgsCurve;
 class QgsAbstractTerrainProvider;
@@ -36,9 +36,7 @@ class QgsAbstractTerrainProvider;
  */
 class CORE_EXPORT QgsProfileRequest
 {
-
   public:
-
     /**
      * Constructor for QgsProfileRequest.
      *
@@ -199,7 +197,6 @@ class CORE_EXPORT QgsProfileRequest
     QgsProfileRequest &setExpressionContext( const QgsExpressionContext &context );
 
   private:
-
     std::unique_ptr< QgsCurve> mCurve;
     QgsCoordinateReferenceSystem mCrs;
     QgsCoordinateTransformContext mTransformContext;
@@ -210,7 +207,6 @@ class CORE_EXPORT QgsProfileRequest
 
     std::unique_ptr< QgsAbstractTerrainProvider > mTerrainProvider;
     QgsExpressionContext mExpressionContext;
-
 };
 
 #endif // QGSPROFILEREQUEST_H

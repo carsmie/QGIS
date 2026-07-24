@@ -14,30 +14,69 @@
  ***************************************************************************/
 
 #include "qgsmetalroughmaterialwidget.h"
+
+#include "qgis.h"
+#include "qgsdoublespinbox.h"
+#include "qgsmetalroughmaterialsettings.h"
+
+#include <QString>
+
 #include "moc_qgsmetalroughmaterialwidget.cpp"
 
-#include "qgsmetalroughmaterialsettings.h"
-#include "qgis.h"
+using namespace Qt::StringLiterals;
 
 QgsMetalRoughMaterialWidget::QgsMetalRoughMaterialWidget( QWidget *parent, bool )
   : QgsMaterialSettingsWidget( parent )
 {
   setupUi( this );
-  mSpinMetalness->setClearValue( 0, tr( "None" ) );
-  mSpinRoughness->setClearValue( 0, tr( "None" ) );
+  mPreviewWidget->hide();
+  mPreviewWidget->setMaterialType( u"metalrough"_s );
 
   QgsMetalRoughMaterialSettings defaultMaterial;
   setSettings( &defaultMaterial, nullptr );
 
+  // clear has no meaning here
+  mMetalnessWidget->spinBox()->setShowClearButton( false );
+  mRoughnessWidget->spinBox()->setShowClearButton( false );
+  mReflectanceWidget->spinBox()->setClearValue( 50 );
+  mAnisotropyWidget->spinBox()->setClearValue( 0 );
+  mClearCoatFactorWidget->spinBox()->setClearValue( 0 );
+  mClearCoatRoughnessWidget->spinBox()->setClearValue( 0 );
+
+  mEmissionStrengthSpinBox->setClearValue( 100 );
+  mEmissionStrengthSpinBox->setEnabled( false );
+  mButtonEmissionColor->setShowNull( true, tr( "No Emission" ) );
+
   connect( mButtonBaseColor, &QgsColorButton::colorChanged, this, &QgsMetalRoughMaterialWidget::changed );
-  connect( mSpinMetalness, static_cast<void ( QDoubleSpinBox::* )( double )>( &QDoubleSpinBox::valueChanged ), this, [this] {
+  connect( mMetalnessWidget, &QgsPercentageWidget::valueChanged, this, [this] {
     updateWidgetState();
     emit changed();
   } );
-  connect( mSpinRoughness, static_cast<void ( QDoubleSpinBox::* )( double )>( &QDoubleSpinBox::valueChanged ), this, [this] {
+  connect( mRoughnessWidget, &QgsPercentageWidget::valueChanged, this, [this] {
     updateWidgetState();
     emit changed();
   } );
+  connect( mReflectanceWidget, &QgsPercentageWidget::valueChanged, this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mAnisotropyWidget, &QgsPercentageWidget::valueChanged, this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mAnisotropyRotationWidget, &QSlider::valueChanged, this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mOpacityWidget, &QgsOpacityWidget::opacityChanged, this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mEmissionStrengthSpinBox, qOverload< double >( &QDoubleSpinBox::valueChanged ), this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mButtonEmissionColor, &QgsColorButton::colorChanged, this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mButtonEmissionColor, &QgsColorButton::colorChanged, this, [this] {
+    mEmissionStrengthSpinBox->setEnabled( mButtonEmissionColor->color().isValid() || mEmissionColorDataDefinedButton->isActive() );
+  } );
+  connect( mEmissionColorDataDefinedButton, &QgsPropertyOverrideButton::activated, this, [this] {
+    mEmissionStrengthSpinBox->setEnabled( mButtonEmissionColor->color().isValid() || mEmissionColorDataDefinedButton->isActive() );
+  } );
+
+  connect( mClearCoatFactorWidget, &QgsPercentageWidget::valueChanged, this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mClearCoatFactorWidget, &QgsPercentageWidget::valueChanged, this, [this] { mClearCoatRoughnessWidget->setEnabled( mClearCoatFactorWidget->value() > 0 ); } );
+  connect( mClearCoatRoughnessWidget, &QgsPercentageWidget::valueChanged, this, &QgsMetalRoughMaterialWidget::changed );
+
+  connect( mBaseColorDataDefinedButton, &QgsPropertyOverrideButton::changed, this, &QgsMetalRoughMaterialWidget::changed );
+  connect( mEmissionColorDataDefinedButton, &QgsPropertyOverrideButton::changed, this, &QgsMetalRoughMaterialWidget::changed );
+
+  connect( this, &QgsMetalRoughMaterialWidget::changed, this, &QgsMetalRoughMaterialWidget::updatePreview );
 }
 
 QgsMaterialSettingsWidget *QgsMetalRoughMaterialWidget::create()
@@ -45,34 +84,100 @@ QgsMaterialSettingsWidget *QgsMetalRoughMaterialWidget::create()
   return new QgsMetalRoughMaterialWidget();
 }
 
-void QgsMetalRoughMaterialWidget::setTechnique( QgsMaterialSettingsRenderingTechnique )
+void QgsMetalRoughMaterialWidget::setTechnique( Qgis::MaterialRenderingTechnique technique )
 {
+  switch ( technique )
+  {
+    case Qgis::MaterialRenderingTechnique::Triangles:
+    case Qgis::MaterialRenderingTechnique::TrianglesFromModel:
+    case Qgis::MaterialRenderingTechnique::InstancedPoints:
+    case Qgis::MaterialRenderingTechnique::Points:
+    case Qgis::MaterialRenderingTechnique::TrianglesWithFixedTexture:
+    {
+      mBaseColorDataDefinedButton->setVisible( false );
+      mEmissionColorDataDefinedButton->setVisible( false );
+      break;
+    }
+
+    case Qgis::MaterialRenderingTechnique::TrianglesDataDefined:
+    {
+      mBaseColorDataDefinedButton->setVisible( true );
+      mEmissionColorDataDefinedButton->setVisible( true );
+      break;
+    }
+
+    case Qgis::MaterialRenderingTechnique::Lines:
+    case Qgis::MaterialRenderingTechnique::Billboards:
+      // not supported
+      break;
+  }
 }
 
-void QgsMetalRoughMaterialWidget::setSettings( const QgsAbstractMaterialSettings *settings, QgsVectorLayer * )
+void QgsMetalRoughMaterialWidget::setSettings( const QgsAbstractMaterialSettings *settings, QgsVectorLayer *layer )
 {
   const QgsMetalRoughMaterialSettings *material = dynamic_cast<const QgsMetalRoughMaterialSettings *>( settings );
   if ( !material )
     return;
   mButtonBaseColor->setColor( material->baseColor() );
-  mSpinMetalness->setValue( material->metalness() );
-  mSpinRoughness->setValue( material->roughness() );
+  mMetalnessWidget->setValue( material->metalness() );
+  mRoughnessWidget->setValue( material->roughness() );
+  mReflectanceWidget->setValue( material->reflectance() );
+  mAnisotropyWidget->setValue( material->anisotropy() );
+  mAnisotropyRotationWidget->setValue( material->anisotropyRotation() );
+  mOpacityWidget->setOpacity( material->opacity() );
+  mButtonEmissionColor->setColor( material->emissionColor() );
+  mEmissionStrengthSpinBox->setValue( material->emissionFactor() * 100 );
+  mEmissionStrengthSpinBox->setEnabled( mButtonEmissionColor->color().isValid() );
+
+  mClearCoatFactorWidget->setValue( material->clearCoatFactor() );
+  mClearCoatRoughnessWidget->setValue( material->clearCoatRoughness() );
+  mClearCoatRoughnessWidget->setEnabled( mClearCoatFactorWidget->value() > 0 );
 
   mPropertyCollection = settings->dataDefinedProperties();
 
+  mBaseColorDataDefinedButton->init( static_cast<int>( QgsAbstractMaterialSettings::Property::BaseColor ), mPropertyCollection, settings->propertyDefinitions(), layer, true );
+  mEmissionColorDataDefinedButton->init( static_cast<int>( QgsAbstractMaterialSettings::Property::EmissionColor ), mPropertyCollection, settings->propertyDefinitions(), layer, true );
+
   updateWidgetState();
+  updatePreview();
 }
 
-QgsAbstractMaterialSettings *QgsMetalRoughMaterialWidget::settings()
+std::unique_ptr<QgsAbstractMaterialSettings> QgsMetalRoughMaterialWidget::settings()
 {
   auto m = std::make_unique<QgsMetalRoughMaterialSettings>();
   m->setBaseColor( mButtonBaseColor->color() );
-  m->setMetalness( static_cast<float>( mSpinMetalness->value() ) );
-  m->setRoughness( static_cast<float>( mSpinRoughness->value() ) );
+  m->setMetalness( mMetalnessWidget->value() );
+  m->setRoughness( mRoughnessWidget->value() );
+  m->setReflectance( mReflectanceWidget->value() );
+  m->setAnisotropy( mAnisotropyWidget->value() );
+  m->setAnisotropyRotation( mAnisotropyRotationWidget->value() );
+  m->setOpacity( mOpacityWidget->opacity() );
+  m->setEmissionColor( mButtonEmissionColor->color() );
+  m->setEmissionFactor( mEmissionStrengthSpinBox->value() / 100.0 );
+
+  m->setClearCoatFactor( mClearCoatFactorWidget->value() );
+  m->setClearCoatRoughness( mClearCoatRoughnessWidget->value() );
+
+  mPropertyCollection.setProperty( QgsAbstractMaterialSettings::Property::BaseColor, mBaseColorDataDefinedButton->toProperty() );
+  mPropertyCollection.setProperty( QgsAbstractMaterialSettings::Property::EmissionColor, mEmissionColorDataDefinedButton->toProperty() );
+
   m->setDataDefinedProperties( mPropertyCollection );
-  return m.release();
+  return m;
+}
+
+void QgsMetalRoughMaterialWidget::setPreviewVisible( bool visible )
+{
+  mPreviewWidget->setVisible( visible );
+  updatePreview();
 }
 
 void QgsMetalRoughMaterialWidget::updateWidgetState()
+{}
+
+void QgsMetalRoughMaterialWidget::updatePreview()
 {
+  if ( mPreviewWidget->isHidden() )
+    return;
+  const std::unique_ptr<QgsAbstractMaterialSettings> newSettings( settings() );
+  mPreviewWidget->updatePreview( newSettings.get() );
 }

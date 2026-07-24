@@ -19,10 +19,12 @@
 #define QGSTILEDSCENESOURCESELECT_H
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
+
+#include "ui_qgstiledscenesourceselectbase.h"
 
 #include "qgsabstractdatasourcewidget.h"
-#include "ui_qgstiledscenesourceselectbase.h"
+
+#define SIP_NO_FILE
 
 /*!
  * \brief Dialog to create connections to tiled scene servers.

@@ -9,6 +9,7 @@
 
 
 
+
 class QgsWkbPtr
 {
 %Docstring(signature="appended")
@@ -46,6 +47,7 @@ A const WKB pointer.
 
   public:
     QgsConstWkbPtr( const unsigned char *p /Array/, int size /ArraySize/ );
+
 
 
 

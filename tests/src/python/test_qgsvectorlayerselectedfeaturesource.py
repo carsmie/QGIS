@@ -11,7 +11,9 @@ __date__ = "2018-07-05"
 __copyright__ = "Copyright 2018, The QGIS Project"
 
 
-from qgis.PyQt.QtCore import QDate, QDateTime, QTime
+import unittest
+
+from featuresourcetestbase import FeatureSourceTestCase
 from qgis.core import (
     NULL,
     QgsFeature,
@@ -20,10 +22,8 @@ from qgis.core import (
     QgsVectorLayer,
     QgsVectorLayerSelectedFeatureSource,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
-from featuresourcetestbase import FeatureSourceTestCase
+from qgis.PyQt.QtCore import QDate, QDateTime, QTime
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 start_app()
@@ -31,11 +31,10 @@ TEST_DATA_DIR = unitTestDataPath()
 
 
 class TestPyQgsVectorLayerSelectedFeatureSource(QgisTestCase, FeatureSourceTestCase):
-
     @classmethod
     def createLayer(cls):
         vl = QgsVectorLayer(
-            "Point?crs=epsg:4326&field=pk:integer&field=cnt:integer&field=name:string(0)&field=name2:string(0)&field=num_char:string&field=dt:datetime&field=date:date&field=time:time&key=pk",
+            "Point?crs=epsg:4326&field=pk:integer&field=cnt:integer&field=name:string(0)&field=name2:string(0)&field=num_char:string&field=dt:datetime&field=date:date&field=time:time",
             "test",
             "memory",
         )

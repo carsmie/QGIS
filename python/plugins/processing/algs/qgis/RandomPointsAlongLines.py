@@ -21,28 +21,28 @@ __copyright__ = "(C) 2014, Alexander Bruy"
 
 import random
 
-from qgis.PyQt.QtCore import QMetaType
 from qgis.core import (
     Qgis,
-    QgsField,
-    QgsFeatureSink,
+    QgsDistanceArea,
     QgsFeature,
+    QgsFeatureRequest,
+    QgsFeatureSink,
+    QgsField,
     QgsFields,
     QgsGeometry,
     QgsPointXY,
-    QgsWkbTypes,
-    QgsSpatialIndex,
-    QgsFeatureRequest,
-    QgsDistanceArea,
-    QgsProject,
     QgsProcessing,
     QgsProcessingException,
-    QgsProcessingParameterDistance,
-    QgsProcessingParameterNumber,
-    QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterFeatureSink,
     QgsProcessingParameterDefinition,
+    QgsProcessingParameterDistance,
+    QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterNumber,
+    QgsProject,
+    QgsSpatialIndex,
+    QgsWkbTypes,
 )
+from qgis.PyQt.QtCore import QMetaType
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import vector
@@ -106,6 +106,21 @@ class RandomPointsAlongLines(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Random points along line")
+
+    def shortDescription(self):
+        return self.tr(
+            "Creates a point layer with a given number of points "
+            "placed on the lines of the input layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a point layer with a given number of points "
+            "placed on the lines of the input layer.\n"
+            "The location of each point is determined by randomly selecting a feature, "
+            "then a segment of the line geometry of that feature, and finally a random position on that segment. "
+            "A minimum distance between the points can be specified (Euclidean distance)."
+        )
 
     def documentationFlags(self):
         return Qgis.ProcessingAlgorithmDocumentationFlags(
@@ -216,6 +231,7 @@ class RandomPointsAlongLines(QgisAlgorithm):
                 f.setAttribute("id", nPoints)
                 f.setGeometry(geom)
                 sink.addFeature(f, QgsFeatureSink.Flag.FastInsert)
+                feedback.featureAddedToSink(self.OUTPUT)
                 index.addFeature(f)
                 points[nPoints] = p
                 nPoints += 1
@@ -231,4 +247,5 @@ class RandomPointsAlongLines(QgisAlgorithm):
             )
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}

@@ -32,7 +32,10 @@ A widget for selecting a projection.
       CrsNotSet,
     };
 
-      explicit QgsProjectionSelectionWidget( QWidget *parent /TransferThis/ = 0, QgsCoordinateReferenceSystemProxyModel::Filters filters = QgsCoordinateReferenceSystemProxyModel::FilterHorizontal | QgsCoordinateReferenceSystemProxyModel::FilterCompound );
+      explicit QgsProjectionSelectionWidget(
+        QWidget *parent /TransferThis/ = 0,
+        QgsCoordinateReferenceSystemProxyModel::Filters filters = QgsCoordinateReferenceSystemProxyModel::FilterHorizontal | QgsCoordinateReferenceSystemProxyModel::FilterCompound
+      );
 %Docstring
 Constructor for QgsProjectionSelectionWidget, with the specified
 ``parent`` widget.
@@ -169,6 +172,15 @@ Sets ``filters`` for the available CRS.
 .. seealso:: :py:func:`filters`
 
 .. versionadded:: 3.36
+%End
+
+    void setAllowTopocentricCrs( bool allow );
+%Docstring
+Sets whether the topocentric CRS option is allowed in the CRS selector
+dialog opened by the widget's button. When ``allow`` is ``False``, the
+topocentric option will be hidden from the CRS selection dialog.
+
+.. versionadded:: 4.2
 %End
 
   signals:

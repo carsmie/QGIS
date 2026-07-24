@@ -15,9 +15,9 @@
 #ifndef QGSSENSORTHINGSFEATUREITERATOR_H
 #define QGSSENSORTHINGSFEATUREITERATOR_H
 
+#include "qgscoordinatetransform.h"
 #include "qgsfeatureiterator.h"
 #include "qgssensorthingsshareddata.h"
-#include "qgscoordinatetransform.h"
 
 #define SIP_NO_FILE
 
@@ -25,7 +25,6 @@
 
 class QgsSensorThingsFeatureSource : public QgsAbstractFeatureSource
 {
-
   public:
     QgsSensorThingsFeatureSource( const std::shared_ptr<QgsSensorThingsSharedData> &sharedData );
     QgsFeatureIterator getFeatures( const QgsFeatureRequest &request ) override;

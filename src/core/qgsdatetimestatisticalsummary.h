@@ -19,8 +19,9 @@
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsinterval.h"
-#include <QSet>
+
 #include <QDateTime>
+#include <QSet>
 #include <QVariantList>
 
 /***************************************************************************
@@ -44,7 +45,6 @@
 class CORE_EXPORT QgsDateTimeStatisticalSummary
 {
   public:
-
     /**
      * Constructor for QgsDateTimeStatisticalSummary
      * \param stats flags for statistics to calculate
@@ -150,7 +150,6 @@ class CORE_EXPORT QgsDateTimeStatisticalSummary
     static QString displayName( Qgis::DateTimeStatistic statistic );
 
   private:
-
     Qgis::DateTimeStatistics mStatistics;
 
     int mCount;

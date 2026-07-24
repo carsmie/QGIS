@@ -14,6 +14,7 @@
  ***************************************************************************/
 
 #include "qgskeyvaluewidget.h"
+
 #include "moc_qgskeyvaluewidget.cpp"
 
 QgsKeyValueWidget::QgsKeyValueWidget( QWidget *parent )
@@ -62,8 +63,7 @@ QVariantMap QgsKeyValueModel::map() const
 
 QgsKeyValueModel::QgsKeyValueModel( QObject *parent )
   : QAbstractTableModel( parent )
-{
-}
+{}
 
 int QgsKeyValueModel::rowCount( const QModelIndex &parent ) const
 {

@@ -17,15 +17,17 @@
 #ifndef QGSANNOTATIONLAYERRENDERER_H
 #define QGSANNOTATIONLAYERRENDERER_H
 
-#define SIP_NO_FILE
+
+#include <memory>
+#include <tuple>
+#include <vector>
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgsmaplayerrenderer.h"
 #include "qgsannotationitem.h"
-#include <tuple>
-#include <vector>
-#include <memory>
+#include "qgsmaplayerrenderer.h"
+
+#define SIP_NO_FILE
 
 class QgsAnnotationLayer;
 class QgsPaintEffect;
@@ -40,7 +42,6 @@ class QgsPaintEffect;
 class CORE_EXPORT QgsAnnotationLayerRenderer : public QgsMapLayerRenderer
 {
   public:
-
     /**
      * Constructor for a QgsAnnotationLayerRenderer, for the specified \a layer.
      */
@@ -51,12 +52,12 @@ class CORE_EXPORT QgsAnnotationLayerRenderer : public QgsMapLayerRenderer
     bool forceRasterRender() const override;
 
   private:
-    std::vector < std::pair< QString, std::unique_ptr< QgsAnnotationItem > > > mItems;
+    std::vector< std::pair< QString, std::unique_ptr< QgsAnnotationItem > > > mItems;
     std::unique_ptr< QgsFeedback > mFeedback;
+    QString mLayerName;
     double mLayerOpacity = 1.0;
     QPainter::CompositionMode mLayerBlendMode = QPainter::CompositionMode::CompositionMode_SourceOver;
     std::unique_ptr< QgsPaintEffect > mPaintEffect;
-
 };
 
 #endif // QGSANNOTATIONLAYERRENDERER_H

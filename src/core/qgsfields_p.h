@@ -29,8 +29,9 @@
 //
 
 #include "qgis_core.h"
-#include <QSharedData>
 #include "qgsfields.h"
+
+#include <QSharedData>
 
 /***************************************************************************
  * This class is considered CRITICAL and any change MUST be accompanied with
@@ -41,17 +42,13 @@
 class QgsFieldsPrivate : public QSharedData
 {
   public:
-
-    QgsFieldsPrivate()
-    {
-    }
+    QgsFieldsPrivate() {}
 
     QgsFieldsPrivate( const QgsFieldsPrivate &other )
       : QSharedData( other )
       , fields( other.fields )
       , nameToIndex( other.nameToIndex )
-    {
-    }
+    {}
 
     ~QgsFieldsPrivate() {}
 
@@ -62,7 +59,7 @@ class QgsFieldsPrivate : public QSharedData
     QHash<QString, int> nameToIndex;
 
   private:
-    QgsFieldsPrivate &operator= ( const QgsFieldsPrivate & ) = delete;
+    QgsFieldsPrivate &operator=( const QgsFieldsPrivate & ) = delete;
 };
 
 /// @endcond

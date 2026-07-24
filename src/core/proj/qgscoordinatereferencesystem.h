@@ -19,8 +19,13 @@
 #define QGSCOORDINATEREFERENCESYSTEM_H
 
 //Standard includes
-#include "qgis_core.h"
 #include <ostream>
+
+#include "qgis_core.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 //qt includes
 #include <QString>
@@ -218,13 +223,12 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
     Q_PROPERTY( QString description READ description )
 
   public:
-
     //! Enumeration of types of IDs accepted in createFromId() method
     enum CrsType
     {
-      InternalCrsId,  //!< Internal ID used by QGIS in the local SQLite database
-      PostgisCrsId,   //!< SRID used in PostGIS. DEPRECATED -- DO NOT USE
-      EpsgCrsId       //!< EPSG code
+      InternalCrsId, //!< Internal ID used by QGIS in the local SQLite database
+      PostgisCrsId,  //!< SRID used in PostGIS. DEPRECATED -- DO NOT USE
+      EpsgCrsId      //!< EPSG code
     };
 
     //! Constructs an invalid CRS object
@@ -232,7 +236,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
 
     ~QgsCoordinateReferenceSystem();
 
-    // TODO QGIS 4: remove "POSTGIS" and "INTERNAL"
+    // TODO QGIS 5: remove "POSTGIS" and "INTERNAL"
 
     /**
      * Constructs a CRS object from a string definition using createFromString()
@@ -255,7 +259,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      */
     explicit QgsCoordinateReferenceSystem( const QString &definition );
 
-    // TODO QGIS 4: remove type and always use EPSG code
+    // TODO QGIS 5: remove type and always use EPSG code
 
     /**
      * Constructor
@@ -274,10 +278,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
     QgsCoordinateReferenceSystem &operator=( const QgsCoordinateReferenceSystem &srs );
 
     //! Allows direct construction of QVariants from QgsCoordinateReferenceSystem.
-    operator QVariant() const
-    {
-      return QVariant::fromValue( *this );
-    }
+    operator QVariant() const { return QVariant::fromValue( *this ); }
 
     /**
      * Returns a list of all valid SRS IDs present in the CRS database. Any of the
@@ -394,7 +395,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
 
     // Misc helper functions -----------------------
 
-    // TODO QGIS 4: remove type and always use EPSG code, rename to createFromEpsg
+    // TODO QGIS 5: remove type and always use EPSG code, rename to createFromEpsg
 
     /**
      * Sets this CRS by lookup of the given ID in the CRS database.
@@ -403,7 +404,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      */
     Q_DECL_DEPRECATED bool createFromId( long id, CrsType type = PostgisCrsId ) SIP_DEPRECATED;
 
-    // TODO QGIS 4: remove "QGIS" and "CUSTOM", only support "USER" (also returned by authid())
+    // TODO QGIS 5: remove "QGIS" and "CUSTOM", only support "USER" (also returned by authid())
 
     /**
      * Sets this CRS to the given OGC WMS-format Coordinate Reference Systems.
@@ -420,7 +421,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      */
     bool createFromOgcWmsCrs( const QString &crs );
 
-    // TODO QGIS 4: remove unless really necessary - let's use EPSG codes instead
+    // TODO QGIS 5: remove unless really necessary - let's use EPSG codes instead
 
     /**
      * Sets this CRS by lookup of the given PostGIS SRID in the CRS database.
@@ -549,7 +550,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      */
     bool createFromString( const QString &definition );
 
-    // TODO QGIS 4: rename to createFromStringOGR so it is clear it's similar to createFromString, just different backend
+    // TODO QGIS 5: rename to createFromStringOGR so it is clear it's similar to createFromString, just different backend
 
     /**
      * Set up this CRS from various text formats.
@@ -600,7 +601,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      */
     void validate();
 
-    // TODO QGIS 4: seems completely obsolete now (only compares proj4 - already done in createFromProj4)
+    // TODO QGIS 5: seems completely obsolete now (only compares proj4 - already done in createFromProj4)
 
     /**
      * Walks the CRS databases (both system and user database) trying to match
@@ -652,7 +653,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      */
     long srsid() const;
 
-    // TODO QGIS 4: remove unless really necessary - let's use EPSG codes instead
+    // TODO QGIS 5: remove unless really necessary - let's use EPSG codes instead
 
     /**
      * Returns PostGIS SRID for the CRS.
@@ -754,6 +755,19 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      * \since QGIS 3.10.3
      */
     QString toProj() const;
+
+    /**
+     * Returns a JSON string representation of this CRS.
+     *
+     * The returned string will be a PROJJSON string representation of the CRS.
+     *
+     * If \a multiline is TRUE then a formatted multiline json string will be returned, using the specified \a indentationWidth.
+     *
+     * The \a schema argument can be used to set a URL to PROJJSON schema. This can be set to empty string to disable it.
+     *
+     * \since QGIS 4.0
+     */
+    std::string toJsonString( bool multiline = false, int indentationWidth = 4, const QString &schema = QString() ) const;
 
     /**
      * Returns the type of the CRS.
@@ -892,6 +906,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
 #ifndef SIP_RUN
     QList< Qgis::CrsAxisDirection > axisOrdering() const;
 #else
+    // clang-format off
     SIP_PYOBJECT axisOrdering() const SIP_TYPEHINT( List[Qgis.CrsAxisDirection] );
     % MethodCode
     // adapted from the qpymultimedia_qlist.sip file from the PyQt6 sources
@@ -927,6 +942,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
       }
     }
     % End
+// clang-format on
 #endif
 
     /**
@@ -1097,19 +1113,50 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
     //! Returns auth id of related geographic CRS
     QString geographicCrsAuthId() const;
 
+    /**
+     * Returns the topocentric origin of a topocentric compatible CRS.
+     *
+     * \param latitude Latitude of topocentric origin in decimal degrees
+     * \param longitude Longitude of topocentric origin in decimal degrees
+     * \returns TRUE if this CRS is a topocentric compatible CRS and the origin was successfully retrieved
+     * \since QGIS 4.2
+     */
+    bool topocentricOrigin( double &latitude SIP_OUT, double &longitude SIP_OUT ) const;
+
+
+    /**
+     * Constructs a topocentric CRS derived from this CRS with origin
+     * at \a latitude, \a longitude in decimal degrees.
+     *
+     * If the CRS is not topocentric compatible, returns invalid CRS.
+     *
+     * \since QGIS 4.2
+     */
+    QgsCoordinateReferenceSystem toTopocentricCrs( double latitude, double longitude ) const;
+
+    /**
+     * Returns the base CRS for this topocentric CRS, or an invalid CRS if this
+     * is not a topocentric CRS or no base CRS has been set.
+     *
+     * \since QGIS 4.2
+     */
+    QgsCoordinateReferenceSystem topocentricBaseCrs() const;
+
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    const QString str = sipCpp->isValid() ? QStringLiteral( "<QgsCoordinateReferenceSystem: %1%2>" ).arg( !sipCpp->authid().isEmpty() ? sipCpp->authid() : sipCpp->toWkt( Qgis::CrsWktVariant::Preferred ),
-                        std::isfinite( sipCpp->coordinateEpoch() ) ? QStringLiteral( " @ %1" ).arg( sipCpp->coordinateEpoch() ) : QString() )
-                        : QStringLiteral( "<QgsCoordinateReferenceSystem: invalid>" );
+    const QString str = sipCpp->isValid() ? u"<QgsCoordinateReferenceSystem: %1%2>"_s.arg( !sipCpp->authid().isEmpty() ? sipCpp->authid() : sipCpp->toWkt( Qgis::CrsWktVariant::Preferred ),
+                        std::isfinite( sipCpp->coordinateEpoch() ) ? u" @ %1"_s.arg( sipCpp->coordinateEpoch() ) : QString() )
+                        : u"<QgsCoordinateReferenceSystem: invalid>"_s;
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
 #ifndef SIP_RUN
 
-    /**
+      /**
     * Returns the underlying PROJ PJ object corresponding to the CRS, or NULLPTR
     * if the CRS is invalid.
     *
@@ -1118,7 +1165,7 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
     * \note Not available in Python bindings.
     * \since QGIS 3.8
     */
-    PJ *projObject() const;
+      PJ *projObject() const;
 
     /**
      * Constructs a QgsCoordinateReferenceSystem from a PROJ PJ object.
@@ -1142,6 +1189,23 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
      */
     bool createFromProjObject( PJ *object );
 #endif
+
+    /**
+     * Returns TRUE if the CRS is associated with the Earth.
+     *
+     * \see celestialBodyName()
+     * \see isSameCelestialBody()
+     * \since QGIS 4.2
+     */
+    bool isEarthCrs() const;
+
+    /**
+     * Returns TRUE if \a other crs is associated with the same celestial body.
+     *
+     * \see celestialBodyName()
+     * \since QGIS 4.2
+     */
+    bool isSameCelestialBody( const QgsCoordinateReferenceSystem &other ) const;
 
     /**
      * Returns a list of recently used projections
@@ -1206,7 +1270,6 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
     // We don't want to expose these to the public api since they won't create
     // a fully valid crs. Programmers should use the createFrom* methods rather
   private:
-
     /**
      * A static helper function to find out the proj string for a srsid
      * \param srsId The srsid used for the lookup
@@ -1317,10 +1380,10 @@ class CORE_EXPORT QgsCoordinateReferenceSystem
 
     friend class TestQgsCoordinateReferenceSystem;
     friend class QgsCoordinateReferenceSystemRegistry;
-    friend bool CORE_EXPORT operator> ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
-    friend bool CORE_EXPORT operator< ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
-    friend bool CORE_EXPORT operator>= ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
-    friend bool CORE_EXPORT operator<= ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+    friend bool CORE_EXPORT operator>( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+    friend bool CORE_EXPORT operator<( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+    friend bool CORE_EXPORT operator>=( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+    friend bool CORE_EXPORT operator<=( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
 
     bool createFromPostgisSrid( const long id );
 };
@@ -1329,55 +1392,55 @@ Q_DECLARE_METATYPE( QgsCoordinateReferenceSystem )
 
 //! Output stream operator
 #ifndef SIP_RUN
-inline std::ostream &operator << ( std::ostream &os, const QgsCoordinateReferenceSystem &r )
+inline std::ostream &operator<<( std::ostream &os, const QgsCoordinateReferenceSystem &r )
 {
-  QString mySummary( QStringLiteral( "\n\tSpatial Reference System:" ) );
-  mySummary += QLatin1String( "\n\t\tDescription : " );
+  QString mySummary( u"\n\tSpatial Reference System:"_s );
+  mySummary += "\n\t\tDescription : "_L1;
   if ( !r.description().isNull() )
   {
     mySummary += r.description();
   }
   else
   {
-    mySummary += QLatin1String( "Undefined" );
+    mySummary += "Undefined"_L1;
   }
-  mySummary += QLatin1String( "\n\t\tProjection  : " );
+  mySummary += "\n\t\tProjection  : "_L1;
   if ( !r.projectionAcronym().isNull() )
   {
     mySummary += r.projectionAcronym();
   }
   else
   {
-    mySummary += QLatin1String( "Undefined" );
+    mySummary += "Undefined"_L1;
   }
 
-  mySummary += QLatin1String( "\n\t\tEllipsoid   : " );
+  mySummary += "\n\t\tEllipsoid   : "_L1;
   if ( !r.ellipsoidAcronym().isNull() )
   {
     mySummary += r.ellipsoidAcronym();
   }
   else
   {
-    mySummary += QLatin1String( "Undefined" );
+    mySummary += "Undefined"_L1;
   }
 
-  mySummary += QLatin1String( "\n\t\tProjString  : " );
+  mySummary += "\n\t\tProjString  : "_L1;
   if ( !r.toProj().isNull() )
   {
     mySummary += r.toProj();
   }
   else
   {
-    mySummary += QLatin1String( "Undefined" );
+    mySummary += "Undefined"_L1;
   }
   // Using streams we need to use local 8 Bit
   return os << mySummary.toLocal8Bit().data() << std::endl;
 }
 
-bool CORE_EXPORT operator> ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
-bool CORE_EXPORT operator< ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
-bool CORE_EXPORT operator>= ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
-bool CORE_EXPORT operator<= ( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+bool CORE_EXPORT operator>( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+bool CORE_EXPORT operator<( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+bool CORE_EXPORT operator>=( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
+bool CORE_EXPORT operator<=( const QgsCoordinateReferenceSystem &c1, const QgsCoordinateReferenceSystem &c2 );
 #endif
 
 #endif // QGSCOORDINATEREFERENCESYSTEM_H

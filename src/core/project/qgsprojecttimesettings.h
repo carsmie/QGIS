@@ -17,9 +17,10 @@
 #ifndef QGSPROJECTTIMESETTINGS_H
 #define QGSPROJECTTIMESETTINGS_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgsrange.h"
-#include "qgis.h"
+
 #include <QObject>
 
 class QDomElement;
@@ -38,7 +39,6 @@ class CORE_EXPORT QgsProjectTimeSettings : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsProjectTimeSettings with the specified \a parent object.
      */
@@ -188,7 +188,6 @@ class CORE_EXPORT QgsProjectTimeSettings : public QObject
     void temporalRangeChanged();
 
   private:
-
     QgsDateTimeRange mRange;
     Qgis::TemporalUnit mTimeStepUnit = Qgis::TemporalUnit::Hours;
     double mTimeStep = 1;

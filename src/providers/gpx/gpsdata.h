@@ -18,17 +18,17 @@
 #ifndef GPSDATA_H
 #define GPSDATA_H
 
+#include <expat.h>
 #include <limits>
 
-#include <expat.h>
+#include "qgsfeatureid.h"
+#include "qgsrectangle.h"
+
 #include <QDateTime>
+#include <QMutex>
+#include <QStack>
 #include <QString>
 #include <QTextStream>
-#include <QStack>
-#include <QMutex>
-
-#include "qgsrectangle.h"
-#include "qgsfeatureid.h"
 
 // workaround for MSVC compiler which already has defined macro max
 // that interferes with calling std::numeric_limits<int>::max
@@ -314,18 +314,9 @@ class QgsGPXHandler
 
     // static wrapper functions for the XML handler functions (expat is in C,
     // it does not know about member functions)
-    static void start( void *data, const XML_Char *el, const XML_Char **attr )
-    {
-      static_cast<QgsGPXHandler *>( data )->startElement( el, attr );
-    }
-    static void end( void *data, const XML_Char *el )
-    {
-      static_cast<QgsGPXHandler *>( data )->endElement( el );
-    }
-    static void chars( void *data, const XML_Char *chars, int len )
-    {
-      static_cast<QgsGPXHandler *>( data )->characters( chars, len );
-    }
+    static void start( void *data, const XML_Char *el, const XML_Char **attr ) { static_cast<QgsGPXHandler *>( data )->startElement( el, attr ); }
+    static void end( void *data, const XML_Char *el ) { static_cast<QgsGPXHandler *>( data )->endElement( el ); }
+    static void chars( void *data, const XML_Char *chars, int len ) { static_cast<QgsGPXHandler *>( data )->characters( chars, len ); }
 
   private:
     enum ParseMode

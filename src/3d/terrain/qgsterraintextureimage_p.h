@@ -27,11 +27,12 @@
 // version without notice, or even be removed.
 //
 
-#define SIP_NO_FILE
+
+#include "qgsrectangle.h"
 
 #include <Qt3DRender/QAbstractTextureImage>
 
-#include "qgsrectangle.h"
+#define SIP_NO_FILE
 
 class QgsTerrainTextureGenerator;
 

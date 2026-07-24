@@ -18,13 +18,13 @@
 #define QGSPOINTCLOUDSOURCESELECT_H
 
 ///@cond PRIVATE
-#include "qgis_sip.h"
-#define SIP_NO_FILE
-
 #include "ui_qgspointcloudsourceselectbase.h"
-#include "qgsabstractdatasourcewidget.h"
-#include "qgis_gui.h"
 
+#include "qgis_gui.h"
+#include "qgis_sip.h"
+#include "qgsabstractdatasourcewidget.h"
+
+#define SIP_NO_FILE
 
 /**
  * \class QgsPointCloudSourceSelect

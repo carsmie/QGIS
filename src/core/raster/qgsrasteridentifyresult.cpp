@@ -17,20 +17,18 @@
 
 //#include <QTime>
 
+#include "qgsrasteridentifyresult.h"
+
 #include "qgis.h"
 #include "qgslogger.h"
-#include "qgsrasteridentifyresult.h"
 #include "qgsrasterdataprovider.h"
 
 QgsRasterIdentifyResult::QgsRasterIdentifyResult( Qgis::RasterIdentifyFormat format, const QMap<int, QVariant> &results )
   : mValid( true )
   , mFormat( format )
   , mResults( results )
-{
-}
+{}
 
 QgsRasterIdentifyResult::QgsRasterIdentifyResult( const QgsError &error )
   : mError( error )
-{
-}
-
+{}

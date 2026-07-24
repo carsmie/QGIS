@@ -15,15 +15,17 @@
 #ifndef QGSEXTENTBUFFERDIALOG_H
 #define QGSEXTENTBUFFERDIALOG_H
 
-#define SIP_NO_FILE
 
-#include <QDialog>
+#include "ui_qgsextentbufferdialogbase.h"
+
+#include "qgis_gui.h"
 #include "qgis_sip.h"
-
 #include "qgssymbol.h"
 #include "qgssymbolwidgetcontext.h"
-#include "ui_qgsextentbufferdialogbase.h"
-#include "qgis_gui.h"
+
+#include <QDialog>
+
+#define SIP_NO_FILE
 
 class QgsVectorLayer;
 

@@ -11,7 +11,6 @@
 
 
 
-
 class QgsHttpHeaders
 {
 %Docstring(signature="appended")
@@ -24,7 +23,6 @@ Implements simple HTTP header management.
 #include "qgshttpheaders.h"
 %End
   public:
-
 
     QgsHttpHeaders( const QVariantMap &headers );
 %Docstring
@@ -114,7 +112,7 @@ key "KEY_REFERER" (for backward compatibility)
 :return: ``True`` if the update succeed
 %End
 
- bool updateDomElement( QDomElement &el ) const /Deprecated="Since 3.42. Will be removed in QGIS 4.0."/;
+ bool updateDomElement( QDomElement &el ) const /Deprecated="Since 3.42. Will be removed in QGIS 5.0."/;
 %Docstring
 Updates a DOM element by adding all the HTTP headers
 
@@ -128,7 +126,7 @@ compatibility)
 
 .. deprecated:: 3.42
 
-   Will be removed in QGIS 4.0.
+   Will be removed in QGIS 5.0.
 %End
 
 
@@ -203,7 +201,6 @@ Returns key/value pairs as strings separated by space
 
 
 };
-
 
 /************************************************************************
  * This file has been generated automatically from                      *

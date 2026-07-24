@@ -17,9 +17,8 @@
 #define QGSGEOCODERCONTEXT_H
 
 #include "qgis_core.h"
-
-#include "qgscoordinatetransformcontext.h"
 #include "qgscoordinatereferencesystem.h"
+#include "qgscoordinatetransformcontext.h"
 #include "qgsgeometry.h"
 
 /**
@@ -30,9 +29,7 @@
 */
 class CORE_EXPORT QgsGeocoderContext
 {
-
   public:
-
     /**
      * Constructor for QgsGeocoderContext, with the specified \a transformContext.
      */
@@ -105,7 +102,6 @@ class CORE_EXPORT QgsGeocoderContext
     void setAreaOfInterestCrs( const QgsCoordinateReferenceSystem &crs ) { mAreaOfInterestCrs = crs; }
 
   private:
-
     QgsCoordinateTransformContext mTransformContext;
     QgsGeometry mAreaOfInterest;
     QgsCoordinateReferenceSystem mAreaOfInterestCrs;

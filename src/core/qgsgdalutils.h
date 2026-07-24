@@ -16,15 +16,16 @@
 #ifndef QGSGDALUTILS_H
 #define QGSGDALUTILS_H
 
-#define SIP_NO_FILE
 
-#include "qgis_core.h"
 #include <gdal.h>
 
+#include "qgis_core.h"
+#include "qgsfeedback.h"
 #include "qgsogrutils.h"
 
 class QgsRasterBlock;
 
+#ifndef SIP_RUN
 /**
  * \ingroup core
  * \class QgsGdalOption
@@ -36,18 +37,17 @@ class QgsRasterBlock;
 class CORE_EXPORT QgsGdalOption
 {
   public:
-
     /**
      * Option types
      */
     enum class Type
     {
       Invalid, //!< Invalid option
-      Select, //!< Selection option
+      Select,  //!< Selection option
       Boolean, //!< Boolean option
-      Text, //!< Text option
-      Int, //!< Integer option
-      Double, //!< Double option
+      Text,    //!< Text option
+      Int,     //!< Integer option
+      Double,  //!< Double option
     };
 
     //! Option name
@@ -87,44 +87,44 @@ class CORE_EXPORT QgsGdalOption
      */
     static QList< QgsGdalOption > optionsFromXml( const CPLXMLNode *node );
 };
-
+#endif
 
 /**
  * \ingroup core
  * \class QgsGdalUtils
- * \brief Utilities for working with GDAL
+ * \brief Utilities for working with GDAL.
  *
- * \note not available in Python bindings
- * \since QGIS 3.4
+ * \since QGIS 4.2
  */
 class CORE_EXPORT QgsGdalUtils
 {
   public:
-
     /**
      * Reads whether a driver supports GDALCreate() for raster purposes.
      * \param driver GDAL driver
      * \returns TRUE if a driver supports GDALCreate() for raster purposes.
      */
-    static bool supportsRasterCreate( GDALDriverH driver );
+    SIP_SKIP static bool supportsRasterCreate( GDALDriverH driver );
 
     /**
      * Creates a new single band memory dataset with given parameters
      * \since QGIS 3.8
      */
-    static gdal::dataset_unique_ptr createSingleBandMemoryDataset( GDALDataType dataType, const QgsRectangle &extent, int width, int height, const QgsCoordinateReferenceSystem &crs );
+    SIP_SKIP static gdal::dataset_unique_ptr createSingleBandMemoryDataset( GDALDataType dataType, const QgsRectangle &extent, int width, int height, const QgsCoordinateReferenceSystem &crs );
 
     /**
      * Creates a new multi band memory dataset with given parameters
      * \since QGIS 3.12
      */
-    static gdal::dataset_unique_ptr createMultiBandMemoryDataset( GDALDataType dataType, int bands, const QgsRectangle &extent, int width, int height, const QgsCoordinateReferenceSystem &crs );
+    SIP_SKIP static gdal::dataset_unique_ptr createMultiBandMemoryDataset( GDALDataType dataType, int bands, const QgsRectangle &extent, int width, int height, const QgsCoordinateReferenceSystem &crs );
 
     /**
      * Creates a new single band TIFF dataset with given parameters
      * \since QGIS 3.8
      */
-    static gdal::dataset_unique_ptr createSingleBandTiffDataset( const QString &filename, GDALDataType dataType, const QgsRectangle &extent, int width, int height, const QgsCoordinateReferenceSystem &crs );
+    SIP_SKIP static gdal::dataset_unique_ptr createSingleBandTiffDataset(
+      const QString &filename, GDALDataType dataType, const QgsRectangle &extent, int width, int height, const QgsCoordinateReferenceSystem &crs
+    );
 
     /**
      * Resamples a single band raster to the destination dataset with different resolution (and possibly with different CRS).
@@ -136,7 +136,7 @@ class CORE_EXPORT QgsGdalUtils
      * \returns TRUE on success
      * \since QGIS 3.8
      */
-    static bool resampleSingleBandRaster( GDALDatasetH hSrcDS, GDALDatasetH hDstDS, GDALResampleAlg resampleAlg, const char *pszCoordinateOperation );
+    SIP_SKIP static bool resampleSingleBandRaster( GDALDatasetH hSrcDS, GDALDatasetH hDstDS, GDALResampleAlg resampleAlg, const char *pszCoordinateOperation );
 
     /**
      * Resamples a single band raster to the destination dataset with different resolution and different CRS.
@@ -149,35 +149,33 @@ class CORE_EXPORT QgsGdalUtils
      * \returns TRUE on success
      * \since QGIS 3.30
      */
-    static bool resampleSingleBandRaster( GDALDatasetH hSrcDS,
-                                          GDALDatasetH hDstDS,
-                                          GDALResampleAlg resampleAlg,
-                                          const QgsCoordinateReferenceSystem &sourceCrs,
-                                          const QgsCoordinateReferenceSystem &destinationCrs );
+    SIP_SKIP static bool resampleSingleBandRaster(
+      GDALDatasetH hSrcDS, GDALDatasetH hDstDS, GDALResampleAlg resampleAlg, const QgsCoordinateReferenceSystem &sourceCrs, const QgsCoordinateReferenceSystem &destinationCrs
+    );
 
     /**
      * Resamples a QImage \a image using GDAL resampler.
      * \since QGIS 3.12
      */
-    static QImage resampleImage( const QImage &image, QSize outputSize, GDALRIOResampleAlg resampleAlg );
+    SIP_SKIP static QImage resampleImage( const QImage &image, QSize outputSize, GDALRIOResampleAlg resampleAlg );
 
     /**
      * Gets creation options metadata for a given format
      * \since QGIS 3.10
      */
-    static QString helpCreationOptionsFormat( const QString &format );
+    SIP_SKIP static QString helpCreationOptionsFormat( const QString &format );
 
     /**
      * Validates creation options for a given format, regardless of layer.
      * \since QGIS 3.10
      */
-    static QString validateCreationOptionsFormat( const QStringList &creationOptions, const QString &format );
+    SIP_SKIP static QString validateCreationOptionsFormat( const QStringList &creationOptions, const QString &format );
 
     /**
      * Helper function
      * \since QGIS 3.10
      */
-    static char **papszFromStringList( const QStringList &list );
+    SIP_SKIP static char **papszFromStringList( const QStringList &list );
 
     /**
      * Converts an \a image to a GDAL memory dataset by borrowing image data.
@@ -186,7 +184,7 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.12
      */
-    static gdal::dataset_unique_ptr imageToMemoryDataset( const QImage &image );
+    SIP_SKIP static gdal::dataset_unique_ptr imageToMemoryDataset( const QImage &image );
 
     /**
      * Converts a data \a block to a single band GDAL memory dataset.
@@ -195,7 +193,7 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.26
      */
-    static gdal::dataset_unique_ptr blockToSingleBandMemoryDataset( int pixelWidth, int pixelHeight, const QgsRectangle &extent, void *block,  GDALDataType dataType );
+    SIP_SKIP static gdal::dataset_unique_ptr blockToSingleBandMemoryDataset( int pixelWidth, int pixelHeight, const QgsRectangle &extent, void *block, GDALDataType dataType );
 
     /**
      * Converts a raster \a block to a single band GDAL memory dataset.
@@ -204,7 +202,7 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.30
      */
-    static gdal::dataset_unique_ptr blockToSingleBandMemoryDataset( const QgsRectangle &extent, QgsRasterBlock *block );
+    SIP_SKIP static gdal::dataset_unique_ptr blockToSingleBandMemoryDataset( const QgsRectangle &extent, QgsRasterBlock *block );
 
     /**
      * Converts a raster \a block to a single band GDAL memory dataset with \a rotation angle,side sizes of the grid,
@@ -214,7 +212,7 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.30
      */
-    static gdal::dataset_unique_ptr blockToSingleBandMemoryDataset( double rotation, const QgsPointXY &origin, double gridXSize,  double gridYSize,   QgsRasterBlock *block );
+    SIP_SKIP static gdal::dataset_unique_ptr blockToSingleBandMemoryDataset( double rotation, const QgsPointXY &origin, double gridXSize, double gridYSize, QgsRasterBlock *block );
 
     /**
      * This is a copy of GDALAutoCreateWarpedVRT optimized for imagery using RPC georeferencing
@@ -224,13 +222,9 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.14
      */
-    static GDALDatasetH rpcAwareAutoCreateWarpedVrt(
-      GDALDatasetH hSrcDS,
-      const char *pszSrcWKT,
-      const char *pszDstWKT,
-      GDALResampleAlg eResampleAlg,
-      double dfMaxError,
-      const GDALWarpOptions *psOptionsIn );
+    SIP_SKIP static GDALDatasetH rpcAwareAutoCreateWarpedVrt(
+      GDALDatasetH hSrcDS, const char *pszSrcWKT, const char *pszDstWKT, GDALResampleAlg eResampleAlg, double dfMaxError, const GDALWarpOptions *psOptionsIn
+    );
 
     /**
      * This is a wrapper around GDALCreateGenImgProjTransformer2() that takes into account RPC
@@ -240,25 +234,25 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.16
      */
-    static void *rpcAwareCreateTransformer( GDALDatasetH hSrcDS, GDALDatasetH hDstDS = nullptr, char **papszOptions = nullptr );
+    SIP_SKIP static void *rpcAwareCreateTransformer( GDALDatasetH hSrcDS, GDALDatasetH hDstDS = nullptr, char **papszOptions = nullptr );
 
     /**
      * Returns the GDAL data type corresponding to the QGIS data type \a dataType
      *
      * \since QGIS 3.30
      */
-    static GDALDataType gdalDataTypeFromQgisDataType( Qgis::DataType dataType );
+    SIP_SKIP static GDALDataType gdalDataTypeFromQgisDataType( Qgis::DataType dataType );
 
     /**
      * Returns the GDAL resampling method corresponding to the QGIS resampling  \a method
      *
      * \since QGIS 3.30
      */
-    static GDALResampleAlg gdalResamplingAlgorithm( Qgis::RasterResamplingMethod method );
+    SIP_SKIP static GDALResampleAlg gdalResamplingAlgorithm( Qgis::RasterResamplingMethod method );
 
 #ifndef QT_NO_NETWORKPROXY
     //! Sets the gdal proxy variables
-    static void setupProxy();
+    SIP_SKIP static void setupProxy();
 #endif
 
     /**
@@ -275,7 +269,7 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.22
      */
-    static bool pathIsCheapToOpen( const QString &path, int smallFileSizeLimit = 50000 );
+    SIP_SKIP static bool pathIsCheapToOpen( const QString &path, int smallFileSizeLimit = 50000 );
 
     /**
      * Returns a list of file extensions which potentially contain multiple layers representing
@@ -283,7 +277,7 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.22
      */
-    static QStringList multiLayerFileExtensions();
+    SIP_SKIP static QStringList multiLayerFileExtensions();
 
     /**
      * Returns a the vsi prefix which corresponds to a file \a path, or an empty
@@ -291,15 +285,16 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.32
      */
-    static QString vsiPrefixForPath( const QString &path );
+    SIP_SKIP static QString vsiPrefixForPath( const QString &path );
 
     /**
      * Returns a list of vsi prefixes which correspond to archive style containers (eg vsizip).
      *
      * \since QGIS 3.32
      */
-    static QStringList vsiArchivePrefixes();
+    SIP_SKIP static QStringList vsiArchivePrefixes();
 
+#ifndef SIP_RUN
     /**
      * Encapsulates details for a GDAL VSI network file system.
      *
@@ -307,47 +302,48 @@ class CORE_EXPORT QgsGdalUtils
      */
     struct VsiNetworkFileSystemDetails
     {
-      //! VSI handler identifier, eg "vsis3"
-      QString identifier;
+        //! VSI handler identifier, eg "vsis3"
+        QString identifier;
 
-      //! Translated, user-friendly name.
-      QString name;
+        //! Translated, user-friendly name.
+        QString name;
     };
+#endif
 
     /**
      * Returns a list of available GDAL VSI network file systems.
      *
      * \since QGIS 3.40
      */
-    static QList< VsiNetworkFileSystemDetails > vsiNetworkFileSystems();
+    SIP_SKIP static QList< VsiNetworkFileSystemDetails > vsiNetworkFileSystems();
 
     /**
      * Returns TRUE if \a prefix is a supported archive style container prefix (e.g. "/vsizip/").
      *
      * \since QGIS 3.32
      */
-    static bool isVsiArchivePrefix( const QString &prefix );
+    SIP_SKIP static bool isVsiArchivePrefix( const QString &prefix );
 
     /**
      * Returns a list of file extensions which correspond to archive style containers supported by GDAL (e.g. "zip").
      *
      * \since QGIS 3.32
      */
-    static QStringList vsiArchiveFileExtensions();
+    SIP_SKIP static QStringList vsiArchiveFileExtensions();
 
     /**
      * Returns TRUE if a file \a extension is a supported archive style container (e.g. ".zip").
      *
      * \since QGIS 3.32
      */
-    static bool isVsiArchiveFileExtension( const QString &extension );
+    SIP_SKIP static bool isVsiArchiveFileExtension( const QString &extension );
 
     /**
      * Returns the VSI handler type for a given VSI \a prefix.
      *
      * \since QGIS 3.40
      */
-    static Qgis::VsiHandlerType vsiHandlerType( const QString &prefix );
+    SIP_SKIP static Qgis::VsiHandlerType vsiHandlerType( const QString &prefix );
 
     /**
      * Attempts to apply VSI credential \a options.
@@ -359,7 +355,7 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.40
      */
-    static bool applyVsiCredentialOptions( const QString &prefix, const QString &path, const QVariantMap &options );
+    SIP_SKIP static bool applyVsiCredentialOptions( const QString &prefix, const QString &path, const QVariantMap &options );
 
     /**
      * Returns TRUE if the VRT file at the specified path is a VRT matching
@@ -367,16 +363,70 @@ class CORE_EXPORT QgsGdalUtils
      *
      * \since QGIS 3.22
      */
-    static bool vrtMatchesLayerType( const QString &vrtPath, Qgis::LayerType type );
+    SIP_SKIP static bool vrtMatchesLayerType( const QString &vrtPath, Qgis::LayerType type );
 
     /**
      * Returns the URL for the GDAL documentation for the specified \a driver.
      *
      * \since QGIS 3.40
      */
-    static QString gdalDocumentationUrlForDriver( GDALDriverH hDriver );
+    SIP_SKIP static QString gdalDocumentationUrlForDriver( GDALDriverH hDriver );
 
+    /**
+     * Returns TRUE if the GDAL library used by this QGIS install supports the LERC compression technique for TIFF files.
+     *
+     * \see supportsMrfLercCompression()
+     * \since QGIS 4.2
+     */
+    static bool supportsTiffLercCompression();
+
+    /**
+     * Returns TRUE if the GDAL library used by this QGIS install supports the LERC compression technique for MRF files.
+     *
+     * \see supportsTiffLercCompression()
+     * \since QGIS 4.2
+     */
+    static bool supportsMrfLercCompression();
+
+  private:
     friend class TestQgsGdalUtils;
 };
 
+#ifndef SIP_RUN
+/**
+ * \ingroup core
+ * \class QgsGdalProgressAdapter
+ * \brief Utility class to map from GDALProgressFunc to QgsFeedback
+ *
+ * Typically used like the following snippet:
+ * \code{.cpp}
+ * QgsGdalProgressAdapter progress(feedback);
+ * GDALSomeCall( ... , QgsGdalProgressAdapter::progressCallback, &sProgress );
+ * \endcode
+ *
+ * \note not available in Python bindings
+ * \since QGIS 4.0
+ */
+class CORE_EXPORT QgsGdalProgressAdapter
+{
+  public:
+    /**
+     * Constructor from \a feedback (which may be NULL).
+     *
+     * The \a startPercentage and \a endPercentage passed to the feedback may be
+     * specified.
+     */
+    explicit QgsGdalProgressAdapter( QgsFeedback *feedback, double startPercentage = 0.0, double endPercentage = 100.0 );
+
+    /**
+     * GDAL progress callback
+     */
+    static int CPL_STDCALL progressCallback( double dfComplete, const char *pszMessage, void *pProgressArg );
+
+  private:
+    QgsFeedback *mFeedback = nullptr;
+    double mStartPercentage;
+    double mEndPercentage;
+};
+#endif
 #endif // QGSGDALUTILS_H

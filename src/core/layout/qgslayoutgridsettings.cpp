@@ -15,12 +15,18 @@
  ***************************************************************************/
 
 #include "qgslayoutgridsettings.h"
-#include "qgsreadwritecontext.h"
+
 #include "qgslayout.h"
-#include "qgsunittypes.h"
-#include "qgslayoutundostack.h"
 #include "qgslayoutpagecollection.h"
-#include "qgssettings.h"
+#include "qgslayoutundostack.h"
+#include "qgsreadwritecontext.h"
+#include "qgssettingsentryimpl.h"
+#include "qgssettingstree.h"
+#include "qgsunittypes.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsLayoutGridSettings::QgsLayoutGridSettings( QgsLayout *layout )
   : mGridResolution( QgsLayoutMeasurement( 10 ) )
@@ -50,30 +56,32 @@ void QgsLayoutGridSettings::setOffset( const QgsLayoutPoint &offset )
   mLayout->undoStack()->endCommand();
 }
 
+const QgsSettingsEntryString *QgsLayoutGridSettings::settingsGridStyle
+  = new QgsSettingsEntryString( u"grid-style"_s, QgsSettingsTree::sTreeLayout, u"Dots"_s, u"Default rendering style for the layout designer grid. Accepted values are \"Solid\", \"Dots\" or \"Crosses\"."_s );
+const QgsSettingsEntryColor *QgsLayoutGridSettings::settingsGridColor
+  = new QgsSettingsEntryColor( u"grid-color"_s, QgsSettingsTree::sTreeLayout, QColor( 190, 190, 190, 100 ), u"Default color used to draw the layout designer grid."_s );
+const QgsSettingsEntryDouble *QgsLayoutGridSettings::settingsGridResolution
+  = new QgsSettingsEntryDouble( u"resolution"_s, QgsSettingsTree::sTreeLayoutGrid, 10.0, u"Default grid resolution (in millimeters) for newly created layouts."_s );
+const QgsSettingsEntryDouble *QgsLayoutGridSettings::settingsGridOffsetX
+  = new QgsSettingsEntryDouble( u"offset-x"_s, QgsSettingsTree::sTreeLayoutGrid, 0, u"Default grid horizontal offset (in millimeters) for newly created layouts."_s );
+const QgsSettingsEntryDouble *QgsLayoutGridSettings::settingsGridOffsetY
+  = new QgsSettingsEntryDouble( u"offset-y"_s, QgsSettingsTree::sTreeLayoutGrid, 0, u"Default grid vertical offset (in millimeters) for newly created layouts."_s );
+
 void QgsLayoutGridSettings::loadFromSettings()
 {
   //read grid style, grid color and pen width from settings
-  const QgsSettings s;
-
-  QString gridStyleString;
-  gridStyleString = s.value( QStringLiteral( "LayoutDesigner/gridStyle" ), "Dots", QgsSettings::Gui ).toString();
-
-  int gridRed, gridGreen, gridBlue, gridAlpha;
-  gridRed = s.value( QStringLiteral( "LayoutDesigner/gridRed" ), 190, QgsSettings::Gui ).toInt();
-  gridGreen = s.value( QStringLiteral( "LayoutDesigner/gridGreen" ), 190, QgsSettings::Gui ).toInt();
-  gridBlue = s.value( QStringLiteral( "LayoutDesigner/gridBlue" ), 190, QgsSettings::Gui ).toInt();
-  gridAlpha = s.value( QStringLiteral( "LayoutDesigner/gridAlpha" ), 100, QgsSettings::Gui ).toInt();
-  const QColor gridColor = QColor( gridRed, gridGreen, gridBlue, gridAlpha );
+  const QString gridStyleString = settingsGridStyle->value();
+  const QColor gridColor = settingsGridColor->value();
 
   mGridPen.setColor( gridColor );
   mGridPen.setWidthF( 0 );
   mGridPen.setCosmetic( true );
 
-  if ( gridStyleString == QLatin1String( "Dots" ) )
+  if ( gridStyleString == "Dots"_L1 )
   {
     mGridStyle = StyleDots;
   }
-  else if ( gridStyleString == QLatin1String( "Crosses" ) )
+  else if ( gridStyleString == "Crosses"_L1 )
   {
     mGridStyle = StyleCrosses;
   }
@@ -82,22 +90,20 @@ void QgsLayoutGridSettings::loadFromSettings()
     mGridStyle = StyleLines;
   }
 
-  mGridResolution = QgsLayoutMeasurement( s.value( QStringLiteral( "LayoutDesigner/defaultSnapGridResolution" ), 10.0, QgsSettings::Gui ).toDouble(), Qgis::LayoutUnit::Millimeters );
-//  mSnapToleranceSpinBox->setValue( mSettings->value( QStringLiteral( "LayoutDesigner/defaultSnapTolerancePixels" ), 5, QgsSettings::Gui ).toInt() );
-  mGridOffset = QgsLayoutPoint( s.value( QStringLiteral( "LayoutDesigner/defaultSnapGridOffsetX" ), 0, QgsSettings::Gui ).toDouble(),
-                                s.value( QStringLiteral( "LayoutDesigner/defaultSnapGridOffsetY" ), 0, QgsSettings::Gui ).toDouble(), Qgis::LayoutUnit::Millimeters );
+  mGridResolution = QgsLayoutMeasurement( settingsGridResolution->value(), Qgis::LayoutUnit::Millimeters );
+  mGridOffset = QgsLayoutPoint( settingsGridOffsetX->value(), settingsGridOffsetY->value(), Qgis::LayoutUnit::Millimeters );
 }
 
 bool QgsLayoutGridSettings::writeXml( QDomElement &parentElement, QDomDocument &document, const QgsReadWriteContext & ) const
 {
-  QDomElement element = document.createElement( QStringLiteral( "Grid" ) );
+  QDomElement element = document.createElement( u"Grid"_s );
 
-  element.setAttribute( QStringLiteral( "resolution" ), mGridResolution.length() );
-  element.setAttribute( QStringLiteral( "resUnits" ), QgsUnitTypes::encodeUnit( mGridResolution.units() ) );
+  element.setAttribute( u"resolution"_s, mGridResolution.length() );
+  element.setAttribute( u"resUnits"_s, QgsUnitTypes::encodeUnit( mGridResolution.units() ) );
 
-  element.setAttribute( QStringLiteral( "offsetX" ), mGridOffset.x() );
-  element.setAttribute( QStringLiteral( "offsetY" ), mGridOffset.y() );
-  element.setAttribute( QStringLiteral( "offsetUnits" ), QgsUnitTypes::encodeUnit( mGridOffset.units() ) );
+  element.setAttribute( u"offsetX"_s, mGridOffset.x() );
+  element.setAttribute( u"offsetY"_s, mGridOffset.y() );
+  element.setAttribute( u"offsetUnits"_s, QgsUnitTypes::encodeUnit( mGridOffset.units() ) );
 
   parentElement.appendChild( element );
   return true;
@@ -106,27 +112,26 @@ bool QgsLayoutGridSettings::writeXml( QDomElement &parentElement, QDomDocument &
 bool QgsLayoutGridSettings::readXml( const QDomElement &e, const QDomDocument &, const QgsReadWriteContext & )
 {
   QDomElement element = e;
-  if ( element.nodeName() != QLatin1String( "Grid" ) )
+  if ( element.nodeName() != "Grid"_L1 )
   {
-    element = element.firstChildElement( QStringLiteral( "Grid" ) );
+    element = element.firstChildElement( u"Grid"_s );
   }
 
-  if ( element.nodeName() != QLatin1String( "Grid" ) )
+  if ( element.nodeName() != "Grid"_L1 )
   {
     return false;
   }
 
-  const double res = element.attribute( QStringLiteral( "resolution" ), QStringLiteral( "10" ) ).toDouble();
-  const Qgis::LayoutUnit resUnit = QgsUnitTypes::decodeLayoutUnit( element.attribute( QStringLiteral( "resUnits" ) ) );
+  const double res = element.attribute( u"resolution"_s, u"10"_s ).toDouble();
+  const Qgis::LayoutUnit resUnit = QgsUnitTypes::decodeLayoutUnit( element.attribute( u"resUnits"_s ) );
   mGridResolution = QgsLayoutMeasurement( res, resUnit );
 
-  const double offsetX = element.attribute( QStringLiteral( "offsetX" ) ).toDouble();
-  const double offsetY = element.attribute( QStringLiteral( "offsetY" ) ).toDouble();
-  const Qgis::LayoutUnit offsetUnit = QgsUnitTypes::decodeLayoutUnit( element.attribute( QStringLiteral( "offsetUnits" ) ) );
+  const double offsetX = element.attribute( u"offsetX"_s ).toDouble();
+  const double offsetY = element.attribute( u"offsetY"_s ).toDouble();
+  const Qgis::LayoutUnit offsetUnit = QgsUnitTypes::decodeLayoutUnit( element.attribute( u"offsetUnits"_s ) );
   mGridOffset = QgsLayoutPoint( offsetX, offsetY, offsetUnit );
 
   mLayout->pageCollection()->redraw();
 
   return true;
 }
-

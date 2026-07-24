@@ -22,6 +22,7 @@
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsreadwritecontext.h"
+
 #include <QObject>
 
 /**
@@ -50,7 +51,7 @@ class CORE_EXPORT QgsMapLayerSelectionProperties : public QObject
     {
       sipType = 0;
     }
-    SIP_END
+  SIP_END
 #endif
 
   public:

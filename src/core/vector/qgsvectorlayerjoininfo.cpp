@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "qgsvectorlayerjoininfo.h"
+
 #include "qgsvectorlayer.h"
 
 QString QgsVectorLayerJoinInfo::prefixedFieldName( const QgsField &f ) const
@@ -52,7 +53,7 @@ void QgsVectorLayerJoinInfo::setEditable( bool enabled )
 {
   mEditable = enabled;
 
-  if ( ! mEditable )
+  if ( !mEditable )
   {
     setCascadedDelete( false );
     setUpsertOnEdit( false );
@@ -107,8 +108,7 @@ QStringList QgsVectorLayerJoinInfo::joinFieldNamesSubset( const QgsVectorLayerJo
     {
       for ( const QgsField &f : joinLayerFields )
       {
-        if ( !info.joinFieldNamesBlockList().contains( f.name() )
-             && f.name() != info.joinFieldName() )
+        if ( !info.joinFieldNamesBlockList().contains( f.name() ) && f.name() != info.joinFieldName() )
           fieldNames.append( f.name() );
       }
     }

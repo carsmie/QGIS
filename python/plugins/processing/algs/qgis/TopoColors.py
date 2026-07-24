@@ -19,30 +19,28 @@ __author__ = "Nyall Dawson"
 __date__ = "February 2017"
 __copyright__ = "(C) 2017, Nyall Dawson"
 
-import os
 import operator
+import os
 import sys
-
 from collections import defaultdict
 
 from qgis.core import (
+    NULL,
+    QgsFeatureSink,
     QgsField,
     QgsFields,
-    QgsProcessingUtils,
-    QgsFeatureSink,
     QgsGeometry,
-    QgsSpatialIndex,
     QgsPointXY,
-    NULL,
     QgsProcessing,
     QgsProcessingException,
-    QgsProcessingParameterFeatureSource,
     QgsProcessingParameterDistance,
-    QgsProcessingParameterNumber,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterNumber,
+    QgsProcessingUtils,
+    QgsSpatialIndex,
 )
-
 from qgis.PyQt.QtCore import QMetaType
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
@@ -129,6 +127,23 @@ class TopoColor(QgisAlgorithm):
             "Assigns a color index to polygon features, so no adjacent polygons share the same color index."
         )
 
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm assigns a color index to polygon features in such a way that "
+            "no adjacent polygons share the same color index, whilst minimizing the number of colors required.\n"
+            "An optional minimum distance between features assigned the same color can be set to prevent nearby "
+            "(but non-touching) features from being assigned equal colors.\n"
+            "The algorithm allows choice of method to use when assigning colors. "
+            "The default method attempts to assign colors so that the count of features assigned "
+            "to each individual color index is balanced.\n"
+            "The 'by assigned area' mode instead assigns colors so that the total area of features "
+            "assigned to each color is balanced. This mode can be useful to help avoid large features "
+            "resulting in one of the colors appearing more dominant on a colored map.\n"
+            "The 'by distance between colors' mode will assign colors in order to maximize the distance "
+            "between features of the same color. This mode helps to create a more uniform distribution of colors across a map.\n"
+            "A minimum number of colors can be specified if desired. The color index is saved to a new attribute named color_id."
+        )
+
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
         if source is None:
@@ -189,10 +204,12 @@ class TopoColor(QgisAlgorithm):
             output_feature.setAttributes(attributes)
 
             sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+            feedback.featureAddedToSink(self.OUTPUT)
             current += 1
             feedback.setProgress(80 + int(current * total))
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}
 
     @staticmethod
@@ -250,7 +267,6 @@ class TopoColor(QgisAlgorithm):
 
 
 class ColoringAlgorithm:
-
     @staticmethod
     def balanced(features, graph, feedback, balance=0, min_colors=4):
         feature_colors = {}
@@ -355,7 +371,6 @@ class ColoringAlgorithm:
 
 
 class Graph:
-
     def __init__(self, sort_graph=True):
         self.sort_graph = sort_graph
         self.node_edge = {}

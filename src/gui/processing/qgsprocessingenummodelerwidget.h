@@ -16,13 +16,16 @@
 #ifndef QGSPROCESSINGENUMMODELERWIDGET_H
 #define QGSPROCESSINGENUMMODELERWIDGET_H
 
-#define SIP_NO_FILE
+
+#include "ui_qgsprocessingenummodelerwidgetbase.h"
 
 #include "qgis.h"
 #include "qgis_gui.h"
-#include "ui_qgsprocessingenummodelerwidgetbase.h"
+
 #include <QStandardItem>
 #include <QStandardItemModel>
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -81,6 +84,15 @@ class GUI_EXPORT QgsProcessingEnumModelerWidget : public QWidget, private Ui::Qg
      * \see allowMultiple()
      */
     void setAllowMultiple( bool allowMultiple );
+
+  signals:
+
+    /**
+     * Emitted when the widget state changes.
+     *
+     * \since QGIS 4.0
+     */
+    void changed();
 
   private slots:
 

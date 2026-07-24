@@ -18,10 +18,10 @@
 #ifndef QGSDELIMITEDTEXTFILE_H
 #define QGSDELIMITEDTEXTFILE_H
 
-#include <QStringList>
-#include <QRegularExpression>
-#include <QUrl>
 #include <QObject>
+#include <QRegularExpression>
+#include <QStringList>
+#include <QUrl>
 
 class QgsFeature;
 class QgsField;
@@ -107,10 +107,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the filename
      * \returns filename  the name of the file
      */
-    QString fileName()
-    {
-      return mFileName;
-    }
+    QString fileName() const { return mFileName; }
 
     /**
      * Set the file encoding (defuault is UTF-8)
@@ -122,7 +119,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the file encoding
      *  \returns encoding The file encoding
      */
-    QString encoding() { return mEncoding; }
+    QString encoding() const { return mEncoding; }
 
     /**
      * Decode the parser settings from a url as a string
@@ -140,7 +137,7 @@ class QgsDelimitedTextFile : public QObject
      * Encode the parser settings into a QUrl
      *  \returns url  The url into which the delimiter and delimiterType items are set
      */
-    QUrl url();
+    QUrl url() const;
 
     /**
      * Set the parser for parsing CSV files
@@ -172,10 +169,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the number of header lines to skip
      * \returns skiplines The maximum lines to skip
      */
-    int skipLines()
-    {
-      return mSkipLines;
-    }
+    int skipLines() const { return mSkipLines; }
 
     /**
      * Set reading field names from the first record
@@ -187,10 +181,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the option for reading field names from the first record
      * \returns useheaders Field names will be read if true
      */
-    bool useHeader()
-    {
-      return mUseHeader;
-    }
+    bool useHeader() const { return mUseHeader; }
 
     /**
      * Set the option for discarding empty fields
@@ -202,10 +193,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the option for discarding empty fields
      * \returns useheaders Empty fields will be discarded if true
      */
-    bool discardEmptyFields()
-    {
-      return mDiscardEmptyFields;
-    }
+    bool discardEmptyFields() const { return mDiscardEmptyFields; }
 
     /**
      * Set the option for trimming whitespace from fields
@@ -217,10 +205,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the option for trimming empty fields
      * \returns useheaders Empty fields will be trimmed if true
      */
-    bool trimFields()
-    {
-      return mTrimFields;
-    }
+    bool trimFields() const { return mTrimFields; }
 
     /**
      * Set the maximum number of fields that will be read from a record
@@ -233,7 +218,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the maximum number of fields that will be read
      *  \returns maxFields The maximum number of fields that will be read
      */
-    int maxFields() { return mMaxFields; }
+    int maxFields() const { return mMaxFields; }
 
     /**
      * Set the field names
@@ -278,10 +263,7 @@ class QgsDelimitedTextFile : public QObject
      * Returns the line number of the start of the last record read
      *  \returns linenumber  The line number of the start of the record
      */
-    int recordId()
-    {
-      return mRecordLineNumber;
-    }
+    int recordId() const { return mRecordLineNumber; }
 
     /**
      * Set the index of the next record to return.
@@ -295,7 +277,7 @@ class QgsDelimitedTextFile : public QObject
      *  serves as a record count.
      *  \returns maxRecordNumber The maximum record number
      */
-    long recordCount() { return mMaxRecordNumber; }
+    long recordCount() const { return mMaxRecordNumber; }
 
     /**
      * Reset the file to reread from the beginning
@@ -306,14 +288,14 @@ class QgsDelimitedTextFile : public QObject
      * Returns a string defining the type of the delimiter as a string
      *  \returns type The delimiter type as a string
      */
-    QString type();
+    QString type() const;
 
     /**
      * Check that provider is valid (filename and definition valid)
      *
      * \returns valid True if the provider is valid
      */
-    bool isValid();
+    bool isValid() const;
 
     /**
      * Encode characters - used to convert delimiter/quote/escape characters to

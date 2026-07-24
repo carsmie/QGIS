@@ -17,13 +17,13 @@
 
 #include <functional>
 
-#include <QObject>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QAuthenticator>
-
 #include "qgsauthorizationsettings.h"
+
+#include <QAuthenticator>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QObject>
+#include <QUrl>
 
 //! Abstract base class for a WFS request.
 class QgsBaseNetworkRequest : public QObject
@@ -35,10 +35,19 @@ class QgsBaseNetworkRequest : public QObject
     ~QgsBaseNetworkRequest() override;
 
     //! \brief proceed to sending a GET request
-    bool sendGET( const QUrl &url, const QString &acceptHeader, bool synchronous, bool forceRefresh = false, bool cache = true, const QList<QNetworkReply::RawHeaderPair> &extraHeaders = QList<QNetworkReply::RawHeaderPair>() );
+    bool sendGET(
+      const QUrl &url,
+      const QString &acceptHeader,
+      bool synchronous,
+      bool forceRefresh = false,
+      bool cache = true,
+      const QList<QNetworkReply::RawHeaderPair> &extraHeaders = QList<QNetworkReply::RawHeaderPair>()
+    );
 
     //! \brief proceed to sending a synchronous POST request
-    bool sendPOST( const QUrl &url, const QString &contentTypeHeader, const QByteArray &data, bool synchronous, const QList<QNetworkReply::RawHeaderPair> &extraHeaders = QList<QNetworkReply::RawHeaderPair>() );
+    bool sendPOST(
+      const QUrl &url, const QString &contentTypeHeader, const QByteArray &data, bool synchronous, const QList<QNetworkReply::RawHeaderPair> &extraHeaders = QList<QNetworkReply::RawHeaderPair>()
+    );
 
     //! \brief proceed to sending a synchronous PUT request
     bool sendPUT( const QUrl &url, const QString &contentTypeHeader, const QByteArray &data, const QList<QNetworkReply::RawHeaderPair> &extraHeaders = QList<QNetworkReply::RawHeaderPair>() );
@@ -130,6 +139,9 @@ class QgsBaseNetworkRequest : public QObject
     //! Whether to log error messages
     bool mLogErrors = true;
 
+    //! Whether this is simulated HTTP mode (for unit tests)
+    bool mIsSimulatedMode = false;
+
     //! Whether in simulated HTTP mode, the response read in the file has HTTP headers
     bool mFakeResponseHasHeaders = false;
 
@@ -155,9 +167,22 @@ class QgsBaseNetworkRequest : public QObject
     void logMessageIfEnabled();
 
     //! \brief proceed to sending a synchronous POST, PUT or PATCH request
-    bool sendPOSTOrPUTOrPATCH( const QUrl &url, const QByteArray &verb, const QString &contentTypeHeader, const QByteArray &data, bool synchronous, const QList<QNetworkReply::RawHeaderPair> &extraHeaders = QList<QNetworkReply::RawHeaderPair>() );
+    bool sendPOSTOrPUTOrPATCH(
+      const QUrl &url,
+      const QByteArray &verb,
+      const QString &contentTypeHeader,
+      const QByteArray &data,
+      bool synchronous,
+      const QList<QNetworkReply::RawHeaderPair> &extraHeaders = QList<QNetworkReply::RawHeaderPair>()
+    );
 
     bool issueRequest( QNetworkRequest &request, const QByteArray &verb, const QByteArray *data, bool synchronous );
+
+    // For unit tests in simulated HTTP mode, when the mFakeResponseHasHeaders
+    // has been set by the derived class, this method will read HTTP response
+    // headers contained at the top of the response file and set them into
+    // mResponseHeaders, while stripping them from mResponse.
+    void extractResponseHeadersForUnitTests();
 };
 
 
@@ -169,13 +194,9 @@ class _DownloaderThread : public QThread
     _DownloaderThread( std::function<void()> function, QObject *parent = nullptr )
       : QThread( parent )
       , mFunction( std::move( function ) )
-    {
-    }
+    {}
 
-    void run() override
-    {
-      mFunction();
-    }
+    void run() override { mFunction(); }
 
   private:
     std::function<void()> mFunction;

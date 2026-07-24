@@ -46,14 +46,14 @@ Sets the camera movement speed
 .. versionadded:: 3.18
 %End
 
-    Qgis::VerticalAxisInversion verticalAxisInversion() const;
+    Qgis::VerticalAxisInversionFlags verticalAxisInversion() const;
 %Docstring
 Returns the vertical axis inversion behavior.
 
 .. versionadded:: 3.18
 %End
 
-    void setVerticalAxisInversion( Qgis::VerticalAxisInversion inversion );
+    void setVerticalAxisInversion( Qgis::VerticalAxisInversionFlags inversion );
 %Docstring
 Sets the vertical axis ``inversion`` behavior.
 
@@ -205,13 +205,26 @@ given new pitch and heading angle.
 .. versionadded:: 3.42
 %End
 
-    void zoomCameraAroundPivot( const QVector3D &oldCameraPosition, double zoomFactor, const QVector3D &pivotPoint );
+ void zoomCameraAroundPivot( const QVector3D &oldCameraPosition, double zoomFactor, const QVector3D &pivotPoint ) /Deprecated="Since 3.44.4. Use version with oldDistanceFromCenterPoint argument instead."/;
 %Docstring
 Zooms camera by given zoom factor (>1 one means zoom in) while keeping
 the pivot point (given in world coordinates) at the same screen
 coordinates after the zoom.
 
 .. versionadded:: 3.42
+
+.. deprecated:: 3.44.4
+
+   Use version with oldDistanceFromCenterPoint argument instead.
+%End
+
+    void zoomCameraAroundPivot( const QVector3D &oldCameraPosition, double oldDistanceFromCenterPoint, double zoomFactor, const QVector3D &pivotPoint );
+%Docstring
+Zooms camera by given zoom factor (>1 one means zoom in) while keeping
+the pivot point (given in world coordinates) at the same screen
+coordinates after the zoom.
+
+.. versionadded:: 3.44.4
 %End
 
     bool keyboardEventFilter( QKeyEvent *event );
@@ -298,6 +311,14 @@ Returns the origin of the scene in map coordinates
 .. versionadded:: 3.44
 %End
 
+    void setCrossSectionSideView( const QgsCrossSection &crossSection );
+%Docstring
+Sets the cross section side view definition for the 3D map canvas. The
+camera will be positioned to look at the cross section from the side.
+
+.. versionadded:: 4.0
+%End
+
     void rotateCameraToHome();
 %Docstring
 .. versionadded:: 3.44
@@ -344,6 +365,26 @@ world position from a pixel's coordinates and depth
 .. versionadded:: 3.24
 %End
 
+    void moveCenterPoint( const QVector3D &posDiff );
+%Docstring
+Moves camera position by the given difference vector in world
+coordinates
+
+.. versionadded:: 4.0
+%End
+
+    double sampleDepthBuffer( int px, int py );
+%Docstring
+Returns the minimum depth value in the square [px - 3, px + 3] * [py -
+3, py + 3] Returned depth is in range [0..1] and it is returned as it
+was written to the depth buffer (not linearized, see
+Qgs3DUtils.screenPointToWorldPos() for conversion to linear depth).
+Returned value 1 means there void around that pixel (no 3D objects).
+
+.. versionadded:: 4.2
+%End
+
+
   private:
     QgsCameraController();
     QgsCameraController( const QgsCameraController &other );
@@ -381,6 +422,13 @@ Emitted to ask for the depth buffer image
 Emitted when the camera rotation center changes
 
 .. versionadded:: 3.24
+%End
+
+    void depthBufferReady();
+%Docstring
+Emitted after the depth buffer has been captured and is ready to sample.
+
+.. versionadded:: 4.2
 %End
 
 };

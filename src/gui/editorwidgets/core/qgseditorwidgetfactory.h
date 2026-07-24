@@ -16,12 +16,14 @@
 #ifndef QGSEDITORWIDGETFACTORY_H
 #define QGSEDITORWIDGETFACTORY_H
 
-#include <QDomNode>
+#include "qgis_gui.h"
 #include "qgis_sip.h"
+
+#include <QDomNode>
+#include <QIcon>
 #include <QMap>
 #include <QString>
 #include <QVariant>
-#include "qgis_gui.h"
 
 class QgsEditorConfigWidget;
 class QgsEditorWidgetWrapper;
@@ -46,8 +48,9 @@ class GUI_EXPORT QgsEditorWidgetFactory
      * Constructor
      *
      * \param name A human readable name for this widget type
+     * \param icon An icon for this widget type (since QGIS 4.0)
      */
-    QgsEditorWidgetFactory( const QString &name );
+    QgsEditorWidgetFactory( const QString &name, const QIcon &icon = QIcon() );
 
     virtual ~QgsEditorWidgetFactory() = default;
 
@@ -68,11 +71,17 @@ class GUI_EXPORT QgsEditorWidgetFactory
     virtual QgsSearchWidgetWrapper *createSearchWidget( QgsVectorLayer *vl, int fieldIdx, QWidget *parent ) const SIP_FACTORY;
 
     /**
-     * Returns The human readable identifier name of this widget type
+     * Returns the human readable identifier name of this widget type
      *
      * \returns a name
      */
     QString name() const;
+
+    /**
+     * Returns the icon of this widget type
+     * \since QGIS 4.0
+     */
+    QIcon icon() const;
 
     /**
      * Returns true if this widget is a read-only widget.
@@ -111,10 +120,7 @@ class GUI_EXPORT QgsEditorWidgetFactory
      * \returns A map of widget type names and weight values
      * \note not available in Python bindings
      */
-    virtual QHash<const char *, int> supportedWidgetTypes() SIP_SKIP
-    {
-      return QHash<const char *, int>();
-    }
+    virtual QHash<const char *, int> supportedWidgetTypes() SIP_SKIP { return QHash<const char *, int>(); }
 
     /**
      * This method allows disabling this editor widget type for a certain field.
@@ -139,6 +145,7 @@ class GUI_EXPORT QgsEditorWidgetFactory
 
   private:
     QString mName;
+    QIcon mIcon;
 };
 
 #endif // QGSEDITORWIDGETFACTORY_H

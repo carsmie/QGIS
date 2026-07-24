@@ -15,12 +15,13 @@
 #ifndef QGSBASICNUMERICFORMAT_H
 #define QGSBASICNUMERICFORMAT_H
 
+#include <iostream>
+#include <memory>
+#include <sstream>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsnumericformat.h"
-#include <sstream>
-#include <iostream>
-#include <memory>
 
 /**
  * \ingroup core
@@ -31,13 +32,12 @@
 class CORE_EXPORT QgsBasicNumericFormat : public QgsNumericFormat
 {
   public:
-
     /**
      * Sets rounding type and behavior of the numberDecimalPlaces() setting.
      */
     enum RoundingType
     {
-      DecimalPlaces, //!< Maximum number of decimal places
+      DecimalPlaces,      //!< Maximum number of decimal places
       SignificantFigures, //!< Maximum number of significant figures
     };
 
@@ -159,7 +159,6 @@ class CORE_EXPORT QgsBasicNumericFormat : public QgsNumericFormat
     void setDecimalSeparator( QChar character );
 
   protected:
-
     /**
      * Sets the format's \a configuration.
      */
@@ -168,7 +167,6 @@ class CORE_EXPORT QgsBasicNumericFormat : public QgsNumericFormat
     bool mUseScientific = false;
 
   private:
-
     int mNumberDecimalPlaces = 6;
     bool mShowThousandsSeparator = true;
     bool mShowPlusSign = false;

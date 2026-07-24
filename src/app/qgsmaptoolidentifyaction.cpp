@@ -13,35 +13,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsapplication.h"
+#include "qgsmaptoolidentifyaction.h"
+
 #include "qgisapp.h"
+#include "qgsapplication.h"
 #include "qgsattributetabledialog.h"
 #include "qgsfeature.h"
 #include "qgsfeaturestore.h"
 #include "qgsgeometry.h"
-#include "qgslogger.h"
 #include "qgsidentifycontext.h"
-#include "qgsidentifyresultsdialog.h"
 #include "qgsidentifymenu.h"
+#include "qgsidentifyresultsdialog.h"
+#include "qgslayertreeview.h"
+#include "qgslogger.h"
 #include "qgsmapcanvas.h"
-#include "qgsmaptoolidentifyaction.h"
-#include "moc_qgsmaptoolidentifyaction.cpp"
+#include "qgsmaplayeraction.h"
+#include "qgsmapmouseevent.h"
 #include "qgsmaptoolselectionhandler.h"
+#include "qgsproject.h"
 #include "qgsrasterlayer.h"
+#include "qgssettingsentryenumflag.h"
+#include "qgssettingsentryimpl.h"
+#include "qgsstatusbar.h"
+#include "qgsunittypes.h"
 #include "qgsvectordataprovider.h"
 #include "qgsvectorlayer.h"
-#include "qgsproject.h"
-#include "qgsstatusbar.h"
-#include "qgssettings.h"
-#include "qgsmapmouseevent.h"
-#include "qgslayertreeview.h"
-#include "qgsmaplayeraction.h"
-#include "qgsunittypes.h"
 
 #include <QCursor>
 #include <QPixmap>
 #include <QStatusBar>
+#include <QString>
 #include <QVariant>
+
+#include "moc_qgsmaptoolidentifyaction.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsMapToolIdentifyAction::QgsMapToolIdentifyAction( QgsMapCanvas *canvas )
   : QgsMapToolIdentify( canvas )
@@ -74,9 +80,7 @@ QgsIdentifyResultsDialog *QgsMapToolIdentifyAction::resultsDialog()
 
     connect( mResultsDialog.data(), static_cast<void ( QgsIdentifyResultsDialog::* )( QgsRasterLayer * )>( &QgsIdentifyResultsDialog::formatChanged ), this, &QgsMapToolIdentify::formatChanged );
     connect( mResultsDialog.data(), &QgsIdentifyResultsDialog::copyToClipboard, this, &QgsMapToolIdentifyAction::handleCopyToClipboard );
-    connect( mResultsDialog.data(), &QgsIdentifyResultsDialog::selectionModeChanged, this, [this] {
-      mSelectionHandler->setSelectionMode( mResultsDialog->selectionMode() );
-    } );
+    connect( mResultsDialog.data(), &QgsIdentifyResultsDialog::selectionModeChanged, this, [this] { mSelectionHandler->setSelectionMode( mResultsDialog->selectionMode() ); } );
   }
 
   return mResultsDialog;
@@ -96,7 +100,7 @@ void QgsMapToolIdentifyAction::showAttributeTable( QgsMapLayer *layer, const QLi
   {
     idList.append( FID_TO_STRING( feature.id() ) );
   }
-  const QString filter = QStringLiteral( "$id IN (%1)" ).arg( idList.join( ',' ) );
+  const QString filter = u"$id IN (%1)"_s.arg( idList.join( ',' ) );
 
   QgsAttributeTableDialog *tableDialog = new QgsAttributeTableDialog( vl, QgsAttributeTableFilterModel::ShowFilteredList );
   tableDialog->setFilterExpression( filter );
@@ -123,7 +127,7 @@ void QgsMapToolIdentifyAction::identifyFromGeometry()
   identifyMenu()->setShowFeatureActions( extendedMenu );
   IdentifyMode mode = extendedMenu ? LayerSelection : DefaultQgsSetting;
   if ( mode == DefaultQgsSetting )
-    mode = QgsSettings().enumValue( QStringLiteral( "Map/identifyMode" ), ActiveLayer );
+    mode = QgsMapToolIdentify::settingIdentifyMode->value();
   QList<QgsMapLayer *> layerList;
   if ( mode == ActiveLayer )
   {
@@ -146,7 +150,7 @@ void QgsMapToolIdentifyAction::identifyFromGeometry()
   {
     // Show the dialog before items are inserted so that items can resize themselves
     // according to dialog size also the first time, see also #9377
-    if ( results.size() != 1 || !QgsSettings().value( QStringLiteral( "/Map/identifyAutoFeatureForm" ), false ).toBool() )
+    if ( results.size() != 1 || !QgsIdentifyResultsDialog::settingIdentifyAutoFeatureForm->value() )
       resultsDialog()->QDialog::show();
 
     QList<IdentifyResult>::const_iterator result;
@@ -183,7 +187,7 @@ void QgsMapToolIdentifyAction::canvasReleaseEvent( QgsMapMouseEvent *e )
 void QgsMapToolIdentifyAction::handleChangedRasterResults( QList<IdentifyResult> &results )
 {
   // Add new result after raster format change
-  QgsDebugMsgLevel( QStringLiteral( "%1 raster results" ).arg( results.size() ), 2 );
+  QgsDebugMsgLevel( u"%1 raster results"_s.arg( results.size() ), 2 );
   QList<IdentifyResult>::const_iterator rresult;
   for ( rresult = results.constBegin(); rresult != results.constEnd(); ++rresult )
   {
@@ -256,15 +260,15 @@ Qgis::AreaUnit QgsMapToolIdentifyAction::displayAreaUnits() const
 
 void QgsMapToolIdentifyAction::handleCopyToClipboard( QgsFeatureStore &featureStore )
 {
-  QgsDebugMsgLevel( QStringLiteral( "features count = %1" ).arg( featureStore.features().size() ), 2 );
+  QgsDebugMsgLevel( u"features count = %1"_s.arg( featureStore.features().size() ), 2 );
   emit copyToClipboard( featureStore );
 }
 
 void QgsMapToolIdentifyAction::setClickContextScope( const QgsPointXY &point )
 {
   QgsExpressionContextScope clickScope;
-  clickScope.addVariable( QgsExpressionContextScope::StaticVariable( QStringLiteral( "click_x" ), point.x(), true ) );
-  clickScope.addVariable( QgsExpressionContextScope::StaticVariable( QStringLiteral( "click_y" ), point.y(), true ) );
+  clickScope.addVariable( QgsExpressionContextScope::StaticVariable( u"click_x"_s, point.x(), true ) );
+  clickScope.addVariable( QgsExpressionContextScope::StaticVariable( u"click_y"_s, point.y(), true ) );
 
   resultsDialog()->setExpressionContextScope( clickScope );
 

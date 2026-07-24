@@ -15,10 +15,12 @@
 #ifndef COSTCALCULATOR_H
 #define COSTCALCULATOR_H
 
-#define SIP_NO_FILE
+
+#include "palrtree.h"
 
 #include <QList>
-#include "palrtree.h"
+
+#define SIP_NO_FILE
 
 /**
  * \class pal::CostCalculator
@@ -30,6 +32,8 @@ namespace pal
   class Feats;
   class LabelPosition;
   class Pal;
+  class FeaturePart;
+  class PointSet;
 
   /**
    * \ingroup core
@@ -74,9 +78,7 @@ namespace pal
    */
   class CandidatePolygonRingDistanceCalculator
   {
-
     public:
-
       /**
        * Constructor for PolygonRingDistanceCalculator, for the specified label \a candidate.
        */
@@ -94,11 +96,10 @@ namespace pal
       double minimumDistance() const;
 
     private:
-
       double mPx;
       double mPy;
       double mMinDistance = std::numeric_limits<double>::max();
   };
-}
+} //namespace pal
 
 #endif // COSTCALCULATOR_H

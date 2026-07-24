@@ -16,10 +16,12 @@
 #ifndef QGSABSTRACTTERRAINSETTINGS_H
 #define QGSABSTRACTTERRAINSETTINGS_H
 
+#include <memory>
+
 #include "qgis_3d.h"
 #include "qgis_sip.h"
+
 #include <QString>
-#include <memory>
 
 class QDomElement;
 class QgsReadWriteContext;
@@ -55,7 +57,7 @@ class _3D_EXPORT QgsAbstractTerrainSettings SIP_ABSTRACT
       sipType = sipType_QgsQuantizedMeshTerrainSettings;
     else
       sipType = 0;
-    SIP_END
+  SIP_END
 #endif
 
   public:
@@ -107,7 +109,7 @@ class _3D_EXPORT QgsAbstractTerrainSettings SIP_ABSTRACT
      *
      * \note Not available in Python bindings
      */
-    virtual std::unique_ptr<QgsTerrainGenerator> createTerrainGenerator( const Qgs3DRenderContext &context ) const = 0 SIP_SKIP;
+    virtual std::unique_ptr<QgsTerrainGenerator> createTerrainGenerator( const Qgs3DRenderContext &context ) const SIP_SKIP = 0;
 
     // common settings
 

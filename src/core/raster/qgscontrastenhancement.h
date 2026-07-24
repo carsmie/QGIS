@@ -21,12 +21,12 @@ class originally created circa 2004 by T.Sutton, Gary E.Sherman, Steve Halasz
 #ifndef QGSCONTRASTENHANCEMENT_H
 #define QGSCONTRASTENHANCEMENT_H
 
-#include "qgis_core.h"
 #include <limits>
+#include <memory>
 
+#include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsraster.h"
-#include <memory>
 
 class QgsContrastEnhancementFunction;
 class QDomDocument;
@@ -43,13 +43,11 @@ class QString;
  */
 class CORE_EXPORT QgsContrastEnhancement
 {
-
   public:
-
     //! \brief This enumerator describes the types of contrast enhancement algorithms that can be used.
     enum ContrastEnhancementAlgorithm
     {
-      NoEnhancement, //!< Default color scaling algorithm, no scaling is applied
+      NoEnhancement,           //!< Default color scaling algorithm, no scaling is applied
       StretchToMinimumMaximum, //!< Linear histogram
       StretchAndClipToMinimumMaximum,
       ClipToMinimumMaximum,
@@ -266,7 +264,6 @@ class CORE_EXPORT QgsContrastEnhancement
 
     //! \brief Method to calculate the actual enhanceContrasted value(s)
     int calculateContrastEnhancementValue( double );
-
 };
 
 #endif

@@ -16,17 +16,22 @@
  ***************************************************************************/
 
 #include "qgslayoututils.h"
+
+#include <cmath>
+
 #include "qgslayout.h"
-#include "qgssettingsregistrycore.h"
 #include "qgslayoutitemmap.h"
+#include "qgslayoutitempicture.h"
+#include "qgslayoutrendercontext.h"
 #include "qgsprojectviewsettings.h"
 #include "qgsrendercontext.h"
-#include "qgssettings.h"
-#include "qgslayoutrendercontext.h"
+#include "qgssettingsregistrycore.h"
 
-#include <QStyleOptionGraphicsItem>
 #include <QPainter>
-#include <cmath>
+#include <QString>
+#include <QStyleOptionGraphicsItem>
+
+using namespace Qt::StringLiterals;
 
 #ifndef M_DEG2RAD
 #define M_DEG2RAD 0.0174532925
@@ -158,17 +163,17 @@ void QgsLayoutUtils::relativeResizeRect( QRectF &rectToResize, const QRectF &bou
 {
   //linearly scale rectToResize relative to the scaling from boundsBefore to boundsAfter
   const double left = !qgsDoubleNear( boundsBefore.left(), boundsBefore.right() )
-                      ? relativePosition( rectToResize.left(), boundsBefore.left(), boundsBefore.right(), boundsAfter.left(), boundsAfter.right() )
-                      : boundsAfter.left();
+                        ? relativePosition( rectToResize.left(), boundsBefore.left(), boundsBefore.right(), boundsAfter.left(), boundsAfter.right() )
+                        : boundsAfter.left();
   const double right = !qgsDoubleNear( boundsBefore.left(), boundsBefore.right() )
-                       ? relativePosition( rectToResize.right(), boundsBefore.left(), boundsBefore.right(), boundsAfter.left(), boundsAfter.right() )
-                       : boundsAfter.right();
+                         ? relativePosition( rectToResize.right(), boundsBefore.left(), boundsBefore.right(), boundsAfter.left(), boundsAfter.right() )
+                         : boundsAfter.right();
   const double top = !qgsDoubleNear( boundsBefore.top(), boundsBefore.bottom() )
-                     ? relativePosition( rectToResize.top(), boundsBefore.top(), boundsBefore.bottom(), boundsAfter.top(), boundsAfter.bottom() )
-                     : boundsAfter.top();
+                       ? relativePosition( rectToResize.top(), boundsBefore.top(), boundsBefore.bottom(), boundsAfter.top(), boundsAfter.bottom() )
+                       : boundsAfter.top();
   const double bottom = !qgsDoubleNear( boundsBefore.top(), boundsBefore.bottom() )
-                        ? relativePosition( rectToResize.bottom(), boundsBefore.top(), boundsBefore.bottom(), boundsAfter.top(), boundsAfter.bottom() )
-                        : boundsAfter.bottom();
+                          ? relativePosition( rectToResize.bottom(), boundsBefore.top(), boundsBefore.bottom(), boundsAfter.top(), boundsAfter.bottom() )
+                          : boundsAfter.bottom();
 
   rectToResize.setRect( left, top, right - left, bottom - top );
 }
@@ -208,7 +213,6 @@ double QgsLayoutUtils::fontDescentMM( const QFont &font )
   QFont metricsFont = scaledFontPixelSize( font );
   QFontMetricsF fontMetrics( metricsFont );
   return ( fontMetrics.descent() / FONT_WORKAROUND_SCALE );
-
 }
 
 double QgsLayoutUtils::fontHeightMM( const QFont &font )
@@ -218,7 +222,6 @@ double QgsLayoutUtils::fontHeightMM( const QFont &font )
   QFont metricsFont = scaledFontPixelSize( font );
   QFontMetricsF fontMetrics( metricsFont );
   return ( fontMetrics.height() / FONT_WORKAROUND_SCALE );
-
 }
 
 double QgsLayoutUtils::fontHeightCharacterMM( const QFont &font, QChar character )
@@ -285,7 +288,9 @@ void QgsLayoutUtils::drawText( QPainter *painter, QPointF position, const QStrin
   painter->drawText( position * FONT_WORKAROUND_SCALE, text );
 }
 
-void QgsLayoutUtils::drawText( QPainter *painter, const QRectF &rect, const QString &text, const QFont &font, const QColor &color, const Qt::AlignmentFlag halignment, const Qt::AlignmentFlag valignment, const int flags )
+void QgsLayoutUtils::drawText(
+  QPainter *painter, const QRectF &rect, const QString &text, const QFont &font, const QColor &color, const Qt::AlignmentFlag halignment, const Qt::AlignmentFlag valignment, const int flags
+)
 {
   if ( !painter )
   {
@@ -296,8 +301,7 @@ void QgsLayoutUtils::drawText( QPainter *painter, const QRectF &rect, const QStr
   //ref: http://osgeo-org.1560.x6.nabble.com/Multi-line-labels-and-font-bug-td4157152.html
   QFont textFont = scaledFontPixelSize( font );
 
-  QRectF scaledRect( rect.x() * FONT_WORKAROUND_SCALE, rect.y() * FONT_WORKAROUND_SCALE,
-                     rect.width() * FONT_WORKAROUND_SCALE, rect.height() * FONT_WORKAROUND_SCALE );
+  QRectF scaledRect( rect.x() * FONT_WORKAROUND_SCALE, rect.y() * FONT_WORKAROUND_SCALE, rect.width() * FONT_WORKAROUND_SCALE, rect.height() * FONT_WORKAROUND_SCALE );
 
   QgsScopedQPainterState painterState( painter );
   painter->setFont( textFont );
@@ -393,12 +397,12 @@ QRectF QgsLayoutUtils::largestRotatedRectWithinBounds( const QRectF &originalRec
 QgsLayoutItemPage::Orientation QgsLayoutUtils::decodePaperOrientation( const QString &string, bool &ok )
 {
   QString s = string.trimmed();
-  if ( s.compare( QLatin1String( "Portrait" ), Qt::CaseInsensitive ) == 0 )
+  if ( s.compare( "Portrait"_L1, Qt::CaseInsensitive ) == 0 )
   {
     ok = true;
     return QgsLayoutItemPage::Portrait;
   }
-  else if ( s.compare( QLatin1String( "Landscape" ), Qt::CaseInsensitive ) == 0 )
+  else if ( s.compare( "Landscape"_L1, Qt::CaseInsensitive ) == 0 )
   {
     ok = true;
     return QgsLayoutItemPage::Landscape;
@@ -409,20 +413,8 @@ QgsLayoutItemPage::Orientation QgsLayoutUtils::decodePaperOrientation( const QSt
 
 double QgsLayoutUtils::scaleFactorFromItemStyle( const QStyleOptionGraphicsItem *style )
 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  // workaround Qt bug 66185
-
-  // Refs #18027 - if a QGraphicsItem is rotated by 90 or 270 degrees, then the item
-  // style given to QGraphicsItem::paint incorrectly uses the shear parameter of the matrix (m12)
-  // to store the current view scale, instead of the horizontal scale parameter (m11) which
-  // is used in all other cases
-
-  // TODO - ifdef this out if Qt fixes upstream
-  return !qgsDoubleNear( style->matrix.m11(), 0.0 ) ? style->matrix.m11() : style->matrix.m12();
-#else
   Q_UNUSED( style )
   return 1;
-#endif
 }
 
 double QgsLayoutUtils::scaleFactorFromItemStyle( const QStyleOptionGraphicsItem *style, QPainter *painter )
@@ -499,7 +491,7 @@ bool QgsLayoutUtils::itemIsAClippingSource( const QgsLayoutItem *item )
   if ( !( item->itemFlags() & QgsLayoutItem::FlagProvidesClipPath ) )
     return false; // not a clipping provider, so shortcut out
 
-  // current only maps can be clipped
+  // maps
   QList< QgsLayoutItemMap * > maps;
   item->layout()->layoutItems( maps );
   for ( QgsLayoutItemMap *map : std::as_const( maps ) )
@@ -507,19 +499,31 @@ bool QgsLayoutUtils::itemIsAClippingSource( const QgsLayoutItem *item )
     if ( map->itemClippingSettings()->isActive() && map->itemClippingSettings()->sourceItem() == item )
       return true;
   }
+
+  // pictures
+  QList< QgsLayoutItemPicture * > pictures;
+  item->layout()->layoutItems( pictures );
+  for ( QgsLayoutItemPicture *picture : std::as_const( pictures ) )
+  {
+    if ( picture->clipToItem() && picture->clippingItem() == item )
+      return true;
+  }
+
   return false;
 }
+
+constexpr double pointToMM = 25.4 / 72.0;
 
 double QgsLayoutUtils::pointsToMM( const double pointSize )
 {
   //conversion to mm based on 1 point = 1/72 inch
-  return ( pointSize * 0.3527 );
+  return ( pointSize * pointToMM );
 }
 
 double QgsLayoutUtils::mmToPoints( const double mmSize )
 {
   //conversion to points based on 1 point = 1/72 inch
-  return ( mmSize / 0.3527 );
+  return ( mmSize / pointToMM );
 }
 
 QVector< double > QgsLayoutUtils::predefinedScales( const QgsLayout *layout )
@@ -533,7 +537,6 @@ QVector< double > QgsLayoutUtils::predefinedScales( const QgsLayout *layout )
   if ( !hasProjectScales || mapScales.isEmpty() )
   {
     // default to global map tool scales
-    QgsSettings settings;
     const QStringList scales = QgsSettingsRegistryCore::settingsMapScales->value();
     for ( const QString &scale : scales )
     {

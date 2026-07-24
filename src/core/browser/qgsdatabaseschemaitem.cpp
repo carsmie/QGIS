@@ -16,29 +16,27 @@
  ***************************************************************************/
 
 #include "qgsdatabaseschemaitem.h"
-#include "moc_qgsdatabaseschemaitem.cpp"
+
+#include "qgsabstractdatabaseproviderconnection.h"
 #include "qgsapplication.h"
 #include "qgsdataitemproviderregistry.h"
 #include "qgsprovidermetadata.h"
 #include "qgsproviderregistry.h"
-#include "qgsabstractdatabaseproviderconnection.h"
+
+#include "moc_qgsdatabaseschemaitem.cpp"
 
 QgsDatabaseSchemaItem::QgsDatabaseSchemaItem( QgsDataItem *parent, const QString &name, const QString &path, const QString &providerKey )
   : QgsDataCollectionItem( parent, name, path, providerKey )
-{
-
-}
+{}
 
 QgsDatabaseSchemaItem::~QgsDatabaseSchemaItem()
-{
-
-}
+{}
 
 QgsAbstractDatabaseProviderConnection *QgsDatabaseSchemaItem::databaseConnection() const
 {
   const QString dataProviderKey { QgsApplication::dataItemProviderRegistry()->dataProviderKey( providerKey() ) };
   QgsProviderMetadata *md { QgsProviderRegistry::instance()->providerMetadata( dataProviderKey ) };
-  if ( ! md )
+  if ( !md )
   {
     return nullptr;
   }

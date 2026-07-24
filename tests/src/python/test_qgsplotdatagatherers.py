@@ -10,8 +10,10 @@ __author__ = "Mathieu Pellerin"
 __date__ = "22/8/2025"
 __copyright__ = "Copyright 2025, The QGIS Project"
 
-from qgis.PyQt.QtCore import QEventLoop
+import unittest
+
 from qgis.core import (
+    Qgis,
     QgsApplication,
     QgsExpressionContext,
     QgsExpressionContextUtils,
@@ -22,16 +24,14 @@ from qgis.core import (
     QgsVectorLayer,
     QgsVectorLayerXyPlotDataGatherer,
     QgsXyPlotSeries,
-    Qgis,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.PyQt.QtCore import QEventLoop
+from qgis.testing import QgisTestCase, start_app
 
 app = start_app()
 
 
 class TestQgsPlot(QgisTestCase):
-
     @classmethod
     def control_path_prefix(cls):
         return "plot"
@@ -62,17 +62,16 @@ class TestQgsPlot(QgisTestCase):
 
         # test a single series
         series1_details = QgsVectorLayerXyPlotDataGatherer.XySeriesDetails(
+            "Series 1",
             '"category"',
             '"value"',
         )
 
         iterator = layer.getFeatures()
-        gatherer = QgsVectorLayerXyPlotDataGatherer(
-            iterator,
-            expression_context,
-            [series1_details],
-            Qgis.PlotAxisType.Categorical,
-        )
+        gatherer = QgsVectorLayerXyPlotDataGatherer(Qgis.PlotAxisType.Categorical)
+        gatherer.setFeatureIterator(iterator)
+        gatherer.setExpressionContext(expression_context)
+        gatherer.setSeriesDetails([series1_details])
         gatherer.taskCompleted.connect(loop.quit)
 
         QgsApplication.taskManager().addTask(gatherer)
@@ -84,18 +83,17 @@ class TestQgsPlot(QgisTestCase):
 
         # test two series with the second series filtered and missing one category
         series2_details = QgsVectorLayerXyPlotDataGatherer.XySeriesDetails(
+            "Series 1",
             '"category"',
             '"value"',
             filterExpression='"category" != \'category_b\' AND "value" <= 10',
         )
 
         iterator = layer.getFeatures()
-        gatherer = QgsVectorLayerXyPlotDataGatherer(
-            iterator,
-            expression_context,
-            [series1_details, series2_details],
-            Qgis.PlotAxisType.Categorical,
-        )
+        gatherer = QgsVectorLayerXyPlotDataGatherer(Qgis.PlotAxisType.Categorical)
+        gatherer.setFeatureIterator(iterator)
+        gatherer.setExpressionContext(expression_context)
+        gatherer.setSeriesDetails([series1_details, series2_details])
         gatherer.taskCompleted.connect(loop.quit)
 
         QgsApplication.taskManager().addTask(gatherer)
@@ -108,18 +106,17 @@ class TestQgsPlot(QgisTestCase):
 
         # test a single series with predefined categories
         series1_details = QgsVectorLayerXyPlotDataGatherer.XySeriesDetails(
+            "Series 1",
             '"category"',
             '"value"',
         )
 
         iterator = layer.getFeatures()
-        gatherer = QgsVectorLayerXyPlotDataGatherer(
-            iterator,
-            expression_context,
-            [series1_details],
-            Qgis.PlotAxisType.Categorical,
-            ["category_c", "category_a"],
-        )
+        gatherer = QgsVectorLayerXyPlotDataGatherer(Qgis.PlotAxisType.Categorical)
+        gatherer.setFeatureIterator(iterator)
+        gatherer.setExpressionContext(expression_context)
+        gatherer.setSeriesDetails([series1_details])
+        gatherer.setPredefinedCategories(["category_c", "category_a"])
         gatherer.taskCompleted.connect(loop.quit)
 
         QgsApplication.taskManager().addTask(gatherer)
@@ -155,13 +152,14 @@ class TestQgsPlot(QgisTestCase):
 
         # test a single series
         series1_details = QgsVectorLayerXyPlotDataGatherer.XySeriesDetails(
-            '"int"', '"value"'
+            "Series 1", '"int"', '"value"'
         )
 
         iterator = layer.getFeatures()
-        gatherer = QgsVectorLayerXyPlotDataGatherer(
-            iterator, expression_context, [series1_details], Qgis.PlotAxisType.Interval
-        )
+        gatherer = QgsVectorLayerXyPlotDataGatherer(Qgis.PlotAxisType.Interval)
+        gatherer.setFeatureIterator(iterator)
+        gatherer.setExpressionContext(expression_context)
+        gatherer.setSeriesDetails([series1_details])
         gatherer.taskCompleted.connect(loop.quit)
 
         QgsApplication.taskManager().addTask(gatherer)
@@ -176,6 +174,7 @@ class TestQgsPlot(QgisTestCase):
 
         # test a single series, ordered by expression
         series1_details = QgsVectorLayerXyPlotDataGatherer.XySeriesDetails(
+            "Series 1",
             '"int"',
             '"value"',
         )
@@ -183,9 +182,10 @@ class TestQgsPlot(QgisTestCase):
         request = QgsFeatureRequest()
         request.addOrderBy('"int"')
         iterator = layer.getFeatures(request)
-        gatherer = QgsVectorLayerXyPlotDataGatherer(
-            iterator, expression_context, [series1_details], Qgis.PlotAxisType.Interval
-        )
+        gatherer = QgsVectorLayerXyPlotDataGatherer(Qgis.PlotAxisType.Interval)
+        gatherer.setFeatureIterator(iterator)
+        gatherer.setExpressionContext(expression_context)
+        gatherer.setSeriesDetails([series1_details])
         gatherer.taskCompleted.connect(loop.quit)
 
         QgsApplication.taskManager().addTask(gatherer)
@@ -200,16 +200,14 @@ class TestQgsPlot(QgisTestCase):
 
         # test two series with the second series filtered and missing one category
         series2_details = QgsVectorLayerXyPlotDataGatherer.XySeriesDetails(
-            '"int"', '"value"', filterExpression='"int" < 3'
+            "Series 1", '"int"', '"value"', filterExpression='"int" < 3'
         )
 
         iterator = layer.getFeatures(request)
-        gatherer = QgsVectorLayerXyPlotDataGatherer(
-            iterator,
-            expression_context,
-            [series1_details, series2_details],
-            Qgis.PlotAxisType.Interval,
-        )
+        gatherer = QgsVectorLayerXyPlotDataGatherer(Qgis.PlotAxisType.Interval)
+        gatherer.setFeatureIterator(iterator)
+        gatherer.setExpressionContext(expression_context)
+        gatherer.setSeriesDetails([series1_details, series2_details])
         gatherer.taskCompleted.connect(loop.quit)
 
         QgsApplication.taskManager().addTask(gatherer)

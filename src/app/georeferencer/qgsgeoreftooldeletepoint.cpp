@@ -13,15 +13,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsmapcanvas.h"
 #include "qgsgeoreftooldeletepoint.h"
-#include "moc_qgsgeoreftooldeletepoint.cpp"
+
+#include "qgsmapcanvas.h"
 #include "qgsmapmouseevent.h"
+
+#include "moc_qgsgeoreftooldeletepoint.cpp"
 
 QgsGeorefToolDeletePoint::QgsGeorefToolDeletePoint( QgsMapCanvas *canvas )
   : QgsMapTool( canvas )
-{
-}
+{}
 
 void QgsGeorefToolDeletePoint::canvasMoveEvent( QgsMapMouseEvent *e )
 {

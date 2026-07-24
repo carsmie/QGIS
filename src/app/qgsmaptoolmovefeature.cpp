@@ -13,6 +13,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsmaptoolmovefeature.h"
+
+#include <limits>
+
 #include "qgisapp.h"
 #include "qgsadvanceddigitizingdockwidget.h"
 #include "qgsavoidintersectionsoperation.h"
@@ -20,19 +24,17 @@
 #include "qgsgeometry.h"
 #include "qgslogger.h"
 #include "qgsmapcanvas.h"
-#include "qgsmaptoolmovefeature.h"
-#include "moc_qgsmaptoolmovefeature.cpp"
+#include "qgsmapmouseevent.h"
 #include "qgsrubberband.h"
+#include "qgssnapindicator.h"
 #include "qgstolerance.h"
 #include "qgsvectorlayer.h"
 #include "qgsvectorlayertools.h"
-#include "qgssnapindicator.h"
-#include "qgsmapmouseevent.h"
 
 #include <QMessageBox>
 #include <QSettings>
-#include <limits>
 
+#include "moc_qgsmaptoolmovefeature.cpp"
 
 QgsMapToolMoveFeature::QgsMapToolMoveFeature( QgsMapCanvas *canvas, MoveMode mode )
   : QgsMapToolAdvancedDigitizing( canvas, QgisApp::instance()->cadDockWidget() )
@@ -102,6 +104,12 @@ void QgsMapToolMoveFeature::cadCanvasReleaseEvent( QgsMapMouseEvent *e )
 
   if ( !mRubberBand )
   {
+    if ( e->button() != Qt::LeftButton )
+    {
+      // only a left-click can start the move operation
+      return;
+    }
+
     //find first geometry under mouse cursor and store iterator to it
     const QgsPointXY layerCoords = toLayerCoordinates( vlayer, e->mapPoint() );
     const double searchRadius = QgsTolerance::vertexSearchRadius( mCanvas->currentLayer(), mCanvas->mapSettings() );
@@ -175,7 +183,8 @@ void QgsMapToolMoveFeature::cadCanvasReleaseEvent( QgsMapMouseEvent *e )
       {
         // for extra safety to make sure we are not modifying geometries by accident
 
-        const int res = QMessageBox::warning( mCanvas, tr( "Move features" ), tr( "Some of the selected features are outside of the current map view. Would you still like to continue?" ), QMessageBox::Yes | QMessageBox::No );
+        const int res = QMessageBox::
+          warning( mCanvas, tr( "Move features" ), tr( "Some of the selected features are outside of the current map view. Would you still like to continue?" ), QMessageBox::Yes | QMessageBox::No );
         if ( res != QMessageBox::Yes )
         {
           mMovedFeatures.clear();
@@ -240,7 +249,8 @@ void QgsMapToolMoveFeature::cadCanvasReleaseEvent( QgsMapMouseEvent *e )
 
             if ( res.operationResult == Qgis::GeometryOperationResult::InvalidInputGeometryType || geom.isEmpty() )
             {
-              const QString errorMessage = ( geom.isEmpty() ) ? tr( "The feature cannot be moved because the resulting geometry would be empty" ) : tr( "An error was reported during intersection removal" );
+              const QString errorMessage = ( geom.isEmpty() ) ? tr( "The feature cannot be moved because the resulting geometry would be empty" )
+                                                              : tr( "An error was reported during intersection removal" );
 
               emit messageEmitted( errorMessage, Qgis::MessageLevel::Warning );
               vlayer->destroyEditCommand();
@@ -252,7 +262,7 @@ void QgsMapToolMoveFeature::cadCanvasReleaseEvent( QgsMapMouseEvent *e )
 
           if ( QgsProject::instance()->topologicalEditing() )
           {
-            if ( mSnapIndicator && ( mSnapIndicator->match().layer() ) )
+            if ( mSnapIndicator->match().layer() )
             {
               mSnapIndicator->match().layer()->addTopologicalPoints( vlayer->getGeometry( id ) );
             }

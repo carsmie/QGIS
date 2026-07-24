@@ -22,9 +22,8 @@
 
 #include <QByteArray>
 #include <QMap>
-#include <QStringList>
 #include <QObject>
-
+#include <QStringList>
 
 class QDomElement;
 
@@ -57,7 +56,6 @@ class CORE_EXPORT QgsMapLayerStyleManager : public QObject
 {
     Q_OBJECT
   public:
-
     /**
      * Construct a style manager associated with a map layer (must not be NULLPTR).
      * The style manager will be parented to \a layer.

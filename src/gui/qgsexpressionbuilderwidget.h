@@ -16,18 +16,20 @@
 #ifndef QGSEXPRESSIONBUILDER_H
 #define QGSEXPRESSIONBUILDER_H
 
-#include <QWidget>
-#include <QStandardItemModel>
-#include <QSortFilterProxyModel>
-
 #include "ui_qgsexpressionbuilder.h"
 
-#include "qgis_sip.h"
 #include "qgis_gui.h"
-#include "qgsexpressioncontext.h"
+#include "qgis_sip.h"
 #include "qgsexpression.h"
+#include "qgsexpressioncontext.h"
 #include "qgsexpressiontreeview.h"
 
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
+#include <QString>
+#include <QWidget>
+
+using namespace Qt::StringLiterals;
 
 class QgsFields;
 class QgsExpressionHighlighter;
@@ -35,7 +37,7 @@ class QgsRelation;
 class QgsCodeEditorExpression;
 
 #ifndef SIP_RUN
-static const QString DEFAULT_PROJECT_FUNCTIONS_ITEM_NAME = QStringLiteral( "[Project Functions]" );
+static const QString DEFAULT_PROJECT_FUNCTIONS_ITEM_NAME = u"[Project Functions]"_s;
 #endif
 
 /**
@@ -73,19 +75,23 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
      * Initialize without any layer
      * \since QGIS 3.14
      */
-    void init( const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = QStringLiteral( "generic" ), QgsExpressionBuilderWidget::Flags flags = LoadAll );
+    void init( const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = u"generic"_s, QgsExpressionBuilderWidget::Flags flags = LoadAll );
 
     /**
      * Initialize with a layer
      * \since QGIS 3.14
      */
-    void initWithLayer( QgsVectorLayer *layer, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = QStringLiteral( "generic" ), QgsExpressionBuilderWidget::Flags flags = LoadAll );
+    void initWithLayer(
+      QgsVectorLayer *layer, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = u"generic"_s, QgsExpressionBuilderWidget::Flags flags = LoadAll
+    );
 
     /**
      * Initialize with given fields without any layer
      * \since QGIS 3.14
      */
-    void initWithFields( const QgsFields &fields, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = QStringLiteral( "generic" ), QgsExpressionBuilderWidget::Flags flags = LoadAll );
+    void initWithFields(
+      const QgsFields &fields, const QgsExpressionContext &context = QgsExpressionContext(), const QString &recentCollection = u"generic"_s, QgsExpressionBuilderWidget::Flags flags = LoadAll
+    );
 
     /**
      * Sets layer in order to get the fields and values
@@ -189,22 +195,21 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
     void setCustomPreviewGenerator( const QString &label, const QList<QPair<QString, QVariant>> &choices, SIP_PYCALLABLE );
     //%MethodCode
     Py_XINCREF( a2 );
-    Py_BEGIN_ALLOW_THREADS
-      sipCpp->setCustomPreviewGenerator( *a0, *a1, [a2]( const QVariant &value ) -> QgsExpressionContext {
-        QgsExpressionContext res;
-        SIP_BLOCK_THREADS
-        PyObject *s = sipCallMethod( NULL, a2, "D", &value, sipType_QVariant, NULL );
-        int state;
-        int sipIsError = 0;
-        QgsExpressionContext *t1 = reinterpret_cast<QgsExpressionContext *>( sipConvertToType( s, sipType_QgsExpressionContext, 0, SIP_NOT_NONE, &state, &sipIsError ) );
-        if ( sipIsError == 0 )
-        {
-          res = QgsExpressionContext( *t1 );
-        }
-        sipReleaseType( t1, sipType_QgsExpressionContext, state );
-        SIP_UNBLOCK_THREADS
-        return res;
-      } );
+    Py_BEGIN_ALLOW_THREADS sipCpp->setCustomPreviewGenerator( *a0, *a1, [a2]( const QVariant &value ) -> QgsExpressionContext {
+      QgsExpressionContext res;
+      SIP_BLOCK_THREADS
+      PyObject *s = sipCallMethod( NULL, a2, "D", &value, sipType_QVariant, NULL );
+      int state;
+      int sipIsError = 0;
+      QgsExpressionContext *t1 = reinterpret_cast<QgsExpressionContext *>( sipConvertToType( s, sipType_QgsExpressionContext, 0, SIP_NOT_NONE, &state, &sipIsError ) );
+      if ( sipIsError == 0 )
+      {
+        res = QgsExpressionContext( *t1 );
+      }
+      sipReleaseType( t1, sipType_QgsExpressionContext, state );
+      SIP_UNBLOCK_THREADS
+      return res;
+    } );
 
     Py_END_ALLOW_THREADS
     //%End
@@ -223,7 +228,7 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
      * By default it is loaded from the collection "generic".
      * \deprecated QGIS 3.14. Use expressionTree()->loadRecent() instead.
      */
-    Q_DECL_DEPRECATED void loadRecent( const QString &collection = QStringLiteral( "generic" ) ) SIP_DEPRECATED;
+    Q_DECL_DEPRECATED void loadRecent( const QString &collection = u"generic"_s ) SIP_DEPRECATED;
 
     /**
      * Returns the expression tree
@@ -285,7 +290,8 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
     void updateFunctionFileList( const QString &path );
 
     /**
-     * Saves the current function editor text to a project entry.
+     * Writes the current function editor text to a project entry.
+     * The project becomes dirty.
      *
      * \since QGIS 3.40
      */
@@ -368,12 +374,14 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
 
     /**
      * Auto save the current Python function code.
+     * \note Auto save does not apply to Project Functions.
      */
     void autosave();
 
     /**
      * Enabled or disable auto saving. When enabled Python scripts will be auto saved
      * when text changes.
+     * \note Auto save does not apply to Project Functions.
      * \param enabled TRUE to enable auto saving.
      */
     void setAutoSave( bool enabled ) { mAutoSave = enabled; }
@@ -460,16 +468,14 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
      */
     void parserErrorChanged();
 
-  protected:
-    void showEvent( QShowEvent *e ) override;
-
   private:
     class ExpressionTreeMenuProvider : public QgsExpressionTreeView::MenuProvider
     {
       public:
         ExpressionTreeMenuProvider( QgsExpressionBuilderWidget *expressionBuilderWidget )
           : QgsExpressionTreeView::MenuProvider()
-          , mExpressionBuilderWidget( expressionBuilderWidget ) {}
+          , mExpressionBuilderWidget( expressionBuilderWidget )
+        {}
 
         QMenu *createContextMenu( QgsExpressionItem *item ) override;
 
@@ -484,6 +490,7 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
     void clearFunctionMarkers();
     void clearErrors();
     void runPythonCode( const QString &code );
+    void displayTemporaryLabel( const QString &text );
     QgsVectorLayer *contextLayer( const QgsExpressionItem *item ) const;
     void fillFieldValues( const QString &fieldName, QgsVectorLayer *layer, int countLimit, bool forceUsedValues = false );
     QString getFunctionHelp( QgsExpressionFunction *function );
@@ -499,7 +506,7 @@ class GUI_EXPORT QgsExpressionBuilderWidget : public QWidget, private Ui::QgsExp
     std::unique_ptr<QStandardItemModel> mValuesModel;
     std::unique_ptr<QSortFilterProxyModel> mProxyValues;
 
-    ExpressionTreeMenuProvider *mExpressionTreeMenuProvider = nullptr;
+    ExpressionTreeMenuProvider mExpressionTreeMenuProvider;
 
     bool mAutoSave = true;
     QString mFunctionsPath;

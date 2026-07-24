@@ -16,17 +16,16 @@
  ***************************************************************************/
 
 #include "qgsgcpgeometrytransformer.h"
+
 #include "qgsgeometry.h"
 
 QgsGcpGeometryTransformer::QgsGcpGeometryTransformer( QgsGcpTransformerInterface *gcpTransformer )
   : mGcpTransformer( gcpTransformer )
-{
-}
+{}
 
 QgsGcpGeometryTransformer::QgsGcpGeometryTransformer( QgsGcpTransformerInterface::TransformMethod method, const QVector<QgsPointXY> &sourceCoordinates, const QVector<QgsPointXY> &destinationCoordinates )
   : mGcpTransformer( QgsGcpTransformerInterface::createFromParameters( method, sourceCoordinates, destinationCoordinates ) )
-{
-}
+{}
 
 QgsGcpGeometryTransformer::~QgsGcpGeometryTransformer() = default;
 

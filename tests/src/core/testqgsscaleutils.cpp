@@ -12,11 +12,13 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include "qgsscaleutils.h"
 #include "qgstest.h"
+
 #include <QObject>
 #include <QString>
 
-#include "qgsscaleutils.h"
+using namespace Qt::StringLiterals;
 
 class TestQgsScaleUtils : public QObject
 {
@@ -33,11 +35,6 @@ class TestQgsScaleUtils : public QObject
 
 void TestQgsScaleUtils::initTestCase()
 {
-  // Runs once before any tests are run
-  QCoreApplication::setOrganizationName( QStringLiteral( "QGIS" ) );
-  QCoreApplication::setOrganizationDomain( QStringLiteral( "qgis.org" ) );
-  QCoreApplication::setApplicationName( QStringLiteral( "QGIS-TEST" ) );
-
   QgsApplication::init();
   QgsApplication::initQgis();
 }

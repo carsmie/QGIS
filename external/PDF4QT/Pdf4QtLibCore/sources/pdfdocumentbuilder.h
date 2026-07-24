@@ -1,19 +1,24 @@
-//    Copyright (C) 2020-2021 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT. If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #ifndef PDFDOCUMENTBUILDER_H
 #define PDFDOCUMENTBUILDER_H
@@ -133,6 +138,7 @@ public:
     PDFObjectFactory& operator<<(const PDFDestination& destination);
     PDFObjectFactory& operator<<(PageRotation pageRotation);
     PDFObjectFactory& operator<<(PDFFormSubmitFlags flags);
+    PDFObjectFactory& operator<<(PDFDictionary dictionary);
 
     /// Treat containers - write them as array
     template<typename Container, typename ValueType = decltype(*std::begin(std::declval<Container>()))>
@@ -343,6 +349,16 @@ public:
     /// if document being built was invalid.
     PDFDocument build();
 
+    ///  Replaces all objects by references in the dictionary
+    void replaceObjectsByReferences(PDFDictionary& dictionary);
+
+    /// Recursively replaces stream objects nested inside dictionaries or arrays
+    /// by references to newly created document objects. Nested streams are illegal
+    /// in a serialized PDF, this function makes any in-memory object tree
+    /// serializable. Top-level stream object is left intact (only its dictionary
+    /// is processed).
+    PDFObject replaceNestedStreamsByReferences(const PDFObject& object);
+
     /// If object is reference, the dereference attempt is performed
     /// and object is returned. If it is not a reference, then self
     /// is returned. If dereference attempt fails, then null object
@@ -461,6 +477,10 @@ public:
 
     /// Returns document info reference
     PDFObjectReference getDocumentInfo() const;
+
+    /// Sets document XMP metadata stream in catalog (/Metadata).
+    /// Metadata are stored as XML stream with /Type /Metadata and /Subtype /XML.
+    void setCatalogMetadata(QByteArray metadataXML);
 
     /// Copies existing annotation to another page
     /// \param pageReference Page reference (onto which is annotation copied)
@@ -746,6 +766,25 @@ public:
                                                 QString subject,
                                                 QString contents,
                                                 TextAlignment textAlignment);
+
+    /// Free text annotation displays text directly on a page. This overload
+    /// also sets text style and can auto-resize rectangle to fit the contents.
+    /// \param page Page to which is annotation added
+    /// \param rectangle Area in which is text displayed
+    /// \param title Title
+    /// \param subject Subject
+    /// \param contents Contents (text displayed)
+    /// \param style Style of displayed text (font family, size, color, alignment)
+    /// \param autoResizeToContents If set to true, rectangle is expanded to fit contents
+    /// \param padding Padding used when auto resizing
+    PDFObjectReference createAnnotationFreeText(PDFObjectReference page,
+                                                QRectF rectangle,
+                                                QString title,
+                                                QString subject,
+                                                QString contents,
+                                                const PDFFreeTextStyle& style,
+                                                bool autoResizeToContents,
+                                                PDFReal padding = 2.0);
 
 
     /// Free text annotation displays text directly on a page. Text appears directly on the page, in the same way, 
@@ -1396,6 +1435,20 @@ public:
     void setAnnotationTitle(PDFObjectReference annotation,
                             QString title);
 
+    /// Sets free text annotation style (DA + Q entries).
+    /// \param annotation Annotation
+    /// \param style Free text style
+    void setFreeTextAnnotationStyle(PDFObjectReference annotation,
+                                    const PDFFreeTextStyle& style);
+
+    /// Expands free text annotation rectangle to fit current contents.
+    /// \param annotation Annotation
+    /// \param style Free text style used for text metrics
+    /// \param padding Padding added around text
+    void resizeFreeTextAnnotationToContents(PDFObjectReference annotation,
+                                            const PDFFreeTextStyle& style,
+                                            PDFReal padding = 2.0);
+
 
     /// Set AcroForm to catalog.
     /// \param acroForm Reference to AcroForm object.
@@ -1573,7 +1626,29 @@ public:
 
 /* END GENERATED CODE */
 
+public:
+    static QByteArray normalizeFreeTextFontName(QString fontName);
+    static QString decodeFreeTextFontName(QByteArray fontName);
+    static QByteArray createFreeTextDefaultAppearance(const PDFFreeTextStyle& style);
+    static PDFAnnotationDefaultAppearance getDefaultFreeTextAppearance(const PDFDictionary* dictionary);
+    static QColor readColorFromPDFObject(const PDFObjectStorage* storage, PDFObject object, QColor defaultColor = Qt::black);
+    static PDFObject createPDFColor(const QColor& color);
+
 private:
+    static QByteArray formatPDFReal(PDFReal value);
+    static void appendPDFPoint(QByteArray& data, const QPointF& point);
+    static QColor getAnnotationDrawColor(const std::vector<PDFReal>& color, PDFReal opacity);
+    static QByteArray getBlendModeNameForAppearance(BlendMode blendMode);
+    static void appendHighlightQuadrilateralPath(QByteArray& data, const PDFAnnotationQuadrilaterals::Quadrilateral& quadrilateral);
+
+    PDFFreeTextStyle createDefaultFreeTextStyle(TextAlignment alignment) const;
+    bool updateHighlightAnnotationAppearanceStream(PDFObjectReference annotationReference,
+                                                   const PDFHighlightAnnotation* annotation);
+    QRectF resizeFreeTextRectangleToContents(QRectF rectangle,
+                                             const QString& contents,
+                                             const PDFFreeTextStyle& style,
+                                             PDFReal padding) const;
+
     QRectF getPopupWindowRect(const QRectF& rectangle) const;
     QString getProducerString() const;
     PDFObjectReference getPageTreeRoot() const;

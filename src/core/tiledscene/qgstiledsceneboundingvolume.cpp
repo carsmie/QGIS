@@ -16,17 +16,17 @@
  ***************************************************************************/
 
 #include "qgstiledsceneboundingvolume.h"
+
 #include "qgscoordinatetransform.h"
-#include "qgsmatrix4x4.h"
-#include "qgsvector3d.h"
-#include "qgsmultipoint.h"
 #include "qgsgeos.h"
+#include "qgsmatrix4x4.h"
+#include "qgsmultipoint.h"
 #include "qgspolygon.h"
+#include "qgsvector3d.h"
 
 QgsTiledSceneBoundingVolume::QgsTiledSceneBoundingVolume( const QgsOrientedBox3D &box )
   : mBox( box )
-{
-}
+{}
 
 void QgsTiledSceneBoundingVolume::transform( const QgsMatrix4x4 &transform )
 {
@@ -97,4 +97,3 @@ bool QgsTiledSceneBoundingVolume::intersects( const QgsOrientedBox3D &box ) cons
 {
   return mBox.intersects( box );
 }
-

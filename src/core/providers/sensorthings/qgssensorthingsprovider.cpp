@@ -16,21 +16,28 @@
  ***************************************************************************/
 
 #include "qgssensorthingsprovider.h"
-#include "moc_qgssensorthingsprovider.cpp"
-#include "qgssensorthingsutils.h"
+
+#include <nlohmann/json.hpp>
+
 #include "qgsapplication.h"
-#include "qgssetrequestinitiator_p.h"
 #include "qgsblockingnetworkrequest.h"
-#include "qgsthreadingutils.h"
-#include "qgsreadwritelocker.h"
-#include "qgssensorthingsfeatureiterator.h"
-#include "qgssensorthingsdataitems.h"
-#include "qgssensorthingsconnection.h"
+#include "qgslogger.h"
 #include "qgsmessagelog.h"
+#include "qgsreadwritelocker.h"
+#include "qgssensorthingsconnection.h"
+#include "qgssensorthingsdataitems.h"
+#include "qgssensorthingsfeatureiterator.h"
+#include "qgssensorthingsutils.h"
+#include "qgssetrequestinitiator_p.h"
+#include "qgsthreadingutils.h"
 
 #include <QIcon>
 #include <QNetworkRequest>
-#include <nlohmann/json.hpp>
+#include <QString>
+
+#include "moc_qgssensorthingsprovider.cpp"
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
@@ -42,8 +49,7 @@ QgsSensorThingsProvider::QgsSensorThingsProvider( const QString &uri, const Prov
   const QUrl url( QgsSensorThingsSharedData::parseUrl( mSharedData->mRootUri ) );
 
   QNetworkRequest request = QNetworkRequest( url );
-  QgsSetRequestInitiatorClass( request, QStringLiteral( "QgsSensorThingsProvider" ) )
-  mSharedData->mHeaders.updateNetworkRequest( request );
+  QgsSetRequestInitiatorClass( request, u"QgsSensorThingsProvider"_s ) mSharedData->mHeaders.updateNetworkRequest( request );
 
   QgsBlockingNetworkRequest networkRequest;
   networkRequest.setAuthCfg( mSharedData->mAuthCfg );
@@ -56,7 +62,7 @@ QgsSensorThingsProvider::QgsSensorThingsProvider( const QString &uri, const Prov
     case QgsBlockingNetworkRequest::NetworkError:
     case QgsBlockingNetworkRequest::TimeoutError:
     case QgsBlockingNetworkRequest::ServerExceptionError:
-      appendError( QgsErrorMessage( tr( "Connection failed: %1" ).arg( networkRequest.errorMessage() ), QStringLiteral( "SensorThings" ) ) );
+      appendError( QgsErrorMessage( tr( "Connection failed: %1" ).arg( networkRequest.errorMessage() ), u"SensorThings"_s ) );
       return;
   }
 
@@ -65,9 +71,31 @@ QgsSensorThingsProvider::QgsSensorThingsProvider( const QString &uri, const Prov
   try
   {
     auto rootContent = json::parse( content.content().toStdString() );
+
+    // try to determine sensorthings version
+    if ( rootContent.contains( "serverSettings" ) && rootContent["serverSettings"].contains( "conformance" ) )
+    {
+      for ( const auto &valueJson : rootContent["serverSettings"]["conformance"] )
+      {
+        const QString conformance = QString::fromStdString( valueJson.get<std::string>() );
+        const thread_local QRegularExpression sDataModelRx( u".*/datamodel\\b"_s );
+        if ( sDataModelRx.match( conformance ).hasMatch() )
+        {
+          // extract version from datamodel value
+          const thread_local QRegularExpression sVersionRx( u"\\d+\\.\\d+"_s );
+          const QRegularExpressionMatch versionMatch = sVersionRx.match( conformance );
+          if ( versionMatch.hasMatch() )
+          {
+            const QString versionString = versionMatch.captured( 0 );
+            mSharedData->mVersion = QVersionNumber::fromString( versionString );
+          }
+        }
+      }
+    }
+
     if ( !rootContent.contains( "value" ) )
     {
-      appendError( QgsErrorMessage( tr( "No 'value' array in response" ), QStringLiteral( "SensorThings" ) ) );
+      appendError( QgsErrorMessage( tr( "No 'value' array in response" ), u"SensorThings"_s ) );
       return;
     }
 
@@ -102,7 +130,6 @@ QgsSensorThingsProvider::QgsSensorThingsProvider( const QString &uri, const Prov
     {
       switch ( mSharedData->mEntityType )
       {
-
         case Qgis::SensorThingsEntity::Invalid:
         case Qgis::SensorThingsEntity::Thing:
         case Qgis::SensorThingsEntity::Location:
@@ -111,14 +138,84 @@ QgsSensorThingsProvider::QgsSensorThingsProvider( const QString &uri, const Prov
         case Qgis::SensorThingsEntity::Sensor:
         case Qgis::SensorThingsEntity::ObservedProperty:
         case Qgis::SensorThingsEntity::Observation:
-        case Qgis::SensorThingsEntity::FeatureOfInterest:
-          appendError( QgsErrorMessage( tr( "Could not find url for %1" ).arg( qgsEnumValueToKey( mSharedData->mEntityType ) ), QStringLiteral( "SensorThings" ) ) );
+        case Qgis::SensorThingsEntity::Feature:
+          appendError( QgsErrorMessage( tr( "Could not find url for %1" ).arg( qgsEnumValueToKey( mSharedData->mEntityType ) ), u"SensorThings"_s ) );
           QgsMessageLog::logMessage( tr( "Could not find url for %1" ).arg( qgsEnumValueToKey( mSharedData->mEntityType ) ), tr( "SensorThings" ) );
           break;
 
         case Qgis::SensorThingsEntity::MultiDatastream:
-          appendError( QgsErrorMessage( tr( "MultiDatastreams are not supported by this connection" ), QStringLiteral( "SensorThings" ) ) );
+          appendError( QgsErrorMessage( tr( "MultiDatastreams are not supported by this connection" ), u"SensorThings"_s ) );
           QgsMessageLog::logMessage( tr( "MultiDatastreams are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::FeatureOfInterest:
+          appendError( QgsErrorMessage( tr( "FeaturesOfInterest are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "FeaturesOfInterest are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::FeatureType:
+          appendError( QgsErrorMessage( tr( "FeatureTypes are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "FeatureTypes are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::Deployment:
+          appendError( QgsErrorMessage( tr( "Deployments are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "Deployments are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::ObservingProcedure:
+          appendError( QgsErrorMessage( tr( "ObservingProcedures are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "ObservingProcedures are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::Sampling:
+          appendError( QgsErrorMessage( tr( "Samplings are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "Samplings are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::SamplingProcedure:
+          appendError( QgsErrorMessage( tr( "SamplingProcedures are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "SamplingProcedures are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::Sampler:
+          appendError( QgsErrorMessage( tr( "Samplers are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "Samplers are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::PreparationStep:
+          appendError( QgsErrorMessage( tr( "PreparationSteps are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "PreparationSteps are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::PreparationProcedure:
+          appendError( QgsErrorMessage( tr( "PreparationProcedures are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "PreparationProcedures are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::ThingRelation:
+          appendError( QgsErrorMessage( tr( "ThingRelations are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "ThingRelations are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::RelationRole:
+          appendError( QgsErrorMessage( tr( "RelationRoles are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "RelationRoles are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::FeatureRelation:
+          appendError( QgsErrorMessage( tr( "FeatureRelations are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "FeatureRelations are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::DatastreamRelation:
+          appendError( QgsErrorMessage( tr( "DatastreamRelations are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "DatastreamRelations are not supported by this connection" ), tr( "SensorThings" ) );
+          break;
+
+        case Qgis::SensorThingsEntity::ObservationRelation:
+          appendError( QgsErrorMessage( tr( "ObservationRelations are not supported by this connection" ), u"SensorThings"_s ) );
+          QgsMessageLog::logMessage( tr( "ObservationRelations are not supported by this connection" ), tr( "SensorThings" ) );
           break;
       }
 
@@ -127,7 +224,7 @@ QgsSensorThingsProvider::QgsSensorThingsProvider( const QString &uri, const Prov
   }
   catch ( const json::parse_error &ex )
   {
-    appendError( QgsErrorMessage( tr( "Error parsing response: %1" ).arg( ex.what() ), QStringLiteral( "SensorThings" ) ) );
+    appendError( QgsErrorMessage( tr( "Error parsing response: %1" ).arg( ex.what() ), u"SensorThings"_s ) );
     return;
   }
 
@@ -138,7 +235,7 @@ QString QgsSensorThingsProvider::storageType() const
 {
   QGIS_PROTECT_QOBJECT_THREAD_ACCESS
 
-  return QStringLiteral( "OGC SensorThings API" );
+  return u"OGC SensorThings API"_s;
 }
 
 QgsAbstractFeatureSource *QgsSensorThingsProvider::featureSource() const
@@ -199,10 +296,21 @@ QString QgsSensorThingsProvider::htmlMetadata() const
   QString metadata;
 
   QgsReadWriteLocker locker( mSharedData->mReadWriteLock, QgsReadWriteLocker::Read );
+  metadata += u"<tr><td class=\"highlight\">"_s % tr( "SensorThings Version" ) % u"</td><td>%1"_s.arg( mSharedData->mVersion.toString() ) % u"</td></tr>\n"_s;
+  metadata += u"<tr><td class=\"highlight\">"_s % tr( "Entity Type" ) % u"</td><td>%1"_s.arg( qgsEnumValueToKey( mSharedData->mEntityType ) ) % u"</td></tr>\n"_s;
+  metadata += u"<tr><td class=\"highlight\">"_s % tr( "Endpoint" ) % u"</td><td><a href=\"%1\">%1</a>"_s.arg( mSharedData->mEntityBaseUri ) % u"</td></tr>\n"_s;
 
-  metadata += QStringLiteral( "<tr><td class=\"highlight\">" ) % tr( "Entity Type" ) % QStringLiteral( "</td><td>%1" ).arg( qgsEnumValueToKey( mSharedData->mEntityType ) ) % QStringLiteral( "</td></tr>\n" );
-  metadata += QStringLiteral( "<tr><td class=\"highlight\">" ) % tr( "Endpoint" ) % QStringLiteral( "</td><td><a href=\"%1\">%1</a>" ).arg( mSharedData->mEntityBaseUri ) % QStringLiteral( "</td></tr>\n" );
+  return metadata;
+}
 
+QVariantMap QgsSensorThingsProvider::metadata() const
+{
+  QGIS_PROTECT_QOBJECT_THREAD_ACCESS
+
+  QVariantMap metadata;
+
+  QgsReadWriteLocker locker( mSharedData->mReadWriteLock, QgsReadWriteLocker::Read );
+  metadata.insert( u"SensorThingsVersion"_s, mSharedData->mVersion.toString() );
   return metadata;
 }
 
@@ -217,9 +325,7 @@ Qgis::VectorProviderCapabilities QgsSensorThingsProvider::capabilities() const
 {
   QGIS_PROTECT_QOBJECT_THREAD_ACCESS
 
-  Qgis::VectorProviderCapabilities c = Qgis::VectorProviderCapability::SelectAtId
-                                       | Qgis::VectorProviderCapability::ReadLayerMetadata
-                                       | Qgis::VectorProviderCapability::ReloadData;
+  Qgis::VectorProviderCapabilities c = Qgis::VectorProviderCapability::SelectAtId | Qgis::VectorProviderCapability::ReadLayerMetadata | Qgis::VectorProviderCapability::ReloadData;
 
   return c;
 }
@@ -237,7 +343,7 @@ QString QgsSensorThingsProvider::subsetStringDialect() const
 
 QString QgsSensorThingsProvider::subsetStringHelpUrl() const
 {
-  return QStringLiteral( "https://docs.ogc.org/is/18-088/18-088.html#filter" );
+  return u"https://docs.ogc.org/is/18-088/18-088.html#filter"_s;
 }
 
 QString QgsSensorThingsProvider::subsetString() const
@@ -331,14 +437,18 @@ void QgsSensorThingsProvider::reloadProviderData()
 // QgsSensorThingsProviderMetadata
 //
 
-QgsSensorThingsProviderMetadata::QgsSensorThingsProviderMetadata():
-  QgsProviderMetadata( QgsSensorThingsProvider::SENSORTHINGS_PROVIDER_KEY, QgsSensorThingsProvider::SENSORTHINGS_PROVIDER_DESCRIPTION )
+QgsSensorThingsProviderMetadata::QgsSensorThingsProviderMetadata()
+  : QgsProviderMetadata( QgsSensorThingsProvider::SENSORTHINGS_PROVIDER_KEY, QgsSensorThingsProvider::SENSORTHINGS_PROVIDER_DESCRIPTION )
+{}
+
+QgsProviderMetadata::ProviderCapabilities QgsSensorThingsProviderMetadata::providerCapabilities() const
 {
+  return QgsProviderMetadata::ProviderCapability::ParallelCreateProvider;
 }
 
 QIcon QgsSensorThingsProviderMetadata::icon() const
 {
-  return QgsApplication::getThemeIcon( QStringLiteral( "mIconSensorThings.svg" ) );
+  return QgsApplication::getThemeIcon( u"mIconSensorThings.svg"_s );
 }
 
 QList<QgsDataItemProvider *> QgsSensorThingsProviderMetadata::dataItemProviders() const
@@ -351,19 +461,19 @@ QVariantMap QgsSensorThingsProviderMetadata::decodeUri( const QString &uri ) con
   const QgsDataSourceUri dsUri = QgsDataSourceUri( uri );
 
   QVariantMap components;
-  components.insert( QStringLiteral( "url" ), dsUri.param( QStringLiteral( "url" ) ) );
+  components.insert( u"url"_s, dsUri.param( u"url"_s ) );
 
   if ( !dsUri.authConfigId().isEmpty() )
   {
-    components.insert( QStringLiteral( "authcfg" ), dsUri.authConfigId() );
+    components.insert( u"authcfg"_s, dsUri.authConfigId() );
   }
   if ( !dsUri.username().isEmpty() )
   {
-    components.insert( QStringLiteral( "username" ), dsUri.username() );
+    components.insert( u"username"_s, dsUri.username() );
   }
   if ( !dsUri.password().isEmpty() )
   {
-    components.insert( QStringLiteral( "password" ), dsUri.password() );
+    components.insert( u"password"_s, dsUri.password() );
   }
 
   // there's two different ways the referer can be set, so we need to check both. Which way it has been
@@ -371,24 +481,24 @@ QVariantMap QgsSensorThingsProviderMetadata::decodeUri( const QString &uri ) con
   // it to handle upgrading old referer handling for connections created before QgsHttpHeaders was invented,
   // and if we rely on that entirely then we get multiple "referer" parameters included in the URI, which is
   // both ugly and unnecessary for a provider created post QgsHttpHeaders.
-  if ( !dsUri.param( QStringLiteral( "referer" ) ).isEmpty() )
+  if ( !dsUri.param( u"referer"_s ).isEmpty() )
   {
-    components.insert( QStringLiteral( "referer" ), dsUri.param( QStringLiteral( "referer" ) ) );
+    components.insert( u"referer"_s, dsUri.param( u"referer"_s ) );
   }
-  if ( !dsUri.param( QStringLiteral( "http-header:referer" ) ).isEmpty() )
+  if ( !dsUri.param( u"http-header:referer"_s ).isEmpty() )
   {
-    components.insert( QStringLiteral( "referer" ), dsUri.param( QStringLiteral( "http-header:referer" ) ) );
+    components.insert( u"referer"_s, dsUri.param( u"http-header:referer"_s ) );
   }
 
-  const QString entityParam = dsUri.param( QStringLiteral( "entity" ) );
+  const QString entityParam = dsUri.param( u"entity"_s );
   Qgis::SensorThingsEntity entity = QgsSensorThingsUtils::entitySetStringToEntity( entityParam );
   if ( entity == Qgis::SensorThingsEntity::Invalid )
     entity = QgsSensorThingsUtils::stringToEntity( entityParam );
 
   if ( entity != Qgis::SensorThingsEntity::Invalid )
-    components.insert( QStringLiteral( "entity" ), qgsEnumValueToKey( entity ) );
+    components.insert( u"entity"_s, qgsEnumValueToKey( entity ) );
 
-  const QStringList expandToParam = dsUri.param( QStringLiteral( "expandTo" ) ).split( ';', Qt::SkipEmptyParts );
+  const QStringList expandToParam = dsUri.param( u"expandTo"_s ).split( ';', Qt::SkipEmptyParts );
   if ( !expandToParam.isEmpty() )
   {
     QVariantList expandParts;
@@ -402,37 +512,37 @@ QVariantMap QgsSensorThingsProviderMetadata::decodeUri( const QString &uri ) con
     }
     if ( !expandParts.isEmpty() )
     {
-      components.insert( QStringLiteral( "expandTo" ), expandParts );
+      components.insert( u"expandTo"_s, expandParts );
     }
   }
 
   bool ok = false;
-  const int maxPageSizeParam = dsUri.param( QStringLiteral( "pageSize" ) ).toInt( &ok );
+  const int maxPageSizeParam = dsUri.param( u"pageSize"_s ).toInt( &ok );
   if ( ok )
   {
-    components.insert( QStringLiteral( "pageSize" ), maxPageSizeParam );
+    components.insert( u"pageSize"_s, maxPageSizeParam );
   }
 
   ok = false;
-  const int featureLimitParam = dsUri.param( QStringLiteral( "featureLimit" ) ).toInt( &ok );
+  const int featureLimitParam = dsUri.param( u"featureLimit"_s ).toInt( &ok );
   if ( ok )
   {
-    components.insert( QStringLiteral( "featureLimit" ), featureLimitParam );
+    components.insert( u"featureLimit"_s, featureLimitParam );
   }
 
   switch ( QgsWkbTypes::geometryType( dsUri.wkbType() ) )
   {
     case Qgis::GeometryType::Point:
       if ( QgsWkbTypes::isMultiType( dsUri.wkbType() ) )
-        components.insert( QStringLiteral( "geometryType" ), QStringLiteral( "multipoint" ) );
+        components.insert( u"geometryType"_s, u"multipoint"_s );
       else
-        components.insert( QStringLiteral( "geometryType" ), QStringLiteral( "point" ) );
+        components.insert( u"geometryType"_s, u"point"_s );
       break;
     case Qgis::GeometryType::Line:
-      components.insert( QStringLiteral( "geometryType" ), QStringLiteral( "line" ) );
+      components.insert( u"geometryType"_s, u"line"_s );
       break;
     case Qgis::GeometryType::Polygon:
-      components.insert( QStringLiteral( "geometryType" ), QStringLiteral( "polygon" ) );
+      components.insert( u"geometryType"_s, u"polygon"_s );
       break;
 
     case Qgis::GeometryType::Unknown:
@@ -440,7 +550,7 @@ QVariantMap QgsSensorThingsProviderMetadata::decodeUri( const QString &uri ) con
       break;
   }
 
-  const QStringList bbox = dsUri.param( QStringLiteral( "bbox" ) ).split( ',' );
+  const QStringList bbox = dsUri.param( u"bbox"_s ).split( ',' );
   if ( bbox.size() == 4 )
   {
     QgsRectangle r;
@@ -453,11 +563,11 @@ QVariantMap QgsSensorThingsProviderMetadata::decodeUri( const QString &uri ) con
     r.setXMaximum( bbox[2].toDouble( &xmaxOk ) );
     r.setYMaximum( bbox[3].toDouble( &ymaxOk ) );
     if ( xminOk && yminOk && xmaxOk && ymaxOk )
-      components.insert( QStringLiteral( "bounds" ), r );
+      components.insert( u"bounds"_s, r );
   }
 
   if ( !dsUri.sql().isEmpty() )
-    components.insert( QStringLiteral( "sql" ), dsUri.sql() );
+    components.insert( u"sql"_s, dsUri.sql() );
 
   return components;
 }
@@ -465,37 +575,35 @@ QVariantMap QgsSensorThingsProviderMetadata::decodeUri( const QString &uri ) con
 QString QgsSensorThingsProviderMetadata::encodeUri( const QVariantMap &parts ) const
 {
   QgsDataSourceUri dsUri;
-  dsUri.setParam( QStringLiteral( "url" ), parts.value( QStringLiteral( "url" ) ).toString() );
+  dsUri.setParam( u"url"_s, parts.value( u"url"_s ).toString() );
 
-  if ( !parts.value( QStringLiteral( "authcfg" ) ).toString().isEmpty() )
+  if ( !parts.value( u"authcfg"_s ).toString().isEmpty() )
   {
-    dsUri.setAuthConfigId( parts.value( QStringLiteral( "authcfg" ) ).toString() );
+    dsUri.setAuthConfigId( parts.value( u"authcfg"_s ).toString() );
   }
-  if ( !parts.value( QStringLiteral( "username" ) ).toString().isEmpty() )
+  if ( !parts.value( u"username"_s ).toString().isEmpty() )
   {
-    dsUri.setUsername( parts.value( QStringLiteral( "username" ) ).toString() );
+    dsUri.setUsername( parts.value( u"username"_s ).toString() );
   }
-  if ( !parts.value( QStringLiteral( "password" ) ).toString().isEmpty() )
+  if ( !parts.value( u"password"_s ).toString().isEmpty() )
   {
-    dsUri.setPassword( parts.value( QStringLiteral( "password" ) ).toString() );
+    dsUri.setPassword( parts.value( u"password"_s ).toString() );
   }
-  if ( !parts.value( QStringLiteral( "referer" ) ).toString().isEmpty() )
+  if ( !parts.value( u"referer"_s ).toString().isEmpty() )
   {
-    dsUri.setParam( QStringLiteral( "referer" ), parts.value( QStringLiteral( "referer" ) ).toString() );
+    dsUri.setParam( u"referer"_s, parts.value( u"referer"_s ).toString() );
   }
 
-  Qgis::SensorThingsEntity entity = QgsSensorThingsUtils::entitySetStringToEntity(
-                                      parts.value( QStringLiteral( "entity" ) ).toString() );
+  Qgis::SensorThingsEntity entity = QgsSensorThingsUtils::entitySetStringToEntity( parts.value( u"entity"_s ).toString() );
   if ( entity == Qgis::SensorThingsEntity::Invalid )
-    entity = QgsSensorThingsUtils::stringToEntity( parts.value( QStringLiteral( "entity" ) ).toString() );
+    entity = QgsSensorThingsUtils::stringToEntity( parts.value( u"entity"_s ).toString() );
 
   if ( entity != Qgis::SensorThingsEntity::Invalid )
   {
-    dsUri.setParam( QStringLiteral( "entity" ),
-                    qgsEnumValueToKey( entity ) );
+    dsUri.setParam( u"entity"_s, qgsEnumValueToKey( entity ) );
   }
 
-  const QVariantList expandToParam = parts.value( QStringLiteral( "expandTo" ) ).toList();
+  const QVariantList expandToParam = parts.value( u"expandTo"_s ).toList();
   if ( !expandToParam.isEmpty() )
   {
     QStringList expandToStringList;
@@ -509,50 +617,50 @@ QString QgsSensorThingsProviderMetadata::encodeUri( const QVariantMap &parts ) c
     }
     if ( !expandToStringList.isEmpty() )
     {
-      dsUri.setParam( QStringLiteral( "expandTo" ), expandToStringList.join( ';' ) );
+      dsUri.setParam( u"expandTo"_s, expandToStringList.join( ';' ) );
     }
   }
 
   bool ok = false;
-  const int maxPageSizeParam = parts.value( QStringLiteral( "pageSize" ) ).toInt( &ok );
+  const int maxPageSizeParam = parts.value( u"pageSize"_s ).toInt( &ok );
   if ( ok )
   {
-    dsUri.setParam( QStringLiteral( "pageSize" ), QString::number( maxPageSizeParam ) );
+    dsUri.setParam( u"pageSize"_s, QString::number( maxPageSizeParam ) );
   }
 
   ok = false;
-  const int featureLimitParam = parts.value( QStringLiteral( "featureLimit" ) ).toInt( &ok );
+  const int featureLimitParam = parts.value( u"featureLimit"_s ).toInt( &ok );
   if ( ok )
   {
-    dsUri.setParam( QStringLiteral( "featureLimit" ), QString::number( featureLimitParam ) );
+    dsUri.setParam( u"featureLimit"_s, QString::number( featureLimitParam ) );
   }
 
-  const QString geometryType = parts.value( QStringLiteral( "geometryType" ) ).toString();
-  if ( geometryType.compare( QLatin1String( "point" ), Qt::CaseInsensitive ) == 0 )
+  const QString geometryType = parts.value( u"geometryType"_s ).toString();
+  if ( geometryType.compare( "point"_L1, Qt::CaseInsensitive ) == 0 )
   {
     dsUri.setWkbType( Qgis::WkbType::PointZ );
   }
-  else if ( geometryType.compare( QLatin1String( "multipoint" ), Qt::CaseInsensitive ) == 0 )
+  else if ( geometryType.compare( "multipoint"_L1, Qt::CaseInsensitive ) == 0 )
   {
     dsUri.setWkbType( Qgis::WkbType::MultiPointZ );
   }
-  else if ( geometryType.compare( QLatin1String( "line" ), Qt::CaseInsensitive ) == 0 )
+  else if ( geometryType.compare( "line"_L1, Qt::CaseInsensitive ) == 0 )
   {
     dsUri.setWkbType( Qgis::WkbType::MultiLineStringZ );
   }
-  else if ( geometryType.compare( QLatin1String( "polygon" ), Qt::CaseInsensitive ) == 0 )
+  else if ( geometryType.compare( "polygon"_L1, Qt::CaseInsensitive ) == 0 )
   {
     dsUri.setWkbType( Qgis::WkbType::MultiPolygonZ );
   }
 
-  if ( parts.contains( QStringLiteral( "bounds" ) ) && parts.value( QStringLiteral( "bounds" ) ).userType() == qMetaTypeId<QgsRectangle>() )
+  if ( parts.contains( u"bounds"_s ) && parts.value( u"bounds"_s ).userType() == qMetaTypeId<QgsRectangle>() )
   {
-    const QgsRectangle bBox = parts.value( QStringLiteral( "bounds" ) ).value< QgsRectangle >();
-    dsUri.setParam( QStringLiteral( "bbox" ), QStringLiteral( "%1,%2,%3,%4" ).arg( bBox.xMinimum() ).arg( bBox.yMinimum() ).arg( bBox.xMaximum() ).arg( bBox.yMaximum() ) );
+    const QgsRectangle bBox = parts.value( u"bounds"_s ).value< QgsRectangle >();
+    dsUri.setParam( u"bbox"_s, u"%1,%2,%3,%4"_s.arg( bBox.xMinimum() ).arg( bBox.yMinimum() ).arg( bBox.xMaximum() ).arg( bBox.yMaximum() ) );
   }
 
-  if ( !parts.value( QStringLiteral( "sql" ) ).toString().isEmpty() )
-    dsUri.setSql( parts.value( QStringLiteral( "sql" ) ).toString() );
+  if ( !parts.value( u"sql"_s ).toString().isEmpty() )
+    dsUri.setSql( parts.value( u"sql"_s ).toString() );
 
   return dsUri.uri( false );
 }

@@ -16,12 +16,12 @@
 #define QGSVECTORLAYEREDITBUFFER_H
 
 #include "qgis_core.h"
-#include <QList>
-#include <QSet>
-
 #include "qgsfeature.h"
 #include "qgsfields.h"
 #include "qgsgeometry.h"
+
+#include <QList>
+#include <QSet>
 
 class QgsVectorLayer;
 class QgsVectorLayerEditBufferGroup;
@@ -287,7 +287,6 @@ class CORE_EXPORT QgsVectorLayerEditBuffer : public QObject
     void committedGeometriesChanges( const QString &layerId, const QgsGeometryMap &changedGeometries );
 
   protected:
-
     QgsVectorLayerEditBuffer() = default;
 
     //! Update feature with uncommitted geometry updates
@@ -362,7 +361,6 @@ class CORE_EXPORT QgsVectorLayerEditBuffer : public QObject
     friend class QgsGrassProvider; //GRASS provider totally abuses the edit buffer
 
   private:
-
     friend class QgsVectorLayerEditBufferGroup;
 
     /**

@@ -13,9 +13,11 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgslabelingengineruleregistry.h"
+
+#include <geos_c.h>
+
 #include "qgslabelingenginerule.h"
 #include "qgslabelingenginerule_impl.h"
-#include <geos_c.h>
 
 QgsLabelingEngineRuleRegistry::QgsLabelingEngineRuleRegistry()
 {
@@ -76,7 +78,7 @@ bool QgsLabelingEngineRuleRegistry::addRule( QgsAbstractLabelingEngineRule *rule
     return false;
   }
 
-  mRules[ rule->id() ] = std::unique_ptr< QgsAbstractLabelingEngineRule >( rule );
+  mRules[rule->id()] = std::unique_ptr< QgsAbstractLabelingEngineRule >( rule );
   return true;
 }
 
@@ -84,4 +86,3 @@ void QgsLabelingEngineRuleRegistry::removeRule( const QString &id )
 {
   mRules.erase( id );
 }
-

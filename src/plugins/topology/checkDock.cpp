@@ -15,34 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "checkDock.h"
+
+#include "dockModel.h"
+#include "qgisinterface.h"
+#include "qgsfeature.h"
+#include "qgsfeatureiterator.h"
+#include "qgsgeometry.h"
+#include "qgsmapcanvas.h"
+#include "qgsmaplayer.h"
+#include "qgsmessagelog.h"
+#include "qgsproject.h"
+#include "qgsrubberband.h"
+#include "qgssettings.h"
+#include "qgsstringutils.h"
+#include "qgsvectorlayer.h"
+#include "qgsvertexmarker.h"
+#include "rulesDialog.h"
+#include "topolTest.h"
+
 #include <QMessageBox>
 #include <QProgressDialog>
 
-#include "checkDock.h"
 #include "moc_checkDock.cpp"
-
-#include "qgsfeatureiterator.h"
-#include "qgsvectorlayer.h"
-#include "qgsmaplayer.h"
-#include "qgsproject.h"
-#include "qgsgeometry.h"
-#include "qgsvertexmarker.h"
-#include "qgsfeature.h"
-#include "qgsmapcanvas.h"
-#include "qgsrubberband.h"
-#include "qgisinterface.h"
-#include "qgsmessagelog.h"
-#include "qgssettings.h"
-#include "qgsstringutils.h"
-
-#include "topolTest.h"
-#include "rulesDialog.h"
-#include "dockModel.h"
 
 //class QgisInterface;
 
 checkDock::checkDock( QgisInterface *qIface, QWidget *parent )
-  : QgsDockWidget( parent ), Ui::checkDock()
+  : QgsDockWidget( parent )
+  , Ui::checkDock()
 {
   mTest = new topolTest( qIface );
 
@@ -63,9 +64,9 @@ checkDock::checkDock( QgisInterface *qIface, QWidget *parent )
   mTestTable = mConfigureDialog->rulesTable();
 
   QgsMapCanvas *canvas = qIface->mapCanvas(); // mQgisApp->mapCanvas();
-  mRBFeature1.reset( new QgsRubberBand( canvas ) );
-  mRBFeature2.reset( new QgsRubberBand( canvas ) );
-  mRBConflict.reset( new QgsRubberBand( canvas ) );
+  mRBFeature1 = make_qobject_unique<QgsRubberBand>( canvas );
+  mRBFeature2 = make_qobject_unique<QgsRubberBand>( canvas );
+  mRBConflict = make_qobject_unique<QgsRubberBand>( canvas );
 
   mRBFeature1->setColor( QColor( 0, 0, 255, 65 ) );
   mRBFeature2->setColor( QColor( 0, 255, 0, 65 ) );
@@ -81,7 +82,6 @@ checkDock::checkDock( QgisInterface *qIface, QWidget *parent )
 
   connect( actionConfigure, &QAction::triggered, this, &checkDock::configure );
   connect( actionValidateAll, &QAction::triggered, this, &checkDock::validateAll );
-  //connect( mValidateSelectedButton, SIGNAL( clicked() ), this, SLOT( validateSelected() ) );
   connect( actionValidateExtent, &QAction::triggered, this, &checkDock::validateExtent );
   connect( mToggleRubberband, &QAbstractButton::clicked, this, &checkDock::toggleErrorMarker );
 

@@ -15,14 +15,14 @@
 #ifndef QGSHEATMAPRENDERER_H
 #define QGSHEATMAPRENDERER_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgsrenderer.h"
+#include "qgscolorramplegendnodesettings.h"
 #include "qgsexpression.h"
 #include "qgsgeometry.h"
 #include "qgsmapunitscale.h"
-#include "qgis.h"
-#include "qgscolorramplegendnodesettings.h"
+#include "qgsrenderer.h"
 
 class QgsColorRamp;
 
@@ -34,7 +34,6 @@ class QgsColorRamp;
 class CORE_EXPORT QgsHeatmapRenderer : public QgsFeatureRenderer
 {
   public:
-
     QgsHeatmapRenderer();
     ~QgsHeatmapRenderer() override;
 
@@ -70,7 +69,7 @@ class CORE_EXPORT QgsHeatmapRenderer : public QgsFeatureRenderer
      * \returns color ramp for heatmap
      * \see setColorRamp
      */
-    QgsColorRamp *colorRamp() const { return mGradientRamp; }
+    QgsColorRamp *colorRamp() const { return mGradientRamp.get(); }
 
     /**
      * Sets the color ramp to use for shading the heatmap.
@@ -196,7 +195,6 @@ class CORE_EXPORT QgsHeatmapRenderer : public QgsFeatureRenderer
     void setWeightExpression( const QString &expression ) { mWeightExpressionString = expression; }
 
   private:
-
     QVector<double> mValues;
 
     double mCalculatedMaxValue = 0;
@@ -211,7 +209,7 @@ class CORE_EXPORT QgsHeatmapRenderer : public QgsFeatureRenderer
     int mWeightAttrNum = -1;
     std::unique_ptr<QgsExpression> mWeightExpression;
 
-    QgsColorRamp *mGradientRamp = nullptr;
+    std::unique_ptr<QgsColorRamp> mGradientRamp;
 
     double mExplicitMax = 0.0;
     int mRenderQuality = 3;

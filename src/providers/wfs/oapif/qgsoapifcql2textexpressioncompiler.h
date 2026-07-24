@@ -17,9 +17,8 @@
 #define QGSOAPIFCQL2TEXTEXPRESSIONCOMPILER_H
 
 #include "qgis_core.h"
-#include "qgsfields.h"
 #include "qgsexpressionnodeimpl.h"
-
+#include "qgsfields.h"
 #include "qgsoapifqueryablesrequest.h"
 
 class QgsExpression;
@@ -33,11 +32,7 @@ class QgsOapifCql2TextExpressionCompiler
 {
   public:
     QgsOapifCql2TextExpressionCompiler(
-      const QMap<QString, QgsOapifQueryablesRequest::Queryable> &queryables,
-      bool supportsLikeBetweenIn,
-      bool supportsCaseI,
-      bool supportsBasicSpatialOperators,
-      bool invertAxisOrientation
+      const QMap<QString, QgsOapifQueryablesRequest::Queryable> &queryables, bool supportsLikeBetweenIn, bool supportsCaseI, bool supportsBasicSpatialOperators, bool invertAxisOrientation
     );
 
     //! Possible results from expression compilation

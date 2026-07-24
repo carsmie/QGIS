@@ -13,27 +13,31 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsrendererwidget.h"
-#include "moc_qgsrendererwidget.cpp"
 
-#include "qgsdatadefinedsizelegendwidget.h"
-#include "qgssymbol.h"
-#include "qgsvectorlayer.h"
 #include "qgscolordialog.h"
-#include "qgssymbollevelsdialog.h"
-#include "qgssymbollayer.h"
+#include "qgsdatadefinedsizelegendwidget.h"
+#include "qgsexpressioncontextutils.h"
+#include "qgslinesymbol.h"
 #include "qgsmapcanvas.h"
+#include "qgsmarkersymbol.h"
 #include "qgspanelwidget.h"
 #include "qgsproject.h"
-#include "qgsexpressioncontextutils.h"
+#include "qgssymbol.h"
+#include "qgssymbollayer.h"
 #include "qgssymbollayerutils.h"
+#include "qgssymbollevelsdialog.h"
 #include "qgstemporalcontroller.h"
-#include "qgsmarkersymbol.h"
-#include "qgslinesymbol.h"
+#include "qgsvectorlayer.h"
 
-#include <QMessageBox>
+#include <QClipboard>
 #include <QInputDialog>
 #include <QMenu>
-#include <QClipboard>
+#include <QMessageBox>
+#include <QString>
+
+#include "moc_qgsrendererwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsRendererWidget::QgsRendererWidget( QgsVectorLayer *layer, QgsStyle *style )
   : mLayer( layer )
@@ -56,18 +60,18 @@ QgsRendererWidget::QgsRendererWidget( QgsVectorLayer *layer, QgsStyle *style )
   connect( mPasteSymbolAction, &QAction::triggered, this, &QgsRendererWidget::pasteSymbolToSelection );
 
   contextMenu->addSeparator();
-  contextMenu->addAction( tr( "Change Color…" ), this, SLOT( changeSymbolColor() ) );
-  contextMenu->addAction( tr( "Change Opacity…" ), this, SLOT( changeSymbolOpacity() ) );
-  contextMenu->addAction( tr( "Change Output Unit…" ), this, SLOT( changeSymbolUnit() ) );
+  contextMenu->addAction( tr( "Change Color…" ), this, &QgsRendererWidget::changeSymbolColor );
+  contextMenu->addAction( tr( "Change Opacity…" ), this, &QgsRendererWidget::changeSymbolOpacity );
+  contextMenu->addAction( tr( "Change Output Unit…" ), this, &QgsRendererWidget::changeSymbolUnit );
 
   if ( mLayer && mLayer->geometryType() == Qgis::GeometryType::Line )
   {
-    contextMenu->addAction( tr( "Change Width…" ), this, SLOT( changeSymbolWidth() ) );
+    contextMenu->addAction( tr( "Change Width…" ), this, &QgsRendererWidget::changeSymbolWidth );
   }
   else if ( mLayer && mLayer->geometryType() == Qgis::GeometryType::Point )
   {
-    contextMenu->addAction( tr( "Change Size…" ), this, SLOT( changeSymbolSize() ) );
-    contextMenu->addAction( tr( "Change Angle…" ), this, SLOT( changeSymbolAngle() ) );
+    contextMenu->addAction( tr( "Change Size…" ), this, &QgsRendererWidget::changeSymbolSize );
+    contextMenu->addAction( tr( "Change Angle…" ), this, &QgsRendererWidget::changeSymbolAngle );
   }
 
   connect( contextMenu, &QMenu::aboutToShow, this, [this] {
@@ -122,7 +126,7 @@ void QgsRendererWidget::changeSymbolColor()
   else
   {
     // modal dialog version... yuck
-    const QColor color = QgsColorDialog::getColor( firstSymbol->color(), this, QStringLiteral( "Change Symbol Color" ), true );
+    const QColor color = QgsColorDialog::getColor( firstSymbol->color(), this, u"Change Symbol Color"_s, true );
     if ( color.isValid() )
     {
       for ( QgsSymbol *symbol : symbolList )
@@ -298,8 +302,7 @@ void QgsRendererWidget::changeSymbolAngle()
 }
 
 void QgsRendererWidget::pasteSymbolToSelection()
-{
-}
+{}
 
 void QgsRendererWidget::copySymbol()
 {
@@ -327,9 +330,7 @@ void QgsRendererWidget::showSymbolLevelsDialog( QgsFeatureRenderer *r )
   {
     QgsSymbolLevelsWidget *widget = new QgsSymbolLevelsWidget( r->legendSymbolItems(), r->usingSymbolLevels(), panel );
     widget->setPanelTitle( tr( "Symbol Levels" ) );
-    connect( widget, &QgsPanelWidget::widgetChanged, this, [this, widget]() {
-      setSymbolLevels( widget->symbolLevels(), widget->usingLevels() );
-    } );
+    connect( widget, &QgsPanelWidget::widgetChanged, this, [this, widget]() { setSymbolLevels( widget->symbolLevels(), widget->usingLevels() ); } );
     panel->openPanel( widget );
   }
   else
@@ -371,8 +372,7 @@ void QgsRendererWidget::setDockMode( bool dockMode )
 }
 
 void QgsRendererWidget::disableSymbolLevels()
-{
-}
+{}
 
 QgsDataDefinedSizeLegendWidget *QgsRendererWidget::createDataDefinedSizeLegendWidget( const QgsMarkerSymbol *symbol, const QgsDataDefinedSizeLegend *ddsLegend )
 {
@@ -389,8 +389,7 @@ QgsDataDefinedSizeLegendWidget *QgsRendererWidget::createDataDefinedSizeLegendWi
 }
 
 void QgsRendererWidget::setSymbolLevels( const QList<QgsLegendSymbolItem> &, bool )
-{
-}
+{}
 
 void QgsRendererWidget::registerDataDefinedButton( QgsPropertyOverrideButton *button, QgsFeatureRenderer::Property key )
 {
@@ -422,13 +421,13 @@ QgsExpressionContext QgsRendererWidget::createExpressionContext() const
   QStringList highlights;
   highlights << QgsExpressionContext::EXPR_ORIGINAL_VALUE;
 
-  if ( expContext.hasVariable( QStringLiteral( "zoom_level" ) ) )
+  if ( expContext.hasVariable( u"zoom_level"_s ) )
   {
-    highlights << QStringLiteral( "zoom_level" );
+    highlights << u"zoom_level"_s;
   }
-  if ( expContext.hasVariable( QStringLiteral( "vector_tile_zoom" ) ) )
+  if ( expContext.hasVariable( u"vector_tile_zoom"_s ) )
   {
-    highlights << QStringLiteral( "vector_tile_zoom" );
+    highlights << u"vector_tile_zoom"_s;
   }
 
   expContext.setHighlightedVariables( highlights );
@@ -469,10 +468,11 @@ QgsExpressionContext QgsDataDefinedValueDialog::createExpressionContext() const
   }
   else
   {
-    expContext << QgsExpressionContextUtils::globalScope()
-               << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
-               << QgsExpressionContextUtils::atlasScope( nullptr )
-               << QgsExpressionContextUtils::mapSettingsScope( QgsMapSettings() );
+    expContext
+      << QgsExpressionContextUtils::globalScope()
+      << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
+      << QgsExpressionContextUtils::atlasScope( nullptr )
+      << QgsExpressionContextUtils::mapSettingsScope( QgsMapSettings() );
   }
 
   if ( auto *lVectorLayer = vectorLayer() )
@@ -619,5 +619,4 @@ void QgsDataDefinedWidthDialog::setDataDefined( QgsSymbol *symbol, const QgsProp
 }
 
 void QgsRendererWidget::apply()
-{
-}
+{}

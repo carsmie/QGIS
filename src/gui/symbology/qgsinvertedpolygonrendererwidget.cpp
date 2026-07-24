@@ -13,11 +13,19 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsinvertedpolygonrendererwidget.h"
-#include "moc_qgsinvertedpolygonrendererwidget.cpp"
+
+#include <memory>
+
+#include "qgsapplication.h"
 #include "qgsinvertedpolygonrenderer.h"
 #include "qgsrendererregistry.h"
 #include "qgsvectorlayer.h"
-#include "qgsapplication.h"
+
+#include <QString>
+
+#include "moc_qgsinvertedpolygonrendererwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsRendererWidget *QgsInvertedPolygonRendererWidget::create( QgsVectorLayer *layer, QgsStyle *style, QgsFeatureRenderer *renderer )
 {
@@ -40,10 +48,14 @@ QgsInvertedPolygonRendererWidget::QgsInvertedPolygonRendererWidget( QgsVectorLay
     //setup blank dialog
     mRenderer.reset( nullptr );
     QGridLayout *layout = new QGridLayout( this );
-    QLabel *label = new QLabel( tr( "The inverted polygon renderer only applies to polygon and multipolygon layers. \n"
-                                    "'%1' is not a polygon layer and then cannot be displayed" )
-                                  .arg( layer->name() ),
-                                this );
+    QLabel *label = new QLabel(
+      tr(
+        "The inverted polygon renderer only applies to polygon and multipolygon layers. \n"
+        "'%1' is not a polygon layer and then cannot be displayed"
+      )
+        .arg( layer->name() ),
+      this
+    );
     this->setLayout( layout );
     layout->addWidget( label );
     return;
@@ -61,7 +73,7 @@ QgsInvertedPolygonRendererWidget::QgsInvertedPolygonRendererWidget( QgsVectorLay
   }
   if ( !mRenderer )
   {
-    mRenderer.reset( new QgsInvertedPolygonRenderer() );
+    mRenderer = std::make_unique<QgsInvertedPolygonRenderer>();
     if ( renderer )
       renderer->copyRendererData( mRenderer.get() );
   }
@@ -77,7 +89,7 @@ QgsInvertedPolygonRendererWidget::QgsInvertedPolygonRendererWidget( QgsVectorLay
   mRendererComboBox->blockSignals( true );
   for ( ; it != rendererList.constEnd(); ++it, ++idx )
   {
-    if ( *it != QLatin1String( "invertedPolygonRenderer" ) ) //< an inverted renderer cannot contain another inverted renderer
+    if ( *it != "invertedPolygonRenderer"_L1 ) //< an inverted renderer cannot contain another inverted renderer
     {
       QgsRendererAbstractMetadata *m = QgsApplication::rendererRegistry()->rendererMetadata( *it );
       mRendererComboBox->addItem( m->icon(), m->visibleName(), /* data */ *it );

@@ -18,12 +18,67 @@
 
 #include "qgis.h"
 #include "qgis_gui.h"
+
 #include <QGraphicsPathItem>
+#include <QGraphicsRectItem>
 #include <QObject>
 
 class QgsModelComponentGraphicItem;
+class QgsModelArrowItem;
 
 ///@cond NOT_STABLE
+
+
+/**
+ * \ingroup gui
+ * \brief A item for showing a "badge" on the midpoint of an arrow item.
+ * \warning Not stable API
+ * \since QGIS 4.0
+ */
+class GUI_EXPORT QgsModelDesignerArrowBadgeItem : public QGraphicsRectItem SIP_SKIP
+{
+  public:
+    QgsModelDesignerArrowBadgeItem( QgsModelArrowItem *link SIP_TRANSFERTHIS );
+
+    /**
+     * Sets the \a center point of the badge, in parent item coordinates.
+     */
+    void setCenter( const QPointF &center );
+
+    /**
+     * Returns the parent arrow item.
+     */
+    QgsModelArrowItem *arrow();
+
+    void paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr ) override;
+
+    /**
+     * Sets the \a value to display in the badge.
+     *
+     * \see value()
+     */
+    void setValue( const QVariant &value );
+
+    /**
+     * Returns the value displayed in the badge.
+     *
+     * \see setValue()
+     */
+    QVariant value() const;
+
+    /**
+     * Returns the badge text to show for a specified \a value.
+     */
+    static QString textForValue( const QVariant &value );
+
+  private:
+    void resizeToContents();
+
+    static constexpr int FONT_SIZE = 10; // Font size for the feature count text
+    static constexpr double BORDER_RADIUS = 5;
+    static constexpr double CONTENTS_MARGIN = 0.2;
+    QVariant mValue;
+};
 
 
 /**
@@ -49,7 +104,18 @@ class GUI_EXPORT QgsModelArrowItem : public QObject, public QGraphicsPathItem
      * The arrow will link \a startItem to \a endItem, joining the specified \a startEdge and \a startIndex
      * to \a endEdge and \a endIndex.
      */
-    QgsModelArrowItem( QgsModelComponentGraphicItem *startItem, Qt::Edge startEdge, int startIndex, bool startIsOutgoing, Marker startMarker, QgsModelComponentGraphicItem *endItem, Qt::Edge endEdge, int endIndex, bool endIsIncoming, Marker endMarker );
+    QgsModelArrowItem(
+      QgsModelComponentGraphicItem *startItem,
+      Qt::Edge startEdge,
+      int startIndex,
+      bool startIsOutgoing,
+      Marker startMarker,
+      QgsModelComponentGraphicItem *endItem,
+      Qt::Edge endEdge,
+      int endIndex,
+      bool endIsIncoming,
+      Marker endMarker
+    );
 
     /**
      * Constructor for QgsModelArrowItem, with the specified \a parent item.
@@ -81,6 +147,62 @@ class GUI_EXPORT QgsModelArrowItem : public QObject, public QGraphicsPathItem
      */
     void setPenStyle( Qt::PenStyle style );
 
+    /**
+     * Returns the item at the start of the arrow.
+     *
+     * \see endItem()
+     */
+    QgsModelComponentGraphicItem *startItem();
+
+    /**
+     * Returns the edge of the start item that arrow begins at.
+     *
+     * \see endEdge()
+     */
+    Qt::Edge startEdge() { return mStartEdge; }
+
+    /**
+     * Returns the index of the start item that arrow begins at.
+     *
+     * \see endIndex()
+     */
+    int startIndex() { return mStartIndex; }
+
+    /**
+     * Returns the item at the end of the arrow.
+     *
+     * \see startItem()
+     */
+    QgsModelComponentGraphicItem *endItem();
+
+    /**
+     * Returns the edge of the end item that arrow ends at.
+     *
+     * \see startEdge()
+     */
+    Qt::Edge endEdge() { return mEndEdge; }
+
+    /**
+     * Returns the index of the end item that arrow ends at.
+     *
+     * \see startIndex()
+     */
+    int endIndex() { return mEndIndex; }
+
+    /**
+     * Returns the optional badge item attached to the arrow.
+     *
+     * If setShowBadge() has not been called to show the item, the NULLPTR will be returned.
+     */
+    SIP_SKIP QgsModelDesignerArrowBadgeItem *badgeItem();
+
+    /**
+     * Sets whether the arrow's badge item should be shown.
+     *
+     * \see badgeItem();
+     */
+    SIP_SKIP void setShowBadge( bool visible );
+
   public slots:
 
     /**
@@ -104,6 +226,9 @@ class GUI_EXPORT QgsModelArrowItem : public QObject, public QGraphicsPathItem
     int mEndIndex = -1;
     bool mEndIsIncoming = false;
     Marker mEndMarker;
+
+    // Optional child badge item. Not created by default.
+    QgsModelDesignerArrowBadgeItem *mBadgeItem = nullptr;
 
     QPointF mStartPoint;
     QPointF mEndPoint;

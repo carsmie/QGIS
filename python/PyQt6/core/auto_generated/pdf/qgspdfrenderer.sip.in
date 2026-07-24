@@ -12,6 +12,9 @@
 
 
 
+
+
+
 class QgsPdfRenderer
 {
 %Docstring(signature="appended")
@@ -28,8 +31,7 @@ calling these methods will raise a :py:class:`QgsNotSupportedException`.
 #include "qgspdfrenderer.h"
 %End
   public:
-
-    QgsPdfRenderer( const QString &path );
+    QgsPdfRenderer( const QString &path, Qgis::PdfRenderFlags flags = Qgis::PdfRenderFlags() );
 %Docstring
 Constructs a PDF renderer for the file at the specified ``path``.
 %End

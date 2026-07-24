@@ -1,19 +1,24 @@
-//    Copyright (C) 2019-2021 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT.  If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #ifndef PDFFONT_H
 #define PDFFONT_H
@@ -28,6 +33,9 @@
 #include <QSharedPointer>
 
 #include <set>
+#include <mutex>
+#include <optional>
+#include <functional>
 #include <unordered_map>
 
 class QPainterPath;
@@ -43,6 +51,7 @@ using CID = unsigned int;
 using GID = unsigned int;
 
 using GlyphIndices = std::array<GID, 256>;
+using GlyphNames = std::array<QByteArray, 256>;
 
 enum class TextRenderingMode
 {
@@ -70,9 +79,9 @@ public:
 struct TextSequenceItem
 {
     inline explicit TextSequenceItem() = default;
-    inline explicit TextSequenceItem(const QPainterPath* glyph, QChar character, PDFReal advance) : glyph(glyph), character(character), advance(advance) { }
+    inline explicit TextSequenceItem(const QPainterPath* glyph, QChar character, PDFReal advance, CID cid) : glyph(glyph), character(character), advance(advance), cid(cid) { }
     inline explicit TextSequenceItem(PDFReal advance) : character(), advance(advance) { }
-    inline explicit TextSequenceItem(const QByteArray* characterContentStream, QChar character, PDFReal advance) : characterContentStream(characterContentStream), character(character), advance(advance) { }
+    inline explicit TextSequenceItem(const QByteArray* characterContentStream, QChar character, PDFReal advance, uint cid) : characterContentStream(characterContentStream), character(character), advance(advance), cid(cid) { }
 
     inline bool isContentStream() const { return characterContentStream; }
     inline bool isCharacter() const { return glyph; }
@@ -83,6 +92,7 @@ struct TextSequenceItem
     const QByteArray* characterContentStream = nullptr;
     QChar character;
     PDFReal advance = 0;
+    CID cid = 0;
 };
 
 struct TextSequence
@@ -290,11 +300,18 @@ private:
     IRealizedFontImpl* m_impl;
 };
 
+struct PDFEncodedText
+{
+    QByteArray encodedText;
+    QString errorString;
+    bool isValid = false;
+};
+
 /// Base  class representing font in the PDF file
 class PDF4QTLIBCORESHARED_EXPORT PDFFont
 {
 public:
-    explicit PDFFont(CIDSystemInfo CIDSystemInfo, FontDescriptor fontDescriptor);
+    explicit PDFFont(CIDSystemInfo CIDSystemInfo, QByteArray fontId, FontDescriptor fontDescriptor);
     virtual ~PDFFont() = default;
 
     /// Returns the font type
@@ -317,8 +334,9 @@ public:
 
     /// Creates font from the object. If font can't be created, exception is thrown.
     /// \param object Font dictionary
+    /// \param fontId Font ID
     /// \param document Document
-    static PDFFontPointer createFont(const PDFObject& object, const PDFDocument* document);
+    static PDFFontPointer createFont(const PDFObject& object, QByteArray fontId, const PDFDocument* document);
 
     /// Tries to read font descriptor from the object
     /// \param fontDescriptorObject Font descriptor dictionary
@@ -330,19 +348,32 @@ public:
     /// \param document Document
     static CIDSystemInfo readCIDSystemInfo(const PDFObject& cidSystemInfoObject, const PDFDocument* document);
 
+    /// Returns font id from the font dictionary
+    QByteArray getFontId() const;
+
+    /// Encodes text into font encoding. Text is processed by unicode code points,
+    /// characters, which cannot be encoded, are reported in the error string.
+    PDFEncodedText encodeText(const QString& text) const;
+
+    /// Encodes a single unicode code point into font encoding. Returns empty
+    /// byte array, if the code point cannot be encoded by this font.
+    virtual QByteArray encodeCharacter(char32_t codePoint) const = 0;
+
 protected:
     CIDSystemInfo m_CIDSystemInfo;
     FontDescriptor m_fontDescriptor;
+    QByteArray m_fontId;
 };
 
 /// Simple font, see PDF reference 1.7, chapter 5.5. Simple fonts have encoding table,
 /// which maps single-byte character to the glyph in the font.
-class PDFSimpleFont : public PDFFont
+class PDF4QTLIBCORESHARED_EXPORT PDFSimpleFont : public PDFFont
 {
     using BaseClass = PDFFont;
 
 public:
     explicit PDFSimpleFont(CIDSystemInfo cidSystemInfo,
+                           QByteArray fontId,
                            FontDescriptor fontDescriptor,
                            QByteArray name,
                            QByteArray baseFont,
@@ -351,15 +382,26 @@ public:
                            std::vector<PDFInteger> widths,
                            PDFEncoding::Encoding encodingType,
                            encoding::EncodingTable encoding,
-                           GlyphIndices glyphIndices);
+                           encoding::EncodingTable toUnicode,
+                           bool hasToUnicode,
+                           StandardFontType standardFontType,
+                           GlyphIndices glyphIndices,
+                           GlyphNames glyphNames);
     virtual ~PDFSimpleFont() override = default;
 
     PDFEncoding::Encoding getEncodingType() const { return m_encodingType; }
     const encoding::EncodingTable* getEncoding() const { return &m_encoding; }
     const GlyphIndices* getGlyphIndices() const { return &m_glyphIndices; }
+    const GlyphNames* getGlyphNames() const { return &m_glyphNames; }
+    QChar getUnicode(CID cid) const;
 
     /// Returns the glyph advance (or zero, if glyph advance is invalid)
     PDFInteger getGlyphAdvance(size_t index) const;
+
+    /// Returns the assigned standard font (or invalid, if font is not standard)
+    StandardFontType getStandardFontType() const { return m_standardFontType; }
+
+    virtual QByteArray encodeCharacter(char32_t codePoint) const override;
 
     virtual void dumpFontToTreeItem(ITreeFactory* treeFactory) const override;
 
@@ -371,7 +413,11 @@ protected:
     std::vector<PDFInteger> m_widths;
     PDFEncoding::Encoding m_encodingType;
     encoding::EncodingTable m_encoding;
+    encoding::EncodingTable m_toUnicode;
+    bool m_hasToUnicode;
     GlyphIndices m_glyphIndices;
+    GlyphNames m_glyphNames;
+    StandardFontType m_standardFontType; ///< Type of the standard font (or invalid, if it is not a standard font)
 };
 
 class PDFType1Font : public PDFSimpleFont
@@ -380,6 +426,7 @@ class PDFType1Font : public PDFSimpleFont
 
 public:
     explicit PDFType1Font(FontType fontType,
+                          QByteArray fontId,
                           CIDSystemInfo cidSystemInfo,
                           FontDescriptor fontDescriptor,
                           QByteArray name,
@@ -389,22 +436,21 @@ public:
                           std::vector<PDFInteger> widths,
                           PDFEncoding::Encoding encodingType,
                           encoding::EncodingTable encoding,
+                          encoding::EncodingTable toUnicode,
+                          bool hasToUnicode,
                           StandardFontType standardFontType,
-                          GlyphIndices glyphIndices);
+                          GlyphIndices glyphIndices,
+                          GlyphNames glyphNames);
     virtual ~PDFType1Font() override = default;
 
     virtual FontType getFontType() const override;
     virtual void dumpFontToTreeItem(ITreeFactory* treeFactory) const override;
 
-    /// Returns the assigned standard font (or invalid, if font is not standard)
-    StandardFontType getStandardFontType() const { return m_standardFontType; }
-
 private:
     FontType m_fontType;
-    StandardFontType m_standardFontType; ///< Type of the standard font (or invalid, if it is not a standard font)
 };
 
-class PDFTrueTypeFont : public PDFSimpleFont
+class PDF4QTLIBCORESHARED_EXPORT PDFTrueTypeFont : public PDFSimpleFont
 {
 public:
     using PDFSimpleFont::PDFSimpleFont;
@@ -425,6 +471,25 @@ public:
 
     }
 
+    ~PDFFontCache();
+
+    /// Substitute font usable for "real text" drawing (e.g. QPainter::drawText) of a PDF font
+    struct TextDrawingFontInfo
+    {
+        QFont font;
+        bool isUsable = false;
+    };
+
+    /// Retrieves a substitute font usable for "real text" drawing (e.g. QPainter::drawText)
+    /// of the given PDF font. If font's embedded program can be registered as an application
+    /// font, then this exact font is used (best fidelity); otherwise a system font is
+    /// substituted using descriptor hints (family, weight, stretch, italic, serif/fixed pitch).
+    /// If no usable font could be obtained (e.g. Type 3 font), returned info has isUsable set
+    /// to false and caller must fall back to path-based glyph painting.
+    /// \param font PDF font
+    /// \param reporter Error reporter (used to report inexact font substitution)
+    const TextDrawingFontInfo* getFontForTextDrawing(const PDFFontPointer& font, PDFRenderErrorReporter* reporter) const;
+
     /// Sets the document to the cache. Whole cache is cleared,
     /// if it is needed.
     /// \param document Document to be setted
@@ -433,7 +498,8 @@ public:
     /// Retrieves font from the cache. If font can't be accessed or created,
     /// then exception is thrown.
     /// \param fontObject Font object
-    PDFFontPointer getFont(const PDFObject& fontObject) const;
+    /// \param fontId Font identification in resource dictionary
+    PDFFontPointer getFont(const PDFObject& fontObject, const QByteArray& fontId) const;
 
     /// Retrieves realized font from the cache. If realized font can't be accessed or created,
     /// then exception is thrown.
@@ -458,6 +524,10 @@ public:
     void shrink();
 
 private:
+    /// Unregisters all application fonts registered for text drawing (via
+    /// QFontDatabase::addApplicationFontFromData) and clears the id list.
+    void clearTextDrawingApplicationFonts();
+
     size_t m_fontCacheLimit;
     size_t m_realizedFontCacheLimit;
     mutable QMutex m_mutex;
@@ -465,6 +535,8 @@ private:
     mutable std::map<PDFObjectReference, PDFFontPointer> m_fontCache;
     mutable std::map<std::pair<PDFFontPointer, PDFReal>, PDFRealizedFontPointer> m_realizedFontCache;
     mutable std::set<const void*> m_fontCacheShrinkDisabledObjects;
+    mutable std::map<PDFFontPointer, TextDrawingFontInfo> m_textDrawingFontCache;
+    mutable std::vector<int> m_textDrawingApplicationFontIds;
 };
 
 /// Performs mapping from CID to GID (even identity mapping, if byte array is empty)
@@ -473,8 +545,8 @@ class PDFCIDtoGIDMapper
 public:
     explicit inline PDFCIDtoGIDMapper(QByteArray&& mapping) : m_mapping(qMove(mapping)) { }
 
-    /// Maps CID to GID (glyph identifier)
-    GID map(CID cid) const
+    /// Maps CID to GID (glyph identifier). Nullopt means no valid mapping exists.
+    std::optional<GID> tryMap(CID cid) const
     {
         if (m_mapping.isEmpty())
         {
@@ -483,12 +555,12 @@ public:
         }
         else if ((2 * cid + 1) < CID(m_mapping.size()))
         {
-            return (GID(m_mapping[2 * cid]) << 8) + GID(m_mapping[2 * cid + 1]);
+            return (GID(static_cast<unsigned char>(m_mapping[2 * cid])) << 8) + GID(static_cast<unsigned char>(m_mapping[2 * cid + 1]));
         }
 
         // This should occur only in case of bad (damaged) PDF file - because in this case,
-        // encoding is missing. Return invalid glyph index.
-        return 0;
+        // encoding is missing.
+        return std::nullopt;
     }
 
     /// Maps GID to CID (inverse mapping)
@@ -504,7 +576,7 @@ public:
             CID lastCid = CID(m_mapping.size() / 2);
             for (CID i = 0; i < lastCid; ++i)
             {
-                if (map(i) == gid)
+                if (tryMap(i) == gid)
                 {
                     return i;
                 }
@@ -525,6 +597,23 @@ class PDF4QTLIBCORESHARED_EXPORT PDFFontCMap
 {
 public:
     explicit PDFFontCMap() = default;
+
+    struct MappedCode
+    {
+        /// CID produced by applying this CMap to the original PDF character code.
+        /// This value is used with CIDFont metrics and CIDToGIDMap.
+        CID cid = 0;
+
+        /// Original PDF character code read from the content stream before CMap
+        /// translation. This is not generally a CID. ToUnicode CMaps map this
+        /// value, and predefined UCS2 CMaps can also treat it as Unicode.
+        unsigned int code = 0;
+
+        /// Number of bytes consumed from the content stream to form code.
+        /// This preserves variable-width CMap information and distinguishes
+        /// equal numeric code values that came from different code lengths.
+        unsigned int byteCount = 0;
+    };
 
     /// Returns true, if mapping is valid
     bool isValid() const { return !m_entries.empty(); }
@@ -547,8 +636,37 @@ public:
     /// Converts byte array to array of CIDs
     std::vector<CID> interpret(const QByteArray& byteArray) const;
 
+    /// Converts byte array to mapped CIDs with original character codes
+    std::vector<MappedCode> interpretWithCode(const QByteArray& byteArray) const;
+
+    /// Encodes character to byte array
+    QByteArray encode(CID cid) const;
+
     /// Converts CID to QChar, use only on ToUnicode CMaps
     QChar getToUnicode(CID cid) const;
+
+    /// Converts character code with a known byte length to QChar, use only on ToUnicode CMaps
+    QChar getToUnicode(CID cid, unsigned int byteCount) const;
+
+    /// Converts QChar to CID, use only on ToUnicode CMaps
+    CID getFromUnicode(QChar character) const;
+
+    /// Converts original character code to Unicode for Unicode predefined CMaps
+    QChar getUnicodeFromCode(unsigned int code) const;
+
+    /// Returns maximal byte count of a character code
+    unsigned int getMaxKeyLength() const { return m_maxKeyLength; }
+
+    /// Returns true, if original character codes are unicode encoded
+    bool isUnicodeEncoded() const { return m_unicodeEncoded; }
+
+    /// Calls the callback for every mapping (code, byteCount, cid). Enumeration
+    /// of a single entry is clamped to avoid enumerating pathologically huge ranges.
+    void enumerate(const std::function<void(unsigned int, unsigned int, CID)>& callback) const;
+
+    /// Returns true, if the character code with given byte count is matched by some entry,
+    /// i.e. it would be successfully decoded by interpretWithCode.
+    bool containsCode(unsigned int code, unsigned int byteCount) const;
 
 private:
 
@@ -584,7 +702,7 @@ private:
 
     using Entries = std::vector<Entry>;
 
-    explicit PDFFontCMap(Entries&& entries, bool vertical);
+    explicit PDFFontCMap(Entries&& entries, bool vertical, bool unicodeEncoded);
 
     /// Optimizes the entries - merges entries, which can be merged. This function
     /// requires, that entries are sorted.
@@ -593,12 +711,14 @@ private:
     Entries m_entries;
     unsigned int m_maxKeyLength = 0;
     bool m_vertical = false;
+    bool m_unicodeEncoded = false;
 };
 
-class PDFType3Font : public PDFFont
+class PDF4QTLIBCORESHARED_EXPORT PDFType3Font : public PDFFont
 {
 public:
     explicit PDFType3Font(FontDescriptor fontDescriptor,
+                          QByteArray fontId,
                           int firstCharacterIndex,
                           int lastCharacterIndex,
                           QTransform fontMatrix,
@@ -626,6 +746,8 @@ public:
     /// present, empty (null) character is returned.
     QChar getUnicode(int characterIndex) const { return m_toUnicode.getToUnicode(characterIndex); }
 
+    virtual QByteArray encodeCharacter(char32_t codePoint) const override;
+
 private:
     int m_firstCharacterIndex;
     int m_lastCharacterIndex;
@@ -637,11 +759,18 @@ private:
 };
 
 /// Composite font (CID-keyed font)
-class PDFType0Font : public PDFFont
+class PDF4QTLIBCORESHARED_EXPORT PDFType0Font : public PDFFont
 {
 public:
-    explicit inline PDFType0Font(CIDSystemInfo cidSystemInfo, FontDescriptor fontDescriptor, PDFFontCMap cmap, PDFFontCMap toUnicode, PDFCIDtoGIDMapper mapper, PDFReal defaultAdvance, std::unordered_map<CID, PDFReal> advances) :
-        PDFFont(qMove(cidSystemInfo), qMove(fontDescriptor)),
+    explicit inline PDFType0Font(CIDSystemInfo cidSystemInfo,
+                                 QByteArray fontId,
+                                 FontDescriptor fontDescriptor,
+                                 PDFFontCMap cmap,
+                                 PDFFontCMap toUnicode,
+                                 PDFCIDtoGIDMapper mapper,
+                                 PDFReal defaultAdvance,
+                                 std::unordered_map<CID, PDFReal> advances) :
+        PDFFont(qMove(cidSystemInfo), qMove(fontId), qMove(fontDescriptor)),
         m_cmap(qMove(cmap)),
         m_toUnicode(qMove(toUnicode)),
         m_mapper(qMove(mapper)),
@@ -664,12 +793,22 @@ public:
     /// \param cid CID of the glyph
     PDFReal getGlyphAdvance(CID cid) const;
 
+    virtual QByteArray encodeCharacter(char32_t codePoint) const override;
+
 private:
+    /// Builds the reverse (unicode to character code bytes) map. The map mirrors
+    /// the forward decoding in PDFRealizedFontImpl::fillTextSequence, so any
+    /// character produced by decoding is guaranteed to be encodable back.
+    void buildEncodeMap() const;
+
     PDFFontCMap m_cmap;
     PDFFontCMap m_toUnicode;
     PDFCIDtoGIDMapper m_mapper;
     PDFReal m_defaultAdvance;
     std::unordered_map<CID, PDFReal> m_advances;
+
+    mutable std::once_flag m_encodeMapFlag;
+    mutable std::unordered_map<char32_t, QByteArray> m_encodeMap;
 };
 
 /// Repository with predefined CMaps
@@ -696,6 +835,12 @@ private:
 
     /// Storage for predefined cmaps
     std::map<QByteArray, QByteArray> m_cmaps;
+};
+
+class PDF4QTLIBCORESHARED_EXPORT PDFSystemFont
+{
+public:
+    static QByteArray getFontData(const QByteArray& fontName);
 };
 
 }   // namespace pdf

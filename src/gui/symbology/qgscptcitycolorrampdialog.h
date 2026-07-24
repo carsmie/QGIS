@@ -18,15 +18,15 @@
 
 
 #include "ui_qgscptcitycolorrampdialogbase.h"
-#include "qgis_sip.h"
-#include <QDialog>
 
+#include "qgis_gui.h"
+#include "qgis_sip.h"
 #include "qgscptcityarchive.h"
 
 #include <QAbstractProxyModel>
-#include <QSortFilterProxyModel>
+#include <QDialog>
 #include <QFileInfo>
-#include "qgis_gui.h"
+#include <QSortFilterProxyModel>
 
 class QgsCptCityColorRamp;
 class TreeFilterProxyModel;
@@ -67,10 +67,7 @@ class GUI_EXPORT QgsCptCityColorRampDialog : public QDialog, private Ui::QgsCptC
     /**
      * Returns the name of the ramp currently selected in the dialog.
      */
-    QString selectedName() const
-    {
-      return QFileInfo( mRamp.schemeName() ).baseName() + mRamp.variantName();
-    }
+    QString selectedName() const { return QFileInfo( mRamp.schemeName() ).baseName() + mRamp.variantName(); }
 
     /**
      * Returns TRUE if the ramp should be converted to a QgsGradientColorRamp.
@@ -113,7 +110,7 @@ class GUI_EXPORT QgsCptCityColorRampDialog : public QDialog, private Ui::QgsCptC
 
     QgsCptCityColorRamp mRamp;
     QgsCptCityArchive *mArchive = nullptr;
-    QgsCptCityBrowserModel::ViewType mArchiveViewType;
+    QgsCptCityBrowserModel::ViewType mArchiveViewType = QgsCptCityBrowserModel::Selections;
 
     /* void refreshModel( const QModelIndex& index ); */
     bool updateRamp();

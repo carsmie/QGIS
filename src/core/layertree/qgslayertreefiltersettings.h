@@ -16,15 +16,16 @@
 #ifndef QGSLAYERTREEFILTERSETTINGS_H
 #define QGSLAYERTREEFILTERSETTINGS_H
 
-#include "qgis_core.h"
+#include <memory>
+
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsexpressioncontext.h"
 #include "qgsgeometry.h"
 #include "qgsmaplayer.h"
 
-#include <QString>
 #include <QMap>
-#include <memory>
+#include <QString>
 
 class QgsMapSettings;
 class QgsLayerTree;
@@ -39,7 +40,6 @@ class QgsReferencedGeometry;
 class CORE_EXPORT QgsLayerTreeFilterSettings
 {
   public:
-
     /**
      * Constructor for QgsLayerTreeFilterSettings, using the specified map \a settings.
      */
@@ -156,7 +156,6 @@ class CORE_EXPORT QgsLayerTreeFilterSettings
     QList<QgsMapLayer *> layers() const;
 
   private:
-
     QMap<QString, QString> mLayerFilterExpressions;
 
     std::unique_ptr<QgsMapSettings> mMapSettings;
@@ -169,7 +168,6 @@ class CORE_EXPORT QgsLayerTreeFilterSettings
 
     // geometry must be in layer CRS
     QMap<QString, QVector< QgsGeometry > > mLayerExtents;
-
 };
 
 #endif // QGSLAYERTREEFILTERSETTINGS_H

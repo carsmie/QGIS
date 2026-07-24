@@ -15,8 +15,10 @@
  ***************************************************************************/
 
 #include "qgslayoutrendercontext.h"
-#include "moc_qgslayoutrendercontext.cpp"
+
 #include "qgslayout.h"
+
+#include "moc_qgslayoutrendercontext.cpp"
 
 QgsLayoutRenderContext::QgsLayoutRenderContext( QgsLayout *layout )
   : QObject( layout )
@@ -179,10 +181,8 @@ void QgsLayoutRenderContext::setFeatureFilterProvider( QgsFeatureFilterProvider 
 
 void QgsLayoutRenderContext::matchRasterizedRenderingPolicyToFlags()
 {
-  if ( !mFlags.testFlag( Qgis::LayoutRenderFlag::ForceVectorOutput )
-       && mFlags.testFlag( Qgis::LayoutRenderFlag::UseAdvancedEffects ) )
+  if ( !mFlags.testFlag( Qgis::LayoutRenderFlag::ForceVectorOutput ) && mFlags.testFlag( Qgis::LayoutRenderFlag::UseAdvancedEffects ) )
     mRasterizedRenderingPolicy = Qgis::RasterizedRenderingPolicy::PreferVector;
-  else if ( mFlags.testFlag( Qgis::LayoutRenderFlag::ForceVectorOutput )
-            || !mFlags.testFlag( Qgis::LayoutRenderFlag::UseAdvancedEffects ) )
+  else if ( mFlags.testFlag( Qgis::LayoutRenderFlag::ForceVectorOutput ) || !mFlags.testFlag( Qgis::LayoutRenderFlag::UseAdvancedEffects ) )
     mRasterizedRenderingPolicy = Qgis::RasterizedRenderingPolicy::ForceVector;
 }

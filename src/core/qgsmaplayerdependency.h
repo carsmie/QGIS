@@ -20,6 +20,7 @@
 #define QGSMAPLAYERDEPENDENCY_H
 
 #include "qgis_core.h"
+
 #include <QString>
 
 /**
@@ -39,15 +40,15 @@ class CORE_EXPORT QgsMapLayerDependency
     //! Type of dependency
     enum Type
     {
-      PresenceDependency = 1, //< The layer must be already present (in the registry) for this dependency to be resolved
-      DataDependency     = 2  //< The layer may be invalidated by data changes on another layer
+      PresenceDependency = 1, //!< The layer must be already present (in the registry) for this dependency to be resolved
+      DataDependency = 2      //!< The layer may be invalidated by data changes on another layer
     };
 
     //! Origin of the dependency
     enum Origin
     {
-      FromProvider = 0,  //< Dependency given by the provider, the user cannot change it
-      FromUser     = 1   //< Dependency given by the user
+      FromProvider = 0, //!< Dependency given by the provider, the user cannot change it
+      FromUser = 1      //!< Dependency given by the user
     };
 
     //! Standard constructor
@@ -68,19 +69,20 @@ class CORE_EXPORT QgsMapLayerDependency
 
     // TODO c++20 - replace with = default
 
-    bool operator==( const QgsMapLayerDependency &other ) const
-    {
-      return layerId() == other.layerId() && origin() == other.origin() && type() == other.type();
-    }
+    bool operator==( const QgsMapLayerDependency &other ) const { return layerId() == other.layerId() && origin() == other.origin() && type() == other.type(); }
 
 #ifdef SIP_RUN
+    // clang-format off
     //! hash operator
     long __hash__() const;
     % MethodCode
     sipRes = qHash( *sipCpp );
     % End
+// clang-format on
 #endif
-  private:
+    // clang-format off
+    private:
+    // clang-format on
     Type mType;
     Origin mOrigin;
     QString mLayerId;
@@ -91,7 +93,7 @@ class CORE_EXPORT QgsMapLayerDependency
 /**
  * global qHash function for QgsMapLayerDependency, so that it can be used in a QSet
  */
-inline uint qHash( const QgsMapLayerDependency &dep )
+inline size_t qHash( const QgsMapLayerDependency &dep )
 {
   return qHash( dep.layerId() ) + dep.origin() + dep.type();
 }

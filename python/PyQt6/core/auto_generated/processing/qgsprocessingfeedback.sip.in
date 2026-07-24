@@ -10,6 +10,7 @@
 
 
 
+
 class QgsProcessingFeedback : QgsFeedback
 {
 %Docstring(signature="appended")
@@ -24,7 +25,6 @@ to log this feedback or report it to users via the GUI.
 #include "qgsprocessingfeedback.h"
 %End
   public:
-
     QgsProcessingFeedback( bool logFeedback = true );
 %Docstring
 Constructor for QgsProcessingFeedback.
@@ -40,6 +40,8 @@ Sets a progress report text string. This can be used in conjunction with
 progress reports, such as "Transformed 4 of 5 layers".
 
 .. seealso:: :py:func:`setProgress`
+
+.. seealso:: :py:func:`progressTextChanged`
 %End
 
     virtual void reportError( const QString &error, bool fatalError = false );
@@ -48,6 +50,8 @@ Reports that the algorithm encountered an ``error`` while executing.
 
 If ``fatalError`` is ``True`` then the error prevented the algorithm
 from executing.
+
+.. seealso:: :py:func:`errorReported`
 %End
 
     virtual void pushWarning( const QString &warning );
@@ -55,6 +59,8 @@ from executing.
 Pushes a warning informational message from the algorithm. This should
 only be used sparsely as to maintain the importance of visual queues
 associated to this type of message.
+
+.. seealso:: :py:func:`warningPushed`
 
 .. seealso:: :py:func:`pushInfo`
 
@@ -73,6 +79,8 @@ Pushes a general informational message from the algorithm. This can be
 used to report feedback which is neither a status report or an error,
 such as "Found 47 matching features".
 
+.. seealso:: :py:func:`infoPushed`
+
 .. seealso:: :py:func:`pushFormattedMessage`
 
 .. seealso:: :py:func:`pushWarning`
@@ -90,6 +98,8 @@ Pushes a pre-formatted message from the algorithm.
 
 This can be used to push formatted HTML messages to the feedback object.
 A plain ``text`` version of the message must also be specified.
+
+.. seealso:: :py:func:`formattedMessagePushed`
 
 .. seealso:: :py:func:`pushInfo`
 
@@ -110,6 +120,8 @@ Pushes an informational message containing a command from the algorithm.
 This is usually used to report commands which are executed in an
 external application or as subprocesses.
 
+.. seealso:: :py:func:`commandInfoPushed`
+
 .. seealso:: :py:func:`pushWarning`
 
 .. seealso:: :py:func:`pushInfo`
@@ -124,6 +136,8 @@ external application or as subprocesses.
 Pushes an informational message containing debugging helpers from the
 algorithm.
 
+.. seealso:: :py:func:`debugInfoPushed`
+
 .. seealso:: :py:func:`pushWarning`
 
 .. seealso:: :py:func:`pushInfo`
@@ -137,6 +151,8 @@ algorithm.
 %Docstring
 Pushes a console feedback message from the algorithm. This is used to
 report the output from executing an external command or subprocess.
+
+.. seealso:: :py:func:`consoleInfoPushed`
 
 .. seealso:: :py:func:`pushWarning`
 
@@ -182,6 +198,154 @@ pushed to the feedback object.
 .. versionadded:: 3.14
 %End
 
+    void reportSourceLoaded( const QString &parameterName, long long featureCount );
+%Docstring
+Reports that a feature source was retrieved for the specified algorithm
+input parameter.
+
+.. seealso:: :py:func:`sourceLoaded`
+
+.. versionadded:: 4.2
+%End
+
+    void featureAddedToSink( const QString &output );
+%Docstring
+Reports that a feature was added to the the sink associated with the
+specified algorithm ``output``.
+
+.. seealso:: :py:func:`sinkFeatureCountChanged`
+
+.. seealso:: :py:func:`featureSinkFinalized`
+
+.. versionadded:: 4.2
+%End
+
+    void featureSinkFinalized( const QString &output );
+%Docstring
+Reports that a feature sink has been finalized.
+
+The ``output`` argument specifies the associated algorithm output name.
+
+This will cause an immediate emission of
+:py:func:`~QgsProcessingFeedback.sinkFeatureCountChanged` signal with
+the final sink size, even if it is zero.
+
+.. seealso:: :py:func:`featureAddedToSink`
+
+.. seealso:: :py:func:`sinkFeatureCountChanged`
+
+.. versionadded:: 4.2
+%End
+
+    void resetFeatureSinkCounts();
+%Docstring
+Resets all stored feature sink counts.
+
+.. versionadded:: 4.2
+%End
+
+  signals:
+
+    void progressTextChanged( const QString &text );
+%Docstring
+Emitted when the progress ``text`` is changed.
+
+.. seealso:: :py:func:`setProgressText`
+
+.. versionadded:: 4.2
+%End
+
+    void errorReported( const QString &text, bool fatalError );
+%Docstring
+Emitted when an error is reported.
+
+.. seealso:: :py:func:`reportError`
+
+.. versionadded:: 4.2
+%End
+
+    void warningPushed( const QString &text );
+%Docstring
+Emitted when an warning is pushed.
+
+.. seealso:: :py:func:`pushWarning`
+
+.. versionadded:: 4.2
+%End
+
+    void infoPushed( const QString &text );
+%Docstring
+Emitted when information ``text`` is pushed.
+
+.. seealso:: :py:func:`pushInfo`
+
+.. versionadded:: 4.2
+%End
+
+    void commandInfoPushed( const QString &text );
+%Docstring
+Emitted when command information ``text`` is pushed.
+
+.. seealso:: :py:func:`pushCommandInfo`
+
+.. versionadded:: 4.2
+%End
+
+    void debugInfoPushed( const QString &text );
+%Docstring
+Emitted when debug information ``text`` is pushed.
+
+.. seealso:: :py:func:`pushDebugInfo`
+
+.. versionadded:: 4.2
+%End
+
+    void consoleInfoPushed( const QString &text );
+%Docstring
+Emitted when console information ``text`` is pushed.
+
+.. seealso:: :py:func:`pushConsoleInfo`
+
+.. versionadded:: 4.2
+%End
+
+    void formattedMessagePushed( const QString &html );
+%Docstring
+Emitted when a formatted ``html`` message is pushed.
+
+.. seealso:: :py:func:`pushFormattedMessage`
+
+.. versionadded:: 4.2
+%End
+
+    void sinkFeatureCountChanged( const QString &output, long long featureCount );
+%Docstring
+Emitted when the count of features pushed to a sink has changed.
+
+The ``output`` argument specifies the associated algorithm output name.
+
+.. note::
+
+   For performance, this signal is not emitted for every individual feature
+   added to the sink. It is instead emitted only once for every 100 features added.
+
+.. seealso:: :py:func:`featureAddedToSink`
+
+.. seealso:: :py:func:`featureSinkFinalized`
+
+.. versionadded:: 4.2
+%End
+
+    void sourceLoaded( const QString &parameterName, long long featureCount );
+%Docstring
+Emitted when a feature source was retrieved for the specified algorithm
+input parameter.
+
+.. seealso:: :py:func:`reportSourceLoaded`
+
+.. versionadded:: 4.2
+%End
+
 };
 
 
@@ -199,7 +363,6 @@ number of child steps which each report their own feedback.
 #include "qgsprocessingfeedback.h"
 %End
   public:
-
     QgsProcessingMultiStepFeedback( int steps, QgsProcessingFeedback *feedback );
 %Docstring
 Constructor for QgsProcessingMultiStepFeedback, for a process with the
@@ -211,6 +374,23 @@ the specified ``feedback`` object.
 %Docstring
 Sets the ``step`` which is being executed. This is used to scale the
 current progress to account for progress through the overall process.
+%End
+
+    void setStepWeights( const QList<double> &weights );
+%Docstring
+Sets the relative ``weights`` for each step.
+
+The ``weights`` list size must match the number of steps defined in the
+constructor. Weights are normalized internally, so they do not need to
+sum to 1.0 or 100.0.
+
+If this is not called, all steps are assumed to have equal weight.
+
+.. warning::
+
+   step weights must be set in advance before the feedback is used to report any progress
+
+.. versionadded:: 4.0
 %End
 
     virtual void setProgressText( const QString &text );
@@ -234,9 +414,8 @@ current progress to account for progress through the overall process.
 
     virtual QString textLog() const;
 
+
 };
-
-
 
 /************************************************************************
  * This file has been generated automatically from                      *

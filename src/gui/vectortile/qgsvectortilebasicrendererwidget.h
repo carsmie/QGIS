@@ -16,16 +16,17 @@
 #ifndef QGSVECTORTILEBASICRENDERERWIDGET_H
 #define QGSVECTORTILEBASICRENDERERWIDGET_H
 
-#include "qgsmaplayerconfigwidget.h"
-
 #include "ui_qgsvectortilebasicrendererwidget.h"
 
 #include <memory>
+
+#include "qgsmaplayerconfigwidget.h"
+
 #include <QSortFilterProxyModel>
 
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 class QgsVectorTileBasicRenderer;
 class QgsVectorTileBasicRendererListModel;

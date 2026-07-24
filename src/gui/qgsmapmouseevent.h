@@ -16,11 +16,11 @@
 #ifndef QGSMAPMOUSEEVENT_H
 #define QGSMAPMOUSEEVENT_H
 
-#include <QMouseEvent>
-
-#include "qgspointxy.h"
-#include "qgspointlocator.h"
 #include "qgis_gui.h"
+#include "qgspointlocator.h"
+#include "qgspointxy.h"
+
+#include <QMouseEvent>
 
 class QgsMapCanvas;
 class QgsMapToolAdvancedDigitizing;
@@ -42,7 +42,7 @@ class GUI_EXPORT QgsMapMouseEvent : public QMouseEvent
       sipType = sipType_QgsMapMouseEvent;
     else
       sipType = 0;
-    SIP_END
+  SIP_END
 #endif
 
   public:
@@ -64,7 +64,9 @@ class GUI_EXPORT QgsMapMouseEvent : public QMouseEvent
      * \param buttons   Further buttons that are pressed
      * \param modifiers Keyboard modifiers
      */
-    QgsMapMouseEvent( QgsMapCanvas *mapCanvas, QEvent::Type type, QPoint pos, Qt::MouseButton button = Qt::NoButton, Qt::MouseButtons buttons = Qt::NoButton, Qt::KeyboardModifiers modifiers = Qt::NoModifier );
+    QgsMapMouseEvent(
+      QgsMapCanvas *mapCanvas, QEvent::Type type, QPoint pos, Qt::MouseButton button = Qt::NoButton, Qt::MouseButtons buttons = Qt::NoButton, Qt::KeyboardModifiers modifiers = Qt::NoModifier
+    );
 
     /**
      * \brief snapPoint will snap the points using the map canvas snapping utils configuration

@@ -1,19 +1,24 @@
-//    Copyright (C) 2018-2023 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT.  If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "pdfcatalog.h"
 #include "pdfdocument.h"
@@ -552,6 +557,62 @@ PDFPageLabel PDFPageLabel::parse(PDFInteger pageIndex, const PDFObjectStorage* s
     return PDFPageLabel();
 }
 
+QString PDFPageLabel::formatPageNumber(NumberingStyle style, PDFInteger number)
+{
+    switch (style)
+    {
+        case NumberingStyle::None:
+        {
+            return QString();
+        }
+
+        case NumberingStyle::DecimalArabic:
+        {
+            return QString::number(number);
+        }
+
+        case NumberingStyle::UppercaseRoman:
+        case NumberingStyle::LowercaseRoman:
+        {
+            static constexpr std::array<std::pair<PDFInteger, const char*>, 13> romanNumerals = { {
+                { 1000, "M" }, { 900, "CM" }, { 500, "D" }, { 400, "CD" },
+                { 100, "C" },  { 90, "XC" },  { 50, "L" },  { 40, "XL" },
+                { 10, "X" },   { 9, "IX" },   { 5, "V" },   { 4, "IV" },
+                { 1, "I" }
+            } };
+
+            PDFInteger remainder = qMax(number, PDFInteger(1));
+            QString result;
+            for (const auto& [value, numeral] : romanNumerals)
+            {
+                while (remainder >= value)
+                {
+                    result += QString::fromLatin1(numeral);
+                    remainder -= value;
+                }
+            }
+
+            return style == NumberingStyle::UppercaseRoman ? result : result.toLower();
+        }
+
+        case NumberingStyle::UppercaseLetters:
+        case NumberingStyle::LowercaseLetters:
+        {
+            const PDFInteger index = qMax(number, PDFInteger(1)) - 1;
+            const PDFInteger letterIndex = index % 26;
+            const PDFInteger repeatCount = index / 26 + 1;
+
+            const QChar letter = QChar::fromLatin1(char('A' + letterIndex));
+            QString result(repeatCount, letter);
+
+            return style == NumberingStyle::UppercaseLetters ? result : result.toLower();
+        }
+    }
+
+    Q_ASSERT(false);
+    return QString();
+}
+
 const PDFDocumentSecurityStore::SecurityStoreItem* PDFDocumentSecurityStore::getItem(const QByteArray& hash) const
 {
     auto it = m_VRI.find(hash);
@@ -1046,6 +1107,53 @@ PDFPageAdditionalActions PDFPageAdditionalActions::parse(const PDFObjectStorage*
     }
 
     return result;
+}
+
+QString PDFPageLayoutUtils::convertPageLayoutToString(PageLayout pageLayout)
+{
+    switch (pageLayout)
+    {
+        case PageLayout::SinglePage:
+            return "SinglePage";
+
+        case PageLayout::OneColumn:
+            return "OneColumn";
+
+        case PageLayout::TwoColumnLeft:
+            return "TwoColumnLeft";
+
+        case PageLayout::TwoColumnRight:
+            return "TwoColumnRight";
+
+        case PageLayout::TwoPagesLeft:
+            return "TwoPagesLeft";
+
+        case PageLayout::TwoPagesRight:
+            return "TwoPagesRight";
+
+        case PageLayout::Custom:
+            return "Custom";
+
+        default:
+            Q_ASSERT(false);
+            break;
+    }
+
+    return QString();
+}
+
+PageLayout PDFPageLayoutUtils::convertStringToPageLayout(const QString& text, PageLayout defaultPageLayout)
+{
+    for (PageLayout pageLayout : { PageLayout::SinglePage, PageLayout::OneColumn, PageLayout::TwoColumnLeft,
+                                   PageLayout::TwoColumnRight, PageLayout::TwoPagesLeft, PageLayout::TwoPagesRight, PageLayout::Custom })
+    {
+        if (convertPageLayoutToString(pageLayout) == text)
+        {
+            return pageLayout;
+        }
+    }
+
+    return defaultPageLayout;
 }
 
 }   // namespace pdf

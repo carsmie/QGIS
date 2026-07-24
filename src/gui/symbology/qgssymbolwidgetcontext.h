@@ -17,8 +17,8 @@
 
 #include <memory>
 
-#include "qgsexpressioncontext.h"
 #include "qgis_gui.h"
+#include "qgsexpressioncontext.h"
 
 class QgsMapLayer;
 class QgsMapCanvas;
@@ -123,7 +123,7 @@ class GUI_EXPORT QgsSymbolWidgetContext // clazy:exclude=rule-of-three
     void setSymbolType( Qgis::SymbolType type );
 
   private:
-    QgsMapCanvas *mMapCanvas = nullptr;
+    QPointer<QgsMapCanvas> mMapCanvas;
     QgsMessageBar *mMessageBar = nullptr;
     std::unique_ptr<QgsExpressionContext> mExpressionContext;
     QList<QgsExpressionContextScope> mAdditionalScopes;

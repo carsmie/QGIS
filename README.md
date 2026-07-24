@@ -6,7 +6,7 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/qgis/QGIS/badge)](https://securityscorecards.dev/viewer/?uri=github.com/qgis/QGIS)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/1581/badge)](https://www.bestpractices.dev/projects/1581)
 [![🪟 MingW64 Windows 64bit Build](https://github.com/qgis/QGIS/actions/workflows/mingw64.yml/badge.svg)](https://github.com/qgis/QGIS/actions/workflows/mingw64.yml?query=branch%3Amaster+event%3Apush)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5869837.svg)](https://doi.org/10.5281/zenodo.5869837)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6139224.svg)](https://doi.org/10.5281/zenodo.6139224)
 
 QGIS is a full-featured, user-friendly, free-and-open-source (FOSS) geographical information system (GIS) that runs on Unix platforms, Windows, and MacOS.
 
@@ -67,7 +67,16 @@ QGIS is a full-featured, user-friendly, free-and-open-source (FOSS) geographical
 
 ![Map of Bogota, Colombia in the style of Starry Starry Night](https://live.staticflickr.com/65535/50327326323_3da28f0d86_b.jpg "Map of Bogota, Colombia in the style of Starry Starry Night")
 
-For more maps created with QGIS, visit the [QGIS Map Showcase Flickr Group](https://www.flickr.com/groups/2244553@N22/pool/with/50355460063/).
+For more maps created with QGIS, visit the following pages:
+- [Amazing maps created using QGIS](https://qgis.org/project/overview/maps/)
+  
+![Amazing maps created using QGIS](images/README-md/qgis_org_map_gallery.webp "Amazing maps created using QGIS")
+
+- [Map Gallery on QGIS Hub](https://maps.qgis.org/)
+
+![Map Gallery on QGIS Hub](images/README-md/maps_qgis_org_map_gallery.webp "Map Gallery on QGIS Hub")
+
+- [QGIS Map Showcase Flickr Group](https://www.flickr.com/groups/2244553@N22/pool/with/50355460063/).
 
 ![QGIS Map Showcase](images/README-md/qgis_map_showcase.png "QGIS Map Showcase")
 

@@ -16,28 +16,25 @@
  ***************************************************************************/
 
 #include "qgspointdistancerenderer.h"
-#include "qgsgeometry.h"
-#include "qgssymbollayerutils.h"
-#include "qgsspatialindex.h"
-#include "qgsmultipoint.h"
-#include "qgslogger.h"
-#include "qgsstyleentityvisitor.h"
-#include "qgsexpressioncontextutils.h"
-#include "qgsmarkersymbol.h"
-#include "qgssldexportcontext.h"
-#include <QDomElement>
-#include <QPainter>
 
 #include <cmath>
+
+#include "qgsexpressioncontextutils.h"
+#include "qgsgeometry.h"
+#include "qgslogger.h"
+#include "qgsmarkersymbol.h"
+#include "qgsmultipoint.h"
+#include "qgssldexportcontext.h"
+#include "qgsspatialindex.h"
+#include "qgsstyleentityvisitor.h"
+#include "qgssymbollayerutils.h"
+
+#include <QDomElement>
+#include <QPainter>
 
 QgsPointDistanceRenderer::QgsPointDistanceRenderer( const QString &rendererName, const QString &labelAttributeName )
   : QgsFeatureRenderer( rendererName )
   , mLabelAttributeName( labelAttributeName )
-  , mLabelIndex( -1 )
-  , mTolerance( 3 )
-  , mToleranceUnit( Qgis::RenderUnit::Millimeters )
-  , mDrawLabels( true )
-
 {
   mRenderer.reset( QgsFeatureRenderer::defaultRenderer( Qgis::GeometryType::Point ) );
 }
@@ -135,13 +132,12 @@ bool QgsPointDistanceRenderer::renderFeature( const QgsFeature &feature, QgsRend
         }
       }
 
-      const int groupIdx = mGroupIndex[ minDistFeatureId ];
+      const int groupIdx = mGroupIndex[minDistFeatureId];
       ClusteredGroup &group = mClusteredGroups[groupIdx];
 
       // calculate new centroid of group
       const QgsPointXY oldCenter = mGroupLocations.value( minDistFeatureId );
-      mGroupLocations[ minDistFeatureId ] = QgsPointXY( ( oldCenter.x() * group.size() + point->x() ) / ( group.size() + 1.0 ),
-                                            ( oldCenter.y() * group.size() + point->y() ) / ( group.size() + 1.0 ) );
+      mGroupLocations[minDistFeatureId] = QgsPointXY( ( oldCenter.x() * group.size() + point->x() ) / ( group.size() + 1.0 ), ( oldCenter.y() * group.size() + point->y() ) / ( group.size() + 1.0 ) );
 
       // add to a group
       group << GroupedFeature( pointFeature, symbol->clone(), selected, label );

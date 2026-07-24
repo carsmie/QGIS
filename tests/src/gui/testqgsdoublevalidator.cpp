@@ -14,10 +14,13 @@
  ***************************************************************************/
 
 
+#include "qgsdoublevalidator.h"
 #include "qgstest.h"
 
-#include "qgsdoublevalidator.h"
 #include <QLineEdit>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class TestQgsDoubleValidator : public QObject
 {
@@ -33,24 +36,22 @@ class TestQgsDoubleValidator : public QObject
     void toDouble_data();
     void toDouble();
 
+    void testRegularExpression();
+
   private:
 };
 
 void TestQgsDoubleValidator::initTestCase()
-{
-}
+{}
 
 void TestQgsDoubleValidator::cleanupTestCase()
-{
-}
+{}
 
 void TestQgsDoubleValidator::init()
-{
-}
+{}
 
 void TestQgsDoubleValidator::cleanup()
-{
-}
+{}
 
 void TestQgsDoubleValidator::validate_data()
 {
@@ -71,7 +72,7 @@ void TestQgsDoubleValidator::validate_data()
   QTest::newRow( "exponent <e> C negative" ) << QString( "44446ecn1" ) << int( QValidator::Acceptable ) << false;
   QTest::newRow( "exponent <e> locale negative" ) << QString( "44446eln1" ) << int( QValidator::Acceptable ) << false;
 
-#if ( QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 ) ) || ( QT_VERSION >= QT_VERSION_CHECK( 6, 5, 2 ) ) // https://bugreports.qt.io/browse/QTBUG-113443
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 2 ) // https://bugreports.qt.io/browse/QTBUG-113443
   QTest::newRow( "locale decimal exponent <E> positive" ) << QString( "444ld46E1" ) << int( QValidator::Acceptable ) << false;
   QTest::newRow( "locale decimal exponent <E> positive sign" ) << QString( "444ld46E+1" ) << int( QValidator::Acceptable ) << false;
 #endif
@@ -90,6 +91,10 @@ void TestQgsDoubleValidator::validate_data()
   QTest::newRow( "outside the range + local decimal" ) << QString( "3ld6" ) << int( QValidator::Intermediate ) << false;
   QTest::newRow( "outside the range + c decimal" ) << QString( "3cd6" ) << int( QValidator::Intermediate ) << false;
   QTest::newRow( "string" ) << QString( "string" ) << int( QValidator::Invalid ) << false;
+
+  QTest::newRow( "empty" ) << QString( "" ) << int( QValidator::Intermediate ) << false;
+  QTest::newRow( "only sign" ) << QString( "-" ) << int( QValidator::Intermediate ) << true;
+  QTest::newRow( "only decimal separator" ) << QString( "." ) << int( QValidator::Intermediate ) << false;
 }
 
 void TestQgsDoubleValidator::toDouble_data()
@@ -110,7 +115,7 @@ void TestQgsDoubleValidator::toDouble_data()
   QTest::newRow( "exponent <e> C negative" ) << QString( "44446ecn1" ) << 4444.6;
   QTest::newRow( "exponent <e> locale negative" ) << QString( "44446eln1" ) << 4444.6;
 
-#if ( QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 ) ) || ( QT_VERSION >= QT_VERSION_CHECK( 6, 5, 2 ) ) // https://bugreports.qt.io/browse/QTBUG-113443
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 2 ) // https://bugreports.qt.io/browse/QTBUG-113443
   QTest::newRow( "locale decimal exponent <E> positive" ) << QString( "444ld46E1" ) << 4444.6;
   QTest::newRow( "locale decimal exponent <E> positive sign" ) << QString( "444ld46E+1" ) << 4444.6;
 #endif
@@ -175,16 +180,13 @@ void TestQgsDoubleValidator::validate()
     //                       and validator->validate(4lg444ld6) == 1 and not 0
     // for 4cg444ld6 double, if cd == ld then 4cg444ld6 == 4cg444cd6
     //                       and validator->validate(4cg444cd6) == 1 and not 0
-    if ( ( QLocale( QLocale::C ).groupSeparator() == QLocale().groupSeparator() || QLocale( QLocale::C ).decimalPoint() == QLocale().decimalPoint() )
-         && value != "string" && expectedValue == 0 )
+    if ( ( QLocale( QLocale::C ).groupSeparator() == QLocale().groupSeparator() || QLocale( QLocale::C ).decimalPoint() == QLocale().decimalPoint() ) && value != "string" && expectedValue == 0 )
       expectedValue = 1;
     // There is another corner case in the test where the group separator is equal
     // to the C decimal point and there is no decimal point,
     // in that case the value is valid, because the fall
     // back check is to test after removing all group separators
-    if ( QLocale().groupSeparator() == QLocale( QLocale::C ).decimalPoint()
-         && !value.contains( QLocale().decimalPoint() )
-         && value != "string" && expectedValue == 0 )
+    if ( QLocale().groupSeparator() == QLocale( QLocale::C ).decimalPoint() && !value.contains( QLocale().decimalPoint() ) && value != "string" && expectedValue == 0 )
     {
       expectedValue = 1;
     }
@@ -226,22 +228,41 @@ void TestQgsDoubleValidator::toDouble()
     //                       and QgsDoubleValidator::toDouble(4lg444ld6) == 4444.6 and not 0.0
     // for 4cg444ld6 double, if cd == ld then 4cg444ld6 == 4cg444cd6
     //                       and QgsDoubleValidator::toDouble(4cg444cd6) == 4444.6 and not 0.0
-    if ( ( QLocale( QLocale::C ).groupSeparator() == QLocale().groupSeparator() || QLocale( QLocale::C ).decimalPoint() == QLocale().decimalPoint() )
-         && value != "string" && expectedValue == 0.0 )
+    if ( ( QLocale( QLocale::C ).groupSeparator() == QLocale().groupSeparator() || QLocale( QLocale::C ).decimalPoint() == QLocale().decimalPoint() ) && value != "string" && expectedValue == 0.0 )
       expectedValue = 4444.6;
     // There is another corner case in the test where the group separator is equal
     // to the C decimal point and there is no decimal point,
     // in that case the value is valid, because the fall
     // back check is to test after removing all group separators
-    if ( QLocale().groupSeparator() == QLocale( QLocale::C ).decimalPoint()
-         && !value.contains( QLocale().decimalPoint() )
-         && value != "string" && expectedValue == 0 )
+    if ( QLocale().groupSeparator() == QLocale( QLocale::C ).decimalPoint() && !value.contains( QLocale().decimalPoint() ) && value != "string" && expectedValue == 0 )
     {
       expectedValue = 44446;
     }
 
     QCOMPARE( QgsDoubleValidator::toDouble( value ), expectedValue );
   }
+}
+
+void TestQgsDoubleValidator::testRegularExpression()
+{
+  // Test that with locales that have '.' as decimal separator and '-' as minus sign the regular expression is correct
+  QLocale::setDefault( QLocale( QLocale::Language::English ) );
+  QgsDoubleValidator validator( nullptr );
+  QString value = u"1.x23"_s;
+  QCOMPARE( validator.validate( value ), QValidator::Invalid );
+  value = u"1.23"_s;
+  QCOMPARE( validator.validate( value ), QValidator::Acceptable );
+  const QRegularExpression re = validator.regularExpression();
+  QCOMPARE( re.pattern(), "^\\s*[+\\-]?[\\d]{0,1000}([\\.][\\d]{0,1000})?([eE][+\\-]?[\\d]{0,1000})?\\s*$" );
+
+  QLocale::setDefault( QLocale( QLocale::Language::Italian ) );
+  validator.setMaxDecimals( 100 );
+  value = u"1,x23"_s;
+  QCOMPARE( validator.validate( value ), QValidator::Invalid );
+  value = u"1,23"_s;
+  QCOMPARE( validator.validate( value ), QValidator::Acceptable );
+  const QRegularExpression re2 = validator.regularExpression();
+  QCOMPARE( re2.pattern(), "^\\s*[+\\-]?[\\d]{0,1000}([\\.\\,][\\d]{0,1000})?([eE][+\\-]?[\\d]{0,100})?\\s*$" );
 }
 
 QGSTEST_MAIN( TestQgsDoubleValidator )

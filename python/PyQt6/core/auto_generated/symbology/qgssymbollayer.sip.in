@@ -176,6 +176,8 @@ Abstract base class for symbol layers.
       LineClipping,
       SkipMultiples,
       ShowMarker,
+      BlankSegments,
+      ExtraItems,
     };
 
     static const QgsPropertiesDefinition &propertyDefinitions();
@@ -463,6 +465,23 @@ Sets layer's subsymbol. takes ownership of the passed symbol
 Returns if the layer can be used below the specified symbol
 %End
 
+    virtual bool rendersIdenticallyTo( const QgsSymbolLayer *other ) const;
+%Docstring
+Returns ``True`` if this symbol layer will always render identically to
+an ``other`` symbol layer.
+
+.. note::
+
+   This method is pessimistic, in that it will return ``False`` in circumstances
+   where it is not possible to guarantee that in 100% of cases the layer will
+   render pixel-identically to the other layer. For instance, calling
+   :py:func:`~QgsSymbolLayer.rendersIdenticallyTo` with the same symbol layer as ``other`` may
+   return ``False`` if the symbol layer contains data-defined overrides, such
+   as those using feature attributes or expression variables.
+
+.. versionadded:: 4.0
+%End
+
     virtual bool canCauseArtifactsBetweenAdjacentTiles() const;
 %Docstring
 Returns ``True`` if the symbol layer rendering can cause visible
@@ -576,19 +595,52 @@ the same key will be overwritten.
 write as DXF
 %End
 
-    virtual double dxfWidth( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+ virtual double dxfWidth( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const /Deprecated="Since 4.2. Use the overload without the ``e`` parameter instead."/;
 %Docstring
-Gets line width
+Gets line width.
+
+.. deprecated:: 4.2
+
+   Use the overload without the ``e`` parameter instead.
 %End
 
-    virtual double dxfSize( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+    virtual double dxfWidth( QgsSymbolRenderContext &context ) const;
 %Docstring
-Gets marker size
+Gets line width.
+
+.. versionadded:: 4.2
 %End
 
-    virtual double dxfOffset( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+ virtual double dxfSize( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const /Deprecated="Since 4.2. Use the overload without the ``e`` parameter instead."/;
 %Docstring
-Gets offset
+Gets marker size.
+
+.. deprecated:: 4.2
+
+   Use the overload without the ``e`` parameter instead.
+%End
+
+    virtual double dxfSize( QgsSymbolRenderContext &context ) const;
+%Docstring
+Gets marker size.
+
+.. versionadded:: 4.2
+%End
+
+ virtual double dxfOffset( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const /Deprecated="Since 4.2. Use the overload without the ``e`` parameter instead."/;
+%Docstring
+Gets offset.
+
+.. deprecated:: 4.2
+
+   Use the overload without the ``e`` parameter instead.
+%End
+
+    virtual double dxfOffset( QgsSymbolRenderContext &context ) const;
+%Docstring
+Gets offset.
+
+.. versionadded:: 4.2
 %End
 
     virtual QColor dxfColor( QgsSymbolRenderContext &context ) const;
@@ -685,6 +737,32 @@ layers of other layers that should be occluded.
 .. versionadded:: 3.12
 %End
 
+    QString selectiveMaskingSourceSetId() const;
+%Docstring
+Returns the selective masking source set ID for this symbol layer.
+
+If non-empty, the symbols from this symbol layer will be masked by
+objects from the matching selective masking source set (see
+:py:class:`QgsSelectiveMaskingSourceSetManager`).
+
+.. seealso:: :py:func:`setSelectiveMaskingSourceSetId`
+
+.. versionadded:: 4.0
+%End
+
+    void setSelectiveMaskingSourceSetId( const QString &id );
+%Docstring
+Sets the selective masking source set ``id`` for this symbol layer.
+
+If non-empty, the symbols from this symbol layer will be masked by
+objects from the matching selective masking source set (see
+:py:class:`QgsSelectiveMaskingSourceSetManager`).
+
+.. seealso:: :py:func:`selectiveMaskingSourceSetId`
+
+.. versionadded:: 4.0
+%End
+
     virtual void prepareMasks( const QgsSymbolRenderContext &context );
 %Docstring
 Prepares all mask internal objects according to what is defined in
@@ -751,9 +829,20 @@ Constructor for QgsSymbolLayer.
 
 
 
+
     void restoreOldDataDefinedProperties( const QVariantMap &stringMap );
 %Docstring
 Restores older data defined properties from string map.
+%End
+
+    void copyCommonProperties( QgsSymbolLayer *destLayer ) const;
+%Docstring
+Copies all common base class properties from this layer to another
+symbol layer.
+
+Includes data defined properties and paint effects.
+
+.. versionadded:: 4.0
 %End
 
     void copyDataDefinedProperties( QgsSymbolLayer *destLayer ) const;
@@ -762,6 +851,8 @@ Copies all data defined properties of this layer to another symbol
 layer.
 
 :param destLayer: destination layer
+
+.. seealso:: :py:func:`copyCommonProperties`
 %End
 
     void copyPaintEffect( QgsSymbolLayer *destLayer ) const;
@@ -769,6 +860,8 @@ layer.
 Copies paint effect of this layer to another symbol layer
 
 :param destLayer: destination layer
+
+.. seealso:: :py:func:`copyCommonProperties`
 %End
 
     void removeMasks( QgsRenderContext &context, bool recursive );
@@ -807,7 +900,6 @@ Abstract base class for marker symbol layers.
 #include "qgssymbollayer.h"
 %End
   public:
-
 
     virtual void startRender( QgsSymbolRenderContext &context );
 
@@ -1111,8 +1203,10 @@ Writes the symbol layer definition as a SLD XML element.
 
     virtual QgsMapUnitScale mapUnitScale() const;
 
-    virtual double dxfSize( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+    virtual double dxfSize( QgsSymbolRenderContext &context ) const;
+
     virtual double dxfAngle( QgsSymbolRenderContext &context ) const;
+
 
     virtual QRectF bounds( QPointF point, QgsSymbolRenderContext &context ) = 0;
 %Docstring
@@ -1124,7 +1218,6 @@ the marker layer.
 %End
 
   protected:
-
 
     QgsMarkerSymbolLayer( bool locked = false );
 %Docstring
@@ -1161,10 +1254,17 @@ and any displacement required to align with the marker's anchor point.
 
 %End
 
-    void markerOffset( QgsSymbolRenderContext &context, double width, double height,
-                       Qgis::RenderUnit widthUnit, Qgis::RenderUnit heightUnit,
-                       double &offsetX, double &offsetY,
-                       const QgsMapUnitScale &widthMapUnitScale, const QgsMapUnitScale &heightMapUnitScale ) const /PyName=markerOffset2/;
+    void markerOffset(
+      QgsSymbolRenderContext &context,
+      double width,
+      double height,
+      Qgis::RenderUnit widthUnit,
+      Qgis::RenderUnit heightUnit,
+      double &offsetX,
+      double &offsetY,
+      const QgsMapUnitScale &widthMapUnitScale,
+      const QgsMapUnitScale &heightMapUnitScale
+    ) const /PyName=markerOffset2/;
 %Docstring
 Calculates the required marker offset, including both the symbol offset
 and any displacement required to align with the marker's anchor point.
@@ -1207,7 +1307,6 @@ Abstract base class for line symbol layers.
 #include "qgssymbollayer.h"
 %End
   public:
-
     enum RenderRingFilter /BaseType=IntEnum/
     {
       AllRings,
@@ -1226,7 +1325,7 @@ Abstract base class for line symbol layers.
 
     virtual void drawPreviewIcon( QgsSymbolRenderContext &context, QSize size );
 
-    virtual double dxfWidth( const QgsDxfExport &e, QgsSymbolRenderContext &context ) const;
+    virtual double dxfWidth( QgsSymbolRenderContext &context ) const;
 
 
     virtual void renderPolyline( const QPolygonF &points, QgsSymbolRenderContext &context ) = 0;
@@ -1430,7 +1529,6 @@ Abstract base class for fill symbol layers.
 %End
   public:
 
-
     virtual void renderPolygon( const QPolygonF &points, const QVector<QPolygonF> *rings, QgsSymbolRenderContext &context ) = 0;
 %Docstring
 Renders the fill symbol layer for the polygon whose outer ring is
@@ -1465,7 +1563,7 @@ Returns the rotation angle of the fill symbol, in degrees clockwise.
 .. seealso:: :py:func:`setAngle`
 %End
 
-    virtual QImage toTiledPatternImage( ) const;
+    virtual QImage toTiledPatternImage() const;
 %Docstring
 Renders the symbol layer as an image that can be used as a seamless
 pattern fill for polygons, this method is used by SLD export to generate

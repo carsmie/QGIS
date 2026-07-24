@@ -18,11 +18,11 @@
 #ifndef QGSLAYOUTEFFECT_H
 #define QGSLAYOUTEFFECT_H
 
-#include <QGraphicsEffect>
-#include <QPainter>
-
 #include "qgis_core.h"
 #include "qgis_sip.h"
+
+#include <QGraphicsEffect>
+#include <QPainter>
 
 /**
  * \ingroup core
@@ -38,7 +38,6 @@ class CORE_EXPORT QgsLayoutEffect : public QGraphicsEffect
     Q_OBJECT
 
   public:
-
     QgsLayoutEffect() = default;
 
     /**
@@ -60,13 +59,10 @@ class CORE_EXPORT QgsLayoutEffect : public QGraphicsEffect
     Q_DECL_DEPRECATED QPainter::CompositionMode compositionMode() const SIP_DEPRECATED { return mCompositionMode; }
 
   protected:
-
     void draw( QPainter *painter ) override;
 
   private:
-
     QPainter::CompositionMode mCompositionMode = QPainter::CompositionMode_SourceOver;
 };
 
 #endif // QGSLAYOUTEFFECT_H
-

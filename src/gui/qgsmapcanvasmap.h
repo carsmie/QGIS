@@ -18,10 +18,11 @@
 
 #include "qgsmapcanvasitem.h"
 
+#define SIP_NO_FILE
+
 class QgsMapSettings;
 class QgsMapCanvas;
 
-#define SIP_NO_FILE
 
 /// @cond PRIVATE
 
@@ -41,6 +42,7 @@ class QgsMapCanvasMap : public QgsMapCanvasItem
 
     QImage contentImage() const { return mImage; }
 
+    using QgsMapCanvasItem::paint;
     void paint( QPainter *painter ) override;
 
     void addPreviewImage( const QImage &image, const QPolygonF &visiblePolygon );

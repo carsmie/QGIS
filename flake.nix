@@ -5,8 +5,6 @@
     #   extra-substituters = [ "https://example.cachix.org" ];
     #   extra-trusted-public-keys = [ "example.cachix.org-1:xxxx=" ];
 
-    # IFD is required for qgisVersion detection in nix/unwrapped.nix.
-    allow-import-from-derivation = true;
     bash-prompt = "\\[\\033[1m\\][qgis-dev]\\[\\033\[m\\]\\040\\w >\\040";
   };
 
@@ -14,86 +12,127 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
 
-      systems = [ "x86_64-linux" ];
-
-      perSystem = { config, self', inputs', pkgs, system, ... }: {
-
-        packages = rec {
-          qgis = pkgs.libsForQt5.callPackage ./nix/package.nix { };
-          docs = pkgs.libsForQt5.callPackage ./nix/documentation.nix {
-            qgisMinorVersion = "master";
-          };
-          default = qgis;
-        };
-
-        apps = {
-          docs =
-            let
-              wwwLauncher = pkgs.writeShellApplication {
-                name = "website";
-                runtimeInputs = [ pkgs.python3 ];
-                text = ''
-                  exec ${pkgs.lib.getExe pkgs.python3} \
-                    -m http.server 8000 \
-                    -d ${self'.packages.docs}
-                '';
-              };
-            in
-            {
-              type = "app";
-              program = "${wwwLauncher}/bin/website";
-            };
-        };
-
-        devShells.default =
-          let
-            nixPatches = pkgs.lib.concatStringsSep " " self'.packages.qgis.passthru.unwrapped.patches;
-
-          in
-          pkgs.mkShell {
-            inputsFrom = [
-              self'.packages.qgis
-              self'.packages.qgis.passthru.unwrapped
+      perSystem =
+        {
+          config,
+          self',
+          inputs',
+          pkgs,
+          system,
+          ...
+        }:
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              (final: prev: {
+                # Build with libspatialindex 2.0.0
+                # https://github.com/qgis/QGIS/pull/63196
+                libspatialindex = prev.libspatialindex.overrideAttrs (prev: rec {
+                  version = "2.0.0";
+                  src = final.fetchFromGitHub {
+                    owner = "libspatialindex";
+                    repo = "libspatialindex";
+                    rev = "refs/tags/${version}";
+                    hash = "sha256-hZyAXz1ddRStjZeqDf4lYkV/g0JLqLy7+GrSUh75k20=";
+                  };
+                }); # end of libspatialindex
+              })
             ];
-
-            shellHook = ''
-              echo "Applying Nix patches ..."
-              for p in ${nixPatches}; do
-                echo "patch: $p"
-                patch --reverse --reject-file - --strip 1 < $p &> /dev/null || true
-                patch --strip 1 < $p
-              done
-
-              export QT_PLUGIN_PATH="${pkgs.libsForQt5.qt5.qtbase}/${pkgs.libsForQt5.qt5.qtbase.qtPluginPrefix}"
-              export QT_QPA_PLATFORM_PLUGIN_PATH="${pkgs.libsForQt5.qt5.qtbase}/${pkgs.libsForQt5.qt5.qtbase.qtPluginPrefix}/platforms"
-
-
-              function dev-help {
-
-                echo -e "\nWelcome to a QGIS development environment !"
-                echo "Build QGIS using following commands:"
-                echo
-                echo " 1.  mkdir build && cd build"
-                echo " 2.  cmake -G Ninja -D CMAKE_BUILD_TYPE=Debug -D CMAKE_INSTALL_PREFIX=\$(pwd)/app -DWITH_QTWEBKIT=OFF -DQT_PLUGINS_DIR=${pkgs.libsForQt5.qt5.qtbase}/${pkgs.libsForQt5.qt5.qtbase.qtPluginPrefix} .."
-                echo " 3.  ninja"
-                echo " 4.  ninja install"
-                echo
-                echo "Run tests:"
-                echo
-                echo "1.  ninja test"
-                echo
-                echo "Note: run 'nix flake update' from time to time to update dependencies."
-                echo
-                echo "Run 'dev-help' to see this message again."
-              }
-
-              dev-help
-            '';
+            config = { };
           };
-      };
+
+          packages = rec {
+            qgis = pkgs.qt6Packages.callPackage ./nix/package.nix { };
+            docs = pkgs.qt6Packages.callPackage ./nix/documentation.nix {
+              qgisMinorVersion = "master";
+            };
+            default = qgis;
+          };
+
+          apps = {
+            docs =
+              let
+                wwwLauncher = pkgs.writeShellApplication {
+                  name = "website";
+                  runtimeInputs = [ pkgs.python3 ];
+                  text = ''
+                    exec ${pkgs.lib.getExe pkgs.python3} \
+                      -m http.server 8000 \
+                      -d ${self'.packages.docs}
+                  '';
+                };
+              in
+              {
+                type = "app";
+                program = "${wwwLauncher}/bin/website";
+                meta.description = "QGIS documentation";
+              };
+          };
+
+          devShells.default =
+            let
+              nixPatches = pkgs.lib.concatStringsSep " " self'.packages.qgis.passthru.unwrapped.patches;
+            in
+            pkgs.mkShell {
+              inputsFrom = [
+                self'.packages.qgis
+                self'.packages.qgis.passthru.unwrapped
+              ];
+
+              shellHook = ''
+                export QT_PLUGIN_PATH="${pkgs.qt6Packages.qtbase}/${pkgs.qt6Packages.qtbase.qtPluginPrefix}"
+                export QT_QPA_PLATFORM_PLUGIN_PATH="${pkgs.qt6Packages.qtbase}/${pkgs.qt6Packages.qtbase.qtPluginPrefix}/platforms"
+
+                # TODO: take inspiration from
+                # https://github.com/qgis/QGIS/blob/798f63fc3c0d2616a5fbc8f47139fbeb5db7c052/.docker/docker-qgis-build.sh#L79
+                function dev-help {
+                  echo -e "\nWelcome to the QGIS development environment !"
+                  echo "Build QGIS using following commands:"
+                  echo
+                  echo " 1.  mkdir build && cd build"
+                  cat <<EOF
+                 2.  cmake .. \\
+                    -G Ninja \\
+                    -D CMAKE_BUILD_TYPE=Debug \\
+                    -D WITH_3D=True \\
+                    -D WITH_PDAL=True \\
+                    -D WITH_QTWEBENGINE=True \\
+                    -D CMAKE_INSTALL_PREFIX=\$PWD/app \\
+                    -D QT_PLUGINS_DIR=${pkgs.qt6Packages.qtbase}/${pkgs.qt6Packages.qtbase.qtPluginPrefix} \\
+                    -D QSCI_SIP_DIR=${pkgs.python3Packages.qscintilla-qt6}/${pkgs.python3.sitePackages}/PyQt6/bindings \\
+                    -D QSCI_DIST_INFO=${pkgs.python3Packages.qscintilla-qt6}/${pkgs.python3.sitePackages}/pyqt6_qscintilla-${pkgs.python3Packages.qscintilla-qt6.version}.dist-info \\
+                    -D PYQT6_DIST_INFO=${pkgs.python3Packages.pyqt6}/${pkgs.python3.sitePackages}/pyqt6-${pkgs.python3Packages.pyqt6.version}.dist-info
+                EOF
+                  echo " 3.  ninja"
+                  echo " 4.  ninja install"
+                  echo
+                  echo "Run tests:"
+                  echo
+                  echo "1.  ninja test"
+                  echo
+                  echo "Note: run 'nix flake update' to update dependencies."
+                  echo
+                  echo "Run 'dev-help' to see this message again."
+                }
+
+                dev-help
+              '';
+            };
+
+          checks = {
+            inherit (config.packages) qgis docs;
+          };
+        };
 
       flake = { };
     };

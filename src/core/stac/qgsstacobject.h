@@ -20,9 +20,9 @@
 #include "qgis_core.h"
 #include "qgsstaclink.h"
 
+#include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QObject>
 
 /**
  * \ingroup core
@@ -54,7 +54,7 @@ class CORE_EXPORT QgsStacObject
     {
       sipType = NULL;
     }
-    SIP_END
+  SIP_END
 #endif
 
   public:

@@ -19,6 +19,7 @@
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsprojectstoredobjectmanager.h"
+
 #include <QObject>
 
 class QDomElement;
@@ -51,7 +52,6 @@ class CORE_EXPORT QgsElevationProfileManager : public QgsAbstractProjectStoredOb
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsElevationProfileManager. The project will become the parent object for this
      * manager.
@@ -148,9 +148,7 @@ class CORE_EXPORT QgsElevationProfileManager : public QgsAbstractProjectStoredOb
     void profileRenamed( QgsElevationProfile *profile, const QString &newName );
 
   protected:
-
     void setupObjectConnections( QgsElevationProfile *profile ) override;
-
 };
 
 

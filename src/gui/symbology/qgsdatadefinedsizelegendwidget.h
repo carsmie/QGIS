@@ -16,15 +16,16 @@
 #ifndef QGSDATADEFINEDSIZELEGENDWIDGET_H
 #define QGSDATADEFINEDSIZELEGENDWIDGET_H
 
-#include "qgis_sip.h"
-#include "qgis_gui.h"
-
-#include <memory>
 #include "ui_qgsdatadefinedsizelegendwidget.h"
 
-#include "qgspanelwidget.h"
+#include <memory>
+
+#include "qgis_gui.h"
+#include "qgis_sip.h"
 #include "qgsdoublevalidator.h"
+#include "qgspanelwidget.h"
 #include "qgsproperty.h"
+
 #include <QStyledItemDelegate>
 
 class QStandardItemModel;
@@ -53,7 +54,9 @@ class GUI_EXPORT QgsDataDefinedSizeLegendWidget : public QgsPanelWidget, private
      * to know the range of sizes. The overrideSymbol argument may override the source symbol: this is useful in case
      * when the symbol is given from outside rather than being set inside QgsDataDefinedSizeLegend.
      */
-    explicit QgsDataDefinedSizeLegendWidget( const QgsDataDefinedSizeLegend *ddsLegend, const QgsProperty &ddSize, QgsMarkerSymbol *overrideSymbol SIP_TRANSFER, QgsMapCanvas *canvas = nullptr, QWidget *parent SIP_TRANSFERTHIS = nullptr );
+    explicit QgsDataDefinedSizeLegendWidget(
+      const QgsDataDefinedSizeLegend *ddsLegend, const QgsProperty &ddSize, QgsMarkerSymbol *overrideSymbol SIP_TRANSFER, QgsMapCanvas *canvas = nullptr, QWidget *parent SIP_TRANSFERTHIS = nullptr
+    );
     ~QgsDataDefinedSizeLegendWidget() override;
 
     //! Returns configuration as set up in the dialog (may be NULLPTR). Ownership is passed to the caller.
@@ -73,9 +76,9 @@ class GUI_EXPORT QgsDataDefinedSizeLegendWidget : public QgsPanelWidget, private
     bool mOverrideSymbol = false;                   //!< If true, symbol should not be editable because it will be overridden
     QgsProperty mSizeProperty;                      //!< Definition of data-defined size of symbol (should have a size scale transformer associated)
     QgsLayerTreeModel *mPreviewModel = nullptr;
-    QgsLayerTree *mPreviewTree = nullptr;
+    std::unique_ptr<QgsLayerTree> mPreviewTree;
     QgsLayerTreeLayer *mPreviewLayerNode = nullptr;
-    QgsVectorLayer *mPreviewLayer = nullptr;
+    std::unique_ptr<QgsVectorLayer> mPreviewLayer;
     QgsMapCanvas *mMapCanvas = nullptr;
     QStandardItemModel *mSizeClassesModel = nullptr;
 };
@@ -91,8 +94,7 @@ class SizeClassDelegate : public QStyledItemDelegate
   public:
     SizeClassDelegate( QObject *parent )
       : QStyledItemDelegate( parent )
-    {
-    }
+    {}
 
     QWidget *createEditor( QWidget *parent, const QStyleOptionViewItem &, const QModelIndex & ) const override
     {

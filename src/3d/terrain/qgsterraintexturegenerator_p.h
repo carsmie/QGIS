@@ -27,18 +27,19 @@
 // version without notice, or even be removed.
 //
 
-#define SIP_NO_FILE
 
 class QgsMapRendererSequentialJob;
 class QgsMapSettings;
 class QgsProject;
 class QgsRasterLayer;
 
+#include "qgschunknode.h"
+#include "qgsrectangle.h"
+
 #include <QObject>
 #include <QSize>
 
-#include "qgschunknode.h"
-#include "qgsrectangle.h"
+#define SIP_NO_FILE
 
 class Qgs3DMapSettings;
 
@@ -98,7 +99,7 @@ class QgsTerrainTextureGenerator : public QObject
     };
 
     QHash<QgsMapRendererSequentialJob *, JobData> mJobs;
-    int mLastJobId;
+    int mLastJobId = 0;
     QSize mTextureSize;
 };
 

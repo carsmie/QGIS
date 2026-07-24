@@ -18,9 +18,9 @@
 #ifndef QGSTILEDSCENEWIREFRAMERENDERER_H
 #define QGSTILEDSCENEWIREFRAMERENDERER_H
 
-#include "qgstiledscenerenderer.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
+#include "qgstiledscenerenderer.h"
 
 class QgsFillSymbol;
 class QgsLineSymbol;
@@ -34,12 +34,11 @@ class QgsLineSymbol;
 class CORE_EXPORT QgsTiledSceneWireframeRenderer : public QgsTiledSceneRenderer
 {
   public:
-
     /**
      * Constructor for QgsTiledSceneWireframeRenderer.
      */
     QgsTiledSceneWireframeRenderer();
-    ~QgsTiledSceneWireframeRenderer();
+    ~QgsTiledSceneWireframeRenderer() override;
 
     QString type() const override;
     QgsTiledSceneRenderer *clone() const override;
@@ -118,11 +117,9 @@ class CORE_EXPORT QgsTiledSceneWireframeRenderer : public QgsTiledSceneRenderer
     void setUseTextureColors( bool enabled );
 
   private:
-
     std::unique_ptr< QgsFillSymbol> mFillSymbol;
     std::unique_ptr< QgsLineSymbol> mLineSymbol;
     bool mUseTextureColors = false;
-
 };
 
 #endif // QGSTILEDSCENEWIREFRAMERENDERER_H

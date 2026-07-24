@@ -18,18 +18,17 @@
 #ifndef QGSRANGEREQUESTCACHE_H
 #define QGSRANGEREQUESTCACHE_H
 
-#include <QtGlobal>
-#include <QMap>
-#include <QByteArray>
-#include <QUrl>
-#include <QFileInfoList>
-#include <QDir>
-#include <QNetworkRequest>
-
 #include "qgis_core.h"
 
-#define SIP_NO_FILE
+#include <QByteArray>
+#include <QDir>
+#include <QFileInfoList>
+#include <QMap>
+#include <QNetworkRequest>
+#include <QUrl>
+#include <QtGlobal>
 
+#define SIP_NO_FILE
 
 /**
  * \ingroup core
@@ -68,6 +67,7 @@ class CORE_EXPORT QgsRangeRequestCache
     QString error() const { return mError; }
 
     friend class TestQgsCopcProvider;
+
   private:
     QString mError;
     QString mCacheDir;

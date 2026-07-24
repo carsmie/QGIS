@@ -17,13 +17,13 @@
 #ifndef QGSRENDERERPROPERTIESDIALOG_H
 #define QGSRENDERERPROPERTIESDIALOG_H
 
-#include <QDialog>
-#include "qgis_sip.h"
-
 #include "ui_qgsrendererpropsdialogbase.h"
 
-#include "qgsfeaturerequest.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
+#include "qgsfeaturerequest.h"
+
+#include <QDialog>
 
 class QKeyEvent;
 
@@ -150,7 +150,7 @@ class GUI_EXPORT QgsRendererPropertiesDialog : public QDialog, private Ui::QgsRe
 
     QgsRendererWidget *mActiveWidget = nullptr;
 
-    QgsPaintEffect *mPaintEffect = nullptr;
+    std::unique_ptr<QgsPaintEffect> mPaintEffect;
 
     QgsMapCanvas *mMapCanvas = nullptr;
     QgsMessageBar *mMessageBar = nullptr;

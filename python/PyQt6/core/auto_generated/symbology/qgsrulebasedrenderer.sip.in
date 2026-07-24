@@ -10,7 +10,6 @@
 
 
 
-
 class QgsRuleBasedRenderer : QgsFeatureRenderer
 {
 %Docstring(signature="appended")
@@ -33,14 +32,13 @@ the rules and draws features with symbols from rules that match.
 
     struct FeatureToRender
     {
-      FeatureToRender( const QgsFeature &_f, int _flags );
-      QgsFeature feat;
-      int flags; // selected and/or draw markers
+        FeatureToRender( const QgsFeature &_f, int _flags );
+        QgsFeature feat;
+        int flags; // selected and/or draw markers
     };
 
     struct RenderJob
     {
-
         RenderJob( const QgsRuleBasedRenderer::FeatureToRender &_ftr, QgsSymbol *_s );
 %Docstring
 Constructor for a render job, with the specified feature to render and
@@ -61,16 +59,15 @@ symbol.
 
     struct RenderLevel
     {
-      explicit RenderLevel( int z );
+        explicit RenderLevel( int z );
 
-      ~RenderLevel();
-      int zIndex;
+        ~RenderLevel();
+        int zIndex;
 
-      QList<QgsRuleBasedRenderer::RenderJob *> jobs;
+        QList<QgsRuleBasedRenderer::RenderJob *> jobs;
 
 
-      RenderLevel( const QgsRuleBasedRenderer::RenderLevel &other );
-
+        RenderLevel( const QgsRuleBasedRenderer::RenderLevel &other );
     };
 
     typedef QList<QgsRuleBasedRenderer::RenderLevel> RenderQueue;
@@ -78,7 +75,7 @@ symbol.
     typedef QList<QgsRuleBasedRenderer::Rule *> RuleList;
 
     class Rule
-{
+    {
 %Docstring(signature="appended")
 Represents an individual rule for a rule-based renderer.
 
@@ -89,9 +86,6 @@ zero, there is no lower/upper bound for scales. A rule matches if both
 filter and scale range match.
 %End
 
-%TypeHeaderCode
-#include "qgsrulebasedrenderer.h"
-%End
       public:
         enum RenderResult /BaseType=IntEnum/
         {
@@ -100,8 +94,15 @@ filter and scale range match.
           Rendered
         };
 
-        Rule( QgsSymbol *symbol /Transfer/, int maximumScale = 0, int minimumScale = 0, const QString &filterExp = QString(),
-              const QString &label = QString(), const QString &description = QString(), bool elseRule = false );
+        Rule(
+          QgsSymbol *symbol /Transfer/,
+          int maximumScale = 0,
+          int minimumScale = 0,
+          const QString &filterExp = QString(),
+          const QString &label = QString(),
+          const QString &description = QString(),
+          bool elseRule = false
+        );
 %Docstring
 Constructor takes ownership of the symbol
 %End
@@ -378,7 +379,7 @@ rule
 :param context: The rendering context
 %End
 
-        static QgsRuleBasedRenderer::Rule *create( QDomElement &ruleElem, QgsSymbolMap &symbolMap, bool reuseId = true ) /Factory/;
+        static QgsRuleBasedRenderer::Rule *create( QDomElement &ruleElem, QgsSymbolMap &symbolMap, bool reuseId = true, const QgsReadWriteContext &context = QgsReadWriteContext() ) /Factory/;
 %Docstring
 Create a rule from an XML definition
 
@@ -388,6 +389,7 @@ Create a rule from an XML definition
                 symbol or ``False`` to create a new rule with the same
                 parameters as the original but a new unique
                 :py:func:`~Rule.ruleKey`. (Since QGIS 3.30)
+:param context: The rendering context (Since QGIS 4.0)
 
 :return: A new rule
 %End
@@ -555,6 +557,8 @@ Creates a new rule based renderer from an SLD XML element.
 
 
     virtual void setLegendSymbolItem( const QString &key, QgsSymbol *symbol /Transfer/ );
+
+    virtual void setLegendSymbolItemLabel( const QString &key, const QString &label );
 
     virtual QgsLegendSymbolList legendSymbolItems() const;
 

@@ -14,17 +14,18 @@
  ***************************************************************************/
 
 #include "qgspointmarkeritem.h"
-#include "qgssymbol.h"
-#include "qgsmapcanvas.h"
-#include "qgsmapsettings.h"
-#include "qgsproject.h"
-#include "qgsexpressioncontextutils.h"
-#include "qgsmarkersymbol.h"
-#include "qgslinesymbol.h"
 
-#include <QPainter>
 #include <cmath>
 
+#include "qgsexpressioncontextutils.h"
+#include "qgslinesymbol.h"
+#include "qgsmapcanvas.h"
+#include "qgsmapsettings.h"
+#include "qgsmarkersymbol.h"
+#include "qgsproject.h"
+#include "qgssymbol.h"
+
+#include <QPainter>
 
 //
 // QgsMapCanvasSymbolItem
@@ -43,23 +44,26 @@ QgsRenderContext QgsMapCanvasSymbolItem::renderContext( QPainter *painter )
 {
   QgsExpressionContext context;
 
+  QgsMapSettings ms;
   if ( mMapCanvas )
   {
     context = mMapCanvas->createExpressionContext();
+    ms = mMapCanvas->mapSettings();
   }
   else
   {
-    context << QgsExpressionContextUtils::globalScope()
-            << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
-            << QgsExpressionContextUtils::atlasScope( nullptr )
-            << QgsExpressionContextUtils::mapSettingsScope( QgsMapSettings() );
+    ms.setEllipsoid( QgsProject::instance()->ellipsoid() );
+    context
+      << QgsExpressionContextUtils::globalScope()
+      << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
+      << QgsExpressionContextUtils::atlasScope( nullptr )
+      << QgsExpressionContextUtils::mapSettingsScope( ms );
   }
   //context << QgsExpressionContextUtils::layerScope( mLayer );
   context.setFeature( mFeature );
   context.setFields( mFeature.fields() );
 
   //setup render context
-  QgsMapSettings ms = mMapCanvas->mapSettings();
   ms.setExpressionContext( context );
   QgsRenderContext rc = QgsRenderContext::fromMapSettings( ms );
   rc.setPainter( painter );

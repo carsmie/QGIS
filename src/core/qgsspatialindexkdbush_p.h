@@ -18,7 +18,6 @@
 #ifndef QGSSPATIALINDEXKDBUSH_PRIVATE_H
 #define QGSSPATIALINDEXKDBUSH_PRIVATE_H
 
-#define SIP_NO_FILE
 
 /// @cond PRIVATE
 
@@ -31,21 +30,23 @@
 // version without notice, or even be removed.
 //
 
-#include "qgsfeature.h"
-#include "qgsspatialindexkdbushdata.h"
-#include "qgsfeatureiterator.h"
-#include "qgsfeedback.h"
-#include "qgsfeaturesource.h"
-#include <memory>
-#include <QList>
-#include "kdbush.hpp"
 #include <functional>
+#include <memory>
 
+#include "kdbush.hpp"
+#include "qgsfeature.h"
+#include "qgsfeatureiterator.h"
+#include "qgsfeaturesource.h"
+#include "qgsfeedback.h"
+#include "qgsspatialindexkdbushdata.h"
+
+#include <QList>
+
+#define SIP_NO_FILE
 
 class PointXYKDBush : public kdbush::KDBush< std::pair<double, double>, QgsSpatialIndexKDBushData, std::size_t >
 {
   public:
-
     explicit PointXYKDBush( QgsFeatureIterator &fi, QgsFeedback *feedback = nullptr, const std::function< bool( const QgsFeature & ) > *callback = nullptr )
     {
       fillFromIterator( fi, feedback, callback );
@@ -57,6 +58,8 @@ class PointXYKDBush : public kdbush::KDBush< std::pair<double, double>, QgsSpati
       QgsFeatureIterator it = source.getFeatures( QgsFeatureRequest().setNoAttributes() );
       fillFromIterator( it, feedback, nullptr );
     }
+
+    PointXYKDBush() {}
 
     void fillFromIterator( QgsFeatureIterator &fi, QgsFeedback *feedback = nullptr, const std::function< bool( const QgsFeature & ) > *callback = nullptr )
     {
@@ -92,29 +95,48 @@ class PointXYKDBush : public kdbush::KDBush< std::pair<double, double>, QgsSpati
         return;
 
       sortKD( 0, size - 1, 0 );
+      finalized = true;
     }
 
-    std::size_t size() const
+    bool addFeature( QgsFeatureId id, const QgsPointXY point )
     {
-      return points.size();
+      if ( finalized )
+        return false;
+      points.emplace_back( QgsSpatialIndexKDBushData( id, point.x(), point.y() ) );
+      return true;
     }
 
+    void finalize()
+    {
+      if ( !finalized && !points.empty() )
+      {
+        sortKD( 0, points.size() - 1, 0 );
+        finalized = true;
+      }
+    }
+
+    std::size_t size() const { return points.size(); }
+
+    bool finalized = false;
 };
 
 class QgsSpatialIndexKDBushPrivate
 {
   public:
-
     explicit QgsSpatialIndexKDBushPrivate( QgsFeatureIterator &fi, QgsFeedback *feedback = nullptr )
-      : index( std::make_unique < PointXYKDBush >( fi, feedback ) )
+      : index( std::make_unique< PointXYKDBush >( fi, feedback ) )
     {}
 
     explicit QgsSpatialIndexKDBushPrivate( const QgsFeatureSource &source, QgsFeedback *feedback = nullptr )
-      : index( std::make_unique < PointXYKDBush >( source, feedback ) )
+      : index( std::make_unique< PointXYKDBush >( source, feedback ) )
     {}
 
     explicit QgsSpatialIndexKDBushPrivate( QgsFeatureIterator &fi, const std::function< bool( const QgsFeature & ) > &callback, QgsFeedback *feedback = nullptr )
-      : index( std::make_unique < PointXYKDBush >( fi, feedback, &callback ) )
+      : index( std::make_unique< PointXYKDBush >( fi, feedback, &callback ) )
+    {}
+
+    explicit QgsSpatialIndexKDBushPrivate()
+      : index( std::make_unique< PointXYKDBush >() )
     {}
 
     QAtomicInt ref = 1;

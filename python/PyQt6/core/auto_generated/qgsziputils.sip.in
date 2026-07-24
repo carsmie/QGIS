@@ -8,6 +8,7 @@
 
 
 
+
 class QgsZipUtils
 {
 %Docstring(signature="appended")
@@ -20,7 +21,6 @@ Provides utility functions for working with zip files.
 #include "qgsziputils.h"
 %End
   public:
-
     static bool isZipFile( const QString &filename );
 %Docstring
 Returns ``True`` if the file name is a zipped file ( i.e with a '.qgz'
@@ -70,6 +70,12 @@ Returns the list of files within a ``zip`` file
 .. versionadded:: 3.30
 %End
 
+    static bool extractFileFromZip( const QString &zipFilename, const QString &filenameInZip, QByteArray &bytesOut /Out/ );
+%Docstring
+Extracts a file from a zip archive, returns ``True`` on success.
+
+.. versionadded:: 4.0
+%End
 };
 
 /************************************************************************

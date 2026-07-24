@@ -14,15 +14,24 @@
  ***************************************************************************/
 
 #include "qgsrenderermeshpropertieswidget.h"
-#include "moc_qgsrenderermeshpropertieswidget.cpp"
 
 #include "qgis.h"
 #include "qgsmapcanvas.h"
 #include "qgsmeshlayer.h"
-#include "qgsmeshrendererscalarsettingswidget.h"
 #include "qgsmeshrendereractivedatasetwidget.h"
+#include "qgsmeshrendererscalarsettingswidget.h"
 #include "qgsproject.h"
 #include "qgsprojectutils.h"
+#include "qgssettingsentryimpl.h"
+#include "qgssettingstree.h"
+
+#include <QString>
+
+#include "moc_qgsrenderermeshpropertieswidget.cpp"
+
+using namespace Qt::StringLiterals;
+
+const QgsSettingsEntryInteger *QgsRendererMeshPropertiesWidget::settingsTab = new QgsSettingsEntryInteger( u"renderer-mesh-properties-tab"_s, QgsSettingsTree::sTreeWindowState, 0 );
 
 QgsRendererMeshPropertiesWidget::QgsRendererMeshPropertiesWidget( QgsMeshLayer *layer, QgsMapCanvas *canvas, QWidget *parent )
   : QgsMapLayerConfigWidget( layer, canvas, parent )
@@ -127,8 +136,7 @@ void QgsRendererMeshPropertiesWidget::apply()
   mMeshLayer->setRendererSettings( settings );
   mMeshLayer->triggerRepaint();
 
-  QgsSettings windowsSettings;
-  windowsSettings.setValue( QStringLiteral( "/Windows/RendererMeshProperties/tab" ), mStyleOptionsTab->currentIndex() );
+  settingsTab->setValue( mStyleOptionsTab->currentIndex() );
 }
 
 void QgsRendererMeshPropertiesWidget::syncToLayer( QgsMapLayer *mapLayer )
@@ -151,15 +159,18 @@ void QgsRendererMeshPropertiesWidget::syncToLayer( QgsMapLayer *mapLayer )
 
 void QgsRendererMeshPropertiesWidget::syncToLayerPrivate()
 {
+  if ( !mMeshLayer )
+    return;
+
   mMeshRendererActiveDatasetWidget->syncToLayer();
   mNativeMeshSettingsWidget->syncToLayer();
   mTriangularMeshSettingsWidget->syncToLayer();
   mEdgeMeshSettingsWidget->syncToLayer();
   m3dAveragingSettingsWidget->syncToLayer();
 
-  mNativeMeshGroup->setChecked( mMeshLayer ? mMeshLayer->rendererSettings().nativeMeshSettings().isEnabled() : false );
-  mTriangularMeshGroup->setChecked( mMeshLayer ? mMeshLayer->rendererSettings().triangularMeshSettings().isEnabled() : false );
-  mEdgeMeshGroup->setChecked( mMeshLayer ? mMeshLayer->rendererSettings().edgeMeshSettings().isEnabled() : false );
+  mNativeMeshGroup->setChecked( mMeshLayer->rendererSettings().nativeMeshSettings().isEnabled() );
+  mTriangularMeshGroup->setChecked( mMeshLayer->rendererSettings().triangularMeshSettings().isEnabled() );
+  mEdgeMeshGroup->setChecked( mMeshLayer->rendererSettings().edgeMeshSettings().isEnabled() );
 
   onActiveScalarGroupChanged( mMeshLayer->rendererSettings().activeScalarDatasetGroup() );
   onActiveVectorGroupChanged( mMeshLayer->rendererSettings().activeVectorDatasetGroup() );
@@ -170,11 +181,7 @@ void QgsRendererMeshPropertiesWidget::syncToLayerPrivate()
   const bool hasEdges = ( mMeshLayer->contains( QgsMesh::ElementType::Edge ) );
   mEdgeMeshGroupBox->setVisible( hasEdges || !mMeshLayer->isValid() );
 
-  QgsSettings settings;
-  if ( !settings.contains( QStringLiteral( "/Windows/RendererMeshProperties/tab" ) ) )
-    settings.setValue( QStringLiteral( "/Windows/RendererMeshProperties/tab" ), 0 );
-  else
-    mStyleOptionsTab->setCurrentIndex( settings.value( QStringLiteral( "/Windows/RendererMeshProperties/tab" ) ).toInt() );
+  mStyleOptionsTab->setCurrentIndex( settingsTab->value() );
 }
 
 void QgsRendererMeshPropertiesWidget::onActiveScalarGroupChanged( int groupIndex )

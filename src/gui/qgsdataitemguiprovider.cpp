@@ -14,12 +14,15 @@
  ***************************************************************************/
 
 #include "qgsdataitemguiprovider.h"
-#include "qgsdataitem.h"
-#include "qgsproviderregistry.h"
-#include "qgsprovidermetadata.h"
+
 #include "qgsabstractdatabaseproviderconnection.h"
+#include "qgsdataitem.h"
 #include "qgsmessagebar.h"
+#include "qgsprovidermetadata.h"
+#include "qgsproviderregistry.h"
+
 #include <QMessageBox>
+
 //
 // QgsDataItemGuiContext
 //
@@ -59,8 +62,7 @@ void QgsDataItemGuiContext::setView( QgsBrowserTreeView *view )
 //
 
 void QgsDataItemGuiProvider::populateContextMenu( QgsDataItem *, QMenu *, const QList<QgsDataItem *> &, QgsDataItemGuiContext )
-{
-}
+{}
 
 int QgsDataItemGuiProvider::precedenceWhenPopulatingMenus() const
 {

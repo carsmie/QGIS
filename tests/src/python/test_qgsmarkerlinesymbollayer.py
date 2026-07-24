@@ -20,10 +20,8 @@ __date__ = "November 2018"
 __copyright__ = "(C) 2018, Nyall Dawson"
 
 import os
+import unittest
 
-from qgis.PyQt.QtCore import QSize, Qt
-from qgis.PyQt.QtGui import QColor, QImage, QPainter
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import (
     Qgis,
     QgsFeature,
@@ -35,6 +33,7 @@ from qgis.core import (
     QgsLineSymbol,
     QgsLineSymbolLayer,
     QgsMapSettings,
+    QgsMapUnitScale,
     QgsMarkerLineSymbolLayer,
     QgsMarkerSymbol,
     QgsProperty,
@@ -50,9 +49,10 @@ from qgis.core import (
     QgsUnitTypes,
     QgsVectorLayer,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QSize, Qt
+from qgis.PyQt.QtGui import QColor, QImage, QPainter
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 start_app()
@@ -60,7 +60,6 @@ TEST_DATA_DIR = unitTestDataPath()
 
 
 class TestQgsMarkerLineSymbolLayer(QgisTestCase):
-
     @classmethod
     def control_path_prefix(cls):
         return "symbol_markerline"
@@ -1498,6 +1497,403 @@ class TestQgsMarkerLineSymbolLayer(QgisTestCase):
         self.assertTrue(
             self.render_map_settings_check(
                 "markerline_ddopacity", "markerline_ddopacity", ms
+            )
+        )
+
+    def testBlankSegments(self):
+        """
+        Test with data defined blank segments
+        """
+
+        # rendering test
+        s = QgsFillSymbol()
+        s.deleteSymbolLayer(0)
+
+        sl = QgsMarkerLineSymbolLayer()
+        sl.setPlacements(Qgis.MarkerLinePlacements(Qgis.MarkerLinePlacement.Interval))
+        sl.setDataDefinedProperty(
+            QgsSymbolLayer.Property.BlankSegments,
+            QgsProperty.fromExpression("'(((2.90402 7.36,11.8776 30.4499)))'"),
+        )
+
+        markerSl = sl.subSymbol().symbolLayers()[0]
+        self.assertTrue(markerSl)
+        markerSl.setShape(Qgis.MarkerShape.HalfSquare)
+        markerSl.setStrokeStyle(Qt.PenStyle.NoPen)
+        s.appendSymbolLayer(sl)
+
+        g = QgsGeometry.fromWkt(
+            """MultiPolygon(((0 0, 10 0, 10 3, 12 4, 8 5, 12 6, 8 7, 10 8, 10 10, 0 10, 0 0),(2 3, 6 3, 6 8, 2 8, 2 3)),
+                            ((13 0, 16 0, 16 10, 13 10, 13 0)))"""
+        )
+
+        # test with average angle disabled
+        sl.setAverageAngleLength(0)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_interval",
+                "markerline_blanksegments_interval",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # Test with average angle enabled
+        sl.setAverageAngleLength(4)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_interval_averageangle",
+                "markerline_blanksegments_interval_averageangle",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # Test blank segments on other multi polygon part and ring
+        sl.setDataDefinedProperty(
+            QgsSymbolLayer.Property.BlankSegments,
+            QgsProperty.fromExpression(
+                "'(((2.90402 7.36,11.8776 30.4499),(6 9)),((2 7)))'"
+            ),
+        )
+
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_multipoly_and_ring",
+                "markerline_blanksegments_multipoly_and_ring",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # central point with no average angle
+        sl.setPlacements(
+            Qgis.MarkerLinePlacements(Qgis.MarkerLinePlacement.CentralPoint)
+        )
+        sl.setAverageAngleLength(0)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_central",
+                "markerline_blanksegments_central",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # central point with average angle
+        sl.setPlacements(
+            Qgis.MarkerLinePlacements(Qgis.MarkerLinePlacement.CentralPoint)
+        )
+        sl.setAverageAngleLength(4)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_central_averageangle",
+                "markerline_blanksegments_central_averageangle",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # vertex with no average angle (but average angle has no impact here, no need to test with,
+        # we would get the same result)
+        sl.setPlacements(Qgis.MarkerLinePlacements(Qgis.MarkerLinePlacement.Vertex))
+        sl.setAverageAngleLength(0)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_vertex",
+                "markerline_blanksegments_vertex",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # Test first and last vertex
+        sl.setPlacements(
+            Qgis.MarkerLinePlacements(
+                Qgis.MarkerLinePlacement.FirstVertex
+                | Qgis.MarkerLinePlacement.LastVertex
+            )
+        )
+        sl.setDataDefinedProperty(
+            QgsSymbolLayer.Property.BlankSegments,
+            QgsProperty.fromExpression(
+                "'(((0 2, 45 52)))'"
+            ),  # 2 distances to erase first and last
+        )
+
+        markerSl.setSize(5)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_firstlast",
+                "markerline_blanksegments_firstlast",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # Test first and last vertex with offset along line
+        # Start vertex of first part must disappear because it's inside the set distances but
+        # not end vertex
+        sl.setOffsetAlongLine(1.5)
+        sl.setOffsetAlongLineUnit(Qgis.RenderUnit.MapUnits)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_firstlast_offset",
+                "markerline_blanksegments_firstlast_offset",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+    def testBlankSegmentsOffsetAlongLine(self):
+        """
+        Test with data defined blank segments and an offset along line has been set
+        """
+
+        # rendering test
+        s = QgsLineSymbol()
+        s.deleteSymbolLayer(0)
+
+        sl = QgsMarkerLineSymbolLayer()
+        sl.setPlacements(Qgis.MarkerLinePlacements(Qgis.MarkerLinePlacement.Interval))
+        sl.setDataDefinedProperty(
+            QgsSymbolLayer.Property.BlankSegments,
+            QgsProperty.fromExpression("'(((1 2.9, 7.7 15)))'"),
+        )
+
+        sl.setOffsetAlongLineUnit(Qgis.RenderUnit.MapUnits)
+        sl.setOffsetAlongLine(3)
+
+        markerSl = sl.subSymbol().symbolLayers()[0]
+        self.assertTrue(markerSl)
+        markerSl.setShape(Qgis.MarkerShape.HalfSquare)
+        markerSl.setStrokeStyle(Qt.PenStyle.NoPen)
+        s.appendSymbolLayer(sl)
+
+        # Test offset along line
+        g = QgsGeometry.fromWkt("""LineString((0 0, 10 10))""")
+
+        sl.setAverageAngleLength(4)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_offsetalongline",
+                "markerline_blanksegments_offsetalongline",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # We should have exactly the same rendering with average angle length because this is a straight line
+        sl.setAverageAngleLength(0)
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_blanksegments_offsetalongline",
+                "markerline_blanksegments_offsetalongline",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+    def testTrimDistance(self):
+        sl = QgsMarkerLineSymbolLayer.create(
+            {"outline_color": "#ff0000", "outline_width": "0.6"}
+        )
+        s = QgsLineSymbol([sl])
+
+        s.symbolLayer(0).setTrimDistanceStart(1.2)
+        s.symbolLayer(0).setTrimDistanceStartUnit(QgsUnitTypes.RenderPoints)
+        s.symbolLayer(0).setTrimDistanceStartMapUnitScale(QgsMapUnitScale(5, 10))
+        s.symbolLayer(0).setTrimDistanceEnd(3.2)
+        s.symbolLayer(0).setTrimDistanceEndUnit(QgsUnitTypes.RenderPercentage)
+        s.symbolLayer(0).setTrimDistanceEndMapUnitScale(QgsMapUnitScale(15, 20))
+
+        s2 = s.clone()
+        self.assertEqual(s2.symbolLayer(0).trimDistanceStart(), 1.2)
+        self.assertEqual(
+            s2.symbolLayer(0).trimDistanceStartUnit(), QgsUnitTypes.RenderPoints
+        )
+        self.assertEqual(s2.symbolLayer(0).trimDistanceStartMapUnitScale().minScale, 5)
+        self.assertEqual(s2.symbolLayer(0).trimDistanceStartMapUnitScale().maxScale, 10)
+        self.assertEqual(s2.symbolLayer(0).trimDistanceEnd(), 3.2)
+        self.assertEqual(
+            s2.symbolLayer(0).trimDistanceEndUnit(), QgsUnitTypes.RenderPercentage
+        )
+        self.assertEqual(s2.symbolLayer(0).trimDistanceEndMapUnitScale().minScale, 15)
+        self.assertEqual(s2.symbolLayer(0).trimDistanceEndMapUnitScale().maxScale, 20)
+
+        doc = QDomDocument()
+        context = QgsReadWriteContext()
+        element = QgsSymbolLayerUtils.saveSymbol("test", s, doc, context)
+
+        s2 = QgsSymbolLayerUtils.loadSymbol(element, context)
+        self.assertEqual(s2.symbolLayer(0).trimDistanceStart(), 1.2)
+        self.assertEqual(
+            s2.symbolLayer(0).trimDistanceStartUnit(), QgsUnitTypes.RenderPoints
+        )
+        self.assertEqual(s2.symbolLayer(0).trimDistanceStartMapUnitScale().minScale, 5)
+        self.assertEqual(s2.symbolLayer(0).trimDistanceStartMapUnitScale().maxScale, 10)
+        self.assertEqual(s2.symbolLayer(0).trimDistanceEnd(), 3.2)
+        self.assertEqual(
+            s2.symbolLayer(0).trimDistanceEndUnit(), QgsUnitTypes.RenderPercentage
+        )
+        self.assertEqual(s2.symbolLayer(0).trimDistanceEndMapUnitScale().minScale, 15)
+        self.assertEqual(s2.symbolLayer(0).trimDistanceEndMapUnitScale().maxScale, 20)
+
+    def testTrimDistanceRender(self):
+        """
+        Rendering test of trim distances
+        """
+        sl = QgsMarkerLineSymbolLayer.create(
+            {"outline_color": "#ff0000", "outline_width": "2"}
+        )
+        s = QgsLineSymbol([sl])
+
+        sl.setTrimDistanceStart(150)
+        sl.setTrimDistanceStartUnit(QgsUnitTypes.RenderPoints)
+        sl.setTrimDistanceEnd(9)
+        sl.setTrimDistanceEndUnit(QgsUnitTypes.RenderMillimeters)
+
+        g = QgsGeometry.fromWkt("LineString(0 0, 10 0, 10 10, 0 10)")
+        rendered_image = self.renderGeometry(s, g)
+        assert self.image_check(
+            "trim_distance_units",
+            "trim_distance_units",
+            rendered_image,
+        )
+
+    def testTrimDistanceRenderPercentage(self):
+        """
+        Rendering test of trim distances using percentage
+        """
+        sl = QgsMarkerLineSymbolLayer.create(
+            {"outline_color": "#ff0000", "outline_width": "2"}
+        )
+        s = QgsLineSymbol([sl])
+
+        s.symbolLayer(0).setTrimDistanceStart(10)
+        s.symbolLayer(0).setTrimDistanceStartUnit(QgsUnitTypes.RenderPercentage)
+        s.symbolLayer(0).setTrimDistanceEnd(50)
+        s.symbolLayer(0).setTrimDistanceEndUnit(QgsUnitTypes.RenderPercentage)
+
+        g = QgsGeometry.fromWkt("LineString(0 0, 10 0, 10 10, 0 10)")
+        rendered_image = self.renderGeometry(s, g)
+        assert self.image_check(
+            "trim_distance_percentage",
+            "trim_distance_percentage",
+            rendered_image,
+        )
+
+    def testTrimDistanceRenderDataDefined(self):
+        """
+        Rendering test of trim distances using data defined lengths
+        """
+        sl = QgsMarkerLineSymbolLayer.create(
+            {"outline_color": "#ff0000", "outline_width": "2"}
+        )
+        s = QgsLineSymbol([sl])
+
+        s.symbolLayer(0).setTrimDistanceStart(1)
+        s.symbolLayer(0).setTrimDistanceStartUnit(QgsUnitTypes.RenderPercentage)
+        s.symbolLayer(0).setTrimDistanceEnd(5)
+        s.symbolLayer(0).setTrimDistanceEndUnit(QgsUnitTypes.RenderPercentage)
+
+        s.symbolLayer(0).setDataDefinedProperty(
+            QgsSymbolLayer.PropertyTrimStart, QgsProperty.fromExpression("5*2")
+        )
+        s.symbolLayer(0).setDataDefinedProperty(
+            QgsSymbolLayer.PropertyTrimEnd, QgsProperty.fromExpression("60-10")
+        )
+
+        g = QgsGeometry.fromWkt("LineString(0 0, 10 0, 10 10, 0 10)")
+        rendered_image = self.renderGeometry(s, g)
+        assert self.image_check(
+            "trim_distance_percentage",
+            "trim_distance_percentage",
+            rendered_image,
+        )
+
+    def testExtraItems(self):
+        """
+        Test with data defined extra items
+        """
+
+        s = QgsFillSymbol()
+        s.deleteSymbolLayer(0)
+
+        sl = QgsMarkerLineSymbolLayer()
+        sl.setPlacements(Qgis.MarkerLinePlacements(Qgis.MarkerLinePlacement.Interval))
+        sl.setDataDefinedProperty(
+            QgsSymbolLayer.Property.ExtraItems,
+            QgsProperty.fromExpression("'3 3 0, 3 6 45, 8 8 90'"),
+        )
+
+        markerSl = sl.subSymbol().symbolLayers()[0]
+        self.assertTrue(markerSl)
+        markerSl.setShape(Qgis.MarkerShape.HalfSquare)
+        markerSl.setStrokeStyle(Qt.PenStyle.NoPen)
+        s.appendSymbolLayer(sl)
+
+        g = QgsGeometry.fromWkt("""MultiPolygon(((0 0, 10 0, 10 10, 0 10, 0 0)))""")
+
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_extraitems",
+                "markerline_extraitems",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
+            )
+        )
+
+        # Same test with line
+
+        s = QgsLineSymbol()
+        s.deleteSymbolLayer(0)
+
+        sl = QgsMarkerLineSymbolLayer()
+        sl.setPlacements(Qgis.MarkerLinePlacements(Qgis.MarkerLinePlacement.Interval))
+        sl.setDataDefinedProperty(
+            QgsSymbolLayer.Property.ExtraItems,
+            QgsProperty.fromExpression("'3 3 0, 3 6 45, 8 8 90'"),
+        )
+
+        markerSl = sl.subSymbol().symbolLayers()[0]
+        self.assertTrue(markerSl)
+        markerSl.setShape(Qgis.MarkerShape.HalfSquare)
+        markerSl.setStrokeStyle(Qt.PenStyle.NoPen)
+        s.appendSymbolLayer(sl)
+
+        g = QgsGeometry.fromWkt("""LineString((0 0, 10 0, 10 10, 0 10, 0 0))""")
+
+        rendered_image = self.renderGeometry(s, g)
+        self.assertTrue(
+            self.image_check(
+                "markerline_extraitems",
+                "markerline_extraitems",
+                rendered_image,
+                color_tolerance=2,
+                allowed_mismatch=20,
             )
         )
 

@@ -15,21 +15,26 @@
  ***************************************************************************/
 
 #include "qgslayoutscalebarwidget.h"
-#include "moc_qgslayoutscalebarwidget.cpp"
+
+#include "qgsfillsymbol.h"
+#include "qgslayout.h"
 #include "qgslayoutitemmap.h"
 #include "qgslayoutitemscalebar.h"
-#include "qgsscalebarrendererregistry.h"
-#include "qgslayout.h"
-#include "qgsnumericformatselectorwidget.h"
-#include "qgslayoutundostack.h"
-#include "qgsfillsymbol.h"
-#include "qgslinesymbol.h"
 #include "qgslayoutreportcontext.h"
+#include "qgslayoutundostack.h"
+#include "qgslinesymbol.h"
+#include "qgsnumericformatselectorwidget.h"
+#include "qgsscalebarrendererregistry.h"
 #include "qgsvectorlayer.h"
 
 #include <QColorDialog>
 #include <QFontDialog>
+#include <QString>
 #include <QWidget>
+
+#include "moc_qgslayoutscalebarwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayoutScaleBarWidget::QgsLayoutScaleBarWidget( QgsLayoutItemScaleBar *scaleBar )
   : QgsLayoutItemBaseWidget( nullptr, scaleBar )
@@ -118,7 +123,8 @@ QgsLayoutScaleBarWidget::QgsLayoutScaleBarWidget( QgsLayoutItemScaleBar *scaleBa
   mAlignmentComboBox->setAvailableAlignments( Qt::AlignLeft | Qt::AlignHCenter | Qt::AlignRight );
 
   //units combo box
-  mUnitsComboBox->addItem( tr( "Map units" ), static_cast<int>( Qgis::DistanceUnit::Unknown ) );
+
+  mUnitsComboBox->addItem( linkedMapUnitsString( scaleBar ), static_cast<int>( Qgis::DistanceUnit::Unknown ) );
   mUnitsComboBox->addItem( tr( "Meters" ), static_cast<int>( Qgis::DistanceUnit::Meters ) );
   mUnitsComboBox->addItem( tr( "Kilometers" ), static_cast<int>( Qgis::DistanceUnit::Kilometers ) );
   mUnitsComboBox->addItem( tr( "Feet" ), static_cast<int>( Qgis::DistanceUnit::Feet ) );
@@ -195,10 +201,10 @@ void QgsLayoutScaleBarWidget::setMasterLayout( QgsMasterLayoutInterface *masterL
 QgsExpressionContext QgsLayoutScaleBarWidget::createExpressionContext() const
 {
   QgsExpressionContext context = mScalebar->createExpressionContext();
-  QgsExpressionContextScope *scaleScope = new QgsExpressionContextScope( QStringLiteral( "scalebar_text" ) );
-  scaleScope->addVariable( QgsExpressionContextScope::StaticVariable( QStringLiteral( "scale_value" ), 0, true, false ) );
+  QgsExpressionContextScope *scaleScope = new QgsExpressionContextScope( u"scalebar_text"_s );
+  scaleScope->addVariable( QgsExpressionContextScope::StaticVariable( u"scale_value"_s, 0, true, false ) );
   context.appendScope( scaleScope );
-  context.setHighlightedVariables( QStringList() << QStringLiteral( "scale_value" ) );
+  context.setHighlightedVariables( QStringList() << u"scale_value"_s );
   return context;
 }
 
@@ -317,9 +323,9 @@ void QgsLayoutScaleBarWidget::setGuiElements()
   toggleStyleSpecificControls( style );
 
   //label vertical/horizontal placement
-  mDistanceLabelPlacementComboBox->setCurrentIndex( mDistanceLabelPlacementComboBox->findData( static_cast<int>(
-    distanceLabelPlacement( mScalebar->labelHorizontalPlacement(), mScalebar->labelVerticalPlacement() )
-  ) ) );
+  mDistanceLabelPlacementComboBox->setCurrentIndex(
+    mDistanceLabelPlacementComboBox->findData( static_cast<int>( distanceLabelPlacement( mScalebar->labelHorizontalPlacement(), mScalebar->labelVerticalPlacement() ) ) )
+  );
 
   //alignment
 
@@ -498,7 +504,9 @@ void QgsLayoutScaleBarWidget::changeNumberFormat()
   return;
 }
 
-QgsLayoutScaleBarWidget::DistanceLabelPlacement QgsLayoutScaleBarWidget::distanceLabelPlacement( Qgis::ScaleBarDistanceLabelHorizontalPlacement horizontalPlacement, Qgis::ScaleBarDistanceLabelVerticalPlacement verticalPlacement )
+QgsLayoutScaleBarWidget::DistanceLabelPlacement QgsLayoutScaleBarWidget::distanceLabelPlacement(
+  Qgis::ScaleBarDistanceLabelHorizontalPlacement horizontalPlacement, Qgis::ScaleBarDistanceLabelVerticalPlacement verticalPlacement
+)
 {
   switch ( horizontalPlacement )
   {
@@ -607,7 +615,9 @@ void QgsLayoutScaleBarWidget::toggleStyleSpecificControls( const QString &style 
   mLabelBarSpaceSpinBox->setEnabled( renderer ? renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesLabelBarSpace : true );
   mLabelBarSpaceLabel->setEnabled( renderer ? renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesLabelBarSpace : true );
   mDistanceLabelPlacementComboBox->setEnabled( renderer ? renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesLabelVerticalPlacement : true );
-  mLabelVerticalPlacementLabel->setEnabled( renderer ? ( renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesLabelHorizontalPlacement || renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesLabelVerticalPlacement ) : true );
+  mLabelVerticalPlacementLabel->setEnabled(
+    renderer ? ( renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesLabelHorizontalPlacement || renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesLabelVerticalPlacement ) : true
+  );
   mAlignmentComboBox->setEnabled( renderer ? renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesAlignment : true );
   mAlignmentLabel->setEnabled( renderer ? renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesAlignment : true );
   mFillSymbol1Button->setEnabled( renderer ? renderer->flags() & QgsScaleBarRenderer::Flag::FlagUsesFillSymbol : true );
@@ -823,6 +833,8 @@ void QgsLayoutScaleBarWidget::mapChanged( QgsLayoutItem *item )
   mScalebar->update();
   connectUpdateSignal();
   mScalebar->endCommand();
+
+  mUnitsComboBox->setItemText( mUnitsComboBox->findData( static_cast<int>( Qgis::DistanceUnit::Unknown ) ), linkedMapUnitsString( mScalebar ) );
 }
 
 void QgsLayoutScaleBarWidget::mMinWidthSpinBox_valueChanged( double )
@@ -865,4 +877,21 @@ void QgsLayoutScaleBarWidget::populateDataDefinedButtons()
   updateDataDefinedButton( mHeightDDBtn );
   updateDataDefinedButton( mSubdivisionHeightDDBtn );
   updateDataDefinedButton( mRightSegmentSubdivisionsDDBtn );
+}
+
+QString QgsLayoutScaleBarWidget::linkedMapUnitsString( QgsLayoutItemScaleBar *scalebar )
+{
+  QString mapUnit;
+  if ( scalebar )
+  {
+    if ( QgsLayoutItemMap *map = scalebar->linkedMap() )
+    {
+      const Qgis::DistanceUnit mapCrsUnits = map->crs().mapUnits();
+      if ( mapCrsUnits != Qgis::DistanceUnit::Unknown )
+      {
+        mapUnit = QgsUnitTypes::toString( mapCrsUnits );
+      }
+    }
+  }
+  return mapUnit.isEmpty() ? tr( "Map Units" ) : tr( "Map Units (%1)" ).arg( mapUnit );
 }

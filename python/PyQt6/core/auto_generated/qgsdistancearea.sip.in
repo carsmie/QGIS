@@ -9,6 +9,7 @@
 
 
 
+
 class QgsDistanceArea
 {
 %Docstring(signature="appended")
@@ -42,7 +43,6 @@ based measurements.
 #include "qgsdistancearea.h"
 %End
   public:
-
     QgsDistanceArea();
     ~QgsDistanceArea();
 
@@ -463,7 +463,6 @@ interpolated for the new vertices created at the antimeridian.
 %End
 
 };
-
 
 /************************************************************************
  * This file has been generated automatically from                      *

@@ -19,13 +19,17 @@
 #define QGSLINESTRING_H
 
 
-#include <QPolygonF>
-
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgscurve.h"
 #include "qgscompoundcurve.h"
+#include "qgscurve.h"
 #include "qgsgeometryutils_base.h"
+#include "qgssimplecurve.h"
+
+#include <QPolygonF>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsLineSegment2D;
 class QgsBox3D;
@@ -41,15 +45,15 @@ class QgsBox3D;
  * \class QgsLineString
  * \brief Line string geometry type, with support for z-dimension and m-values.
  */
-class CORE_EXPORT QgsLineString: public QgsCurve
+class CORE_EXPORT QgsLineString : public QgsSimpleCurve
 {
-
   public:
-
+    // clang-format off
     /**
      * Constructor for an empty linestring geometry.
      */
     QgsLineString() SIP_HOLDGIL;
+    // clang-format on
 #ifndef SIP_RUN
 
     /**
@@ -66,6 +70,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
      */
     QgsLineString( const QVector<QgsPointXY> &points );
 #else
+// clang-format off
 
     /**
      * Construct a linestring from a sequence of points (QgsPoint objects, QgsPointXY objects, or sequences of float values).
@@ -78,7 +83,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
     % MethodCode
     if ( !PySequence_Check( a0 ) )
     {
-      PyErr_SetString( PyExc_TypeError, QStringLiteral( "A sequence of QgsPoint, QgsPointXY or array of floats is expected" ).toUtf8().constData() );
+      PyErr_SetString( PyExc_TypeError, u"A sequence of QgsPoint, QgsPointXY or array of floats is expected"_s.toUtf8().constData() );
       sipIsErr = 1;
     }
     else
@@ -102,7 +107,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
         PyObject *value = PySequence_GetItem( a0, i );
         if ( !value )
         {
-          PyErr_SetString( PyExc_TypeError, QStringLiteral( "Invalid type at index %1." ).arg( i ) .toUtf8().constData() );
+          PyErr_SetString( PyExc_TypeError, u"Invalid type at index %1."_s.arg( i ) .toUtf8().constData() );
           sipIsErr = 1;
           break;
         }
@@ -113,7 +118,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
           if ( elementSize < 2 || elementSize > 4 )
           {
             sipIsErr = 1;
-            PyErr_SetString( PyExc_TypeError, QStringLiteral( "Invalid sequence size at index %1. Expected an array of 2-4 float values, got %2." ).arg( i ).arg( elementSize ).toUtf8().constData() );
+            PyErr_SetString( PyExc_TypeError, u"Invalid sequence size at index %1. Expected an array of 2-4 float values, got %2."_s.arg( i ).arg( elementSize ).toUtf8().constData() );
             Py_DECREF( value );
             break;
           }
@@ -125,7 +130,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
               PyObject *element = PySequence_GetItem( value, j );
               if ( !element )
               {
-                PyErr_SetString( PyExc_TypeError, QStringLiteral( "Invalid type at index %1." ).arg( i ) .toUtf8().constData() );
+                PyErr_SetString( PyExc_TypeError, u"Invalid type at index %1."_s.arg( i ) .toUtf8().constData() );
                 sipIsErr = 1;
                 break;
               }
@@ -134,7 +139,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
               double d = PyFloat_AsDouble( element );
               if ( PyErr_Occurred() )
               {
-                Py_DECREF( value );
+                Py_DECREF( element );
                 sipIsErr = 1;
                 break;
               }
@@ -239,7 +244,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
           if ( sipIsErr )
           {
             // couldn't convert the sequence value to a QgsPoint or QgsPointXY
-            PyErr_SetString( PyExc_TypeError, QStringLiteral( "Invalid type at index %1. Expected QgsPoint, QgsPointXY or array of floats." ).arg( i ) .toUtf8().constData() );
+            PyErr_SetString( PyExc_TypeError, u"Invalid type at index %1. Expected QgsPoint, QgsPointXY or array of floats."_s.arg( i ) .toUtf8().constData() );
             break;
           }
         }
@@ -248,6 +253,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
         sipCpp = new sipQgsLineString( QgsLineString( xl, yl, zl, ml, is25D ) );
     }
     % End
+// clang-format on
 #endif
 
     /**
@@ -301,587 +307,10 @@ class CORE_EXPORT QgsLineString: public QgsCurve
      * \since QGIS 3.10
      */
     static std::unique_ptr< QgsLineString > fromQPolygonF( const QPolygonF &polygon );
+
 #ifndef SIP_RUN
-  private:
-    bool fuzzyHelper( double epsilon,
-                      const QgsAbstractGeometry &other,
-                      bool is3DFlag,
-                      bool isMeasureFlag,
-                      std::function<bool( double, double, double, double, double, double, double, double, double )> comparator3DMeasure,
-                      std::function<bool( double, double, double, double, double, double, double )> comparator3D,
-                      std::function<bool( double, double, double, double, double, double, double )> comparatorMeasure,
-                      std::function<bool( double, double, double, double, double )> comparator2D ) const
-    {
-      const QgsLineString *otherLine = qgsgeometry_cast< const QgsLineString * >( &other );
-      if ( !otherLine )
-        return false;
-
-      if ( mWkbType != otherLine->mWkbType )
-        return false;
-
-      const int size = mX.count();
-      if ( size != otherLine->mX.count() )
-        return false;
-
-      bool result = true;
-      const double *xData = mX.constData();
-      const double *yData = mY.constData();
-      const double *zData = is3DFlag ? mZ.constData() : nullptr;
-      const double *mData = isMeasureFlag ? mM.constData() : nullptr;
-      const double *otherXData = otherLine->mX.constData();
-      const double *otherYData = otherLine->mY.constData();
-      const double *otherZData = is3DFlag ? otherLine->mZ.constData() : nullptr;
-      const double *otherMData = isMeasureFlag ? otherLine->mM.constData() : nullptr;
-      for ( int i = 0; i < size; ++i )
-      {
-        if ( is3DFlag && isMeasureFlag )
-        {
-          result &= comparator3DMeasure( epsilon, *xData++, *yData++, *zData++, *mData++,
-                                         *otherXData++, *otherYData++, *otherZData++, *otherMData++ );
-        }
-        else if ( is3DFlag )
-        {
-          result &= comparator3D( epsilon, *xData++, *yData++, *zData++,
-                                  *otherXData++, *otherYData++, *otherZData++ );
-        }
-        else if ( isMeasureFlag )
-        {
-          result &= comparatorMeasure( epsilon, *xData++, *yData++, *mData++,
-                                       *otherXData++, *otherYData++, *otherMData++ );
-        }
-        else
-        {
-          result &= comparator2D( epsilon, *xData++, *yData++,
-                                  *otherXData++, *otherYData++ );
-        }
-        if ( ! result )
-        {
-          return false;
-        }
-      }
-
-      return result;
-    }
+    using QgsSimpleCurve::setPoints; // make all setPoints() functions eligible for overload resolution
 #endif // !SIP_RUN
-
-  public:
-    bool fuzzyEqual( const QgsAbstractGeometry &other, double epsilon = 1e-8 ) const override SIP_HOLDGIL
-    {
-      return fuzzyHelper(
-               epsilon,
-               other,
-               is3D(),
-               isMeasure(),
-               []( double epsilon, double x1, double y1, double z1, double m1,
-                   double x2, double y2, double z2, double m2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyEqual( epsilon, x1, y1, z1, m1, x2, y2, z2, m2 );
-      },
-      []( double epsilon, double x1, double y1, double z1,
-          double x2, double y2, double z2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyEqual( epsilon, x1, y1, z1, x2, y2, z2 );
-      },
-      []( double epsilon, double x1, double y1, double m1,
-          double x2, double y2, double m2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyEqual( epsilon, x1, y1, m1, x2, y2, m2 );
-      },
-      []( double epsilon, double x1, double y1,
-          double x2, double y2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyEqual( epsilon, x1, y1, x2, y2 );
-      } );
-    }
-
-    bool fuzzyDistanceEqual( const QgsAbstractGeometry &other, double epsilon = 1e-8 ) const override SIP_HOLDGIL
-    {
-      return fuzzyHelper(
-               epsilon,
-               other,
-               is3D(),
-               isMeasure(),
-               []( double epsilon, double x1, double y1, double z1, double m1,
-                   double x2, double y2, double z2, double m2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyDistanceEqual( epsilon, x1, y1, z1, m1, x2, y2, z2, m2 );
-      },
-      []( double epsilon, double x1, double y1, double z1,
-          double x2, double y2, double z2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyDistanceEqual( epsilon, x1, y1, z1, x2, y2, z2 );
-      },
-      []( double epsilon, double x1, double y1, double m1,
-          double x2, double y2, double m2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyDistanceEqual( epsilon, x1, y1, m1, x2, y2, m2 );
-      },
-      []( double epsilon, double x1, double y1,
-          double x2, double y2 )
-      {
-        return QgsGeometryUtilsBase::fuzzyDistanceEqual( epsilon, x1, y1, x2, y2 );
-      } );
-    }
-
-    bool equals( const QgsCurve &other ) const override
-    {
-      return fuzzyEqual( other, 1e-8 );
-    }
-
-
-#ifndef SIP_RUN
-
-    /**
-     * Returns the specified point from inside the line string.
-     * \param i index of point, starting at 0 for the first point
-     */
-    QgsPoint pointN( int i ) const;
-#else
-
-    /**
-     * Returns the point at the specified index.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-     */
-    SIP_PYOBJECT pointN( int i ) const SIP_TYPEHINT( QgsPoint );
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      std::unique_ptr< QgsPoint > p;
-      if ( a0 >= 0 )
-        p = std::make_unique< QgsPoint >( sipCpp->pointN( a0 ) );
-      else // negative index, count backwards from end
-        p = std::make_unique< QgsPoint >( sipCpp->pointN( count + a0 ) );
-      sipRes = sipConvertFromType( p.release(), sipType_QgsPoint, Py_None );
-    }
-    % End
-#endif
-
-#ifndef SIP_RUN
-    double xAt( int index ) const override;
-#else
-
-    /**
-     * Returns the x-coordinate of the specified node in the line string.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-    */
-    double xAt( int index ) const override;
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        return PyFloat_FromDouble( sipCpp->xAt( a0 ) );
-      else
-        return PyFloat_FromDouble( sipCpp->xAt( count + a0 ) );
-    }
-    % End
-#endif
-
-#ifndef SIP_RUN
-    double yAt( int index ) const override;
-#else
-
-    /**
-     * Returns the y-coordinate of the specified node in the line string.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-    */
-    double yAt( int index ) const override;
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        return PyFloat_FromDouble( sipCpp->yAt( a0 ) );
-      else
-        return PyFloat_FromDouble( sipCpp->yAt( count + a0 ) );
-    }
-    % End
-#endif
-
-    /**
-     * Returns a const pointer to the x vertex data.
-     * \note Not available in Python bindings
-     * \see yData()
-     * \since QGIS 3.2
-     */
-    const double *xData() const SIP_SKIP
-    {
-      return mX.constData();
-    }
-
-    /**
-     * Returns a const pointer to the y vertex data.
-     * \note Not available in Python bindings
-     * \see xData()
-     * \since QGIS 3.2
-     */
-    const double *yData() const SIP_SKIP
-    {
-      return mY.constData();
-    }
-
-    /**
-     * Returns a const pointer to the z vertex data, or NULLPTR if the linestring does
-     * not have z values.
-     * \note Not available in Python bindings
-     * \see xData()
-     * \see yData()
-     * \since QGIS 3.2
-     */
-    const double *zData() const SIP_SKIP
-    {
-      if ( mZ.empty() )
-        return nullptr;
-      else
-        return mZ.constData();
-    }
-
-    /**
-     * Returns a const pointer to the m vertex data, or NULLPTR if the linestring does
-     * not have m values.
-     * \note Not available in Python bindings
-     * \see xData()
-     * \see yData()
-     * \since QGIS 3.2
-     */
-    const double *mData() const SIP_SKIP
-    {
-      if ( mM.empty() )
-        return nullptr;
-      else
-        return mM.constData();
-    }
-
-    /**
-     * Returns the x vertex values as a vector.
-     * \note Not available in Python bindings
-     * \since QGIS 3.26
-    */
-    QVector< double > xVector() const SIP_SKIP
-    {
-      return mX;
-    }
-
-    /**
-     * Returns the y vertex values as a vector.
-     * \note Not available in Python bindings
-     * \since QGIS 3.26
-    */
-    QVector< double > yVector() const SIP_SKIP
-    {
-      return mY;
-    }
-
-    /**
-     * Returns the z vertex values as a vector.
-     * \note Not available in Python bindings
-     * \since QGIS 3.26
-    */
-    QVector< double > zVector() const SIP_SKIP
-    {
-      return mZ;
-    }
-
-    /**
-     * Returns the m vertex values as a vector.
-     * \note Not available in Python bindings
-     * \since QGIS 3.26
-    */
-    QVector< double > mVector() const SIP_SKIP
-    {
-      return mM;
-    }
-
-
-#ifndef SIP_RUN
-
-    /**
-     * Returns the z-coordinate of the specified node in the line string.
-     * \param index index of node, where the first node in the line is 0
-     * \returns z-coordinate of node, or ``NaN`` if index is out of bounds or the line
-     * does not have a z dimension
-     * \see setZAt()
-     */
-    double zAt( int index ) const override
-    {
-      if ( index >= 0 && index < mZ.size() )
-        return mZ.at( index );
-      else
-        return std::numeric_limits<double>::quiet_NaN();
-    }
-#else
-
-    /**
-     * Returns the z-coordinate of the specified node in the line string.
-     *
-     * If the LineString does not have a z-dimension then ``NaN`` will be returned.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-    */
-    double zAt( int index ) const override;
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        return PyFloat_FromDouble( sipCpp->zAt( a0 ) );
-      else
-        return PyFloat_FromDouble( sipCpp->zAt( count + a0 ) );
-    }
-    % End
-#endif
-
-#ifndef SIP_RUN
-
-    /**
-     * Returns the m value of the specified node in the line string.
-     * \param index index of node, where the first node in the line is 0
-     * \returns m value of node, or ``NaN`` if index is out of bounds or the line
-     * does not have m values
-     * \see setMAt()
-     */
-    double mAt( int index ) const override
-    {
-      if ( index >= 0 && index < mM.size() )
-        return mM.at( index );
-      else
-        return std::numeric_limits<double>::quiet_NaN();
-    }
-#else
-
-    /**
-     * Returns the m-coordinate of the specified node in the line string.
-     *
-     * If the LineString does not have a m-dimension then ``NaN`` will be returned.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-    */
-    double mAt( int index ) const override;
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        return PyFloat_FromDouble( sipCpp->mAt( a0 ) );
-      else
-        return PyFloat_FromDouble( sipCpp->mAt( count + a0 ) );
-    }
-    % End
-#endif
-
-#ifndef SIP_RUN
-
-    /**
-     * Sets the x-coordinate of the specified node in the line string.
-     * \param index index of node, where the first node in the line is 0. Corresponding
-     * node must already exist in line string.
-     * \param x x-coordinate of node
-     * \see xAt()
-     */
-    void setXAt( int index, double x );
-#else
-
-    /**
-     * Sets the x-coordinate of the specified node in the line string.
-     * The corresponding node must already exist in line string.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-     *
-     * \see xAt()
-     */
-    void setXAt( int index, double x );
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        sipCpp->setXAt( a0, a1 );
-      else
-        sipCpp->setXAt( count + a0, a1 );
-    }
-    % End
-#endif
-
-#ifndef SIP_RUN
-
-    /**
-     * Sets the y-coordinate of the specified node in the line string.
-     * \param index index of node, where the first node in the line is 0. Corresponding
-     * node must already exist in line string.
-     * \param y y-coordinate of node
-     * \see yAt()
-     */
-    void setYAt( int index, double y );
-#else
-
-    /**
-     * Sets the y-coordinate of the specified node in the line string.
-     * The corresponding node must already exist in line string.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-     *
-     * \see yAt()
-     */
-    void setYAt( int index, double y );
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        sipCpp->setYAt( a0, a1 );
-      else
-        sipCpp->setYAt( count + a0, a1 );
-    }
-    % End
-#endif
-
-#ifndef SIP_RUN
-
-    /**
-     * Sets the z-coordinate of the specified node in the line string.
-     * \param index index of node, where the first node in the line is 0. Corresponding
-     * node must already exist in line string, and the line string must have z-dimension.
-     * \param z z-coordinate of node
-     * \see zAt()
-     */
-    void setZAt( int index, double z )
-    {
-      if ( index >= 0 && index < mZ.size() )
-        mZ[ index ] = z;
-    }
-#else
-
-    /**
-     * Sets the z-coordinate of the specified node in the line string.
-     * The corresponding node must already exist in line string and the line string must have z-dimension.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-     * \see zAt()
-     */
-    void setZAt( int index, double z );
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        sipCpp->setZAt( a0, a1 );
-      else
-        sipCpp->setZAt( count + a0, a1 );
-    }
-    % End
-#endif
-
-#ifndef SIP_RUN
-
-    /**
-     * Sets the m value of the specified node in the line string.
-     * \param index index of node, where the first node in the line is 0. Corresponding
-     * node must already exist in line string, and the line string must have m values.
-     * \param m m value of node
-     * \see mAt()
-     */
-    void setMAt( int index, double m )
-    {
-      if ( index >= 0 && index < mM.size() )
-        mM[ index ] = m;
-    }
-#else
-
-    /**
-     * Sets the m-coordinate of the specified node in the line string.
-     * The corresponding node must already exist in line string and the line string must have m-dimension.
-     *
-     * Indexes can be less than 0, in which case they correspond to positions from the end of the line. E.g. an index of -1
-     * corresponds to the last point in the line.
-     *
-     * \throws IndexError if no point with the specified index exists.
-     * \see mAt()
-     */
-    void setMAt( int index, double m );
-    % MethodCode
-    const int count = sipCpp->numPoints();
-    if ( a0 < -count || a0 >= count )
-    {
-      PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
-      sipIsErr = 1;
-    }
-    else
-    {
-      if ( a0 >= 0 )
-        sipCpp->setMAt( a0, a1 );
-      else
-        sipCpp->setMAt( count + a0, a1 );
-    }
-    % End
-#endif
 
     /**
     * Resets the line string to match the specified point data. The line string
@@ -897,19 +326,6 @@ class CORE_EXPORT QgsLineString: public QgsCurve
     * \since QGIS 3.26
     */
     void setPoints( size_t size, const double *x, const double *y, const double *z = nullptr, const double *m = nullptr ) SIP_SKIP;
-
-    /**
-    * Resets the line string to match the specified list of points. The line string will
-    * inherit the dimensionality of the first point in the list.
-    * \param points new points for line string. If empty, line string will be cleared.
-    */
-    void setPoints( const QgsPointSequence &points );
-
-    /**
-     * Appends the contents of another line string to the end of this line string.
-     * \param line line to append. Ownership is not transferred.
-     */
-    void append( const QgsLineString *line );
 
     /**
      * Adds a new vertex to the end of the line string.
@@ -930,8 +346,11 @@ class CORE_EXPORT QgsLineString: public QgsCurve
      * Extends the line geometry by extrapolating out the start or end of the line
      * by a specified distance. Lines are extended using the bearing of the first or last
      * segment in the line.
+     *
+     * Since QGIS 4.4, the \a startDeflection and \a endDeflection arguments can be used to deflect the
+     * start and end extensions by the specified angles (specified in degrees clockwise).
      */
-    void extend( double startDistance, double endDistance );
+    void extend( double startDistance, double endDistance, double startDeflection = 0, double endDeflection = 0 );
 
 #ifndef SIP_RUN
 
@@ -948,10 +367,9 @@ class CORE_EXPORT QgsLineString: public QgsCurve
 
     //reimplemented methods
     QString geometryType() const override SIP_HOLDGIL;
-    int dimension() const override SIP_HOLDGIL;
+
     QgsLineString *clone() const override SIP_FACTORY;
     void clear() override;
-    bool isEmpty() const override SIP_HOLDGIL;
     int indexOf( const QgsPoint &point ) const final;
     bool isValid( QString &error SIP_OUT, Qgis::GeometryValidityFlags flags = Qgis::GeometryValidityFlags() ) const override;
     QgsLineString *snappedToGrid( double hSpacing, double vSpacing, double dSpacing = 0, double mSpacing = 0, bool removeRedundantPoints = false ) const override SIP_FACTORY;
@@ -973,15 +391,10 @@ class CORE_EXPORT QgsLineString: public QgsCurve
     QPolygonF asQPolygonF() const override;
 
     QgsLineString *simplifyByDistance( double tolerance ) const override SIP_FACTORY;
-    bool fromWkb( QgsConstWkbPtr &wkb ) override;
-    bool fromWkt( const QString &wkt ) override;
 
-    int wkbSize( QgsAbstractGeometry::WkbFlags flags = QgsAbstractGeometry::WkbFlags() ) const override;
-    QByteArray asWkb( QgsAbstractGeometry::WkbFlags flags = QgsAbstractGeometry::WkbFlags() ) const override;
-    QString asWkt( int precision = 17 ) const override;
     QDomElement asGml2( QDomDocument &doc, int precision = 17, const QString &ns = "gml", QgsAbstractGeometry::AxisOrder axisOrder = QgsAbstractGeometry::AxisOrder::XY ) const override;
     QDomElement asGml3( QDomDocument &doc, int precision = 17, const QString &ns = "gml", QgsAbstractGeometry::AxisOrder axisOrder = QgsAbstractGeometry::AxisOrder::XY ) const override;
-    json asJsonObject( int precision = 17 ) const override SIP_SKIP;
+    json asJsonObject( int precision = 17, Qgis::GeoJsonProfile profile = Qgis::GeoJsonProfile::Legacy ) const override SIP_SKIP;
     QString asKml( int precision = 17 ) const override;
 
     //curve interface
@@ -1008,8 +421,6 @@ class CORE_EXPORT QgsLineString: public QgsCurve
      * \since QGIS 3.10
      */
     double length3D() const SIP_HOLDGIL;
-    QgsPoint startPoint() const override SIP_HOLDGIL;
-    QgsPoint endPoint() const override SIP_HOLDGIL;
 
     /**
      * Returns a new line string geometry corresponding to a segmentized approximation
@@ -1019,21 +430,14 @@ class CORE_EXPORT QgsLineString: public QgsCurve
     */
     QgsLineString *curveToLine( double tolerance = M_PI_2 / 90, SegmentationToleranceType toleranceType = MaximumAngle ) const override  SIP_FACTORY;
 
-    int numPoints() const override SIP_HOLDGIL;
-    int nCoordinates() const override SIP_HOLDGIL;
-    void points( QgsPointSequence &pt SIP_OUT ) const override;
-
     void draw( QPainter &p ) const override;
-
-    void transform( const QgsCoordinateTransform &ct, Qgis::TransformDirection d = Qgis::TransformDirection::Forward, bool transformZ = false ) override  SIP_THROW( QgsCsException );
-    void transform( const QTransform &t, double zTranslate = 0.0, double zScale = 1.0, double mTranslate = 0.0, double mScale = 1.0 ) override;
 
     void addToPainterPath( QPainterPath &path ) const override;
     void drawAsPolygon( QPainter &p ) const override;
 
     bool insertVertex( QgsVertexId position, const QgsPoint &vertex ) override;
-    bool moveVertex( QgsVertexId position, const QgsPoint &newPos ) override;
     bool deleteVertex( QgsVertexId position ) override;
+    bool deleteVertices( const QSet<QgsVertexId> &positions ) override;
 
     QgsLineString *reversed() const override SIP_FACTORY;
     QgsPoint *interpolatePoint( double distance ) const override SIP_FACTORY;
@@ -1046,6 +450,8 @@ class CORE_EXPORT QgsLineString: public QgsCurve
 
     /**
      * Calculates the shoelace/triangle formula sum for the points in the linestring.
+     * 2D version.
+     *
      * If the linestring is closed (i.e. a polygon) then the polygon area is equal to the absolute value of the sum.
      * Please note that the sum will be negative if the points are defined in clockwise order.
      * Therefore, if you want to use the sum as an area (as the method name indicates) then you probably should use the absolute value,
@@ -1054,24 +460,25 @@ class CORE_EXPORT QgsLineString: public QgsCurve
      */
     void sumUpArea( double &sum SIP_OUT ) const override;
 
+    /**
+     * Calculates the shoelace/triangle formula sum for the points in the linestring.
+     * 3D version.
+     *
+     * If the linestring is closed (i.e. a polygon) then the polygon area is equal to the value of the sum.
+     *
+     * \note If the geometry is 2D, the method falls back to the 2D computation.
+     *
+     * \since QGIS 4.0
+     */
+    void sumUpArea3D( double &sum SIP_OUT ) const override;
+
     double vertexAngle( QgsVertexId vertex ) const override;
     double segmentLength( QgsVertexId startVertex ) const override;
-    bool addZValue( double zValue = 0 ) override;
-    bool addMValue( double mValue = 0 ) override;
-
-    bool dropZValue() override;
-    bool dropMValue() override;
-    void swapXy() override;
+    double distanceBetweenVertices( QgsVertexId fromVertex, QgsVertexId toVertex ) const override;
 
     bool convertTo( Qgis::WkbType type ) override;
 
-    bool transform( QgsAbstractGeometryTransformer *transformer, QgsFeedback *feedback = nullptr ) override;
-    void scroll( int firstVertexIndex ) final;
-
 #ifndef SIP_RUN
-    void filterVertices( const std::function< bool( const QgsPoint & ) > &filter ) override;
-    void transformVertices( const std::function< QgsPoint( const QgsPoint & ) > &transform ) override;
-
     /**
      * Cast the \a geom to a QgsLineString.
      * Should be used by qgsgeometry_cast<QgsLineString *>( geometry ).
@@ -1106,12 +513,13 @@ class CORE_EXPORT QgsLineString: public QgsCurve
     QgsLineString *createEmptyWithSameType() const override SIP_FACTORY;
 
 #ifdef SIP_RUN
+// clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
     QString wkt = sipCpp->asWkt();
     if ( wkt.length() > 1000 )
-      wkt = wkt.left( 1000 ) + QStringLiteral( "..." );
-    QString str = QStringLiteral( "<QgsLineString: %1>" ).arg( wkt );
+      wkt = wkt.left( 1000 ) + u"..."_s;
+    QString str = u"<QgsLineString: %1>"_s.arg( wkt );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
 
@@ -1187,9 +595,9 @@ class CORE_EXPORT QgsLineString: public QgsCurve
     % MethodCode
     const int count = sipCpp->numPoints();
     if ( a0 >= 0 && a0 < count )
-      sipCpp->deleteVertex( QgsVertexId( -1, -1, a0 ) );
+      sipCpp->deleteVertex( QgsVertexId( 0, 0, a0 ) );
     else if ( a0 < 0 && a0 >= -count )
-      sipCpp->deleteVertex( QgsVertexId( -1, -1, count + a0 ) );
+      sipCpp->deleteVertex( QgsVertexId( 0, 0, count + a0 ) );
     else
     {
       PyErr_SetString( PyExc_IndexError, QByteArray::number( a0 ) );
@@ -1197,6 +605,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
     }
     % End
 
+// clang-format on
 #endif
 
     /**
@@ -1263,18 +672,7 @@ class CORE_EXPORT QgsLineString: public QgsCurve
      */
     bool lineLocatePointByM( double m, double &x SIP_OUT, double &y SIP_OUT, double &z SIP_OUT, double &distanceFromStart SIP_OUT, bool use3DDistance = true ) const;
 
-  protected:
-
-    int compareToSameClass( const QgsAbstractGeometry *other ) const final;
-
   private:
-    QVector<double> mX;
-    QVector<double> mY;
-    QVector<double> mZ;
-    QVector<double> mM;
-
-    void importVerticesFromWkb( const QgsConstWkbPtr &wkb );
-
     /**
      * Resets the line string to match the line string in a WKB geometry.
      * \param type WKB type

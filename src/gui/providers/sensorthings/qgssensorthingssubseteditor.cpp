@@ -16,16 +16,18 @@
  ***************************************************************************/
 
 #include "qgssensorthingssubseteditor.h"
-#include "moc_qgssensorthingssubseteditor.cpp"
-#include "qgsvectorlayer.h"
+
 #include "qgscodeeditor.h"
-#include "qgsfieldproxymodel.h"
 #include "qgsfieldmodel.h"
+#include "qgsfieldproxymodel.h"
+#include "qgsvectorlayer.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QStandardItemModel>
 #include <QPushButton>
+#include <QStandardItemModel>
+
+#include "moc_qgssensorthingssubseteditor.cpp"
 
 ///@cond PRIVATE
 
@@ -102,23 +104,7 @@ QgsSensorThingsSubsetEditor::QgsSensorThingsSubsetEditor( QgsVectorLayer *layer,
   connect( lstFields, &QListView::doubleClicked, this, &QgsSensorThingsSubsetEditor::lstFieldsDoubleClicked );
 
   for ( QPushButton *button :
-        {
-          mButtonEq,
-          mButtonNe,
-          mButtonGt,
-          mButtonGe,
-          mButtonLt,
-          mButtonLe,
-          mButtonAnd,
-          mButtonOr,
-          mButtonNot,
-          mButtonAdd,
-          mButtonSub,
-          mButtonMul,
-          mButtonDiv,
-          mButtonMod,
-          mButtonNow
-        } )
+        { mButtonEq, mButtonNe, mButtonGt, mButtonGe, mButtonLt, mButtonLe, mButtonAnd, mButtonOr, mButtonNot, mButtonAdd, mButtonSub, mButtonMul, mButtonDiv, mButtonMod, mButtonNow } )
   {
     connect( button, &QPushButton::clicked, this, [this, button] {
       mSubsetEditor->insertText( button->property( "expression" ).toString() );

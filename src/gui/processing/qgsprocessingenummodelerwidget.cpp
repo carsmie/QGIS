@@ -14,10 +14,13 @@
  ***************************************************************************/
 
 #include "qgsprocessingenummodelerwidget.h"
-#include "moc_qgsprocessingenummodelerwidget.cpp"
+
 #include "qgsgui.h"
+
 #include <QMessageBox>
 #include <QToolButton>
+
+#include "moc_qgsprocessingenummodelerwidget.cpp"
 
 ///@cond NOT_STABLE
 
@@ -42,6 +45,7 @@ void QgsProcessingEnumModelerWidget::addItem()
   item->setDropEnabled( false );
   item->setData( Qt::Unchecked );
   mModel->appendRow( item );
+  emit changed();
 }
 
 void QgsProcessingEnumModelerWidget::removeItems( const bool removeAll )
@@ -67,6 +71,7 @@ void QgsProcessingEnumModelerWidget::removeItems( const bool removeAll )
       mModel->removeRows( i, 1 );
     mItemList->setUpdatesEnabled( true );
   }
+  emit changed();
 }
 
 void QgsProcessingEnumModelerWidget::onItemChanged( QStandardItem *item )
@@ -101,6 +106,7 @@ void QgsProcessingEnumModelerWidget::onItemChanged( QStandardItem *item )
     }
   }
   mModel->blockSignals( false );
+  emit changed();
 }
 
 QStringList QgsProcessingEnumModelerWidget::options() const
@@ -124,6 +130,7 @@ void QgsProcessingEnumModelerWidget::setOptions( const QStringList &options )
     item->setData( Qt::Unchecked );
     mModel->appendRow( item );
   }
+  emit changed();
 }
 
 QVariant QgsProcessingEnumModelerWidget::defaultOptions() const
@@ -171,6 +178,7 @@ void QgsProcessingEnumModelerWidget::setDefaultOptions( const QVariant &defaultV
       item->setData( Qt::Checked );
     }
   }
+  emit changed();
 }
 
 bool QgsProcessingEnumModelerWidget::allowMultiple() const
@@ -181,6 +189,7 @@ bool QgsProcessingEnumModelerWidget::allowMultiple() const
 void QgsProcessingEnumModelerWidget::setAllowMultiple( bool allowMultiple )
 {
   mAllowMultiple->setChecked( allowMultiple );
+  emit changed();
 }
 
 ///@endcond

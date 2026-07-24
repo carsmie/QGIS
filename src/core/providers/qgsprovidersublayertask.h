@@ -18,9 +18,11 @@
 #ifndef QGSPROVIDERSUBLAYERTASKTASK_H
 #define QGSPROVIDERSUBLAYERTASKTASK_H
 
-#include "qgstaskmanager.h"
-#include <QReadWriteLock>
 #include <memory>
+
+#include "qgstaskmanager.h"
+
+#include <QReadWriteLock>
 
 class QgsFeedback;
 class QgsProviderSublayerDetails;
@@ -48,7 +50,6 @@ class CORE_EXPORT QgsProviderSublayerTask : public QgsTask
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsProviderSublayerTask, which retrieves sublayer details for the
      * specified \a uri.
@@ -73,11 +74,9 @@ class CORE_EXPORT QgsProviderSublayerTask : public QgsTask
     void cancel() override;
 
   protected:
-
     bool run() override;
 
   private:
-
     QString mUri;
 
     QString mProviderKey;
@@ -89,7 +88,6 @@ class CORE_EXPORT QgsProviderSublayerTask : public QgsTask
     QList<QgsProviderSublayerDetails> mResults;
 
     mutable QReadWriteLock mLock;
-
 };
 
 #endif // QGSPROVIDERSUBLAYERTASKTASK_H

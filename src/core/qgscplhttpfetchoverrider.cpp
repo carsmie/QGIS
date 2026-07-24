@@ -14,11 +14,16 @@
  ***************************************************************************/
 
 #include "qgscplhttpfetchoverrider.h"
-#include "qgslogger.h"
-#include "qgsblockingnetworkrequest.h"
 
-#include "cpl_http.h"
-#include "gdal.h"
+#include <cpl_http.h>
+#include <gdal.h>
+
+#include "qgsblockingnetworkrequest.h"
+#include "qgslogger.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsCPLHTTPFetchOverrider::QgsCPLHTTPFetchOverrider( const QString &authCfg, QgsFeedback *feedback )
   : mAuthCfg( authCfg )
@@ -34,13 +39,9 @@ QgsCPLHTTPFetchOverrider::~QgsCPLHTTPFetchOverrider()
 }
 
 
-CPLHTTPResult *QgsCPLHTTPFetchOverrider::callback( const char *pszURL,
-    CSLConstList papszOptions,
-    GDALProgressFunc /* pfnProgress */,
-    void * /*pProgressArg */,
-    CPLHTTPFetchWriteFunc pfnWrite,
-    void *pWriteArg,
-    void *pUserData )
+CPLHTTPResult *QgsCPLHTTPFetchOverrider::callback(
+  const char *pszURL, CSLConstList papszOptions, GDALProgressFunc /* pfnProgress */, void * /*pProgressArg */, CPLHTTPFetchWriteFunc pfnWrite, void *pWriteArg, void *pUserData
+)
 {
   QgsCPLHTTPFetchOverrider *pThis = static_cast<QgsCPLHTTPFetchOverrider *>( pUserData );
 
@@ -58,7 +59,7 @@ CPLHTTPResult *QgsCPLHTTPFetchOverrider::callback( const char *pszURL,
   {
     if ( CSLFetchNameValue( papszOptions, pszOption ) )
     {
-      QgsDebugError( QStringLiteral( "Option %1 not handled" ).arg( pszOption ) );
+      QgsDebugError( u"Option %1 not handled"_s.arg( pszOption ) );
       return nullptr;
     }
   }
@@ -90,9 +91,7 @@ CPLHTTPResult *QgsCPLHTTPFetchOverrider::callback( const char *pszURL,
       const char *pszValue = CPLParseNameValue( papszTokensHeaders[i], &pszKey );
       if ( pszKey && pszValue )
       {
-        request.setRawHeader(
-          QByteArray::fromStdString( pszKey ),
-          QByteArray::fromStdString( pszValue ) );
+        request.setRawHeader( QByteArray::fromStdString( pszKey ), QByteArray::fromStdString( pszValue ) );
       }
       CPLFree( pszKey );
     }
@@ -107,20 +106,15 @@ CPLHTTPResult *QgsCPLHTTPFetchOverrider::callback( const char *pszURL,
   {
     if ( !pszCustomRequest || EQUAL( pszCustomRequest, "POST" ) )
     {
-      errCode = blockingRequest.post( request,
-                                      QByteArray::fromStdString( pszPostFields ),
-                                      forceRefresh,
-                                      pThis->mFeedback );
+      errCode = blockingRequest.post( request, QByteArray::fromStdString( pszPostFields ), forceRefresh, pThis->mFeedback );
     }
     else if ( EQUAL( pszCustomRequest, "PUT" ) )
     {
-      errCode = blockingRequest.put( request,
-                                     QByteArray::fromStdString( pszPostFields ),
-                                     pThis->mFeedback );
+      errCode = blockingRequest.put( request, QByteArray::fromStdString( pszPostFields ), pThis->mFeedback );
     }
     else
     {
-      QgsDebugError( QStringLiteral( "Invalid CUSTOMREQUEST = %1 when POSTFIELDS is defined" ).arg( pszCustomRequest ) );
+      QgsDebugError( u"Invalid CUSTOMREQUEST = %1 when POSTFIELDS is defined"_s.arg( pszCustomRequest ) );
       return nullptr;
     }
   }
@@ -140,7 +134,7 @@ CPLHTTPResult *QgsCPLHTTPFetchOverrider::callback( const char *pszURL,
     }
     else
     {
-      QgsDebugError( QStringLiteral( "Invalid CUSTOMREQUEST = %1 when POSTFIELDS is not defined" ).arg( pszCustomRequest ) );
+      QgsDebugError( u"Invalid CUSTOMREQUEST = %1 when POSTFIELDS is not defined"_s.arg( pszCustomRequest ) );
       return nullptr;
     }
   }
@@ -161,10 +155,7 @@ CPLHTTPResult *QgsCPLHTTPFetchOverrider::callback( const char *pszURL,
       CPLFree( psResult->pszContentType );
       psResult->pszContentType = CPLStrdup( pair.second.toStdString().c_str() );
     }
-    psResult->papszHeaders = CSLAddNameValue(
-                               psResult->papszHeaders,
-                               pair.first.toStdString().c_str(),
-                               pair.second.toStdString().c_str() );
+    psResult->papszHeaders = CSLAddNameValue( psResult->papszHeaders, pair.first.toStdString().c_str(), pair.second.toStdString().c_str() );
   }
 
   // Process content

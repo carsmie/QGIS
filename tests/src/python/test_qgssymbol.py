@@ -20,9 +20,8 @@ __date__ = "January 2016"
 __copyright__ = "(C) 2016, Nyall Dawson"
 
 
-from qgis.PyQt.QtCore import QDir, QSize, Qt, QPointF
-from qgis.PyQt.QtGui import QColor, QImage, QPainter
-from qgis.PyQt.QtXml import QDomDocument
+import unittest
+
 from qgis.core import (
     Qgis,
     QgsArrowSymbolLayer,
@@ -52,15 +51,16 @@ from qgis.core import (
     QgsSimpleMarkerSymbolLayer,
     QgsSimpleMarkerSymbolLayerBase,
     QgsSymbol,
+    QgsSymbolBufferSettings,
     QgsSymbolLayer,
     QgsSymbolLayerUtils,
     QgsUnitTypes,
     QgsWkbTypes,
-    QgsSymbolBufferSettings,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QDir, QPointF, QSize, Qt
+from qgis.PyQt.QtGui import QColor, QImage, QPainter
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 start_app()
@@ -68,7 +68,6 @@ TEST_DATA_DIR = unitTestDataPath()
 
 
 class TestQgsSymbol(QgisTestCase):
-
     @classmethod
     def control_path_prefix(cls):
         return "symbol"
@@ -366,9 +365,9 @@ class TestQgsSymbol(QgisTestCase):
             def get_geom():
                 if "geom" not in test:
                     geom = QgsGeometry.fromWkt(test["wkt"])
-                    assert (
-                        geom and not geom.isNull()
-                    ), f"Could not create geometry {test['wkt']}"
+                    assert geom and not geom.isNull(), (
+                        f"Could not create geometry {test['wkt']}"
+                    )
                 else:
                     geom = test["geom"]
                 return geom
@@ -1164,7 +1163,6 @@ class TestQgsSymbol(QgisTestCase):
 
 
 class TestQgsMarkerSymbol(QgisTestCase):
-
     @classmethod
     def control_path_prefix(cls):
         return "symbol"
@@ -1943,7 +1941,6 @@ class TestQgsMarkerSymbol(QgisTestCase):
 
 
 class TestQgsLineSymbol(QgisTestCase):
-
     def testWidth(self):
         # test width and setWidth
         ms = QgsMapSettings()
@@ -2003,7 +2000,6 @@ class TestQgsLineSymbol(QgisTestCase):
 
 
 class TestQgsFillSymbol(QgisTestCase):
-
     @classmethod
     def control_path_prefix(cls):
         return "symbol"
@@ -2120,6 +2116,101 @@ class TestQgsFillSymbol(QgisTestCase):
         QgsProject.instance().styleSettings().setColorModel(Qgis.ColorModel.Cmyk)
         s1 = QgsSymbol.defaultSymbol(Qgis.GeometryType.Point)
         self.assertEqual(s1.color().spec(), QColor.Spec.Cmyk)
+
+    def test_renders_identically_to(self):
+        symbol1 = QgsLineSymbol.createSimple({})
+
+        # simple tests
+        self.assertTrue(symbol1.rendersIdenticallyTo(symbol1))
+        self.assertTrue(symbol1.rendersIdenticallyTo(QgsLineSymbol.createSimple({})))
+
+        # type mismatches
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # extent buffer mismatch
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.setExtentBuffer(5)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+        symbol1.setExtentBuffer(5)
+        self.assertTrue(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertTrue(symbol2.rendersIdenticallyTo(symbol1))
+        symbol1.setExtentBufferSizeUnit(Qgis.RenderUnit.Inches)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # opacity mismatch
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.setOpacity(0.5)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # render hint mismatch
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.setRenderHints(Qgis.SymbolRenderHint.IsSymbolLayerSubSymbol)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # symbol flags mismatch
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.setFlags(Qgis.SymbolFlag.AffectsLabeling)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # clip features mismatch
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.setClipFeaturesToExtent(False)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+        symbol1.setClipFeaturesToExtent(False)
+        self.assertTrue(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertTrue(symbol2.rendersIdenticallyTo(symbol1))
+
+        # force rhr mismatch
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.setForceRHR(True)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # buffer settings
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        buffer_settings = QgsSymbolBufferSettings()
+        buffer_settings.setEnabled(True)
+        buffer_settings.setSize(3)
+        symbol2.setBufferSettings(buffer_settings)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # animation settings
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.animationSettings().setIsAnimated(True)
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # different symbol layer count
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2.appendSymbolLayer(QgsSimpleMarkerSymbolLayer())
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
+
+        # different symbol layer properties
+        symbol1 = QgsMarkerSymbol.createSimple({})
+        symbol1[0].setColor(QColor(255, 0, 255))
+        symbol2 = QgsMarkerSymbol.createSimple({})
+        symbol2[0].setColor(QColor(255, 0, 0))
+        self.assertFalse(symbol1.rendersIdenticallyTo(symbol2))
+        self.assertFalse(symbol2.rendersIdenticallyTo(symbol1))
 
 
 if __name__ == "__main__":

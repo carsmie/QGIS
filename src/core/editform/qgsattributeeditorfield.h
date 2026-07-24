@@ -19,7 +19,6 @@
 #include "qgis_core.h"
 #include "qgsattributeeditorelement.h"
 
-
 /**
  * \ingroup core
  * \brief This element will load a field's widget onto the form.
@@ -27,7 +26,6 @@
 class CORE_EXPORT QgsAttributeEditorField : public QgsAttributeEditorElement
 {
   public:
-
     /**
      * Creates a new attribute editor element which represents a field
      *
@@ -49,11 +47,10 @@ class CORE_EXPORT QgsAttributeEditorField : public QgsAttributeEditorElement
 
   private:
     void saveConfiguration( QDomElement &elem, QDomDocument &doc ) const override;
-    void loadConfiguration( const QDomElement &element,  const QString &layerId, const QgsReadWriteContext &context, const QgsFields &fields ) override;
+    void loadConfiguration( const QDomElement &element, const QString &layerId, const QgsReadWriteContext &context, const QgsFields &fields ) override;
     QString typeIdentifier() const override;
     int mIdx;
 };
-
 
 
 #endif // QGSATTRIBUTEEDITORFIELD_H

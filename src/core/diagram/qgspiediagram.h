@@ -15,11 +15,12 @@
 #ifndef QGSPIEDIAGRAM_H
 #define QGSPIEDIAGRAM_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsdiagram.h"
-#include <QPen>
+
 #include <QBrush>
+#include <QPen>
 
 class QPainter;
 class QPointF;
@@ -33,7 +34,7 @@ class QgsRenderContext;
  * \class QgsPieDiagram
  * \brief A pie chart diagram.
  */
-class CORE_EXPORT QgsPieDiagram: public QgsDiagram SIP_NODEFAULTCTORS
+class CORE_EXPORT QgsPieDiagram : public QgsDiagram SIP_NODEFAULTCTORS
 {
   public:
     static const QString DIAGRAM_NAME_PIE SIP_SKIP;
@@ -52,7 +53,6 @@ class CORE_EXPORT QgsPieDiagram: public QgsDiagram SIP_NODEFAULTCTORS
   private:
     QBrush mCategoryBrush;
     QPen mPen;
-
 };
 
 #endif // QGSPIEDIAGRAM_H

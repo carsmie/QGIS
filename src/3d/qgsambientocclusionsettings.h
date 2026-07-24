@@ -16,15 +16,16 @@
 #ifndef QGSAMBIENTOCCLUSIONSETTINGS_H
 #define QGSAMBIENTOCCLUSIONSETTINGS_H
 
-#include <QString>
-#include <QMap>
-
 #include "qgis_3d.h"
+
+#include <QMap>
+#include <QString>
+
+#define SIP_NO_FILE
 
 class QgsReadWriteContext;
 class QDomElement;
 
-#define SIP_NO_FILE
 
 /**
  * \brief Contains the configuration of ambient occlusion rendering.

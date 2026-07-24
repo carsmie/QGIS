@@ -49,7 +49,6 @@ class QgsMeshSpatialIndexData;
 class CORE_EXPORT QgsMeshSpatialIndex
 {
   public:
-
     /**
      * Constructor for QgsSpatialIndex. Creates an empty R-tree index.
      */
@@ -68,17 +67,20 @@ class CORE_EXPORT QgsMeshSpatialIndex
     explicit QgsMeshSpatialIndex( const QgsMesh &mesh, QgsFeedback *feedback = nullptr, QgsMesh::ElementType elementType = QgsMesh::ElementType::Face );
 
     QgsMeshSpatialIndex( const QgsMeshSpatialIndex &other );
+    SIP_SKIP QgsMeshSpatialIndex( QgsMeshSpatialIndex &&other );
 
     //! Destructor finalizes work with spatial index
     ~QgsMeshSpatialIndex();
 
     QgsMeshSpatialIndex &operator=( const QgsMeshSpatialIndex &other );
+    QgsMeshSpatialIndex &operator=( QgsMeshSpatialIndex &&other );
 
     /**
      * Returns a list of face ids with a bounding box which intersects the specified \a rectangle.
      *
      * \note The intersection test is performed based on the face bounding boxes only, so it is necessary
      * to manually test the returned faces for exact geometry intersection when required.
+     * \note Since QGIS 4.0, an empty list is returned if the specified \a rectangle is null.
      */
     QList<int> intersects( const QgsRectangle &rectangle ) const;
 

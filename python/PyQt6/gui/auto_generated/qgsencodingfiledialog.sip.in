@@ -9,6 +9,7 @@
 
 
 
+
 class QgsEncodingFileDialog : QFileDialog
 {
 %Docstring(signature="appended")
@@ -20,7 +21,9 @@ a data provider.
 #include "qgsencodingfiledialog.h"
 %End
   public:
-    QgsEncodingFileDialog( QWidget *parent /TransferThis/ = 0, const QString &caption = QString(), const QString &directory = QString(), const QString &filter = QString(), const QString &encoding = QString() );
+    QgsEncodingFileDialog(
+      QWidget *parent /TransferThis/ = 0, const QString &caption = QString(), const QString &directory = QString(), const QString &filter = QString(), const QString &encoding = QString()
+    );
 %Docstring
 Constructor for QgsEncodingFileDialog
 %End
@@ -32,7 +35,7 @@ Returns a string describing the chosen encoding
 %Docstring
 Adds a 'Cancel All' button for the user to click
 %End
-    bool cancelAll();
+    bool cancelAll() const;
 %Docstring
 Returns ``True`` if the user clicked 'Cancel All'
 %End

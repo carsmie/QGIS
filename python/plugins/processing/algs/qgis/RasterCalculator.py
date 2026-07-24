@@ -19,28 +19,30 @@ __author__ = "Victor Olaya"
 __date__ = "November 2016"
 __copyright__ = "(C) 2016, Victor Olaya"
 
-import os
 import math
-from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
-from processing.algs.gdal.GdalUtils import GdalUtils
+import os
+
+from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
 from qgis.core import (
+    QgsCoordinateTransform,
+    QgsMapLayer,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsProcessingUtils,
+    QgsProcessingOutputRasterLayer,
     QgsProcessingParameterCrs,
+    QgsProcessingParameterExtent,
     QgsProcessingParameterMultipleLayers,
     QgsProcessingParameterNumber,
-    QgsProcessingParameterExtent,
     QgsProcessingParameterRasterDestination,
     QgsProcessingParameterRasterLayer,
-    QgsProcessingOutputRasterLayer,
     QgsProcessingParameterString,
-    QgsCoordinateTransform,
-    QgsMapLayer,
+    QgsProcessingUtils,
 )
 from qgis.PyQt.QtCore import QObject
-from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
+
+from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
 class RasterCalculator(QgisAlgorithm):
@@ -62,7 +64,6 @@ class RasterCalculator(QgisAlgorithm):
 
     def initAlgorithm(self, config=None):
         class ParameterRasterCalculatorExpression(QgsProcessingParameterString):
-
             def __init__(self, name="", description="", multiLine=False):
                 super().__init__(name, description, multiLine=multiLine)
                 self.setMetadata(
@@ -124,6 +125,31 @@ class RasterCalculator(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Raster calculator")
+
+    def shortDescription(self):
+        return self.tr("Allows performing algebraic operations using raster layers.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm allows performing algebraic operations using raster layers. \n"
+            "The resulting layer will have its values computed according to an expression. "
+            "The expression can contain numerical values, operators and references to any of "
+            "the layers in the current project. The following functions are also supported:\n"
+            "- sin(), cos(), tan(), atan2(), ln(), log10()\n"
+            "The extent, cell size, and output CRS can be defined by the user. "
+            "If the extent is not specified, the minimum extent that covers selected reference "
+            "layer(s) will be used. If the cell size is not specified, the minimum cell size "
+            "of selected reference layer(s) will be used. If the output CRS is not specified, "
+            "the CRS of the first reference layer will be used.\n"
+            "The cell size is assumed to be the same in both X and Y axes.\n"
+            "Layers are referred by their name as displayed in the layer list "
+            "and the number of the band to use (based on 1), using the pattern 'layer_name@band number'. "
+            "For instance, the first band from a layer named DEM will be referred as DEM@1.\n"
+            "When using the calculator in the batch interface or from the console, the files to use have to be specified. "
+            "The corresponding layers are referred using the base name of the file (without the full path). "
+            "For instance, if using a layer at path/to/my/rasterfile.tif, "
+            "the first band of that layer will be referred as rasterfile.tif@1."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         expression = self.parameterAsString(parameters, self.EXPRESSION, context)
@@ -266,7 +292,6 @@ class RasterCalculator(QgisAlgorithm):
             # to a layer
             varDescription = None
             for varName in expContextAlgInputsScope.variableNames():
-
                 layerInContext = expContextAlgInputsScope.variable(varName)
 
                 if not isinstance(layerInContext, str) and not isinstance(

@@ -14,12 +14,12 @@
  ***************************************************************************/
 
 #include "qgsspatialiteexpressioncompiler.h"
+
 #include "qgsexpressionnodeimpl.h"
 
 QgsSpatialiteExpressionCompiler::QgsSpatialiteExpressionCompiler( const QgsFields &fields, bool ignoreStaticNodes )
   : QgsSQLiteExpressionCompiler( fields, ignoreStaticNodes )
-{
-}
+{}
 
 QString QgsSpatialiteExpressionCompiler::sqlFunctionFromFunctionName( const QString &fnName ) const
 {

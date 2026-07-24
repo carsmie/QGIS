@@ -20,24 +20,23 @@ __date__ = "April 2014"
 __copyright__ = "(C) 2014, Victor Olaya"
 
 import json
-from typing import List
-from qgis.PyQt.QtCore import QCoreApplication
+
+from processing.core.ProcessingConfig import ProcessingConfig, Setting
 from qgis.core import (
     Qgis,
     QgsApplication,
+    QgsMessageLog,
     QgsProcessingAlgorithm,
     QgsProcessingProvider,
-    QgsVectorFileWriter,
-    QgsMessageLog,
     QgsRuntimeProfiler,
 )
-from processing.core.ProcessingConfig import ProcessingConfig, Setting
-from grassprovider.grass_utils import GrassUtils
+from qgis.PyQt.QtCore import QCoreApplication
+
 from grassprovider.grass_algorithm import GrassAlgorithm
+from grassprovider.grass_utils import GrassUtils
 
 
 class GrassProvider(QgsProcessingProvider):
-
     def __init__(self):
         super().__init__()
 
@@ -127,17 +126,17 @@ class GrassProvider(QgsProcessingProvider):
                             algs.append(alg)
                         else:
                             QgsMessageLog.logMessage(
-                                self.tr(
-                                    "Could not open GRASS GIS algorithm: {0}"
-                                ).format(algorithm_json.get("name")),
+                                self.tr("Could not open GRASS algorithm: {0}").format(
+                                    algorithm_json.get("name")
+                                ),
                                 self.tr("Processing"),
                                 Qgis.MessageLevel.Critical,
                             )
                     except Exception as e:
                         QgsMessageLog.logMessage(
-                            self.tr(
-                                "Could not open GRASS GIS algorithm: {0}\n{1}"
-                            ).format(algorithm_json.get("name"), e),
+                            self.tr("Could not open GRASS algorithm: {0}\n{1}").format(
+                                algorithm_json.get("name"), e
+                            ),
                             self.tr("Processing"),
                             Qgis.MessageLevel.Critical,
                         )
@@ -150,34 +149,23 @@ class GrassProvider(QgsProcessingProvider):
                             algs.append(alg)
                         else:
                             QgsMessageLog.logMessage(
-                                self.tr(
-                                    "Could not open GRASS GIS algorithm: {0}"
-                                ).format(descriptionFile),
+                                self.tr("Could not open GRASS algorithm: {0}").format(
+                                    descriptionFile
+                                ),
                                 self.tr("Processing"),
                                 Qgis.MessageLevel.Critical,
                             )
                     except Exception as e:
                         QgsMessageLog.logMessage(
-                            self.tr(
-                                "Could not open GRASS GIS algorithm: {0}\n{1}"
-                            ).format(descriptionFile, e),
+                            self.tr("Could not open GRASS algorithm: {0}\n{1}").format(
+                                descriptionFile, e
+                            ),
                             self.tr("Processing"),
                             Qgis.MessageLevel.Critical,
                         )
         return algs
 
     def loadAlgorithms(self):
-        version = GrassUtils.installedVersion(True)
-        if version is None:
-            QgsMessageLog.logMessage(
-                self.tr(
-                    "Problem with GRASS installation: GRASS was not found or is not correctly installed"
-                ),
-                self.tr("Processing"),
-                Qgis.MessageLevel.Critical,
-            )
-            return
-
         for a in self.parse_algorithms():
             self.addAlgorithm(a)
 
@@ -186,7 +174,7 @@ class GrassProvider(QgsProcessingProvider):
 
     def longName(self):
         version = GrassUtils.installedVersion()
-        return f"GRASS GIS ({version})" if version is not None else "GRASS GIS"
+        return f"GRASS ({version})" if version is not None else "GRASS"
 
     def id(self):
         return "grass"
@@ -216,13 +204,11 @@ class GrassProvider(QgsProcessingProvider):
         # different from QGIS OGR version.
         return super().supportedOutputVectorLayerExtensions()
 
-    def supportedOutputRasterLayerExtensions(self):
-        return GrassUtils.getSupportedOutputRasterExtensions()
+    def getSupportedOutputRasterFormatAndExtensions(self):
+        return GrassUtils.getSupportedOutputRasterFormatAndExtensions()
 
     def canBeActivated(self):
         return not bool(GrassUtils.checkGrassIsInstalled())
 
-    def tr(self, string, context=""):
-        if context == "":
-            context = "Grass7AlgorithmProvider"
-        return QCoreApplication.translate(context, string)
+    def tr(self, string: str):
+        return QCoreApplication.translate(self.__class__.__name__, string)

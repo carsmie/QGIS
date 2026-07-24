@@ -16,10 +16,10 @@
 #ifndef QGSEXPRESSIONSORTER_H
 #define QGSEXPRESSIONSORTER_H
 
-#include <QLocale>
-
 #include "qgsfeaturerequest.h"
 #include "qgsindexedfeature.h"
+
+#include <QLocale>
 
 /// @cond PRIVATE
 class QgsExpressionSorter
@@ -27,9 +27,9 @@ class QgsExpressionSorter
   public:
     explicit QgsExpressionSorter( const QList<QgsFeatureRequest::OrderByClause> &preparedOrderBys )
       : mPreparedOrderBys( preparedOrderBys )
-        // QString::localeAwareCompare() is case insensitive for common locales,
-        // but case sensitive for the C locale. So use an explicit case
-        // insensitive comparison in that later case to avoid test failures.
+      // QString::localeAwareCompare() is case insensitive for common locales,
+      // but case sensitive for the C locale. So use an explicit case
+      // insensitive comparison in that later case to avoid test failures.
       , mUseCaseInsensitiveComparison( QLocale().name() == QLocale::c().name() )
     {}
 

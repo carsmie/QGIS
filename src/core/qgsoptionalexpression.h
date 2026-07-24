@@ -16,11 +16,9 @@
 #ifndef QGSOPTIONALEXPRESSION_H
 #define QGSOPTIONALEXPRESSION_H
 
-#include "qgsoptional.h"
-#include "qgsexpression.h"
-
 #include "qgis_core.h"
-
+#include "qgsexpression.h"
+#include "qgsoptional.h"
 
 /**
  * \ingroup core
@@ -34,11 +32,9 @@
  */
 
 
-
 class CORE_EXPORT QgsOptionalExpression : public QgsOptional<QgsExpression>
 {
   public:
-
     /**
      * Construct a default optional expression.
      * It will be disabled and with an empty expression.
@@ -74,7 +70,7 @@ class CORE_EXPORT QgsOptionalExpression : public QgsOptional<QgsExpression>
 };
 
 
-#if defined(_MSC_VER)
+#if defined( _MSC_VER )
 #ifndef SIP_RUN
 template class CORE_EXPORT QgsOptional<QgsExpression>;
 #endif

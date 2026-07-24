@@ -18,12 +18,15 @@
 #ifndef QGSGEOMETRYFACTORY_H
 #define QGSGEOMETRYFACTORY_H
 
-#define SIP_NO_FILE
+
+#include <memory>
 
 #include "qgis_core.h"
 #include "qgswkbtypes.h"
+
 #include <QString>
-#include <memory>
+
+#define SIP_NO_FILE
 
 class QgsAbstractGeometry;
 class QgsLineString;
@@ -52,7 +55,6 @@ typedef QVector<QgsPolygonXY> QgsMultiPolygonXY;
 class CORE_EXPORT QgsGeometryFactory
 {
   public:
-
     /**
      * Construct geometry from a WKB string.
      * Updates position of the passed WKB pointer.

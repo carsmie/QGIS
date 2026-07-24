@@ -18,12 +18,14 @@
 #ifndef QGSDXFPAINTENGINE_H
 #define QGSDXFPAINTENGINE_H
 
-#define SIP_NO_FILE
 
 #include "qgis_core.h"
+#include "qgsabstractgeometry.h"
+
 #include <QPaintEngine>
 #include <QPainterPath>
-#include "qgsabstractgeometry.h"
+
+#define SIP_NO_FILE
 
 class QgsPoint;
 class QgsDxfExport;
@@ -37,7 +39,7 @@ class QgsDxfPaintDevice;
  * \brief Custom paint engine for rendering to DXF drawings.
 */
 
-class CORE_EXPORT QgsDxfPaintEngine: public QPaintEngine
+class CORE_EXPORT QgsDxfPaintEngine : public QPaintEngine
 {
   public:
     QgsDxfPaintEngine( const QgsDxfPaintDevice *dxfDevice, QgsDxfExport *dxf );
@@ -73,6 +75,17 @@ class CORE_EXPORT QgsDxfPaintEngine: public QPaintEngine
     QgsRingSequence mPolygon;
     QPolygonF mCurrentPolygon;
     QList<QPointF> mCurrentCurve;
+
+    QPainterPath mClipPath; //in painter device coordinates
+    bool mClipEnabled = false;
+
+    /**
+     * Returns the input polygon (expressed in painter logical coordinates)
+     * clipped against the active clip path. If clipping is disabled or
+     * the clip path is empty, returns the original polygon unchanged.
+     * If the polygon is fully outside the clip an empty list is returned.
+     */
+    QList<QPolygonF> clipPolygonLogical( const QPolygonF &polyLogical ) const;
 
     QgsPoint toDxfCoordinates( QPointF pt ) const;
     double currentWidth() const;

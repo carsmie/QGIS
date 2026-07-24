@@ -12,17 +12,17 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "qgstest.h"
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QSettings>
-
+#include "qgsexpressioncontextutils.h"
 #include "qgsfeature.h"
 #include "qgsfield.h"
 #include "qgsgeometry.h"
 #include "qgssimplifymethod.h"
-#include "qgsexpressioncontextutils.h"
+#include "qgstest.h"
+
+#include <QObject>
+#include <QSettings>
+#include <QString>
+#include <QStringList>
 
 class TestQgsFeatureRequest : public QObject
 {
@@ -45,20 +45,16 @@ class TestQgsFeatureRequest : public QObject
 };
 
 void TestQgsFeatureRequest::initTestCase()
-{
-}
+{}
 
 void TestQgsFeatureRequest::cleanupTestCase()
-{
-}
+{}
 
 void TestQgsFeatureRequest::init()
-{
-}
+{}
 
 void TestQgsFeatureRequest::cleanup()
-{
-}
+{}
 
 void TestQgsFeatureRequest::testDefaultConstructed( const QgsFeatureRequest &f )
 {

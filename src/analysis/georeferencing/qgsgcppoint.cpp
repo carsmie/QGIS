@@ -12,19 +12,23 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "qgscoordinatereferencesystem.h"
 #include "qgsgcppoint.h"
+
+#include "qgscoordinatereferencesystem.h"
 #include "qgscoordinatetransform.h"
 #include "qgsexception.h"
 #include "qgslogger.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsGcpPoint::QgsGcpPoint( const QgsPointXY &sourcePoint, const QgsPointXY &destinationPoint, const QgsCoordinateReferenceSystem &destinationPointCrs, bool enabled )
   : mSourcePoint( sourcePoint )
   , mDestinationPoint( destinationPoint )
   , mDestinationCrs( destinationPointCrs )
   , mEnabled( enabled )
-{
-}
+{}
 
 QgsCoordinateReferenceSystem QgsGcpPoint::destinationPointCrs() const
 {
@@ -45,7 +49,7 @@ QgsPointXY QgsGcpPoint::transformedDestinationPoint( const QgsCoordinateReferenc
   }
   catch ( QgsCsException & )
   {
-    QgsDebugError( QStringLiteral( "Error transforming destination point" ) );
+    QgsDebugError( u"Error transforming destination point"_s );
     return mDestinationPoint;
   }
 }

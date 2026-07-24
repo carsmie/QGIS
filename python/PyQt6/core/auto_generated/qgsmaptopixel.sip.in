@@ -10,6 +10,7 @@
 
 
 
+
 class QgsMapToPixel
 {
 %Docstring(signature="appended")
@@ -23,7 +24,6 @@ versa.
 #include "qgsmaptopixel.h"
 %End
   public:
-
     QgsMapToPixel();
 %Docstring
 Constructor for an invalid QgsMapToPixel.

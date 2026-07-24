@@ -17,12 +17,10 @@
 #define QGSVECTORTILEUTILS_H
 
 #include "qgis_core.h"
+#include "qgshttpheaders.h"
 
 #include <QSet>
 #include <QVariantMap>
-
-#include "qgshttpheaders.h"
-
 
 class QPointF;
 class QPolygon;
@@ -48,7 +46,6 @@ class QgsMapBoxGlStyleConversionContext;
 class CORE_EXPORT QgsVectorTileUtils
 {
   public:
-
     /**
      * Parses the style URL to update the source URLs in the \a uri.
      * If \a forceUpdate is TRUE, any existing source will be updated.
@@ -101,6 +98,13 @@ class CORE_EXPORT QgsVectorTileUtils
      */
     static void loadSprites( const QVariantMap &styleDefinition, QgsMapBoxGlStyleConversionContext &context, const QString &styleUrl = QString() );
 
+    /**
+     * Resolves a URI which uses the mapbox:// protocol to a standard HTTPS URL.
+     *
+     * \since QGIS 4.2
+     */
+    static QString resolveMapboxUri( const QString &uri, const QString &accessToken );
+
   private:
     //! Parses the style URL to get a list of named source URLs.
     static QMap<QString, QString> parseStyleSourceUrl( const QString &styleUrl, const QgsHttpHeaders &headers = QgsHttpHeaders(), const QString &authCfg = QString() );
@@ -109,7 +113,6 @@ class CORE_EXPORT QgsVectorTileUtils
     static QVariantList parseStyleSourceContentUrl( const QString &sourceUrl, const QgsHttpHeaders &headers = QgsHttpHeaders(), const QString &authCfg = QString() );
 
     friend class TestQgsVectorTileUtils;
-
 };
 
 #endif // QGSVECTORTILEUTILS_H

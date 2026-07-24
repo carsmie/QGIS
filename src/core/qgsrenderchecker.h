@@ -18,15 +18,16 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-
+#include "qgsdartmeasurement.h"
 #include "qgslogger.h"
 #include "qgsmapsettings.h"
-#include "qgsdartmeasurement.h"
 
 #include <QDir>
-#include <QString>
-#include <QRegularExpression>
 #include <QList>
+#include <QRegularExpression>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QImage;
 
@@ -43,7 +44,6 @@ class CORE_EXPORT QgsRenderChecker
     Q_GADGET
 
   public:
-
     /**
      * Constructor for QgsRenderChecker.
      */
@@ -105,11 +105,7 @@ class CORE_EXPORT QgsRenderChecker
     /**
      * Returns the percent of pixels which matched the control image.
      */
-    float matchPercent() const
-    {
-      return static_cast<float>( mMismatchCount ) /
-             static_cast<float>( mMatchTarget ) * 100;
-    }
+    float matchPercent() const { return static_cast<float>( mMismatchCount ) / static_cast<float>( mMatchTarget ) * 100; }
 
     /**
      * Returns the number of pixels which did not match the control image.
@@ -189,7 +185,11 @@ class CORE_EXPORT QgsRenderChecker
      * \param xTolerance x tolerance in pixels
      * \param yTolerance y tolerance in pixels
      */
-    void setSizeTolerance( int xTolerance, int yTolerance ) { mMaxSizeDifferenceX = xTolerance; mMaxSizeDifferenceY = yTolerance; }
+    void setSizeTolerance( int xTolerance, int yTolerance )
+    {
+      mMaxSizeDifferenceX = xTolerance;
+      mMaxSizeDifferenceY = yTolerance;
+    }
 
     /**
      * Render checker flags.
@@ -199,7 +199,7 @@ class CORE_EXPORT QgsRenderChecker
     enum class Flag : int SIP_ENUM_BASETYPE( IntFlag )
     {
       AvoidExportingRenderedImage = 1 << 0, //!< Avoids exporting rendered images to reports
-      Silent = 1 << 1, //!< Don't output non-critical messages to console \since QGIS 3.40
+      Silent = 1 << 1,                      //!< Don't output non-critical messages to console \since QGIS 3.40
     };
     Q_ENUM( Flag )
 
@@ -245,7 +245,9 @@ class CORE_EXPORT QgsRenderChecker
      *
      * \since QGIS 3.18
      */
-    bool compareImages( const QString &testName, const QString &referenceImageFile, const QString &renderedImageFile, unsigned int mismatchCount = 0, QgsRenderChecker::Flags flags = QgsRenderChecker::Flags() );
+    bool compareImages(
+      const QString &testName, const QString &referenceImageFile, const QString &renderedImageFile, unsigned int mismatchCount = 0, QgsRenderChecker::Flags flags = QgsRenderChecker::Flags()
+    );
 
     /**
      * Gets a list of all the anomalies. An anomaly is a rendered difference
@@ -329,7 +331,7 @@ class CORE_EXPORT QgsRenderChecker
     int mMaxSizeDifferenceY = 0;
     int mElapsedTimeTarget = 0;
     QgsMapSettings mMapSettings;
-    QString mControlExtension = QStringLiteral( "png" );
+    QString mControlExtension = u"png"_s;
     QString mControlPathPrefix;
     QString mControlPathSuffix;
     bool mIsCiRun = false;
@@ -352,14 +354,14 @@ Q_DECLARE_OPERATORS_FOR_FLAGS( QgsRenderChecker::Flags )
 
 inline bool compareWkt( const QString &a, const QString &b, double tolerance = 0.000001 )
 {
-  QgsDebugMsgLevel( QStringLiteral( "a:%1 b:%2 tol:%3" ).arg( a, b ).arg( tolerance ), 2 );
+  QgsDebugMsgLevel( u"a:%1 b:%2 tol:%3"_s.arg( a, b ).arg( tolerance ), 2 );
   const thread_local QRegularExpression re( "-?\\d+(?:\\.\\d+)?(?:[eE]\\d+)?" );
 
   QString a0( a ), b0( b );
-  a0.replace( re, QStringLiteral( "#" ) );
-  b0.replace( re, QStringLiteral( "#" ) );
+  a0.replace( re, u"#"_s );
+  b0.replace( re, u"#"_s );
 
-  QgsDebugMsgLevel( QStringLiteral( "a0:%1 b0:%2" ).arg( a0, b0 ), 2 );
+  QgsDebugMsgLevel( u"a0:%1 b0:%2"_s.arg( a0, b0 ), 2 );
 
   if ( a0 != b0 )
     return false;

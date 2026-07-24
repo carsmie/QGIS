@@ -17,9 +17,11 @@
 #define QGSSTACSOURCESELECTPROVIDER_H
 
 #include "qgssourceselectprovider.h"
-// #include "qgis_gui.h"
 
 #define SIP_NO_FILE
+
+// #include "qgis_gui.h"
+
 
 class QgsStacSourceSelectProvider : public QgsSourceSelectProvider
 {

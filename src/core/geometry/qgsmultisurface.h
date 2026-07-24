@@ -20,7 +20,6 @@ email                : marco.hugentobler at sourcepole dot com
 #include "qgis_sip.h"
 #include "qgsgeometrycollection.h"
 
-
 class QgsSurface;
 
 /**
@@ -28,14 +27,15 @@ class QgsSurface;
  * \class QgsMultiSurface
  * \brief Multi surface geometry collection.
  */
-class CORE_EXPORT QgsMultiSurface: public QgsGeometryCollection
+class CORE_EXPORT QgsMultiSurface : public QgsGeometryCollection
 {
   public:
-
+    // clang-format off
     /**
      * Constructor for an empty multisurface geometry.
      */
     QgsMultiSurface() SIP_HOLDGIL;
+    // clang-format on
 
 #ifndef SIP_RUN
 
@@ -46,6 +46,7 @@ class CORE_EXPORT QgsMultiSurface: public QgsGeometryCollection
      */
     QgsSurface *surfaceN( int index );
 #else
+// clang-format off
 
     /**
      * Returns the surface with the specified \a index.
@@ -66,6 +67,7 @@ class CORE_EXPORT QgsMultiSurface: public QgsGeometryCollection
       return sipConvertFromType( sipCpp->surfaceN( a0 ), sipType_QgsSurface, NULL );
     }
     % End
+// clang-format on
 #endif
 
 #ifndef SIP_RUN
@@ -87,7 +89,7 @@ class CORE_EXPORT QgsMultiSurface: public QgsGeometryCollection
     bool fromWkt( const QString &wkt ) override;
     QDomElement asGml2( QDomDocument &doc, int precision = 17, const QString &ns = "gml", QgsAbstractGeometry::AxisOrder axisOrder = QgsAbstractGeometry::AxisOrder::XY ) const override;
     QDomElement asGml3( QDomDocument &doc, int precision = 17, const QString &ns = "gml", QgsAbstractGeometry::AxisOrder axisOrder = QgsAbstractGeometry::AxisOrder::XY ) const override;
-    json asJsonObject( int precision = 17 ) const override SIP_SKIP;
+    json asJsonObject( int precision = 17, Qgis::GeoJsonProfile profile = Qgis::GeoJsonProfile::Legacy ) const override SIP_SKIP;
     bool addGeometry( QgsAbstractGeometry *g SIP_TRANSFER ) override;
     bool addGeometries( const QVector< QgsAbstractGeometry * > &geometries SIP_TRANSFER ) override;
     bool insertGeometry( QgsAbstractGeometry *g SIP_TRANSFER, int index ) override;

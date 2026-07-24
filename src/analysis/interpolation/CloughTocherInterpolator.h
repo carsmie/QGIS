@@ -18,12 +18,13 @@
 #define CLOUGHTOCHERINTERPOLATOR_H
 
 #include "TriangleInterpolator.h"
-#include "qgspoint.h"
 #include "qgis_analysis.h"
+#include "qgspoint.h"
+
+#define SIP_NO_FILE
 
 class NormVecDecorator;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup analysis

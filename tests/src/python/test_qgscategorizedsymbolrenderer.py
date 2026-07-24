@@ -13,10 +13,8 @@ __date__ = "2/12/2015"
 __copyright__ = "Copyright 2015, The QGIS Project"
 
 import os
+import unittest
 
-from qgis.PyQt.QtCore import QLocale, QSize, Qt, QTemporaryDir, QVariant
-from qgis.PyQt.QtGui import QColor
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
     QgsEditorWidgetSetup,
@@ -36,6 +34,7 @@ from qgis.core import (
     QgsRectangle,
     QgsRenderContext,
     QgsRendererCategory,
+    QgsRuleBasedRenderer,
     QgsSimpleMarkerSymbolLayer,
     QgsSingleSymbolRenderer,
     QgsStyle,
@@ -44,9 +43,10 @@ from qgis.core import (
     QgsSymbolLayerReference,
     QgsVectorLayer,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QLocale, QSize, Qt, QTemporaryDir, QVariant
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 start_app()
@@ -72,7 +72,6 @@ def createFillSymbol():
 
 
 class TestQgsCategorizedSymbolRenderer(QgisTestCase):
-
     def testFilter(self):
         """Test filter creation"""
         renderer = QgsCategorizedSymbolRenderer()
@@ -763,6 +762,234 @@ class TestQgsCategorizedSymbolRenderer(QgisTestCase):
             [l.symbol().color().name() for l in renderer2.categories()],
             ["#ff0000", "#00ff00", "#0000ff", "#ff00ff", "#ffffff"],
         )
+
+    def testConvertFromRuleBased(self):
+        """
+        Test converting rule based renderers to a categorized renderer
+        """
+        points_layer = QgsVectorLayer("Point", "Polys", "memory")
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        child_rule = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#ff0000",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule.setFilterExpression('"a field" = 1')
+        child_rule.setLabel("first rule")
+        child_rule.setDescription("first rule desc")
+        root_rule.appendChild(child_rule.clone())
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertEqual(categorized.classAttribute(), '"a field"')
+        self.assertEqual(len(categorized.categories()), 1)
+        cc = categorized.categories()[0]
+        self.assertEqual(cc.value(), 1)
+        self.assertEqual(cc.label(), "first rule")
+        self.assertEqual(cc.symbol().color().name(), "#ff0000")
+
+        child_rule2 = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#00ff00",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule2.setFilterExpression("\"a field\" = 'abc'")
+        root_rule.appendChild(child_rule2.clone())
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertEqual(categorized.classAttribute(), '"a field"')
+        self.assertEqual(len(categorized.categories()), 2)
+        cc = categorized.categories()[0]
+        self.assertEqual(cc.value(), 1)
+        self.assertEqual(cc.label(), "first rule")
+        self.assertEqual(cc.symbol().color().name(), "#ff0000")
+        cc = categorized.categories()[1]
+        self.assertEqual(cc.value(), "abc")
+        self.assertEqual(cc.label(), "abc")
+        self.assertEqual(cc.symbol().color().name(), "#00ff00")
+
+        # different expression, should not be converted
+        child_rule3 = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#0000ff",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule3.setFilterExpression('"a different field" = 33')
+        root_rule.appendChild(child_rule3.clone())
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
+
+        # not an equality operator for rule filter
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        root_rule.appendChild(child_rule.clone())
+        child_rule4 = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#ff0000",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule4.setFilterExpression('"a field" / 5 = 6')
+        root_rule.appendChild(child_rule4.clone())
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
+
+        # else rule, cannot convert
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        root_rule.appendChild(child_rule.clone())
+        child_rule5 = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#ff0000",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule5.setIsElse(True)
+        root_rule.appendChild(child_rule5.clone())
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
+
+        # rule with maximum scale based visibility, cannot convert
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        root_rule.appendChild(child_rule.clone())
+        child_rule5 = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#ff0000",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule5.setMaximumScale(10000)
+        root_rule.appendChild(child_rule5.clone())
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
+
+        # rule with minimum scale based visibility, cannot convert
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        root_rule.appendChild(child_rule.clone())
+        child_rule5 = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#ff0000",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule5.setMinimumScale(10000)
+        root_rule.appendChild(child_rule5.clone())
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
+
+        # rule without symbol, cannot convert
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        root_rule.appendChild(child_rule.clone())
+        child_rule5 = QgsRuleBasedRenderer.Rule(None)
+        root_rule.appendChild(child_rule5.clone())
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
+
+        # nested rules, cannot convert
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        new_child = child_rule.clone()
+        new_child.appendChild(child_rule2.clone())
+        root_rule.appendChild(new_child)
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
+
+        # broken expression, cannot convert
+        root_rule = QgsRuleBasedRenderer.Rule(None)
+        root_rule.appendChild(child_rule.clone())
+        child_rule5 = QgsRuleBasedRenderer.Rule(
+            QgsMarkerSymbol.createSimple(
+                {
+                    "name": "triangle",
+                    "size": 10,
+                    "color": "#ff0000",
+                    "outline_style": "no",
+                }
+            )
+        )
+        child_rule5.setFilterExpression('"abc" / ')
+        root_rule.appendChild(child_rule5.clone())
+        renderer = QgsRuleBasedRenderer(root_rule)
+        points_layer.setRenderer(renderer)
+
+        categorized = QgsCategorizedSymbolRenderer.convertFromRenderer(
+            renderer, points_layer
+        )
+        self.assertFalse(categorized.classAttribute())
+        self.assertFalse(categorized.categories())
 
     def testConvertFromEmbedded(self):
         """
@@ -1553,6 +1780,95 @@ class TestQgsCategorizedSymbolRenderer(QgisTestCase):
         self.assertEqual(layer.featureCount(cat_a_id), 3)
         self.assertEqual(layer.featureCount(cat_b_id), 2)
         self.assertEqual(layer.featureCount(cat_default_id), 1)
+
+    def test_layer_counts_other_categories(self):
+        """Test that features with values that don't match any category are counted in the
+        fallback 'else' category"""
+
+        def _test(type, values, fallback_value):
+            layer = QgsVectorLayer(
+                f"Point?field=test_field:{type}", "test_layer", "memory"
+            )
+            self.assertTrue(layer.isValid())
+            fields = layer.fields()
+            layer.startEditing()
+
+            # add test values
+            values.append(None)
+            for attr_value in values:
+                f = QgsFeature(fields)
+                f.setAttributes([attr_value])
+                self.assertTrue(layer.addFeature(f))
+
+            self.assertEqual(layer.featureCount(), 3)
+            layer.commitChanges()
+
+            renderer = QgsCategorizedSymbolRenderer()
+            renderer.setClassAttribute("test_field")
+
+            renderer.addCategory(
+                QgsRendererCategory(
+                    str(values[0]), createMarkerSymbol(), str(values[0])
+                )
+            )
+            cat_a_id = renderer.categories()[-1].uuid()
+            renderer.addCategory(
+                QgsRendererCategory(
+                    fallback_value, createMarkerSymbol(), "other values"
+                )
+            )
+            cat_other_id = renderer.categories()[-1].uuid()
+
+            self.assertEqual(renderer.legendKeys(), {cat_a_id, cat_other_id})
+
+            ctx = QgsRenderContext()
+            renderer.startRender(ctx, layer.fields())
+
+            self.assertEqual(
+                renderer.legendKeysForFeature(layer.getFeature(1), ctx), {cat_a_id}
+            )
+            self.assertEqual(
+                renderer.legendKeysForFeature(layer.getFeature(3), ctx), {cat_other_id}
+            )
+            self.assertEqual(
+                renderer.legendKeysForFeature(layer.getFeature(2), ctx), {cat_other_id}
+            )
+
+        _test("string", ["a", "b"], QVariant())
+        _test("int", [1, 2], QVariant())
+        _test("int", [1, 2], "")
+
+    def testSetLegendSymbolItemLabel(self):
+        cat1 = QgsRendererCategory(1, createMarkerSymbol(), "category 1")
+        cat2 = QgsRendererCategory(2, createMarkerSymbol(), "category 2")
+        cat3 = QgsRendererCategory(3, createMarkerSymbol(), "category 3")
+
+        renderer = QgsCategorizedSymbolRenderer("field", [cat1, cat2, cat3])
+
+        # verify initial labels
+        self.assertEqual(renderer.categories()[0].label(), "category 1")
+        self.assertEqual(renderer.categories()[1].label(), "category 2")
+        self.assertEqual(renderer.categories()[2].label(), "category 3")
+
+        # change label for second category using its key
+        key2 = renderer.categories()[1].uuid()
+        renderer.setLegendSymbolItemLabel(key2, "updated category 2")
+
+        self.assertEqual(renderer.categories()[0].label(), "category 1")
+        self.assertEqual(renderer.categories()[1].label(), "updated category 2")
+        self.assertEqual(renderer.categories()[2].label(), "category 3")
+
+        # change label via legendSymbolItems key
+        items = renderer.legendSymbolItems()
+        self.assertEqual(len(items), 3)
+        renderer.setLegendSymbolItemLabel(items[0].ruleKey(), "new category 1")
+        self.assertEqual(renderer.categories()[0].label(), "new category 1")
+
+        # non-existent key should not change anything
+        renderer.setLegendSymbolItemLabel("nonexistent", "nonexistent_label")
+        self.assertEqual(renderer.categories()[0].label(), "new category 1")
+        self.assertEqual(renderer.categories()[1].label(), "updated category 2")
+        self.assertEqual(renderer.categories()[2].label(), "category 3")
 
 
 if __name__ == "__main__":

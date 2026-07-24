@@ -17,20 +17,21 @@
 #define QGS3DRENDERCONTEXT_H
 
 #include "qgis_3d.h"
-#include "qgsvector3d.h"
-#include "qgsrectangle.h"
-#include "qgsrange.h"
+#include "qgsabstractterrainsettings.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgscoordinatetransformcontext.h"
 #include "qgsexpressioncontext.h"
-#include "qgsabstractterrainsettings.h"
+#include "qgsrange.h"
+#include "qgsrectangle.h"
+#include "qgsterraingenerator.h"
+#include "qgsvector3d.h"
 
 #include <QColor>
 
-class QgsTerrainGenerator;
+#define SIP_NO_FILE
+
 class Qgs3DMapSettings;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup qgis_3d
@@ -153,6 +154,22 @@ class _3D_EXPORT Qgs3DRenderContext
      */
     const QgsExpressionContext &expressionContext() const SIP_SKIP { return mExpressionContext; }
 
+    /**
+     * Returns the texture filtering quality.
+     *
+     * \see setTextureFilterQuality()
+     * \since QGIS 4.2
+     */
+    Qgis::TextureFilterQuality textureFilterQuality() const { return mTextureFilterQuality; }
+
+    /**
+     * Sets the texture filtering \a quality.
+     *
+     * \see textureFilterQuality()
+     * \since QGIS 4.2
+     */
+    void setTextureFilterQuality( Qgis::TextureFilterQuality quality ) { mTextureFilterQuality = quality; }
+
   private:
     QgsCoordinateReferenceSystem mCrs; //!< Destination coordinate system of the world
     //! Coordinate transform context
@@ -169,9 +186,11 @@ class _3D_EXPORT Qgs3DRenderContext
     //! Expression context
     QgsExpressionContext mExpressionContext;
 
+    Qgis::TextureFilterQuality mTextureFilterQuality = Qgis::TextureFilterQuality::Trilinear;
+
     // not owned, currently a pointer to the Qgs3DMapSettings terrain generator.
     // TODO -- fix during implementation of https://github.com/qgis/QGIS-Enhancement-Proposals/issues/301
-    QgsTerrainGenerator *mTerrainGenerator = nullptr; //!< Implementation of the terrain generation
+    QPointer<QgsTerrainGenerator> mTerrainGenerator; //!< Implementation of the terrain generation
 };
 
 

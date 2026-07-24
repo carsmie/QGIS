@@ -19,8 +19,9 @@
 #define QGSMEMORYPROVIDERUTILS_H
 
 #include "qgis_core.h"
-#include "qgswkbtypes.h"
 #include "qgscoordinatereferencesystem.h"
+#include "qgswkbtypes.h"
+
 #include <QString>
 #include <QVariant>
 
@@ -34,9 +35,7 @@ class QgsFields;
  */
 class CORE_EXPORT QgsMemoryProviderUtils
 {
-
   public:
-
     /**
      * Creates a new memory layer using the specified parameters. The caller takes responsibility
      * for deleting the newly created layer.
@@ -46,13 +45,13 @@ class CORE_EXPORT QgsMemoryProviderUtils
      * \param crs optional layer CRS for layers with geometry
      * \param loadDefaultStyle optional load default style toggle
      */
-    static QgsVectorLayer *createMemoryLayer( const QString &name,
-        const QgsFields &fields,
-        Qgis::WkbType geometryType = Qgis::WkbType::NoGeometry,
-        const QgsCoordinateReferenceSystem &crs = QgsCoordinateReferenceSystem(),
-        bool loadDefaultStyle = true ) SIP_FACTORY;
+    static QgsVectorLayer *createMemoryLayer(
+      const QString &name,
+      const QgsFields &fields,
+      Qgis::WkbType geometryType = Qgis::WkbType::NoGeometry,
+      const QgsCoordinateReferenceSystem &crs = QgsCoordinateReferenceSystem(),
+      bool loadDefaultStyle = true
+    ) SIP_FACTORY;
 };
 
 #endif // QGSMEMORYPROVIDERUTILS_H
-
-

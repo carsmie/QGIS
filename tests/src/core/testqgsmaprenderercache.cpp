@@ -12,13 +12,12 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "qgstest.h"
-
-#include <QImage>
-
 #include "qgsmaprenderercache.h"
 #include "qgsmaptopixel.h"
 #include "qgsrectangle.h"
+#include "qgstest.h"
+
+#include <QImage>
 
 class TestQgsMapRendererCache : public QObject
 {
@@ -51,12 +50,10 @@ void TestQgsMapRendererCache::cleanupTestCase()
 }
 
 void TestQgsMapRendererCache::init()
-{
-}
+{}
 
 void TestQgsMapRendererCache::cleanup()
-{
-}
+{}
 
 void TestQgsMapRendererCache::testCache()
 {

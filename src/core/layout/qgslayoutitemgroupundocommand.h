@@ -19,22 +19,23 @@
 #define QGSLAYOUTITEMGROUPUNDOCOMMAND_H
 
 #include "qgis_core.h"
-#include <QUndoCommand>
 #include "qgslayoutitem.h"
 
+#include <QUndoCommand>
+
 #define SIP_NO_FILE
+
 ///@cond PRIVATE
 
 /**
  * \ingroup core
  * \brief A layout undo command class for grouping / ungrouping layout items.
  */
-class CORE_EXPORT QgsLayoutItemGroupUndoCommand: public QObject, public QUndoCommand
+class CORE_EXPORT QgsLayoutItemGroupUndoCommand : public QObject, public QUndoCommand
 {
     Q_OBJECT
 
   public:
-
     //! Command kind, and state
     enum State
     {
@@ -52,8 +53,7 @@ class CORE_EXPORT QgsLayoutItemGroupUndoCommand: public QObject, public QUndoCom
      * \param parent parent command, if any
      *
      */
-    QgsLayoutItemGroupUndoCommand( State s, QgsLayoutItemGroup *group, QgsLayout *layout,
-                                   const QString &text, QUndoCommand *parent = nullptr );
+    QgsLayoutItemGroupUndoCommand( State s, QgsLayoutItemGroup *group, QgsLayout *layout, const QString &text, QUndoCommand *parent = nullptr );
 
     void redo() override;
     void undo() override;

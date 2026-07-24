@@ -8,6 +8,7 @@
 
 
 
+
 class QgsLabeling
 {
 %Docstring(signature="appended")
@@ -20,8 +21,6 @@ Contains constants and enums relating to labeling.
 #include "qgslabeling.h"
 %End
   public:
-
-
 };
 
 

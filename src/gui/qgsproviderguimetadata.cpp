@@ -16,14 +16,14 @@
  ***************************************************************************/
 
 #include "qgsproviderguimetadata.h"
+
 #include "qgsdataitemguiprovider.h"
 #include "qgsprojectstorageguiprovider.h"
 #include "qgssourceselectprovider.h"
 
 QgsProviderGuiMetadata::QgsProviderGuiMetadata( const QString &key )
   : mKey( key )
-{
-}
+{}
 
 QgsProviderGuiMetadata::~QgsProviderGuiMetadata() = default;
 
@@ -63,5 +63,4 @@ QString QgsProviderGuiMetadata::key() const
 }
 
 void QgsProviderGuiMetadata::registerGui( QMainWindow * )
-{
-}
+{}

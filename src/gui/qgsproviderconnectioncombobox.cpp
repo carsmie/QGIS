@@ -14,8 +14,10 @@
 ***************************************************************************/
 
 #include "qgsproviderconnectioncombobox.h"
-#include "moc_qgsproviderconnectioncombobox.cpp"
+
 #include "qgsproviderconnectionmodel.h"
+
+#include "moc_qgsproviderconnectioncombobox.cpp"
 
 QgsProviderConnectionComboBox::QgsProviderConnectionComboBox( const QString &provider, QWidget *parent )
   : QComboBox( parent )
@@ -25,8 +27,7 @@ QgsProviderConnectionComboBox::QgsProviderConnectionComboBox( const QString &pro
 
 QgsProviderConnectionComboBox::QgsProviderConnectionComboBox( QWidget *parent )
   : QComboBox( parent )
-{
-}
+{}
 
 void QgsProviderConnectionComboBox::setProvider( const QString &provider )
 {
@@ -83,7 +84,8 @@ void QgsProviderConnectionComboBox::setConnection( const QString &connection )
     return;
   }
 
-  const QModelIndexList idx = mSortModel->match( mSortModel->index( 0, 0 ), static_cast<int>( QgsProviderConnectionModel::CustomRole::ConnectionName ), connection, Qt::MatchFixedString | Qt::MatchCaseSensitive );
+  const QModelIndexList idx
+    = mSortModel->match( mSortModel->index( 0, 0 ), static_cast<int>( QgsProviderConnectionModel::CustomRole::ConnectionName ), connection, Qt::MatchFixedString | Qt::MatchCaseSensitive );
   if ( !idx.empty() )
   {
     const QModelIndex proxyIdx = idx.at( 0 );
@@ -167,8 +169,7 @@ void QgsProviderConnectionComboBox::rowsRemoved()
 ///@cond PRIVATE
 QgsProviderConnectionComboBoxSortModel::QgsProviderConnectionComboBoxSortModel( QObject *parent )
   : QSortFilterProxyModel( parent )
-{
-}
+{}
 
 bool QgsProviderConnectionComboBoxSortModel::lessThan( const QModelIndex &left, const QModelIndex &right ) const
 {

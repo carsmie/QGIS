@@ -19,13 +19,12 @@
 
 #define SIP_NO_CREATION
 
-#define SIP_NO_FILE
-
-#include <QString>
 
 #include "qgis_core.h"
 
+#include <QString>
 
+#define SIP_NO_FILE
 
 /**
  * \ingroup core
@@ -34,7 +33,6 @@
 class CORE_EXPORT QgsException
 {
   public:
-
     /**
      * Constructor for QgsException, with the specified error \a message.
      */
@@ -46,16 +44,11 @@ class CORE_EXPORT QgsException
     virtual ~QgsException() throw() = default;
 
     //! \note not available in Python bindings
-    QString what() const throw()
-    {
-      return mWhat;
-    }
+    QString what() const throw() { return mWhat; }
 
   private:
-
     //! Description of exception
     QString mWhat;
-
 };
 
 
@@ -66,12 +59,12 @@ class CORE_EXPORT QgsException
 class CORE_EXPORT QgsCsException : public QgsException
 {
   public:
-
     /**
      * Constructor for QgsCsException, with the specified error \a message.
      */
-    QgsCsException( const QString &message ) : QgsException( message ) {}
-
+    QgsCsException( const QString &message )
+      : QgsException( message )
+    {}
 };
 
 /**
@@ -82,12 +75,12 @@ class CORE_EXPORT QgsCsException : public QgsException
 class CORE_EXPORT QgsProcessingException : public QgsException
 {
   public:
-
     /**
      * Constructor for QgsProcessingException, with the specified error \a message.
      */
-    QgsProcessingException( const QString &message ) : QgsException( message ) {}
-
+    QgsProcessingException( const QString &message )
+      : QgsException( message )
+    {}
 };
 
 
@@ -97,15 +90,15 @@ class CORE_EXPORT QgsProcessingException : public QgsException
  * \brief Custom exception class for provider connection related exceptions.
  * \since QGIS 3.10
  */
-class CORE_EXPORT QgsProviderConnectionException: public QgsException
+class CORE_EXPORT QgsProviderConnectionException : public QgsException
 {
   public:
-
     /**
      * Constructor for QgsProviderConnectionException, with the specified error \a message.
      */
-    QgsProviderConnectionException( const QString &message ) : QgsException( message ) {}
-
+    QgsProviderConnectionException( const QString &message )
+      : QgsException( message )
+    {}
 };
 
 /**
@@ -117,11 +110,12 @@ class CORE_EXPORT QgsProviderConnectionException: public QgsException
 class CORE_EXPORT QgsNotSupportedException : public QgsException
 {
   public:
-
     /**
      * Constructor for QgsNotSupportedException, with the specified error \a message.
      */
-    QgsNotSupportedException( const QString &message ) : QgsException( message ) {}
+    QgsNotSupportedException( const QString &message )
+      : QgsException( message )
+    {}
 };
 
 /**
@@ -133,12 +127,46 @@ class CORE_EXPORT QgsNotSupportedException : public QgsException
 class CORE_EXPORT QgsSettingsException : public QgsException
 {
   public:
-
     /**
      * Constructor for QgsProcessingException, with the specified error \a message.
      */
-    QgsSettingsException( const QString &message ) : QgsException( message ) {}
+    QgsSettingsException( const QString &message )
+      : QgsException( message )
+    {}
+};
 
+/**
+ * \class QgsSfcgalException
+ * \ingroup core
+ * \brief Custom exception class for SfCGAL related operations.
+ * \since QGIS 4.0
+ */
+class CORE_EXPORT QgsSfcgalException : public QgsException
+{
+  public:
+    /**
+     * Constructor for QgsSfcgalException, with the specified error \a message.
+     */
+    QgsSfcgalException( const QString &message )
+      : QgsException( message )
+    {}
+};
+
+/**
+ * \class QgsInvalidArgumentException
+ * \ingroup core
+ * \brief Custom exception class when argument are invalid. Ie. algorithms or processing can not continue computation.
+ * \since QGIS 4.0
+ */
+class CORE_EXPORT QgsInvalidArgumentException : public QgsException
+{
+  public:
+    /**
+     * Constructor for QgsInvalidArgumentException, with the specified error \a message.
+     */
+    QgsInvalidArgumentException( const QString &message )
+      : QgsException( message )
+    {}
 };
 
 #endif

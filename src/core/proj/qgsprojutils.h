@@ -17,16 +17,18 @@
 #ifndef QGSPROJUTILS_H
 #define QGSPROJUTILS_H
 
-#include <QtGlobal>
+#include "qgsconfig.h"
+
+#include <memory>
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgsconfig.h"
 #include "qgsdatumtransform.h"
-#include <memory>
-#include <QStringList>
 
-#if !defined(USE_THREAD_LOCAL) || defined(Q_OS_WIN)
+#include <QStringList>
+#include <QtGlobal>
+
+#if !defined( USE_THREAD_LOCAL ) || defined( Q_OS_WIN )
 #include <QThreadStorage>
 #endif
 
@@ -44,7 +46,6 @@ typedef struct PJconsts PJ;
 class CORE_EXPORT QgsProjUtils
 {
   public:
-
     /**
      * Returns the proj library major version number.
      */
@@ -127,12 +128,10 @@ class CORE_EXPORT QgsProjUtils
      */
     struct ProjPJDeleter
     {
-
-      /**
+        /**
        * Destroys an PJ \a object, using the correct proj calls.
        */
-      void CORE_EXPORT operator()( PJ *object ) const;
-
+        void CORE_EXPORT operator()( PJ *object ) const;
     };
 
     /**
@@ -284,7 +283,6 @@ typedef struct pj_ctx PJ_CONTEXT;
 class CORE_EXPORT QgsProjContext
 {
   public:
-
     QgsProjContext();
     ~QgsProjContext();
 
@@ -300,7 +298,7 @@ class CORE_EXPORT QgsProjContext
      * Thread local proj context storage. A new proj context will be created
      * for every thread.
      */
-#if defined(USE_THREAD_LOCAL) && !defined(Q_OS_WIN)
+#if defined( USE_THREAD_LOCAL ) && !defined( Q_OS_WIN )
     static thread_local QgsProjContext sProjContext;
 #else
     static QThreadStorage< QgsProjContext * > sProjContext;
@@ -323,7 +321,6 @@ class CORE_EXPORT QgsProjContext
 class CORE_EXPORT QgsScopedProjSilentLogger
 {
   public:
-
     /**
      * Constructor for QgsScopedProjSilentLogger.
      *
@@ -335,9 +332,7 @@ class CORE_EXPORT QgsScopedProjSilentLogger
      * Returns the PROJ logger back to the default QGIS PROJ logger.
      */
     ~QgsScopedProjSilentLogger();
-
 };
-
 
 
 /**
@@ -356,7 +351,6 @@ class CORE_EXPORT QgsScopedProjSilentLogger
 class CORE_EXPORT QgsScopedProjCollectingLogger
 {
   public:
-
     /**
      * Constructor for QgsScopedProjCollectingLogger.
      *
@@ -375,7 +369,6 @@ class CORE_EXPORT QgsScopedProjCollectingLogger
     QStringList errors() const { return mProjErrors; }
 
   private:
-
     QStringList mProjErrors;
 };
 

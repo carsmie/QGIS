@@ -15,37 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsdiagramproperties.h"
+
 #include "diagram/qgshistogramdiagram.h"
 #include "diagram/qgspiediagram.h"
-#include "diagram/qgstextdiagram.h"
 #include "diagram/qgsstackedbardiagram.h"
 #include "diagram/qgsstackeddiagram.h"
-
-#include "qgsproject.h"
+#include "diagram/qgstextdiagram.h"
 #include "qgsapplication.h"
+#include "qgsauxiliarystorage.h"
 #include "qgsdatadefinedsizelegend.h"
 #include "qgsdatadefinedsizelegendwidget.h"
-#include "qgsdiagramproperties.h"
-#include "moc_qgsdiagramproperties.cpp"
 #include "qgsdiagramrenderer.h"
-#include "qgsfeatureiterator.h"
-#include "qgssymbolselectordialog.h"
-#include "qgsmapcanvas.h"
 #include "qgsexpressionbuilderdialog.h"
-#include "qgslogger.h"
-#include "qgssettings.h"
-#include "qgsnewauxiliarylayerdialog.h"
-#include "qgsauxiliarystorage.h"
 #include "qgsexpressioncontextutils.h"
-#include "qgspropertytransformer.h"
-#include "qgspainteffectregistry.h"
-#include "qgspainteffect.h"
+#include "qgsfeatureiterator.h"
 #include "qgslinesymbol.h"
+#include "qgslogger.h"
+#include "qgsmapcanvas.h"
+#include "qgsnewauxiliarylayerdialog.h"
+#include "qgspainteffect.h"
+#include "qgspainteffectregistry.h"
+#include "qgsproject.h"
+#include "qgspropertytransformer.h"
+#include "qgssettings.h"
+#include "qgssymbolselectordialog.h"
 
 #include <QList>
 #include <QMessageBox>
-#include <QStyledItemDelegate>
 #include <QRandomGenerator>
+#include <QString>
+#include <QStyledItemDelegate>
+
+#include "moc_qgsdiagramproperties.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsExpressionContext QgsDiagramProperties::createExpressionContext() const
 {
@@ -56,10 +60,11 @@ QgsExpressionContext QgsDiagramProperties::createExpressionContext() const
   }
   else
   {
-    expContext << QgsExpressionContextUtils::globalScope()
-               << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
-               << QgsExpressionContextUtils::atlasScope( nullptr )
-               << QgsExpressionContextUtils::mapSettingsScope( QgsMapSettings() );
+    expContext
+      << QgsExpressionContextUtils::globalScope()
+      << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
+      << QgsExpressionContextUtils::atlasScope( nullptr )
+      << QgsExpressionContextUtils::mapSettingsScope( QgsMapSettings() );
   }
   expContext << QgsExpressionContextUtils::layerScope( mLayer );
 
@@ -93,18 +98,20 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer *layer, QWidget *pare
   mDiagramOptionsListWidget->setIconSize( QSize( iconSize, iconSize ) );
 
   mBarSpacingSpinBox->setClearValue( 0 );
-  mBarSpacingUnitComboBox->setUnits( { Qgis::RenderUnit::Millimeters, Qgis::RenderUnit::MetersInMapUnits, Qgis::RenderUnit::MapUnits, Qgis::RenderUnit::Pixels, Qgis::RenderUnit::Points, Qgis::RenderUnit::Inches } );
+  mBarSpacingUnitComboBox->setUnits(
+    { Qgis::RenderUnit::Millimeters, Qgis::RenderUnit::MetersInMapUnits, Qgis::RenderUnit::MapUnits, Qgis::RenderUnit::Pixels, Qgis::RenderUnit::Points, Qgis::RenderUnit::Inches }
+  );
 
   mDiagramFontButton->setMode( QgsFontButton::ModeQFont );
 
   mDiagramTypeComboBox->blockSignals( true );
-  QIcon icon = QgsApplication::getThemeIcon( QStringLiteral( "pie-chart.svg" ) );
+  QIcon icon = QgsApplication::getThemeIcon( u"pie-chart.svg"_s );
   mDiagramTypeComboBox->addItem( icon, tr( "Pie Chart" ), QgsPieDiagram::DIAGRAM_NAME_PIE );
-  icon = QgsApplication::getThemeIcon( QStringLiteral( "text.svg" ) );
+  icon = QgsApplication::getThemeIcon( u"text.svg"_s );
   mDiagramTypeComboBox->addItem( icon, tr( "Text Diagram" ), QgsTextDiagram::DIAGRAM_NAME_TEXT );
-  icon = QgsApplication::getThemeIcon( QStringLiteral( "histogram.svg" ) );
+  icon = QgsApplication::getThemeIcon( u"histogram.svg"_s );
   mDiagramTypeComboBox->addItem( icon, tr( "Histogram" ), QgsHistogramDiagram::DIAGRAM_NAME_HISTOGRAM );
-  icon = QgsApplication::getThemeIcon( QStringLiteral( "stacked-bar.svg" ) );
+  icon = QgsApplication::getThemeIcon( u"stacked-bar.svg"_s );
   mDiagramTypeComboBox->addItem( icon, tr( "Stacked Bars" ), QgsStackedBarDiagram::DIAGRAM_NAME_STACKED_BAR );
   mDiagramTypeComboBox->blockSignals( false );
 
@@ -116,12 +123,12 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer *layer, QWidget *pare
 
   mBackgroundColorButton->setColorDialogTitle( tr( "Select Background Color" ) );
   mBackgroundColorButton->setAllowOpacity( true );
-  mBackgroundColorButton->setContext( QStringLiteral( "symbology" ) );
+  mBackgroundColorButton->setContext( u"symbology"_s );
   mBackgroundColorButton->setShowNoColor( true );
   mBackgroundColorButton->setNoColorString( tr( "Transparent Background" ) );
   mDiagramPenColorButton->setColorDialogTitle( tr( "Select Pen Color" ) );
   mDiagramPenColorButton->setAllowOpacity( true );
-  mDiagramPenColorButton->setContext( QStringLiteral( "symbology" ) );
+  mDiagramPenColorButton->setContext( u"symbology"_s );
   mDiagramPenColorButton->setShowNoColor( true );
   mDiagramPenColorButton->setNoColorString( tr( "Transparent Stroke" ) );
 
@@ -212,7 +219,7 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer *layer, QWidget *pare
   QSizePolicy policy( mDiagramOptionsListFrame->sizePolicy() );
   policy.setHorizontalStretch( 0 );
   mDiagramOptionsListFrame->setSizePolicy( policy );
-  if ( !settings.contains( QStringLiteral( "/Windows/Diagrams/OptionsSplitState" ) ) )
+  if ( !settings.contains( u"/Windows/Diagrams/OptionsSplitState"_s ) )
   {
     // set left list widget width on initial showing
     QList<int> splitsizes;
@@ -221,8 +228,8 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer *layer, QWidget *pare
   }
 
   // restore dialog, splitters and current tab
-  mDiagramOptionsSplitter->restoreState( settings.value( QStringLiteral( "Windows/Diagrams/OptionsSplitState" ) ).toByteArray() );
-  mDiagramOptionsListWidget->setCurrentRow( settings.value( QStringLiteral( "Windows/Diagrams/Tab" ), 0 ).toInt() );
+  mDiagramOptionsSplitter->restoreState( settings.value( u"Windows/Diagrams/OptionsSplitState"_s ).toByteArray() );
+  mDiagramOptionsListWidget->setCurrentRow( settings.value( u"Windows/Diagrams/Tab"_s, 0 ).toInt() );
 
   // set correct initial tab to match displayed setting page
   whileBlocking( mOptionsTab )->setCurrentIndex( mDiagramStackedWidget->currentIndex() );
@@ -240,7 +247,7 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer *layer, QWidget *pare
   for ( int idx = 0; idx < layerFields.count(); ++idx )
   {
     QTreeWidgetItem *newItem = new QTreeWidgetItem( mAttributesTreeWidget );
-    const QString name = QStringLiteral( "\"%1\"" ).arg( layerFields.at( idx ).name() );
+    const QString name = u"\"%1\""_s.arg( layerFields.at( idx ).name() );
     newItem->setText( 0, name );
     newItem->setData( 0, RoleAttributeExpression, name );
     newItem->setFlags( newItem->flags() & ~Qt::ItemIsDropEnabled );
@@ -406,6 +413,27 @@ void QgsDiagramProperties::insertDefaults()
   mDiagramTypeComboBox_currentIndexChanged( mDiagramTypeComboBox->currentIndex() );
 }
 
+void QgsDiagramProperties::updateDataDefinedButtons()
+{
+  const QList<QgsPropertyOverrideButton *> propertyOverrideButtons { findChildren<QgsPropertyOverrideButton *>() };
+  for ( QgsPropertyOverrideButton *button : propertyOverrideButtons )
+  {
+    updateDataDefinedButton( button );
+  }
+}
+
+void QgsDiagramProperties::updateDataDefinedButton( QgsPropertyOverrideButton *button )
+{
+  if ( !button )
+    return;
+
+  if ( button->propertyKey() < 0 )
+    return;
+
+  const QgsWidgetWrapper::Property key = static_cast<QgsWidgetWrapper::Property>( button->propertyKey() );
+  whileBlocking( button )->setToProperty( mDataDefinedProperties.property( key ) );
+}
+
 void QgsDiagramProperties::syncToLayer()
 {
   const QgsDiagramRenderer *renderer = mLayer->diagramRenderer();
@@ -460,7 +488,10 @@ void QgsDiagramProperties::syncToRenderer( const QgsDiagramRenderer *dr )
       mDiagramPenColorButton->setColor( settingList.at( 0 ).penColor );
       mPenWidthSpinBox->setValue( settingList.at( 0 ).penWidth );
       mDiagramSizeSpinBox->setValue( ( size.width() + size.height() ) / 2.0 );
-      mScaleRangeWidget->setScaleRange( ( settingList.at( 0 ).minimumScale > 0 ? settingList.at( 0 ).minimumScale : mLayer->minimumScale() ), ( settingList.at( 0 ).maximumScale > 0 ? settingList.at( 0 ).maximumScale : mLayer->maximumScale() ) );
+      mScaleRangeWidget->setScaleRange(
+        ( settingList.at( 0 ).minimumScale > 0 ? settingList.at( 0 ).minimumScale : mLayer->minimumScale() ),
+        ( settingList.at( 0 ).maximumScale > 0 ? settingList.at( 0 ).maximumScale : mLayer->maximumScale() )
+      );
       mScaleVisibilityGroupBox->setChecked( settingList.at( 0 ).scaleBasedVisibility );
       mDiagramUnitComboBox->setUnit( settingList.at( 0 ).sizeType );
       mDiagramUnitComboBox->setMapUnitScale( settingList.at( 0 ).sizeScale );
@@ -620,14 +651,15 @@ void QgsDiagramProperties::syncToSettings( const QgsDiagramLayerSettings *dls )
     mShowAllCheckBox->setChecked( dls->showAllDiagrams() );
 
     mDataDefinedProperties = dls->dataDefinedProperties();
+    updateDataDefinedButtons();
   }
 }
 
 QgsDiagramProperties::~QgsDiagramProperties()
 {
   QgsSettings settings;
-  settings.setValue( QStringLiteral( "Windows/Diagrams/OptionsSplitState" ), mDiagramOptionsSplitter->saveState() );
-  settings.setValue( QStringLiteral( "Windows/Diagrams/Tab" ), mDiagramOptionsListWidget->currentRow() );
+  settings.setValue( u"Windows/Diagrams/OptionsSplitState"_s, mDiagramOptionsSplitter->saveState() );
+  settings.setValue( u"Windows/Diagrams/Tab"_s, mDiagramOptionsListWidget->currentRow() );
 }
 
 void QgsDiagramProperties::registerDataDefinedButton( QgsPropertyOverrideButton *button, QgsDiagramLayerSettings::Property key )
@@ -794,10 +826,11 @@ void QgsDiagramProperties::mFindMaximumValueButton_clicked()
   {
     QgsExpression exp( sizeFieldNameOrExp );
     QgsExpressionContext context;
-    context << QgsExpressionContextUtils::globalScope()
-            << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
-            << QgsExpressionContextUtils::mapSettingsScope( mMapCanvas->mapSettings() )
-            << QgsExpressionContextUtils::layerScope( mLayer );
+    context
+      << QgsExpressionContextUtils::globalScope()
+      << QgsExpressionContextUtils::projectScope( QgsProject::instance() )
+      << QgsExpressionContextUtils::mapSettingsScope( mMapCanvas->mapSettings() )
+      << QgsExpressionContextUtils::layerScope( mLayer );
 
     exp.prepare( &context );
     if ( !exp.hasEvalError() )
@@ -1005,23 +1038,19 @@ QgsDiagramLayerSettings QgsDiagramProperties::createDiagramLayerSettings()
   dls.setShowAllDiagrams( mShowAllCheckBox->isChecked() );
 
   QWidget *curWdgt = stackedPlacement->currentWidget();
-  if ( ( curWdgt == pagePoint && radAroundPoint->isChecked() )
-       || ( curWdgt == pagePolygon && radAroundCentroid->isChecked() ) )
+  if ( ( curWdgt == pagePoint && radAroundPoint->isChecked() ) || ( curWdgt == pagePolygon && radAroundCentroid->isChecked() ) )
   {
     dls.setPlacement( QgsDiagramLayerSettings::AroundPoint );
   }
-  else if ( ( curWdgt == pagePoint && radOverPoint->isChecked() )
-            || ( curWdgt == pagePolygon && radOverCentroid->isChecked() ) )
+  else if ( ( curWdgt == pagePoint && radOverPoint->isChecked() ) || ( curWdgt == pagePolygon && radOverCentroid->isChecked() ) )
   {
     dls.setPlacement( QgsDiagramLayerSettings::OverPoint );
   }
-  else if ( ( curWdgt == pageLine && radAroundLine->isChecked() )
-            || ( curWdgt == pagePolygon && radPolygonPerimeter->isChecked() ) )
+  else if ( ( curWdgt == pageLine && radAroundLine->isChecked() ) || ( curWdgt == pagePolygon && radPolygonPerimeter->isChecked() ) )
   {
     dls.setPlacement( QgsDiagramLayerSettings::Line );
   }
-  else if ( ( curWdgt == pageLine && radOverLine->isChecked() )
-            || ( curWdgt == pagePolygon && radInsidePolygon->isChecked() ) )
+  else if ( ( curWdgt == pageLine && radOverLine->isChecked() ) || ( curWdgt == pagePolygon && radInsidePolygon->isChecked() ) )
   {
     dls.setPlacement( QgsDiagramLayerSettings::Horizontal );
   }
@@ -1048,7 +1077,7 @@ void QgsDiagramProperties::apply()
 {
   // Avoid this messageBox when in both dock and liveUpdate mode
   QgsSettings settings;
-  if ( !dockMode() || !settings.value( QStringLiteral( "UI/autoApplyStyling" ), true ).toBool() )
+  if ( !dockMode() || !settings.value( u"UI/autoApplyStyling"_s, true ).toBool() )
   {
     if ( isDiagramEnabled() && 0 == mDiagramAttributesTreeWidget->topLevelItemCount() )
     {
@@ -1071,7 +1100,7 @@ QString QgsDiagramProperties::showExpressionBuilder( const QString &initialExpre
 {
   QgsExpressionContext context = createExpressionContext();
 
-  QgsExpressionBuilderDialog dlg( mLayer, initialExpression, this, QStringLiteral( "generic" ), context );
+  QgsExpressionBuilderDialog dlg( mLayer, initialExpression, this, u"generic"_s, context );
   dlg.setWindowTitle( tr( "Expression Based Attribute" ) );
 
   QgsDistanceArea myDa;
@@ -1134,9 +1163,7 @@ void QgsDiagramProperties::updatePlacementWidgets()
 {
   QWidget *curWdgt = stackedPlacement->currentWidget();
 
-  if ( ( curWdgt == pagePoint && radAroundPoint->isChecked() )
-       || ( curWdgt == pageLine && radAroundLine->isChecked() )
-       || ( curWdgt == pagePolygon && radAroundCentroid->isChecked() ) )
+  if ( ( curWdgt == pagePoint && radAroundPoint->isChecked() ) || ( curWdgt == pageLine && radAroundLine->isChecked() ) || ( curWdgt == pagePolygon && radAroundCentroid->isChecked() ) )
   {
     mDiagramDistanceLabel->setEnabled( true );
     mDiagramDistanceSpinBox->setEnabled( true );
@@ -1211,7 +1238,7 @@ void QgsDiagramProperties::showSizeLegendDialog()
 
 void QgsDiagramProperties::showHelp()
 {
-  QgsHelp::openHelp( QStringLiteral( "working_with_vector/vector_properties.html#legend" ) );
+  QgsHelp::openHelp( u"working_with_vector/vector_properties.html#legend"_s );
 }
 
 void QgsDiagramProperties::createAuxiliaryField()
@@ -1317,7 +1344,7 @@ void QgsDiagramProperties::connectValueChanged( const QList<QWidget *> &widgets 
     }
     else
     {
-      QgsLogger::warning( QStringLiteral( "Could not create connection for widget %1" ).arg( widget->objectName() ) );
+      QgsLogger::warning( u"Could not create connection for widget %1"_s.arg( widget->objectName() ) );
     }
   }
 }

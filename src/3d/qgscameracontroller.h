@@ -20,9 +20,9 @@
 #include "qgscamerapose.h"
 #include "qgscoordinatetransform.h"
 
+#include <QImage>
 #include <Qt3DCore/QEntity>
 #include <Qt3DInput/QMouseEvent>
-#include <QImage>
 
 #ifndef SIP_RUN
 namespace Qt3DInput
@@ -48,6 +48,7 @@ class QgsCameraPose;
 class QgsVector3D;
 class QgsWindow3DEngine;
 class Qgs3DMapScene;
+class QgsCrossSection;
 
 /**
  * \ingroup qgis_3d
@@ -98,13 +99,13 @@ class _3D_EXPORT QgsCameraController : public QObject
      * Returns the vertical axis inversion behavior.
      * \since QGIS 3.18
      */
-    Qgis::VerticalAxisInversion verticalAxisInversion() const { return mVerticalAxisInversion; }
+    Qgis::VerticalAxisInversionFlags verticalAxisInversion() const { return mVerticalAxisInversion; }
 
     /**
      * Sets the vertical axis \a inversion behavior.
      * \since QGIS 3.18
      */
-    void setVerticalAxisInversion( Qgis::VerticalAxisInversion inversion );
+    void setVerticalAxisInversion( Qgis::VerticalAxisInversionFlags inversion );
 
     //! Called internally from 3D scene when a new frame is generated. Updates camera according to keyboard/mouse input
     void frameTriggered( float dt );
@@ -213,8 +214,17 @@ class _3D_EXPORT QgsCameraController : public QObject
      * while keeping the pivot point (given in world coordinates) at the
      * same screen coordinates after the zoom.
      * \since QGIS 3.42
+     * \deprecated QGIS 3.44.4. Use version with oldDistanceFromCenterPoint argument instead.
      */
-    void zoomCameraAroundPivot( const QVector3D &oldCameraPosition, double zoomFactor, const QVector3D &pivotPoint );
+    Q_DECL_DEPRECATED void zoomCameraAroundPivot( const QVector3D &oldCameraPosition, double zoomFactor, const QVector3D &pivotPoint ) SIP_DEPRECATED;
+
+    /**
+     * Zooms camera by given zoom factor (>1 one means zoom in)
+     * while keeping the pivot point (given in world coordinates) at the
+     * same screen coordinates after the zoom.
+     * \since QGIS 3.44.4
+     */
+    void zoomCameraAroundPivot( const QVector3D &oldCameraPosition, double oldDistanceFromCenterPoint, double zoomFactor, const QVector3D &pivotPoint );
 
     /**
      * If the event is relevant, handles the event and returns TRUE, otherwise FALSE.
@@ -282,11 +292,18 @@ class _3D_EXPORT QgsCameraController : public QObject
      */
     const QgsVector3D origin() const { return mOrigin; }
 
+    /**
+     * Sets the cross section side view definition for the 3D map canvas.
+     * The camera will be positioned to look at the cross section from the side.
+     * \since QGIS 4.0
+     */
+    void setCrossSectionSideView( const QgsCrossSection &crossSection );
+
     // Convenience methods to set camera view to standard positions
     //! Rotate to diagonal view. \since QGIS 3.44
     void rotateCameraToHome() { rotateToRespectingTerrain( 45.0f, 45.0f ); }
     //! Rotate to top-down view. \since QGIS 3.44
-    void rotateCameraToTop() { rotateToRespectingTerrain( 0.0f, 90.0f ); }
+    void rotateCameraToTop() { rotateToRespectingTerrain( 0.0f, 0.0f ); }
     //! Rotate to view from the north. \since QGIS 3.44
     void rotateCameraToNorth() { rotateToRespectingTerrain( 90.0f, 180.0f ); }
     //! Rotate to view from the east. \since QGIS 3.44
@@ -312,36 +329,59 @@ class _3D_EXPORT QgsCameraController : public QObject
      */
     void depthBufferCaptured( const QImage &depthImage );
 
+    /**
+     * Moves camera position by the given difference vector in world coordinates
+     * \since QGIS 4.0
+     */
+    void moveCenterPoint( const QVector3D &posDiff );
+
+    /**
+     * Returns the minimum depth value in the square [px - 3, px + 3] * [py - 3, py + 3]
+     * Returned depth is in range [0..1] and it is returned as it was written to the
+     * depth buffer (not linearized, see Qgs3DUtils::screenPointToWorldPos() for conversion
+     * to linear depth). Returned value 1 means there void around that pixel (no 3D objects).
+     * \since QGIS 4.2
+     */
+    double sampleDepthBuffer( int px, int py );
+
+
   private:
 #ifdef SIP_RUN
     QgsCameraController();
     QgsCameraController( const QgsCameraController &other );
 #endif
 
+    /**
+     * Updates orthographic projection plane size based on distance from
+     * view center when orthographic projection is being used.
+     */
+    void updateOrthographicProjectionPlane();
+    //! Sets mCamera parameters based on mCameraPose
     void updateCameraFromPose();
-    void moveCameraPositionBy( const QVector3D &posDiff );
     //! Returns a pointer to the scene's engine's window or nullptr if engine is QgsOffscreen3DEngine
     QWindow *window() const;
 
     //! List of possible operations with the mouse in TerrainBased navigation
     enum class MouseOperation
     {
-      None = 0,       // no operation
-      Translation,    // left button pressed, no modifier
-      RotationCamera, // left button pressed + ctrl modifier
-      RotationCenter, // left button pressed + shift modifier
-      Zoom,           // right button pressed
-      ZoomWheel       // mouse wheel scroll
+      None = 0,       //!< No operation
+      Translation,    //!< Left button pressed, no modifier
+      RotationCamera, //!< Left button pressed + ctrl modifier
+      RotationCenter, //!< Left button pressed + shift modifier
+      Zoom,           //!< Right button pressed
+      ZoomWheel       //!< Mouse wheel scroll
     };
 
     // This list gathers all the rotation and translation operations.
     // It is used to update the appropriate parameters when successive
     // translation and rotation happen.
+    // clang-format off
     const QList<MouseOperation> mTranslateOrRotate = {
       MouseOperation::Translation,
       MouseOperation::RotationCamera,
       MouseOperation::RotationCenter
     };
+    // clang-format on
 
     // check that current sequence (current operation and new operation) is a rotation or translation
     bool isATranslationRotationSequence( MouseOperation newOperation ) const;
@@ -385,6 +425,12 @@ class _3D_EXPORT QgsCameraController : public QObject
      */
     void cameraRotationCenterChanged( QVector3D position );
 
+    /**
+     * Emitted after the depth buffer has been captured and is ready to sample.
+     * \since QGIS 4.2
+     */
+    void depthBufferReady();
+
   private slots:
     void onPositionChanged( Qt3DInput::QMouseEvent *mouse );
     void onWheel( Qt3DInput::QWheelEvent *wheel );
@@ -402,14 +448,6 @@ class _3D_EXPORT QgsCameraController : public QObject
     void onPositionChangedGlobeTerrainNavigation( Qt3DInput::QMouseEvent *mouse );
 
     void handleTerrainNavigationWheelZoom();
-
-    /**
-     * Returns the minimum depth value in the square [px - 3, px + 3] * [py - 3, py + 3]
-     * Returned depth is in range [0..1] and it is returned as it was written to the
-     * depth buffer (not linearized, see Qgs3DUtils::screenPointToWorldPos() for conversion
-     * to linear depth). Returned value 1 means there void around that pixel (no 3D objects).
-     */
-    double sampleDepthBuffer( int px, int py );
 
     // Returns the average depth of all non void pixels
     double depthBufferNonVoidAverage();
@@ -456,7 +494,7 @@ class _3D_EXPORT QgsCameraController : public QObject
 
     bool mDragPointCalculated = false;
     QVector3D mDragPoint;
-    double mDragDepth;
+    double mDragDepth = 0;
 
     bool mZoomPointCalculated = false;
     QVector3D mZoomPoint;
@@ -469,7 +507,7 @@ class _3D_EXPORT QgsCameraController : public QObject
     Qt3DInput::QKeyboardHandler *mKeyboardHandler = nullptr;
     bool mInputHandlersEnabled = true;
     Qgis::NavigationMode mCameraNavigationMode = Qgis::NavigationMode::TerrainBased;
-    Qgis::VerticalAxisInversion mVerticalAxisInversion = Qgis::VerticalAxisInversion::WhenDragging;
+    Qgis::VerticalAxisInversionFlags mVerticalAxisInversion = Qgis::VerticalAxisInversion::WhenPivoting | Qgis::VerticalAxisInversion::WhenRotatingDragging;
     double mCameraMovementSpeed = 5.0;
 
     QSet<int> mDepressedKeys;

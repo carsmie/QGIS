@@ -16,8 +16,8 @@
 #ifndef QGSVECTORLAYERGPSLOGGER_H
 #define QGSVECTORLAYERGPSLOGGER_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsgpslogger.h"
 
@@ -37,7 +37,6 @@ class CORE_EXPORT QgsVectorLayerGpsLogger : public QgsGpsLogger
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsVectorLayerGpsLogger with the specified \a parent object.
      *
@@ -159,7 +158,6 @@ class CORE_EXPORT QgsVectorLayerGpsLogger : public QgsGpsLogger
     void gpsStateChanged( const QgsGpsInformation &information );
 
   private:
-
     bool mUseEditBuffer = true;
 
     QPointer< QgsVectorLayer > mPointsLayer;
@@ -171,7 +169,6 @@ class CORE_EXPORT QgsVectorLayerGpsLogger : public QgsGpsLogger
     QMap< Qgis::GpsInformationComponent, QString > mDestinationFields;
 
     QVariant timestamp( QgsVectorLayer *vlayer, int idx, const QDateTime &time );
-
 };
 
 

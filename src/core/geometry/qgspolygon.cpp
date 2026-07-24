@@ -16,11 +16,18 @@
  ***************************************************************************/
 
 #include "qgspolygon.h"
+
+#include <nlohmann/json.hpp>
+
 #include "qgsapplication.h"
 #include "qgsgeometryutils.h"
 #include "qgslinestring.h"
 #include "qgsmultilinestring.h"
 #include "qgswkbptr.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsPolygon::QgsPolygon()
 {
@@ -41,7 +48,7 @@ QgsPolygon::QgsPolygon( QgsLineString *exterior, const QList<QgsLineString *> &r
 
 QString QgsPolygon::geometryType() const
 {
-  return QStringLiteral( "Polygon" );
+  return u"Polygon"_s;
 }
 
 QgsPolygon *QgsPolygon::createEmptyWithSameType() const
@@ -190,10 +197,10 @@ QString QgsPolygon::asWkt( int precision ) const
   QString wkt = wktTypeStr();
 
   if ( isEmpty() )
-    wkt += QLatin1String( " EMPTY" );
+    wkt += " EMPTY"_L1;
   else
   {
-    wkt += QLatin1String( " (" );
+    wkt += " ("_L1;
     if ( mExteriorRing )
     {
       QString childWkt = mExteriorRing->asWkt( precision );
@@ -209,7 +216,7 @@ QString QgsPolygon::asWkt( int precision ) const
       if ( !curve->isEmpty() )
       {
         QString childWkt;
-        if ( ! qgsgeometry_cast< const QgsLineString *>( curve ) )
+        if ( !qgsgeometry_cast< const QgsLineString *>( curve ) )
         {
           std::unique_ptr<QgsLineString> line( curve->curveToLine() );
           childWkt = line->asWkt( precision );
@@ -344,8 +351,7 @@ double QgsPolygon::pointDistanceToBoundary( double x, double y ) const
       double bX = ring->xAt( j );
       double bY = ring->yAt( j );
 
-      if ( ( ( aY > y ) != ( bY > y ) ) &&
-           ( x < ( bX - aX ) * ( y - aY ) / ( bY - aY ) + aX ) )
+      if ( ( ( aY > y ) != ( bY > y ) ) && ( x < ( bX - aX ) * ( y - aY ) / ( bY - aY ) + aX ) )
         inside = !inside;
 
       minimumDistance = std::min( minimumDistance, QgsGeometryUtilsBase::sqrDistToLine( x, y, aX, aY, bX, bY, minDistX, minDistY, 4 * std::numeric_limits<double>::epsilon() ) );
@@ -373,4 +379,27 @@ QgsCurvePolygon *QgsPolygon::toCurveType() const
     }
   }
   return curvePolygon;
+}
+
+
+json QgsPolygon::asJsonObject( int precision, Qgis::GeoJsonProfile profile ) const
+{
+  json coordinates = json::array();
+  if ( exteriorRing() )
+  {
+    std::unique_ptr< QgsLineString > exteriorLineString( exteriorRing()->curveToLine() );
+    QgsPointSequence exteriorPts;
+    exteriorLineString->points( exteriorPts );
+    coordinates.push_back( QgsGeometryUtils::pointsToJson( exteriorPts, precision, profile ) );
+
+    std::unique_ptr< QgsLineString > interiorLineString;
+    for ( int i = 0, n = numInteriorRings(); i < n; ++i )
+    {
+      interiorLineString.reset( interiorRing( i )->curveToLine() );
+      QgsPointSequence interiorPts;
+      interiorLineString->points( interiorPts );
+      coordinates.push_back( QgsGeometryUtils::pointsToJson( interiorPts, precision, profile ) );
+    }
+  }
+  return { { "type", "Polygon" }, { "coordinates", coordinates } };
 }

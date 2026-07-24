@@ -15,11 +15,12 @@
 #ifndef QGSTEXTDIAGRAM_H
 #define QGSTEXTDIAGRAM_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsdiagram.h"
-#include <QPen>
+
 #include <QBrush>
+#include <QPen>
 
 class QPainter;
 class QPointF;
@@ -33,7 +34,7 @@ class QgsRenderContext;
  * \class QgsTextDiagram
  * \brief A text based diagram.
  */
-class CORE_EXPORT QgsTextDiagram: public QgsDiagram SIP_NODEFAULTCTORS
+class CORE_EXPORT QgsTextDiagram : public QgsDiagram SIP_NODEFAULTCTORS
 {
   public:
     static const QString DIAGRAM_NAME_TEXT SIP_SKIP;

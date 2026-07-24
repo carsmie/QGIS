@@ -18,8 +18,8 @@
 #ifndef QGSMETADATAUTILS_H
 #define QGSMETADATAUTILS_H
 
-#include "qgis_sip.h"
 #include "qgis_core.h"
+#include "qgis_sip.h"
 
 class QgsLayerMetadata;
 class QDomDocument;
@@ -34,12 +34,10 @@ class QDomDocument;
 class CORE_EXPORT QgsMetadataUtils
 {
   public:
-
     /**
      * Converts ESRI layer metadata to QgsLayerMetadata.
      */
     static QgsLayerMetadata convertFromEsri( const QDomDocument &document );
-
 };
 
 #endif // QGSMETADATAUTILS_H

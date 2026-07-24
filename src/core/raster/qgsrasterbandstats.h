@@ -18,15 +18,15 @@
 #ifndef QGSRASTERBANDSTATS
 #define QGSRASTERBANDSTATS
 
-#include "qgis_core.h"
-#include "qgis_sip.h"
-#include "qgis.h"
-#include <QString>
-#include <QVector>
-
 #include <limits>
 
+#include "qgis.h"
+#include "qgis_core.h"
+#include "qgis_sip.h"
 #include "qgsrectangle.h"
+
+#include <QString>
+#include <QVector>
 
 /**
  * \ingroup core
@@ -36,17 +36,12 @@
 class CORE_EXPORT QgsRasterBandStats
 {
   public:
-
     QgsRasterBandStats() = default;
 
     //! Compares region, size etc. not collected statistics
     bool contains( const QgsRasterBandStats &s ) const
     {
-      return ( s.bandNumber == bandNumber &&
-               s.extent == extent &&
-               s.width == width &&
-               s.height == height &&
-               s.statsGathered == ( statsGathered & s.statsGathered ) );
+      return ( s.bandNumber == bandNumber && s.extent == extent && s.width == width && s.height == height && s.statsGathered == ( statsGathered & s.statsGathered ) );
     }
 
     //! \brief The gdal band number (starts at 1)

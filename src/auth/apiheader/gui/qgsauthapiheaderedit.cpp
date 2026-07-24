@@ -14,11 +14,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsauthapiheaderedit.h"
-#include "moc_qgsauthapiheaderedit.cpp"
 #include "ui_qgsauthapiheaderedit.h"
+#include "qgsauthapiheaderedit.h"
 
 #include "qgslogger.h"
+
+#include <QString>
+
+#include "moc_qgsauthapiheaderedit.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsAuthApiHeaderEdit::QgsAuthApiHeaderEdit( QWidget *parent )
   : QgsAuthMethodEdit( parent )
@@ -137,7 +142,7 @@ void QgsAuthApiHeaderEdit::headerTableCellChanged( const int row, const int colu
 bool QgsAuthApiHeaderEdit::emptyHeadersKeysPresent()
 {
   const int rowCount = tblwdgHeaderPairs->rowCount();
-  QgsDebugMsgLevel( QStringLiteral( "Validate header table contains valid header keys for %1 rows" ).arg( rowCount ), 2 );
+  QgsDebugMsgLevel( u"Validate header table contains valid header keys for %1 rows"_s.arg( rowCount ), 2 );
 
   for ( int i = 0; i < rowCount; ++i )
   {
@@ -156,8 +161,7 @@ void QgsAuthApiHeaderEdit::addHeaderPairRow( const QString &key, const QString &
   const int rowCount = tblwdgHeaderPairs->rowCount();
   tblwdgHeaderPairs->insertRow( rowCount );
 
-  const Qt::ItemFlags itemFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable
-                                  | Qt::ItemIsEditable | Qt::ItemIsDropEnabled;
+  const Qt::ItemFlags itemFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDropEnabled;
 
   QTableWidgetItem *keyItem = new QTableWidgetItem( key );
   keyItem->setFlags( itemFlags );

@@ -18,11 +18,13 @@
 
 #include "qgis.h"
 #include "qgis_gui.h"
+
 #include <QTreeWidget>
+
+#define SIP_NO_FILE
 
 class QMimeData;
 
-#define SIP_NO_FILE
 
 ///@cond NOT_STABLE
 
@@ -41,11 +43,7 @@ class QgsModelDesignerInputsTreeWidget : public QTreeWidget
      */
     explicit QgsModelDesignerInputsTreeWidget( QWidget *parent = nullptr );
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    QMimeData *mimeData( const QList<QTreeWidgetItem *> items ) const override;
-#else
     QMimeData *mimeData( const QList<QTreeWidgetItem *> &items ) const override;
-#endif
 };
 
 ///@endcond

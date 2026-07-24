@@ -16,16 +16,21 @@
  ***************************************************************************/
 
 #include "qgslinechartplot.h"
+
 #include "qgsexpressioncontextutils.h"
 #include "qgssymbol.h"
 #include "qgssymbollayer.h"
 #include "qgssymbollayerutils.h"
+#include "qgsvectorlayerplotdatagatherer.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsLineChartPlot::QgsLineChartPlot()
 {
-  setMarkerSymbol( 0, QgsPlotDefaultSettings::lineChartMarkerSymbol() );
-  setLineSymbol( 0, QgsPlotDefaultSettings::lineChartLineSymbol() );
+  setMarkerSymbolAt( 0, QgsPlotDefaultSettings::lineChartMarkerSymbol() );
+  setLineSymbolAt( 0, QgsPlotDefaultSettings::lineChartLineSymbol() );
 }
 
 void QgsLineChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderContext &, const QRectF &plotArea, const QgsPlotData &plotData )
@@ -55,20 +60,45 @@ void QgsLineChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCo
       break;
   }
 
-  QgsExpressionContextScope *chartScope = new QgsExpressionContextScope( QStringLiteral( "chart" ) );
+  QgsExpressionContextScope *chartScope = new QgsExpressionContextScope( u"chart"_s );
   const QgsExpressionContextScopePopper scopePopper( context.expressionContext(), chartScope );
 
   context.painter()->save();
   context.painter()->setClipRect( plotArea );
 
-  const double xScale = plotArea.width() / ( xMaximum() - xMinimum() );
-  const double yScale = plotArea.height() / ( yMaximum() - yMinimum() );
-  const double categoriesWidth = plotArea.width() / categories.size();
+  double minX = xMinimum();
+  double maxX = xMaximum();
+  double minY = yMinimum();
+  double maxY = yMaximum();
+  double majorIntervalX = xAxis().gridIntervalMajor();
+  double minorIntervalX = xAxis().gridIntervalMinor();
+  double labelIntervalX = xAxis().labelInterval();
+  double majorIntervalY = yAxis().gridIntervalMajor();
+  double minorIntervalY = yAxis().gridIntervalMinor();
+  double labelIntervalY = yAxis().labelInterval();
+  Qgs2DXyPlot::applyDataDefinedProperties( context, minX, maxX, minY, maxY, majorIntervalX, minorIntervalX, labelIntervalX, majorIntervalY, minorIntervalY, labelIntervalY );
+
+  double xScale = 0.0;
+  double yScale = 0.0;
+  double categoriesWidth = 0.0;
+  if ( flipAxes() )
+  {
+    xScale = plotArea.height() / ( maxX - minX );
+    yScale = plotArea.width() / ( maxY - minY );
+    categoriesWidth = plotArea.height() / static_cast<double>( categories.size() );
+  }
+  else
+  {
+    xScale = plotArea.width() / ( maxX - minX );
+    yScale = plotArea.height() / ( maxY - minY );
+    categoriesWidth = plotArea.width() / static_cast<double>( categories.size() );
+  }
+
   int seriesIndex = 0;
   for ( const QgsAbstractPlotSeries *series : seriesList )
   {
-    QgsLineSymbol *lSymbol = !mLineSymbols.empty() ? lineSymbol( seriesIndex % mLineSymbols.size() ) : nullptr;
-    QgsMarkerSymbol *mSymbol = !mMarkerSymbols.empty() ? markerSymbol( seriesIndex % mMarkerSymbols.size() ) : nullptr;
+    QgsLineSymbol *lSymbol = !mLineSymbols.empty() ? lineSymbolAt( seriesIndex % mLineSymbols.size() ) : nullptr;
+    QgsMarkerSymbol *mSymbol = !mMarkerSymbols.empty() ? markerSymbolAt( seriesIndex % mMarkerSymbols.size() ) : nullptr;
     if ( !lSymbol && !mSymbol )
     {
       continue;
@@ -83,6 +113,8 @@ void QgsLineChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCo
     {
       mSymbol->startRender( context );
     }
+
+    chartScope->addVariable( QgsExpressionContextScope::StaticVariable( u"chart_series_name"_s, series->name(), true ) );
 
     if ( const QgsXyPlotSeries *xySeries = dynamic_cast<const QgsXyPlotSeries *>( series ) )
     {
@@ -105,12 +137,20 @@ void QgsLineChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCo
               x = ( categoriesWidth * pair.first ) + ( categoriesWidth / 2 );
               break;
             case Qgis::PlotAxisType::Interval:
-              x = ( pair.first - xMinimum() ) * xScale;
+              x = ( pair.first - minX ) * xScale;
               break;
           }
-          double y = ( pair.second - yMinimum() ) * yScale;
+          double y = ( pair.second - minY ) * yScale;
 
-          const QPointF point( plotArea.x() + x, plotArea.y() + plotArea.height() - y );
+          QPointF point;
+          if ( flipAxes() )
+          {
+            point = QPointF( plotArea.x() + y, plotArea.bottom() - x );
+          }
+          else
+          {
+            point = QPointF( plotArea.x() + x, plotArea.y() + plotArea.height() - y );
+          }
           points.replace( xAxis().type() == Qgis::PlotAxisType::Interval ? dataIndex : pair.first, point );
         }
         dataIndex++;
@@ -118,7 +158,7 @@ void QgsLineChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCo
 
       if ( lSymbol )
       {
-        chartScope->removeVariable( QStringLiteral( "chart_value" ) );
+        chartScope->removeVariable( u"chart_value"_s );
         QVector<QPointF> line;
         for ( const QPointF &point : points )
         {
@@ -155,18 +195,25 @@ void QgsLineChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCo
                 break;
 
               case Qgis::PlotAxisType::Categorical:
+                bool found = false;
                 for ( const std::pair<double, double> &pair : data )
                 {
                   if ( pair.first == pointIndex )
                   {
+                    found = true;
                     value = pair.second;
+                    chartScope->addVariable( QgsExpressionContextScope::StaticVariable( u"chart_category"_s, categories[pair.first], true ) );
                     break;
                   }
+                }
+                if ( !found )
+                {
+                  continue;
                 }
                 break;
             }
 
-            chartScope->addVariable( QgsExpressionContextScope::StaticVariable( QStringLiteral( "chart_value" ), value, true ) );
+            chartScope->addVariable( QgsExpressionContextScope::StaticVariable( u"chart_value"_s, value, true ) );
             mSymbol->renderPoint( point, nullptr, context );
           }
           pointIndex++;
@@ -189,7 +236,7 @@ void QgsLineChartPlot::renderContent( QgsRenderContext &context, QgsPlotRenderCo
   context.painter()->restore();
 }
 
-QgsMarkerSymbol *QgsLineChartPlot::markerSymbol( int index ) const
+QgsMarkerSymbol *QgsLineChartPlot::markerSymbolAt( int index ) const
 {
   if ( index < 0 || index >= static_cast<int>( mMarkerSymbols.size() ) )
   {
@@ -199,7 +246,7 @@ QgsMarkerSymbol *QgsLineChartPlot::markerSymbol( int index ) const
   return mMarkerSymbols[index].get();
 }
 
-void QgsLineChartPlot::setMarkerSymbol( int index, QgsMarkerSymbol *symbol )
+void QgsLineChartPlot::setMarkerSymbolAt( int index, QgsMarkerSymbol *symbol )
 {
   if ( index < 0 )
   {
@@ -214,7 +261,7 @@ void QgsLineChartPlot::setMarkerSymbol( int index, QgsMarkerSymbol *symbol )
   mMarkerSymbols[index].reset( symbol );
 }
 
-QgsLineSymbol *QgsLineChartPlot::lineSymbol( int index ) const
+QgsLineSymbol *QgsLineChartPlot::lineSymbolAt( int index ) const
 {
   if ( index < 0 || index >= static_cast<int>( mLineSymbols.size() ) )
   {
@@ -224,7 +271,7 @@ QgsLineSymbol *QgsLineChartPlot::lineSymbol( int index ) const
   return mLineSymbols[index].get();
 }
 
-void QgsLineChartPlot::setLineSymbol( int index, QgsLineSymbol *symbol )
+void QgsLineChartPlot::setLineSymbolAt( int index, QgsLineSymbol *symbol )
 {
   if ( index < 0 )
   {
@@ -243,11 +290,11 @@ bool QgsLineChartPlot::writeXml( QDomElement &element, QDomDocument &document, c
 {
   Qgs2DXyPlot::writeXml( element, document, context );
 
-  QDomElement markerSymbolsElement = document.createElement( QStringLiteral( "markerSymbols" ) );
+  QDomElement markerSymbolsElement = document.createElement( u"markerSymbols"_s );
   for ( int i = 0; i < static_cast<int>( mMarkerSymbols.size() ); i++ )
   {
-    QDomElement markerSymbolElement = document.createElement( QStringLiteral( "markerSymbol" ) );
-    markerSymbolElement.setAttribute( QStringLiteral( "index" ), QString::number( i ) );
+    QDomElement markerSymbolElement = document.createElement( u"markerSymbol"_s );
+    markerSymbolElement.setAttribute( u"index"_s, QString::number( i ) );
     if ( mMarkerSymbols[i] )
     {
       markerSymbolElement.appendChild( QgsSymbolLayerUtils::saveSymbol( QString(), mMarkerSymbols[i].get(), document, context ) );
@@ -256,11 +303,11 @@ bool QgsLineChartPlot::writeXml( QDomElement &element, QDomDocument &document, c
   }
   element.appendChild( markerSymbolsElement );
 
-  QDomElement lineSymbolsElement = document.createElement( QStringLiteral( "lineSymbols" ) );
+  QDomElement lineSymbolsElement = document.createElement( u"lineSymbols"_s );
   for ( int i = 0; i < static_cast<int>( mLineSymbols.size() ); i++ )
   {
-    QDomElement lineSymbolElement = document.createElement( QStringLiteral( "lineSymbol" ) );
-    lineSymbolElement.setAttribute( QStringLiteral( "index" ), QString::number( i ) );
+    QDomElement lineSymbolElement = document.createElement( u"lineSymbol"_s );
+    lineSymbolElement.setAttribute( u"index"_s, QString::number( i ) );
     if ( mLineSymbols[i] )
     {
       lineSymbolElement.appendChild( QgsSymbolLayerUtils::saveSymbol( QString(), mLineSymbols[i].get(), document, context ) );
@@ -276,40 +323,40 @@ bool QgsLineChartPlot::readXml( const QDomElement &element, const QgsReadWriteCo
 {
   Qgs2DXyPlot::readXml( element, context );
 
-  const QDomNodeList markerSymbolsList = element.firstChildElement( QStringLiteral( "markerSymbols" ) ).childNodes();
+  const QDomNodeList markerSymbolsList = element.firstChildElement( u"markerSymbols"_s ).childNodes();
   for ( int i = 0; i < markerSymbolsList.count(); i++ )
   {
     const QDomElement markerSymbolElement = markerSymbolsList.at( i ).toElement();
-    const int index = markerSymbolElement.attribute( QStringLiteral( "index" ), QStringLiteral( "-1" ) ).toInt();
+    const int index = markerSymbolElement.attribute( u"index"_s, u"-1"_s ).toInt();
     if ( index >= 0 )
     {
       if ( markerSymbolElement.hasChildNodes() )
       {
-        const QDomElement symbolElement = markerSymbolElement.firstChildElement( QStringLiteral( "symbol" ) );
-        setMarkerSymbol( index, QgsSymbolLayerUtils::loadSymbol< QgsMarkerSymbol >( symbolElement, context ).release() );
+        const QDomElement symbolElement = markerSymbolElement.firstChildElement( u"symbol"_s );
+        setMarkerSymbolAt( index, QgsSymbolLayerUtils::loadSymbol< QgsMarkerSymbol >( symbolElement, context ).release() );
       }
       else
       {
-        setMarkerSymbol( index, nullptr );
+        setMarkerSymbolAt( index, nullptr );
       }
     }
   }
 
-  const QDomNodeList lineSymbolsList = element.firstChildElement( QStringLiteral( "lineSymbols" ) ).childNodes();
+  const QDomNodeList lineSymbolsList = element.firstChildElement( u"lineSymbols"_s ).childNodes();
   for ( int i = 0; i < lineSymbolsList.count(); i++ )
   {
     const QDomElement lineSymbolElement = lineSymbolsList.at( i ).toElement();
-    const int index = lineSymbolElement.attribute( QStringLiteral( "index" ), QStringLiteral( "-1" ) ).toInt();
+    const int index = lineSymbolElement.attribute( u"index"_s, u"-1"_s ).toInt();
     if ( index >= 0 )
     {
       if ( lineSymbolElement.hasChildNodes() )
       {
-        const QDomElement symbolElement = lineSymbolElement.firstChildElement( QStringLiteral( "symbol" ) );
-        setLineSymbol( index, QgsSymbolLayerUtils::loadSymbol< QgsLineSymbol >( symbolElement, context ).release() );
+        const QDomElement symbolElement = lineSymbolElement.firstChildElement( u"symbol"_s );
+        setLineSymbolAt( index, QgsSymbolLayerUtils::loadSymbol< QgsLineSymbol >( symbolElement, context ).release() );
       }
       else
       {
-        setLineSymbol( index, nullptr );
+        setLineSymbolAt( index, nullptr );
       }
     }
   }
@@ -320,4 +367,44 @@ bool QgsLineChartPlot::readXml( const QDomElement &element, const QgsReadWriteCo
 QgsLineChartPlot *QgsLineChartPlot::create()
 {
   return new QgsLineChartPlot();
+}
+
+QgsVectorLayerAbstractPlotDataGatherer *QgsLineChartPlot::createDataGatherer( QgsPlot *plot )
+{
+  QgsLineChartPlot *chart = dynamic_cast<QgsLineChartPlot *>( plot );
+  if ( !chart )
+  {
+    return nullptr;
+  }
+
+  return new QgsVectorLayerXyPlotDataGatherer( chart->xAxis().type() );
+}
+
+void QgsLineChartPlot::initFromPlot( const QgsPlot *plot )
+{
+  if ( !plot )
+  {
+    return;
+  }
+
+  if ( const Qgs2DXyPlot *plotXy = dynamic_cast<const Qgs2DXyPlot *>( plot ) )
+  {
+    Qgs2DXyPlot::copyCommonProperties( plotXy );
+  }
+  else if ( const Qgs2DPlot *plotPie = dynamic_cast<const Qgs2DPlot *>( plot ) )
+  {
+    Qgs2DPlot::copyCommonProperties( plotPie );
+  }
+
+  if ( const QgsLineChartPlot *lineChartPlot = dynamic_cast<const QgsLineChartPlot *>( plot ) )
+  {
+    for ( int idx = 0; idx < lineChartPlot->lineSymbolCount(); idx++ )
+    {
+      setLineSymbolAt( idx, lineChartPlot->lineSymbolAt( idx )->clone() );
+    }
+    for ( int idx = 0; idx < lineChartPlot->markerSymbolCount(); idx++ )
+    {
+      setMarkerSymbolAt( idx, lineChartPlot->markerSymbolAt( idx )->clone() );
+    }
+  }
 }

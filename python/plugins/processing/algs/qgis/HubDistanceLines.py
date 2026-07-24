@@ -19,31 +19,32 @@ __author__ = "Michael Minn"
 __date__ = "May 2010"
 __copyright__ = "(C) 2010, Michael Minn"
 
-from qgis.PyQt.QtCore import QMetaType
+from math import sqrt
+
 from qgis.core import (
     Qgis,
-    QgsField,
-    QgsFields,
-    QgsProcessingUtils,
-    QgsGeometry,
     QgsDistanceArea,
     QgsFeature,
-    QgsFeatureSink,
     QgsFeatureRequest,
-    QgsWkbTypes,
-    QgsUnitTypes,
+    QgsFeatureSink,
+    QgsField,
+    QgsFields,
+    QgsGeometry,
     QgsProcessing,
-    QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterField,
+    QgsProcessingAlgorithm,
+    QgsProcessingException,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFeatureSink,
-    QgsProcessingException,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterField,
+    QgsProcessingUtils,
     QgsSpatialIndex,
-    QgsProcessingAlgorithm,
+    QgsUnitTypes,
+    QgsWkbTypes,
 )
-from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
+from qgis.PyQt.QtCore import QMetaType
 
-from math import sqrt
+from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
 class HubDistanceLines(QgisAlgorithm):
@@ -124,6 +125,19 @@ class HubDistanceLines(QgisAlgorithm):
     def displayName(self):
         return self.tr("Distance to nearest hub (line to hub)")
 
+    def shortDescription(self):
+        return self.tr(
+            "Creates lines that join each feature from an input vector to the nearest feature in a destination layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "Given an origin and a destination layers, this algorithm computes "
+            "the distance between origin features and their closest destination one. "
+            "Distance calculations are based on the feature's center.\n"
+            "The resulting layer contains lines linking each origin point with its nearest destination feature."
+        )
+
     def processAlgorithm(self, parameters, context, feedback):
         if parameters[self.INPUT] == parameters[self.HUBS]:
             raise QgsProcessingException(
@@ -183,6 +197,7 @@ class HubDistanceLines(QgisAlgorithm):
 
             if not f.hasGeometry():
                 sink.addFeature(f, QgsFeatureSink.Flag.FastInsert)
+                feedback.featureAddedToSink(self.OUTPUT)
                 continue
             src = f.geometry().boundingBox().center()
 
@@ -220,7 +235,9 @@ class HubDistanceLines(QgisAlgorithm):
             feat.setGeometry(QgsGeometry.fromPolylineXY([src, closest]))
 
             sink.addFeature(feat, QgsFeatureSink.Flag.FastInsert)
+            feedback.featureAddedToSink(self.OUTPUT)
             feedback.setProgress(int(current * total))
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}

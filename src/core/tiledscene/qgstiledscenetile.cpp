@@ -16,20 +16,17 @@
  ***************************************************************************/
 
 #include "qgstiledscenetile.h"
+
 #include "qgstiledsceneboundingvolume.h"
 
 QgsTiledSceneTile::QgsTiledSceneTile()
   : mBoundingVolume( QgsTiledSceneBoundingVolume( QgsOrientedBox3D() ) )
-{
-
-}
+{}
 
 QgsTiledSceneTile::QgsTiledSceneTile( long long id )
   : mId( id )
   , mBoundingVolume( QgsTiledSceneBoundingVolume( QgsOrientedBox3D() ) )
-{
-
-}
+{}
 
 QgsTiledSceneTile::~QgsTiledSceneTile() = default;
 
@@ -47,6 +44,9 @@ QgsTiledSceneTile::QgsTiledSceneTile( const QgsTiledSceneTile &other )
 
 QgsTiledSceneTile &QgsTiledSceneTile::operator=( const QgsTiledSceneTile &other )
 {
+  if ( &other == this )
+    return *this;
+
   mId = other.mId;
   mRefinementProcess = other.mRefinementProcess;
   mTransform.reset( other.mTransform ? new QgsMatrix4x4( *other.mTransform.get() ) : nullptr );

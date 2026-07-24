@@ -25,13 +25,13 @@ from qgis.core import (
     QgsProcessingException,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
-    QgsProcessingParameterNumber,
     QgsProcessingParameterFileDestination,
+    QgsProcessingParameterNumber,
 )
+from qgis.PyQt.QtCore import QCoreApplication
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import vector
-
-from qgis.PyQt.QtCore import QCoreApplication
 
 
 class VectorLayerHistogram(QgisAlgorithm):
@@ -82,6 +82,12 @@ class VectorLayerHistogram(QgisAlgorithm):
     def shortDescription(self):
         return self.tr(
             "Generates a histogram with the values of the attribute of a vector layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm generates a histogram with the values of the attribute of a vector layer.\n"
+            "The attribute to use for computing the histogram must be a numeric attribute."
         )
 
     def processAlgorithm(self, parameters, context, feedback):

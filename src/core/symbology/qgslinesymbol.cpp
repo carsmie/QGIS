@@ -14,10 +14,11 @@
  ***************************************************************************/
 
 #include "qgslinesymbol.h"
-#include "qgslinesymbollayer.h"
+
 #include "qgsgeometrygeneratorsymbollayer.h"
-#include "qgssymbollayerutils.h"
+#include "qgslinesymbollayer.h"
 #include "qgspainteffect.h"
+#include "qgssymbollayerutils.h"
 
 std::unique_ptr< QgsLineSymbol > QgsLineSymbol::createSimple( const QVariantMap &properties )
 {
@@ -232,7 +233,7 @@ QgsProperty QgsLineSymbol::dataDefinedWidth() const
 void QgsLineSymbol::renderPolyline( const QPolygonF &points, const QgsFeature *f, QgsRenderContext &context, int layerIdx, bool selected )
 {
   const double opacity = dataDefinedProperties().hasActiveProperties() ? dataDefinedProperties().valueAsDouble( QgsSymbol::Property::Opacity, context.expressionContext(), mOpacity * 100 ) * 0.01
-                         : mOpacity;
+                                                                       : mOpacity;
 
   //save old painter
   QPainter *renderPainter = context.painter();

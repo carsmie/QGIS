@@ -17,11 +17,14 @@
 #ifndef QGSCODEEDITOR_H
 #define QGSCODEEDITOR_H
 
-#include <QString>
-#include "qgscodeeditorcolorscheme.h"
 #include "qgis.h"
-#include "qgssettingstree.h"
+#include "qgscodeeditorcolorscheme.h"
 #include "qgspanelwidget.h"
+#include "qgssettingstree.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 // qscintilla includes
 #include <Qsci/qsciapis.h>
@@ -34,6 +37,8 @@ class QgsFilterLineEdit;
 class QToolButton;
 class QCheckBox;
 class QgsSettingsEntryBool;
+class QgsSettingsEntryInteger;
+class QgsSettingsEntryString;
 
 SIP_IF_MODULE( HAVE_QSCI_SIP )
 
@@ -82,7 +87,7 @@ class GUI_EXPORT QgsCodeInterpreter
 };
 
 
-// TODO QGIS 4.0 -- Consider making QgsCodeEditor inherit QWidget only,
+// TODO QGIS 5.0 -- Consider making QgsCodeEditor inherit QWidget only,
 // with a separate getter for the QsciScintilla child widget. This
 // would give us more flexibility to add functionality to the base
 // QgsCodeEditor class, eg adding a message bar or other child widgets
@@ -101,8 +106,12 @@ class GUI_EXPORT QgsCodeEditor : public QsciScintilla
   public:
 #ifndef SIP_RUN
 
-    static inline QgsSettingsTreeNode *sTreeCodeEditor = QgsSettingsTree::sTreeGui->createChildNode( QStringLiteral( "code-editor" ) );
+    static inline QgsSettingsTreeNode *sTreeCodeEditor = QgsSettingsTree::sTreeGui->createChildNode( u"code-editor"_s );
     static const QgsSettingsEntryBool *settingContextHelpHover;
+    //! Settings entry for code editor font family override
+    static const QgsSettingsEntryString *settingFontFamily;
+    //! Settings entry for code editor font size override
+    static const QgsSettingsEntryInteger *settingFontSize;
 #endif
 
     /**
@@ -140,8 +149,9 @@ class GUI_EXPORT QgsCodeEditor : public QsciScintilla
      */
     enum class Flag : int SIP_ENUM_BASETYPE( IntFlag )
     {
-      CodeFolding = 1 << 0,              //!< Indicates that code folding should be enabled for the editor
-      ImmediatelyUpdateHistory = 1 << 1, //!< Indicates that the history file should be immediately updated whenever a command is executed, instead of the default behavior of only writing the history on widget close \since QGIS 3.32
+      CodeFolding = 1 << 0, //!< Indicates that code folding should be enabled for the editor
+      ImmediatelyUpdateHistory
+      = 1 << 1, //!< Indicates that the history file should be immediately updated whenever a command is executed, instead of the default behavior of only writing the history on widget close \since QGIS 3.32
     };
     Q_ENUM( Flag )
 
@@ -166,7 +176,14 @@ class GUI_EXPORT QgsCodeEditor : public QsciScintilla
      * \param flags flags controlling behavior of code editor (since QGIS 3.28)
      * \param mode code editor mode (since QGIS 3.30)
      */
-    QgsCodeEditor( QWidget *parent SIP_TRANSFERTHIS = nullptr, const QString &title = QString(), bool folding = false, bool margin = false, QgsCodeEditor::Flags flags = QgsCodeEditor::Flags(), QgsCodeEditor::Mode mode = QgsCodeEditor::Mode::ScriptEditor );
+    QgsCodeEditor(
+      QWidget *parent SIP_TRANSFERTHIS = nullptr,
+      const QString &title = QString(),
+      bool folding = false,
+      bool margin = false,
+      QgsCodeEditor::Flags flags = QgsCodeEditor::Flags(),
+      QgsCodeEditor::Mode mode = QgsCodeEditor::Mode::ScriptEditor
+    );
 
     /**
      * Set the widget title
@@ -296,7 +313,12 @@ class GUI_EXPORT QgsCodeEditor : public QsciScintilla
      * \note Not available in Python bindings
      * \since QGIS 3.16
      */
-    void setCustomAppearance( const QString &scheme = QString(), const QMap<QgsCodeEditorColorScheme::ColorRole, QColor> &customColors = QMap<QgsCodeEditorColorScheme::ColorRole, QColor>(), const QString &fontFamily = QString(), int fontSize = 0 ) SIP_SKIP;
+    void setCustomAppearance(
+      const QString &scheme = QString(),
+      const QMap<QgsCodeEditorColorScheme::ColorRole, QColor> &customColors = QMap<QgsCodeEditorColorScheme::ColorRole, QColor>(),
+      const QString &fontFamily = QString(),
+      int fontSize = 0
+    ) SIP_SKIP;
 
     /**
      * Adds a \a warning message and indicator to the specified a \a lineNumber.
@@ -404,7 +426,7 @@ class GUI_EXPORT QgsCodeEditor : public QsciScintilla
     void setLinearSelection( int start, int end );
 
     // Override QsciScintilla::callTip to handle wrapping
-    virtual void callTip() override;
+    void callTip() override;
 
     /**
      * Returns the linear position of the start of the last wrapped part for the specified line, or
@@ -613,6 +635,7 @@ class GUI_EXPORT QgsCodeEditor : public QsciScintilla
     void contextMenuEvent( QContextMenuEvent *event ) override;
     bool event( QEvent *event ) override;
     bool eventFilter( QObject *watched, QEvent *event ) override;
+
     /**
      * Called when the dialect specific code lexer needs to be initialized (or reinitialized).
      *

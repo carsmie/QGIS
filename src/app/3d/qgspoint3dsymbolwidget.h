@@ -16,8 +16,9 @@
 #ifndef QGSPOINT3DSYMBOLWIDGET_H
 #define QGSPOINT3DSYMBOLWIDGET_H
 
-#include "qgs3dsymbolwidget.h"
 #include "ui_point3dsymbolwidget.h"
+
+#include "qgs3dsymbolwidget.h"
 
 class QgsPoint3DSymbol;
 
@@ -34,9 +35,14 @@ class QgsPoint3DSymbolWidget : public Qgs3DSymbolWidget, private Ui::Point3DSymb
     void setSymbol( const QgsAbstract3DSymbol *symbol, QgsVectorLayer *layer ) final;
     QgsAbstract3DSymbol *symbol() final;
     QString symbolType() const final;
+    Qgis::MaterialRenderingTechnique renderingTechnique() const final;
+    void setDockMode( bool dockMode ) override;
 
   private slots:
     void onShapeChanged();
+
+  private:
+    Qgis::MaterialRenderingTechnique mRenderingTechnique = Qgis::MaterialRenderingTechnique::InstancedPoints;
 };
 
 #endif // QGSPOINT3DSYMBOLWIDGET_H

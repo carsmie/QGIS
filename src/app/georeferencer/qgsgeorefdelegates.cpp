@@ -12,24 +12,28 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include "qgsgeorefdelegates.h"
+
+#include <cmath>
 #include <limits>
+
+#include "qgsgeorefvalidators.h"
 
 #include <QDoubleSpinBox>
 #include <QLineEdit>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionValidator>
+#include <QString>
 
-#include "qgsgeorefvalidators.h"
-#include "qgsgeorefdelegates.h"
 #include "moc_qgsgeorefdelegates.cpp"
-#include <cmath>
+
+using namespace Qt::StringLiterals;
 
 // ------------------------- QgsDmsAndDdDelegate --------------------------- //
 QgsDmsAndDdDelegate::QgsDmsAndDdDelegate( QWidget *parent )
   : QStyledItemDelegate( parent )
-{
-}
+{}
 
 QWidget *QgsDmsAndDdDelegate::createEditor( QWidget *parent, const QStyleOptionViewItem & /*option*/, const QModelIndex & /*index*/ ) const
 {
@@ -86,13 +90,12 @@ double QgsDmsAndDdDelegate::dmsToDD( const QString &dms ) const
 // ---------------------------- QgsCoordDelegate --------------------------- //
 QgsCoordDelegate::QgsCoordDelegate( QWidget *parent )
   : QStyledItemDelegate( parent )
-{
-}
+{}
 
 QWidget *QgsCoordDelegate::createEditor( QWidget *parent, const QStyleOptionViewItem & /*option*/, const QModelIndex & /*index*/ ) const
 {
   QLineEdit *editor = new QLineEdit( parent );
-  const thread_local QRegularExpression re( QStringLiteral( "-?\\d*(\\.\\d+)?" ) );
+  const thread_local QRegularExpression re( u"-?\\d*(\\.\\d+)?"_s );
   QRegularExpressionValidator *validator = new QRegularExpressionValidator( re, editor );
   editor->setValidator( validator );
 

@@ -18,13 +18,15 @@
 #ifndef QGSSENSORTHINGSSOURCESELECT_H
 #define QGSSENSORTHINGSSOURCESELECT_H
 
-#include "qgsabstractdatasourcewidget.h"
 #include "ui_qgssensorthingssourceselectbase.h"
+
+#include "qgsabstractdatasourcewidget.h"
+
+#define SIP_NO_FILE
 
 class QgsSensorThingsSourceWidget;
 class QgsSensorThingsConnectionWidget;
 
-#define SIP_NO_FILE
 
 ///@cond PRIVATE
 class QgsSensorThingsSourceSelect : public QgsAbstractDataSourceWidget, private Ui::QgsSensorThingsSourceSelectBase

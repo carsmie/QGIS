@@ -18,9 +18,9 @@
 #ifndef QGSEPTPOINTCLOUDBLOCKREQUEST_H
 #define QGSEPTPOINTCLOUDBLOCKREQUEST_H
 
-#include <QObject>
-
 #include "qgspointcloudblockrequest.h"
+
+#include <QObject>
 
 #define SIP_NO_FILE
 
@@ -39,17 +39,26 @@ class CORE_EXPORT QgsEptPointCloudBlockRequest : public QgsPointCloudBlockReques
 {
     Q_OBJECT
   public:
-
     /**
      * QgsPointCloudBlockRequest constructor
      * Requests the block data of size \a blockSize at offset blockOffset
      * Note: It is the responsablitiy of the caller to delete the block if it was loaded correctly
      */
-    QgsEptPointCloudBlockRequest( const QgsPointCloudNodeId &node, const QString &Uri, const QString &dataType,
-                                  const QgsPointCloudAttributeCollection &attributes, const QgsPointCloudAttributeCollection &requestedAttributes,
-                                  const QgsVector3D &scale, const QgsVector3D &offset, const QgsPointCloudExpression &filterExpression, const QgsRectangle &filterRect );
+    QgsEptPointCloudBlockRequest(
+      QgsPointCloudNodeId node,
+      const QString &Uri,
+      const QString &dataType,
+      const QgsPointCloudAttributeCollection &attributes,
+      const QgsPointCloudAttributeCollection &requestedAttributes,
+      const QgsVector3D &scale,
+      const QgsVector3D &offset,
+      const QgsPointCloudExpression &filterExpression,
+      const QgsRectangle &filterRect,
+      const QString &authcfg = QString()
+    );
 
-    ~QgsEptPointCloudBlockRequest() = default;
+    ~QgsEptPointCloudBlockRequest() override = default;
+
   private:
     QString mDataType;
   private slots:

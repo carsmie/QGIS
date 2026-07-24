@@ -11,6 +11,8 @@
 
 
 
+
+
 class QgsRenderedItemResults
 {
 %Docstring(signature="appended")
@@ -24,7 +26,6 @@ operation.
 #include "qgsrendereditemresults.h"
 %End
   public:
-
     QgsRenderedItemResults( const QgsRectangle &extent = QgsRectangle() );
 %Docstring
 Constructor for QgsRenderedItemResults.

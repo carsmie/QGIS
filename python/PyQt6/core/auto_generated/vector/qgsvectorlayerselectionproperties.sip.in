@@ -24,7 +24,6 @@ Implementation of layer selection properties for vector layers.
 #include "qgsvectorlayerselectionproperties.h"
 %End
   public:
-
     QgsVectorLayerSelectionProperties( QObject *parent /TransferThis/ = 0 );
 %Docstring
 Constructor for QgsVectorLayerSelectionProperties, with the specified
@@ -92,6 +91,29 @@ Ownership of ``symbol`` is transferred to the plot. If ``symbol`` is
 ``None`` then the default symbol will be used instead.
 
 .. seealso:: :py:func:`selectionSymbol`
+%End
+
+  signals:
+
+    void selectionRenderingModeChanged();
+%Docstring
+Emitted whenever the selection rendering mode changes.
+
+.. versionadded:: 4.0
+%End
+
+    void selectionColorChanged();
+%Docstring
+Emitted whenever the selection color changes.
+
+.. versionadded:: 4.0
+%End
+
+    void selectionSymbolChanged();
+%Docstring
+Emitted whenever the selection symbol changes.
+
+.. versionadded:: 4.0
 %End
 
 };

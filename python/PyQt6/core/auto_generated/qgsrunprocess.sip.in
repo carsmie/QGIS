@@ -12,7 +12,8 @@
 
 
 
-class QgsRunProcess: QObject /NoDefaultCtors/
+
+class QgsRunProcess : QObject /NoDefaultCtors/
 {
 %Docstring(signature="appended")
 Executes an external program/script.
@@ -75,7 +76,6 @@ https://lists.qt-project.org/pipermail/development/2015-July/022205.html
 #include "qgsrunprocess.h"
 %End
   public:
-
     QgsBlockingProcess( const QString &program, const QStringList &arguments );
 %Docstring
 Constructor for the given ``program``, with the specified list of
@@ -145,6 +145,24 @@ After a call to :py:func:`~QgsBlockingProcess.run`, returns the process'
 reported error.
 
 Returns QProcess.UnknownError if no error occurred.
+%End
+
+    QString workingDirectory() const;
+%Docstring
+Returns the process working directory.
+
+.. seealso:: :py:func:`setWorkingDirectory`
+
+.. versionadded:: 4.2
+%End
+
+    void setWorkingDirectory( const QString &directory );
+%Docstring
+Sets the process working ``directory``.
+
+.. seealso:: :py:func:`workingDirectory`
+
+.. versionadded:: 4.2
 %End
 
 };

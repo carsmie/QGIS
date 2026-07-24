@@ -11,6 +11,7 @@
 
 
 
+
 class QgsTiledSceneLayer3DRendererMetadata : Qgs3DRendererAbstractMetadata
 {
 %Docstring(signature="appended")
@@ -45,16 +46,6 @@ class QgsTiledSceneLayer3DRenderer : QgsAbstract3DRenderer
 
 %TypeHeaderCode
 #include "qgstiledscenelayer3drenderer.h"
-%End
-%ConvertToSubClassCode
-    if ( sipCpp->type() == QLatin1String( "tiledscene" ) )
-    {
-      sipType = sipType_QgsTiledSceneLayer3DRenderer;
-    }
-    else
-    {
-      sipType = 0;
-    }
 %End
   public:
     QgsTiledSceneLayer3DRenderer();
@@ -105,9 +96,13 @@ scene.
 
     virtual QString type() const;
     virtual QgsAbstract3DRenderer *clone() const /Factory/;
+
     virtual void writeXml( QDomElement &elem, const QgsReadWriteContext &context ) const;
+
     virtual void readXml( const QDomElement &elem, const QgsReadWriteContext &context );
+
     virtual void resolveReferences( const QgsProject &project );
+
 
   private:
     QgsTiledSceneLayer3DRenderer( const QgsTiledSceneLayer3DRenderer & );

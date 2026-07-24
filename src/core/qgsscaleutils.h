@@ -13,10 +13,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgis_core.h"
+
 #include <QString>
 #include <QStringList>
-
-#include "qgis_core.h"
 
 #ifndef QGSSCALEUTILS_H
 #define QGSSCALEUTILS_H
@@ -28,7 +28,6 @@
 class CORE_EXPORT QgsScaleUtils
 {
   public:
-
     /**
      * Save scales to the given file
      * \param fileName the name of the output file

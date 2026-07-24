@@ -17,8 +17,9 @@
 #define QGSSTACSOURCESELECT_H
 
 #include "ui_qgsstacsourceselectbase.h"
-#include "qgsabstractdatasourcewidget.h"
+
 #include "qgis_gui.h"
+#include "qgsabstractdatasourcewidget.h"
 #include "qgsmimedatautils.h"
 #include "qobjectuniqueptr.h"
 
@@ -26,8 +27,9 @@
 #include <QStyledItemDelegate>
 #include <QUrl>
 
-///@cond PRIVATE
 #define SIP_NO_FILE
+
+///@cond PRIVATE
 
 class QgsStacSearchParametersDialog;
 class QgsStacItemListModel;
@@ -82,7 +84,7 @@ class GUI_EXPORT QgsStacSourceSelect : public QgsAbstractDataSourceWidget, priva
     void onItemsViewScroll( int value );
 
     //! Called when double clicking a result item
-    void onItemDoubleClicked( const QModelIndex &index );
+    void showItemDetails( const QModelIndex &index );
 
     //! Enables Add Layers button based on current item, updates rubber bands
     void onCurrentItemChanged( const QModelIndex &current, const QModelIndex &previous );
@@ -106,7 +108,7 @@ class GUI_EXPORT QgsStacSourceSelect : public QgsAbstractDataSourceWidget, priva
     QUrl mNextPageUrl;
     int mCollectionsPageCounter = 0;
 
-    QgsStacController *mStac = nullptr;
+    std::unique_ptr<QgsStacController> mStac;
     QgsStacItemListModel *mItemsModel = nullptr;
     QgsStacSearchParametersDialog *mParametersDialog = nullptr;
     QObjectUniquePtr<QgsRubberBand> mCurrentItemBand;

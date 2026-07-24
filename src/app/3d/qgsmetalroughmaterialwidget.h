@@ -16,12 +16,11 @@
 #ifndef QGSMETALROUGHMATERIALWIDGET_H
 #define QGSMETALROUGHMATERIALWIDGET_H
 
+#include "ui_metalroughmaterialwidget.h"
+
 #include "qgsmaterialsettingswidget.h"
-#include "qgsabstractmaterialsettings.h"
 
-#include <ui_metalroughmaterialwidget.h>
-
-class QgsMetalRoughMaterialSettings;
+class QgsAbstractMaterialSettings;
 
 
 //! Widget for configuration of metal rough material settings
@@ -34,13 +33,15 @@ class QgsMetalRoughMaterialWidget : public QgsMaterialSettingsWidget, private Ui
 
     static QgsMaterialSettingsWidget *create();
 
-    void setTechnique( QgsMaterialSettingsRenderingTechnique technique ) final;
+    void setTechnique( Qgis::MaterialRenderingTechnique technique ) final;
     void setSettings( const QgsAbstractMaterialSettings *settings, QgsVectorLayer *layer ) final;
-    QgsAbstractMaterialSettings *settings() override;
-
+    std::unique_ptr< QgsAbstractMaterialSettings > settings() final;
+  public slots:
+    void setPreviewVisible( bool visible ) final;
   private slots:
 
     void updateWidgetState();
+    void updatePreview();
 };
 
 #endif // QGSMETALROUGHMATERIALWIDGET_H

@@ -27,7 +27,7 @@
  * \ingroup core
  * \brief Evaluates NMEA sentences coming from gpsd.
  */
-class CORE_EXPORT QgsGpsdConnection: public QgsNmeaConnection
+class CORE_EXPORT QgsGpsdConnection : public QgsNmeaConnection
 {
     Q_OBJECT
   public:
@@ -35,7 +35,7 @@ class CORE_EXPORT QgsGpsdConnection: public QgsNmeaConnection
 
   private slots:
     void connected();
-    void error( QAbstractSocket::SocketError );
+    void errorOccurred( QAbstractSocket::SocketError );
 
   private:
     QString mDevice;

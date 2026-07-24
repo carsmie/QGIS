@@ -16,13 +16,13 @@
 #ifndef QGSFILEDOWNLOADER_H
 #define QGSFILEDOWNLOADER_H
 
-#include <QObject>
-#include <QFile>
-#include <QNetworkReply>
-#include <QUrl>
-
 #include "qgis.h"
 #include "qgis_core.h"
+
+#include <QFile>
+#include <QNetworkReply>
+#include <QObject>
+#include <QUrl>
 
 #ifndef QT_NO_SSL
 #include <QSslError>
@@ -46,7 +46,6 @@ class CORE_EXPORT QgsFileDownloader : public QObject
 {
     Q_OBJECT
   public:
-
     /**
      * QgsFileDownloader
      * \param url the download URL
@@ -59,7 +58,9 @@ class CORE_EXPORT QgsFileDownloader : public QObject
      * \param httpMethod Method for the HTTP request : GET or POST, since QGIS 3.22
      * \param data If the request is POST, some data can be added, since QGIS 3.22
      */
-    QgsFileDownloader( const QUrl &url, const QString &outputFileName, const QString &authcfg = QString(), bool delayStart = false, Qgis::HttpMethod httpMethod = Qgis::HttpMethod::Get, const QByteArray &data = QByteArray() );
+    QgsFileDownloader(
+      const QUrl &url, const QString &outputFileName, const QString &authcfg = QString(), bool delayStart = false, Qgis::HttpMethod httpMethod = Qgis::HttpMethod::Get, const QByteArray &data = QByteArray()
+    );
 
   signals:
     //! Emitted when the download has completed successfully
@@ -114,7 +115,6 @@ class CORE_EXPORT QgsFileDownloader : public QObject
     ~QgsFileDownloader() override;
 
   private:
-
     /**
      * Abort current request and show an error if the instance has GUI
      * notifications enabled.
@@ -124,7 +124,7 @@ class CORE_EXPORT QgsFileDownloader : public QObject
     QUrl mUrl;
     QNetworkReply *mReply = nullptr;
     QFile mFile;
-    bool mDownloadCanceled;
+    bool mDownloadCanceled = false;
     Qgis::HttpMethod mHttpMethod = Qgis::HttpMethod::Get;
     QByteArray mData;
     QStringList mErrors;

@@ -18,9 +18,9 @@
 #ifndef QGSPOINTCLOUDEXTENTRENDERER_H
 #define QGSPOINTCLOUDEXTENTRENDERER_H
 
-#include "qgspointcloudrenderer.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
+#include "qgspointcloudrenderer.h"
 
 class QgsFillSymbol;
 
@@ -33,7 +33,6 @@ class QgsFillSymbol;
 class CORE_EXPORT QgsPointCloudExtentRenderer : public QgsPointCloudRenderer
 {
   public:
-
     /**
      * Constructor for QgsPointCloudExtentRenderer.
      *
@@ -97,9 +96,7 @@ class CORE_EXPORT QgsPointCloudExtentRenderer : public QgsPointCloudRenderer
     void renderLabel( const QRectF &extent, const QString &text, QgsPointCloudRenderContext &context ) const;
 
   private:
-
     std::unique_ptr< QgsFillSymbol > mFillSymbol;
-
 };
 
 #endif // QGSPOINTCLOUDEXTENTRENDERER_H

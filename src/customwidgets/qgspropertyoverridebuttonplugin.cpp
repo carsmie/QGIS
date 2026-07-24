@@ -13,17 +13,17 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "qgiscustomwidgets.h"
 #include "qgspropertyoverridebuttonplugin.h"
-#include "moc_qgspropertyoverridebuttonplugin.cpp"
+
+#include "qgiscustomwidgets.h"
 #include "qgspropertyoverridebutton.h"
 
+#include "moc_qgspropertyoverridebuttonplugin.cpp"
 
 QgsPropertyOverrideButtonPlugin::QgsPropertyOverrideButtonPlugin( QObject *parent )
   : QObject( parent )
   , mInitialized( false )
-{
-}
+{}
 
 
 QString QgsPropertyOverrideButtonPlugin::name() const
@@ -82,17 +82,19 @@ QString QgsPropertyOverrideButtonPlugin::whatsThis() const
 
 QString QgsPropertyOverrideButtonPlugin::domXml() const
 {
-  return QString( "<ui language=\"c++\">\n"
-                  " <widget class=\"%1\" name=\"mPropertyOverrideButton\">\n"
-                  "  <property name=\"geometry\">\n"
-                  "   <rect>\n"
-                  "    <x>0</x>\n"
-                  "    <y>0</y>\n"
-                  "    <width>27</width>\n"
-                  "    <height>27</height>\n"
-                  "   </rect>\n"
-                  "  </property>\n"
-                  " </widget>\n"
-                  "</ui>\n" )
+  return QString(
+           "<ui language=\"c++\">\n"
+           " <widget class=\"%1\" name=\"mPropertyOverrideButton\">\n"
+           "  <property name=\"geometry\">\n"
+           "   <rect>\n"
+           "    <x>0</x>\n"
+           "    <y>0</y>\n"
+           "    <width>27</width>\n"
+           "    <height>27</height>\n"
+           "   </rect>\n"
+           "  </property>\n"
+           " </widget>\n"
+           "</ui>\n"
+  )
     .arg( name() );
 }

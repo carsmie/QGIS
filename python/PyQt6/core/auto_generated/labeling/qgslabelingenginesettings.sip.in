@@ -8,6 +8,7 @@
 
 
 
+
 class QgsLabelingEngineSettings
 {
 %Docstring(signature="appended")
@@ -18,7 +19,6 @@ Stores global configuration for labeling engine.
 #include "qgslabelingenginesettings.h"
 %End
   public:
-
 
     enum Search /BaseType=IntEnum/
     {
@@ -33,6 +33,7 @@ Stores global configuration for labeling engine.
     ~QgsLabelingEngineSettings();
 
     QgsLabelingEngineSettings( const QgsLabelingEngineSettings &other );
+
 
     void clear();
 %Docstring

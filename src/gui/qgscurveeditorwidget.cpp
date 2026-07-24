@@ -15,13 +15,20 @@
 
 
 #include "qgscurveeditorwidget.h"
-#include "moc_qgscurveeditorwidget.cpp"
+
+#include <algorithm>
+#include <memory>
+
 #include "qgsvectorlayer.h"
 
-#include <QPainter>
-#include <QVBoxLayout>
 #include <QMouseEvent>
-#include <algorithm>
+#include <QPainter>
+#include <QString>
+#include <QVBoxLayout>
+
+#include "moc_qgscurveeditorwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 // QWT Charting widget
 #include <qwt_global.h>
@@ -74,9 +81,8 @@ QgsCurveEditorWidget::QgsCurveEditorWidget( QWidget *parent, const QgsCurveTrans
   grid->attach( mPlot );
 
   mPlotCurve = new QwtPlotCurve();
-  mPlotCurve->setTitle( QStringLiteral( "Curve" ) );
-  mPlotCurve->setPen( QPen( QColor( 30, 30, 30 ), 0.0 ) ),
-    mPlotCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+  mPlotCurve->setTitle( u"Curve"_s );
+  mPlotCurve->setPen( QPen( QColor( 30, 30, 30 ), 0.0 ) ), mPlotCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
   mPlotCurve->attach( mPlot );
 
   mPlotFilter = new QgsCurveEditorPlotEventFilter( mPlot );
@@ -109,9 +115,9 @@ void QgsCurveEditorWidget::setHistogramSource( const QgsVectorLayer *layer, cons
 {
   if ( !mGatherer )
   {
-    mGatherer.reset( new QgsHistogramValuesGatherer() );
+    mGatherer = std::make_unique<QgsHistogramValuesGatherer>();
     connect( mGatherer.get(), &QgsHistogramValuesGatherer::calculatedHistogram, this, [this] {
-      mHistogram.reset( new QgsHistogram( mGatherer->histogram() ) );
+      mHistogram = std::make_unique<QgsHistogram>( mGatherer->histogram() );
       updateHistogram();
     } );
   }
@@ -203,8 +209,7 @@ int QgsCurveEditorWidget::findNearestControlPoint( QPointF point ) const
 
 
 void QgsCurveEditorWidget::plotMouseRelease( QPointF )
-{
-}
+{}
 
 void QgsCurveEditorWidget::plotMouseMove( QPointF point )
 {

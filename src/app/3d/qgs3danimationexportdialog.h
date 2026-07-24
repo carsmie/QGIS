@@ -16,14 +16,11 @@
 #ifndef QGS3DANIMATIONEXPORTDIALOG_H
 #define QGS3DANIMATIONEXPORTDIALOG_H
 
-#include <QWidget>
-#include <memory>
-#include <QSize>
-
-#include "qgs3dmapsettings.h"
-#include "qgs3danimationsettings.h"
-
 #include "ui_animationexport3ddialog.h"
+
+#include <QDialog>
+#include <QSize>
+#include <QString>
 
 /**
  * Dialog for settings for 3D animation export

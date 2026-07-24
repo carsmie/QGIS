@@ -19,8 +19,8 @@ email                : ersts@amnh.org
 #ifndef QGSCONTRASTENHANCEMENTFUNCTION_H
 #define QGSCONTRASTENHANCEMENTFUNCTION_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 
 /**
  * \ingroup core
@@ -31,7 +31,6 @@ email                : ersts@amnh.org
  */
 class CORE_EXPORT QgsContrastEnhancementFunction
 {
-
   public:
     QgsContrastEnhancementFunction( Qgis::DataType, double, double );
     QgsContrastEnhancementFunction( const QgsContrastEnhancementFunction &f );

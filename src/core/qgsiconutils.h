@@ -17,9 +17,9 @@
 #ifndef QGSICONUTILS_H
 #define QGSICONUTILS_H
 
-#include "qgis_sip.h"
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
+#include "qgis_sip.h"
 
 class QgsMapLayer;
 class QIcon;
@@ -31,9 +31,7 @@ class QIcon;
 */
 class CORE_EXPORT QgsIconUtils
 {
-
   public:
-
     /**
      * Returns the icon for a vector layer whose geometry \a type is provided.
      */
@@ -115,9 +113,6 @@ class CORE_EXPORT QgsIconUtils
      * \since QGIS 3.22
      */
     static QIcon iconForLayerType( Qgis::LayerType type );
-
 };
 
 #endif // QGSICONUTILS_H
-
-

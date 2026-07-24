@@ -19,6 +19,7 @@
  */
 
 #include "qgsgraph.h"
+
 #include <QSet>
 
 int QgsGraph::addVertex( const QgsPointXY &pt )
@@ -188,8 +189,7 @@ int QgsGraphEdge::toVertex() const
 
 QgsGraphVertex::QgsGraphVertex( const QgsPointXY &point )
   : mCoordinate( point )
-{
-}
+{}
 
 QgsGraphEdgeIds QgsGraphVertex::incomingEdges() const
 {

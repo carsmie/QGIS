@@ -26,9 +26,9 @@ import urllib.parse
 import urllib.request
 
 import osgeo.gdal  # NOQA
-
 from qgis.core import (
     Qgis,
+    QgsAttributeEditorField,
     QgsCoordinateReferenceSystem,
     QgsFeature,
     QgsField,
@@ -36,19 +36,18 @@ from qgis.core import (
     QgsGeometry,
     QgsMapLayer,
     QgsMemoryProviderUtils,
+    QgsPointXY,
     QgsProject,
     QgsWkbTypes,
-    QgsPointXY,
-    QgsAttributeEditorField,
 )
-from qgis.PyQt.QtCore import QVariant, QUrl
+from qgis.PyQt.QtCore import QUrl, QVariant
 from qgis.server import (
     QgsBufferServerRequest,
     QgsBufferServerResponse,
     QgsServer,
     QgsServerRequest,
 )
-from qgis.testing import unittest, QgisTestCase
+from qgis.testing import QgisTestCase, unittest
 from test_qgsserver_wms import TestQgsServerWMSTestBase
 
 
@@ -406,6 +405,25 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
             "test_project_values.qgz",
         )
 
+    def testMeshGetFeatureInfo(self):
+        """Test GetFeatureInfo for mesh layers"""
+        mypath = self.testdata_path + "test_project_mesh_getfeatureinfo.qgz"
+        self.wms_request_compare(
+            "GetFeatureInfo",
+            "&layers=landsat&styles=&"
+            + "VERSION=1.3.0&"
+            + "info_format=application%2Fjson&"
+            + "width=500&height=500"
+            + "&bbox=30.18983,17.95269,30.23169,18.0057"
+            + "&CRS=EPSG:4326"
+            + "&FEATURE_COUNT=10"
+            + "&WITH_GEOMETRY=True"
+            + "&QUERY_LAYERS=landsat"
+            + "&I=0&J=0",
+            "wms_getfeatureinfo-mesh-json",
+            "test_project_mesh_getfeatureinfo.qgz",
+        )
+
     # TODO make GetFeatureInfo show what's in the display expression and
     # enable test
     @QgisTestCase.expectedFailure
@@ -669,6 +687,49 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
         )
 
     def testGetFeatureInfoJSON(self):
+
+        # simple test with geometry with underlying layer in 4326 and CRS is OGC:CRS84
+        self.wms_request_compare(
+            "GetFeatureInfo",
+            "&layers=testlayer%20%C3%A8%C3%A9&styles=&"
+            + "info_format=application%2Fjson&transparent=true&"
+            + "width=600&height=400&srs=OGC:CRS84&"
+            + "bbox=8.2034387,44.9014173,8.2036094,44.9015094&"
+            + "query_layers=testlayer2&X=203&Y=116&"
+            + "with_geometry=true",
+            "wms_getfeatureinfo_geometry_CRS84_json",
+            "test_project.qgs",
+            normalizeJson=True,
+        )
+
+        # simple test with geometry with underlying layer in 4326 and CRS is CRS:84
+        self.wms_request_compare(
+            "GetFeatureInfo",
+            "&layers=testlayer%20%C3%A8%C3%A9&styles=&"
+            + "info_format=application%2Fjson&transparent=true&"
+            + "width=600&height=400&srs=CRS:84&"
+            + "bbox=8.2034387,44.9014173,8.2036094,44.9015094&"
+            + "query_layers=testlayer2&X=203&Y=116&"
+            + "with_geometry=true",
+            "wms_getfeatureinfo_geometry_CRS84_json",
+            "test_project.qgs",
+            normalizeJson=True,
+        )
+
+        # simple test with geometry with underlying layer in 3857
+        self.wms_request_compare(
+            "GetFeatureInfo",
+            "&layers=testlayer%20%C3%A8%C3%A9&styles=&"
+            + "info_format=application%2Fjson&transparent=true&"
+            + "width=600&height=400&srs=EPSG%3A3857&bbox=913190.6389747962%2C"
+            + "5606005.488876367%2C913235.426296057%2C5606035.347090538&"
+            + "query_layers=testlayer%20%C3%A8%C3%A9&X=190&Y=320&"
+            + "with_geometry=true",
+            "wms_getfeatureinfo_geometry_json",
+            "test_project_epsg3857.qgs",
+            normalizeJson=True,
+        )
+
         # simple test without geometry and info_format=application/json
         self.wms_request_compare(
             "GetFeatureInfo",
@@ -703,20 +764,6 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
             + "query_layers=testlayer%20%C3%A8%C3%A9,fields_alias,exclude_attribute&"
             + "X=190&Y=320&FEATURE_COUNT=2&FI_POINT_TOLERANCE=200",
             "wms_getfeatureinfo_multiple_json",
-            normalizeJson=True,
-        )
-
-        # simple test with geometry with underlying layer in 3857
-        self.wms_request_compare(
-            "GetFeatureInfo",
-            "&layers=testlayer%20%C3%A8%C3%A9&styles=&"
-            + "info_format=application%2Fjson&transparent=true&"
-            + "width=600&height=400&srs=EPSG%3A3857&bbox=913190.6389747962%2C"
-            + "5606005.488876367%2C913235.426296057%2C5606035.347090538&"
-            + "query_layers=testlayer%20%C3%A8%C3%A9&X=190&Y=320&"
-            + "with_geometry=true",
-            "wms_getfeatureinfo_geometry_json",
-            "test_project_epsg3857.qgs",
             normalizeJson=True,
         )
 
@@ -784,16 +831,16 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
             normalizeJson=True,
         )
 
-        # simple test with geometry with underlying layer in 4326 and CRS is CRS84
+        # test on requesting the group_name (expected requestedWmsName as foreign member)
         self.wms_request_compare(
             "GetFeatureInfo",
-            "&layers=testlayer%20%C3%A8%C3%A9&styles=&"
+            "&layers=group_name&styles=&"
             + "info_format=application%2Fjson&transparent=true&"
             + "width=600&height=400&srs=OGC:CRS84&"
             + "bbox=8.2034387,44.9014173,8.2036094,44.9015094&"
-            + "query_layers=testlayer2&X=203&Y=116&"
+            + "query_layers=group_name&X=203&Y=116&"
             + "with_geometry=true",
-            "wms_getfeatureinfo_geometry_CRS84_json",
+            "wms_getfeatureinfo_group_name_json",
             "test_project.qgs",
             normalizeJson=True,
         )
@@ -841,7 +888,7 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
             + "&INFO_FORMAT=application/json"
             + "&I=0&J=1"
             + "&FEATURE_COUNT=10",
-            "wms_getfeatureinfo_group_name_areas_nested",
+            "wms_getfeatureinfo_group_name_areas_nested_direct",
             "test_project_wms_grouped_nested_layers.qgs",
             normalizeJson=True,
         )
@@ -916,7 +963,7 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
             + "&INFO_FORMAT=application/json"
             + "&I=0&J=1"
             + "&FEATURE_COUNT=10",
-            "wms_getfeatureinfo_group_query_child",
+            "wms_getfeatureinfo_group_query_child_ok",
             "test_project_wms_grouped_nested_layers.qgs",
             normalizeJson=True,
         )
@@ -931,7 +978,7 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
             + "&INFO_FORMAT=application/json"
             + "&I=0&J=1"
             + "&FEATURE_COUNT=10",
-            "wms_getfeatureinfo_group_query_child",
+            "wms_getfeatureinfo_group_query_child_direct",
             "test_project_wms_grouped_nested_layers.qgs",
             normalizeJson=True,
         )
@@ -1511,7 +1558,6 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
             "text/xml",
             "application/vnd.ogc.gml",
         ]:
-
             request.setUrl(
                 QUrl(
                     f"?SERVICE=WMS&REQUEST=GetFeatureInfo&LAYERS=points&QUERY_LAYERS=points&INFO_FORMAT={info_format}&FEATURE_COUNT=1&WIDTH={w}&HEIGHT={w}&CRS=EPSG:4326&STYLES=&BBOX=-1,-1,1,1&X={w2}&Y={w2}&VERSION=1.3.0"
@@ -1572,7 +1618,6 @@ class TestQgsServerWMSGetFeatureInfo(TestQgsServerWMSTestBase):
 
         # Note: not implemented for , 'application/vnd.ogc.gml'
         for info_format in ["text/plain", "application/json", "text/xml"]:
-
             request.setUrl(
                 QUrl(
                     f"?SERVICE=WMS&REQUEST=GetFeatureInfo&LAYERS=points&QUERY_LAYERS=points&INFO_FORMAT={info_format}&FEATURE_COUNT=1&WIDTH={w}&HEIGHT={w}&CRS=EPSG:4326&STYLES=&WITH_DISPLAY_NAME=true&BBOX=-1,-1,1,1&X={w2}&Y={w2}&VERSION=1.3.0"

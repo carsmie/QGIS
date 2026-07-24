@@ -18,10 +18,10 @@
 #ifndef QGSDBFILTERPROXYMODEL_H
 #define QGSDBFILTERPROXYMODEL_H
 
-#include <QSortFilterProxyModel>
+#include "qgis_core.h"
 #include "qgis_sip.h"
 
-#include "qgis_core.h"
+#include <QSortFilterProxyModel>
 
 /**
  * \class QgsDatabaseFilterProxyModel
@@ -35,7 +35,6 @@ class CORE_DEPRECATED_EXPORT QgsDatabaseFilterProxyModel : public QSortFilterPro
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsDatabaseFilterProxyModel.
      */

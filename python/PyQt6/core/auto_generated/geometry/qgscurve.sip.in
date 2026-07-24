@@ -10,7 +10,8 @@
 
 
 
-class QgsCurve: QgsAbstractGeometry /Abstract/
+
+class QgsCurve : QgsAbstractGeometry /Abstract/
 {
 %Docstring(signature="appended")
 Abstract base class for curved geometry type.
@@ -20,7 +21,6 @@ Abstract base class for curved geometry type.
 #include "qgscurve.h"
 %End
   public:
-
     QgsCurve();
 
     virtual bool equals( const QgsCurve &other ) const = 0;
@@ -130,6 +130,14 @@ Sums up the area of the curve by iterating over the vertices (shoelace
 formula).
 %End
 
+    virtual void sumUpArea3D( double &sum /Out/ ) const = 0;
+%Docstring
+Sums up the 3d area of the curve by iterating over the vertices
+(shoelace formula).
+
+.. versionadded:: 4.0
+%End
+
     virtual QgsCoordinateSequence coordinateSequence() const;
 
     virtual bool nextVertex( QgsVertexId &id, QgsPoint &vertex /Out/ ) const;
@@ -141,7 +149,7 @@ formula).
 
     virtual bool pointAt( int node, QgsPoint &point /Out/, Qgis::VertexType &type /Out/ ) const = 0;
 %Docstring
-Returns the point and vertex id of a point within the curve.
+Returns the point and vertex type of a point within the curve.
 
 :param node: node number, where the first node is 0
 
@@ -196,6 +204,8 @@ Returns a geometry without curves. Caller takes ownership
     virtual int partCount() const;
 
     virtual QgsPoint vertexAt( QgsVertexId id ) const;
+
+    virtual bool hasVertex( QgsVertexId position ) const;
 
     virtual QgsCurve *toCurveType() const /Factory/;
 
@@ -330,6 +340,27 @@ given index.
    is undefined.
 
 .. versionadded:: 3.20
+%End
+
+    virtual double distanceBetweenVertices( QgsVertexId fromVertex, QgsVertexId toVertex ) const = 0;
+%Docstring
+Returns the distance along the curve between two vertices.
+
+This method calculates the accumulated distance along the curve from one
+vertex to another. For circular strings, this includes following the arc
+path precisely.
+
+.. note::
+
+   For 3D geometries, the distance calculation includes the Z coordinate component.
+
+:param fromVertex: the starting vertex ID
+:param toVertex: the ending vertex ID
+
+:return: distance along the curve between the vertices, or -1 if either
+         vertex is invalid
+
+.. versionadded:: 4.00
 %End
 
 

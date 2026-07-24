@@ -22,32 +22,32 @@ __copyright__ = "(C) 2014, Alexander Bruy"
 import os
 import random
 
-from qgis.PyQt.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsApplication,
-    QgsField,
-    QgsFeatureSink,
+    QgsDistanceArea,
+    QgsExpression,
     QgsFeature,
+    QgsFeatureSink,
+    QgsField,
     QgsFields,
     QgsGeometry,
     QgsPointXY,
-    QgsWkbTypes,
-    QgsSpatialIndex,
-    QgsExpression,
-    QgsDistanceArea,
-    QgsPropertyDefinition,
     QgsProcessing,
     QgsProcessingException,
-    QgsProcessingParameters,
     QgsProcessingParameterDefinition,
-    QgsProcessingParameterNumber,
     QgsProcessingParameterDistance,
-    QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterFeatureSink,
-    QgsProcessingParameterExpression,
     QgsProcessingParameterEnum,
+    QgsProcessingParameterExpression,
+    QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterNumber,
+    QgsProcessingParameters,
+    QgsPropertyDefinition,
+    QgsSpatialIndex,
+    QgsWkbTypes,
 )
+from qgis.PyQt.QtCore import QMetaType
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import vector
@@ -151,6 +151,20 @@ class RandomPointsPolygons(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Random points inside polygons")
+
+    def shortDescription(self):
+        return self.tr(
+            "Creates a new point layer with random points inside the polygons of a given layer."
+        )
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a new point layer with random points inside the polygons of a given layer."
+            "The number of points in each polygon can be defined as a fixed count or as a density value. "
+            "The count/density value could also be taken from an attribute or an expression specified "
+            "using the 'Data defined override' functionality, so it can be different for each polygon in the input layer."
+            "A minimum distance can be specified, to avoid points being too close to each other."
+        )
 
     def documentationFlags(self):
         return Qgis.ProcessingAlgorithmDocumentationFlags(
@@ -289,6 +303,7 @@ class RandomPointsPolygons(QgisAlgorithm):
                     f.setAttribute("id", pointId)
                     f.setGeometry(geom)
                     sink.addFeature(f, QgsFeatureSink.Flag.FastInsert)
+                    feedback.featureAddedToSink(self.OUTPUT)
                     if minDistance:
                         index.addFeature(f)
                     points[nPoints] = p
@@ -309,4 +324,5 @@ class RandomPointsPolygons(QgisAlgorithm):
 
         feedback.setProgress(100)
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}

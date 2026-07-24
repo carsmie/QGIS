@@ -10,7 +10,8 @@
 
 
 
-class QgsAuthConfigurationStorageRegistry: QObject
+
+class QgsAuthConfigurationStorageRegistry : QObject
 {
 %Docstring(signature="appended")
 Registry for authentication configuration storages.
@@ -29,13 +30,12 @@ created, but rather accessed through
 #include "qgsauthconfigurationstorageregistry.h"
 %End
   public:
-
     QgsAuthConfigurationStorageRegistry();
 %Docstring
 Creates a new QgsAuthConfigurationStorageRegistry instance.
 %End
 
-    virtual ~QgsAuthConfigurationStorageRegistry();
+    ~QgsAuthConfigurationStorageRegistry();
 
     bool addStorage( QgsAuthConfigurationStorage *storage /Transfer/ );
 %Docstring

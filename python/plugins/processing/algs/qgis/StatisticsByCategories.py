@@ -19,30 +19,31 @@ __author__ = "Victor Olaya"
 __date__ = "September 2012"
 __copyright__ = "(C) 2012, Victor Olaya"
 
+from collections import defaultdict
+
 from qgis.core import (
-    QgsProcessingParameterFeatureSource,
-    QgsStatisticalSummary,
-    QgsDateTimeStatisticalSummary,
-    QgsStringStatisticalSummary,
-    QgsFeatureRequest,
-    QgsApplication,
-    QgsProcessingException,
-    QgsProcessingParameterField,
-    QgsProcessingParameterFeatureSink,
-    QgsFields,
-    QgsField,
-    QgsWkbTypes,
-    QgsCoordinateReferenceSystem,
-    QgsFeature,
-    QgsFeatureSink,
-    QgsProcessing,
-    QgsProcessingFeatureSource,
     NULL,
+    QgsApplication,
+    QgsCoordinateReferenceSystem,
+    QgsDateTimeStatisticalSummary,
+    QgsFeature,
+    QgsFeatureRequest,
+    QgsFeatureSink,
+    QgsField,
+    QgsFields,
+    QgsProcessing,
+    QgsProcessingException,
+    QgsProcessingFeatureSource,
+    QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterField,
+    QgsStatisticalSummary,
+    QgsStringStatisticalSummary,
+    QgsWkbTypes,
 )
 from qgis.PyQt.QtCore import QMetaType
-from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
-from collections import defaultdict
+from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
 
 class StatisticsByCategories(QgisAlgorithm):
@@ -111,6 +112,14 @@ class StatisticsByCategories(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Statistics by categories")
+
+    def shortDescription(self):
+        return self.tr("Calculates statistics of fields depending on a parent class.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm calculates statistics of fields depending on a parent class."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -261,6 +270,7 @@ class StatisticsByCategories(QgisAlgorithm):
             self.calcStringStats(values, sink, feedback)
 
         sink.finalize()
+        feedback.featureSinkFinalized(self.OUTPUT)
         return {self.OUTPUT: dest_id}
 
     def saveCounts(self, values, sink, feedback):

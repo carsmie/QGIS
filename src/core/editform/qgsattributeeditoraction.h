@@ -17,8 +17,8 @@
 #define QGSATTRIBUTEEDITORACTION_H
 
 #include "qgis_core.h"
-#include "qgsattributeeditorelement.h"
 #include "qgsaction.h"
+#include "qgsattributeeditorelement.h"
 
 /**
  * \ingroup core
@@ -28,7 +28,6 @@
 class CORE_EXPORT QgsAttributeEditorAction : public QgsAttributeEditorElement
 {
   public:
-
     /**
      * Creates a new element which can display a layer action.
      *
@@ -39,7 +38,7 @@ class CORE_EXPORT QgsAttributeEditorAction : public QgsAttributeEditorElement
 
     /**
      * Creates a new element which can display a layer action, this constructor allows
-     * to create a QgsAttributeEditorAction when actions are not yet loaded.
+     * creating an QgsAttributeEditorAction when actions are not yet loaded.
      *
      * \param uuid         The action unique identifier (UUID).
      * \param parent       The parent (used as container).
@@ -59,7 +58,6 @@ class CORE_EXPORT QgsAttributeEditorAction : public QgsAttributeEditorElement
     void setAction( const QgsAction &newAction );
 
   private:
-
     // Lazy loaded
     mutable QgsAction mAction;
     QUuid mUuid;
@@ -68,7 +66,6 @@ class CORE_EXPORT QgsAttributeEditorAction : public QgsAttributeEditorElement
     void saveConfiguration( QDomElement &elem, QDomDocument &doc ) const override;
     void loadConfiguration( const QDomElement &element, const QString &layerId, const QgsReadWriteContext &context, const QgsFields &fields ) override;
     QString typeIdentifier() const override;
-
 };
 
 #endif // QGSATTRIBUTEEDITORACTION_H

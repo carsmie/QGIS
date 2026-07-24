@@ -11,22 +11,22 @@ __date__ = "22.3.2017"
 __copyright__ = "Copyright 2017, The QGIS Project"
 
 import os
+import unittest
 from tempfile import TemporaryDirectory
 
-from qgis.PyQt.QtCore import QCoreApplication, QDir, QEvent
-from qgis.PyQt.QtTest import QSignalSpy
 from qgis.core import (
     QgsCoordinateTransformContext,
     QgsGroupLayer,
     QgsLayerTree,
+    QgsLayerTreeCustomNode,
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
     QgsProject,
     QgsVectorLayer,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QCoreApplication, QDir, QEvent
+from qgis.PyQt.QtTest import QSignalSpy
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 app = start_app()
@@ -34,10 +34,46 @@ TEST_DATA_DIR = unitTestDataPath()
 
 
 class TestQgsLayerTree(QgisTestCase):
-
     def __init__(self, methodName):
         """Run once on class initialization."""
         QgisTestCase.__init__(self, methodName)
+
+    def test_python(self):
+        """
+        Test python methods for layer tree classes
+        """
+        group = QgsLayerTreeGroup("test")
+        self.assertTrue(group)
+        self.assertEqual(len(group), 0)
+        with self.assertRaises(IndexError):
+            group[0]
+        with self.assertRaises(IndexError):
+            group[-1]
+        group2 = group.addGroup("test 2")
+        self.assertTrue(group)
+        self.assertTrue(group2)
+        self.assertEqual(len(group), 1)
+        self.assertEqual(group[0], group2)
+        with self.assertRaises(IndexError):
+            group[1]
+        with self.assertRaises(IndexError):
+            group[-1]
+        group3 = group.addGroup("test 3")
+        self.assertEqual(len(group), 2)
+        self.assertEqual(group[0], group2)
+        self.assertEqual(group[1], group3)
+        with self.assertRaises(IndexError):
+            group[2]
+
+        layer = QgsVectorLayer("Point?field=fldtxt:string", "layer1", "memory")
+        layer_node = group.addLayer(layer)
+        self.assertEqual(len(group), 3)
+        self.assertTrue(group)
+        self.assertEqual(group[0], group2)
+        self.assertEqual(group[1], group3)
+        self.assertEqual(group[2], layer_node)
+        with self.assertRaises(IndexError):
+            group[3]
 
     def testCustomLayerOrder(self):
         """test project layer order"""
@@ -132,6 +168,34 @@ class TestQgsLayerTree(QgisTestCase):
 
         # already removed, should be no extra signal
         layer1_node.removeCustomProperty("test")
+        self.assertEqual(len(spy), 3)
+
+    def testCustomNodeCustomProperties(self):
+        custom1_node = QgsLayerTreeCustomNode("custom-id", "Custom Name")
+        spy = QSignalSpy(custom1_node.customPropertyChanged)
+
+        self.assertFalse(custom1_node.customProperty("test"))
+        self.assertNotIn("test", custom1_node.customProperties())
+
+        custom1_node.setCustomProperty("test", "value")
+        self.assertEqual(len(spy), 1)
+        # set to same value, should be no extra signal
+        custom1_node.setCustomProperty("test", "value")
+        self.assertEqual(len(spy), 1)
+        self.assertIn("test", custom1_node.customProperties())
+        self.assertEqual(custom1_node.customProperty("test"), "value")
+        custom1_node.setCustomProperty("test", "value2")
+        self.assertEqual(len(spy), 2)
+        self.assertIn("test", custom1_node.customProperties())
+        self.assertEqual(custom1_node.customProperty("test"), "value2")
+
+        custom1_node.removeCustomProperty("test")
+        self.assertEqual(len(spy), 3)
+        self.assertFalse(custom1_node.customProperty("test"))
+        self.assertNotIn("test", custom1_node.customProperties())
+
+        # already removed, should be no extra signal
+        custom1_node.removeCustomProperty("test")
         self.assertEqual(len(spy), 3)
 
     def test_layer_tree_group_layer(self):

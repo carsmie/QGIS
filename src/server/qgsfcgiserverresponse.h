@@ -19,15 +19,16 @@
 #ifndef QGSFCGISERVERRESPONSE_H
 #define QGSFCGISERVERRESPONSE_H
 
-#define SIP_NO_FILE
 
+#include <mutex>
+#include <thread>
 
 #include "qgsserverrequest.h"
 #include "qgsserverresponse.h"
 
 #include <QBuffer>
-#include <thread>
-#include <mutex>
+
+#define SIP_NO_FILE
 
 /**
  * \ingroup server
@@ -77,7 +78,7 @@ class SERVER_EXPORT QgsFcgiServerResponse : public QgsServerResponse
      */
     QgsFcgiServerResponse( QgsServerRequest::Method method = QgsServerRequest::GetMethod );
 
-    virtual ~QgsFcgiServerResponse() override;
+    ~QgsFcgiServerResponse() override;
 
     void setHeader( const QString &key, const QString &value ) override;
 
@@ -85,7 +86,11 @@ class SERVER_EXPORT QgsFcgiServerResponse : public QgsServerResponse
 
     QString header( const QString &key ) const override;
 
-    QMap<QString, QString> headers() const override { return mHeaders; }
+    QMap<QString, QString> headers() const override;
+
+    QList<QString> fullHeader( const QString &key ) const override;
+
+    QMap<QString, QList<QString>> fullHeaders() const override { return mHeaders; }
 
     bool headersSent() const override;
 
@@ -118,8 +123,10 @@ class SERVER_EXPORT QgsFcgiServerResponse : public QgsServerResponse
      */
     QgsFeedback *feedback() const override { return mFeedback.get(); }
 
+    void addHeader( const QString &key, const QString &value ) override;
+
   private:
-    QMap<QString, QString> mHeaders;
+    QMap<QString, QList<QString>> mHeaders;
     QBuffer mBuffer;
     bool mFinished = false;
     bool mHeadersSent = false;

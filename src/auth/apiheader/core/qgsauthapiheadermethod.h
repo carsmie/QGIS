@@ -17,13 +17,12 @@
 #ifndef QGSAUTHAPIHEADERMETHOD_H
 #define QGSAUTHAPIHEADERMETHOD_H
 
-#include <QObject>
-#include <QMutex>
-
 #include "qgsauthconfig.h"
 #include "qgsauthmethod.h"
 #include "qgsauthmethodmetadata.h"
 
+#include <QMutex>
+#include <QObject>
 
 class QgsAuthApiHeaderMethod : public QgsAuthMethod
 {
@@ -44,6 +43,7 @@ class QgsAuthApiHeaderMethod : public QgsAuthMethod
     QString displayDescription() const override;
 
     bool updateNetworkRequest( QNetworkRequest &request, const QString &authcfg, const QString &dataprovider = QString() ) override;
+    bool updateDataSourceUriItems( QStringList &connectionItems, const QString &authcfg, const QString &dataprovider = QString() ) override;
 
     void clearCachedConfig( const QString &authcfg ) override;
     void updateMethodConfig( QgsAuthMethodConfig &config ) override;

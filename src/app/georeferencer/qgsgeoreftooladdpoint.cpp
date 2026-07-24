@@ -13,15 +13,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsmapcanvas.h"
 #include "qgsgeoreftooladdpoint.h"
-#include "moc_qgsgeoreftooladdpoint.cpp"
+
+#include "qgsmapcanvas.h"
 #include "qgsmapmouseevent.h"
+
+#include "moc_qgsgeoreftooladdpoint.cpp"
 
 QgsGeorefToolAddPoint::QgsGeorefToolAddPoint( QgsMapCanvas *canvas, QgsAdvancedDigitizingDockWidget *advancedDigitizingDockWidget )
   : QgsMapToolCapture( canvas, advancedDigitizingDockWidget, QgsMapToolCapture::CaptureMode::CapturePoint )
-{
-}
+{}
 
 void QgsGeorefToolAddPoint::pointCaptured( const QgsPoint &point )
 {

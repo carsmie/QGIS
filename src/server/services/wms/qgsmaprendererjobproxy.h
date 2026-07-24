@@ -18,8 +18,8 @@
 #ifndef QGSMAPRENDERERJOBPROXY_H
 #define QGSMAPRENDERERJOBPROXY_H
 
-#include "qgsmapsettings.h"
 #include "qgsmaprendererjob.h"
+#include "qgsmapsettings.h"
 
 class QgsFeatureFilterProvider;
 
@@ -41,9 +41,7 @@ namespace QgsWms
        * \param maxThreads The number of threads to use in case of parallel rendering
        * \param featureFilterProvider Features filtering
        */
-      QgsMapRendererJobProxy(
-        bool parallelRendering, int maxThreads, QgsFeatureFilterProvider *featureFilterProvider
-      );
+      QgsMapRendererJobProxy( bool parallelRendering, int maxThreads, QgsFeatureFilterProvider *featureFilterProvider );
 
       /**
        * Sequential or parallel map rendering.

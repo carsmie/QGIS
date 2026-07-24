@@ -28,7 +28,10 @@
 //
 
 #include "qgs3dmapsceneentity.h"
-#include <numeric>
+#include "qgsraycasthit.h"
+
+#include <QMatrix4x4>
+#include <QTime>
 
 #define SIP_NO_FILE
 
@@ -39,20 +42,8 @@ class QgsChunkQueueJob;
 class QgsChunkLoaderFactory;
 class QgsChunkBoundsEntity;
 class QgsChunkQueueJobFactory;
-
-namespace QgsRayCastingUtils
-{
-  class Ray3D;
-  struct RayCastContext;
-  struct RayHit;
-} // namespace QgsRayCastingUtils
-
-#include <QVector3D>
-#include <QMatrix4x4>
-
-#include <QTime>
-
-#include "qgschunknode.h"
+class QgsRay3D;
+class QgsRayCastContext;
 
 
 /**
@@ -65,7 +56,9 @@ class QgsChunkedEntity : public Qgs3DMapSceneEntity
     Q_OBJECT
   public:
     //! Constructs a chunked entity
-    QgsChunkedEntity( Qgs3DMapSettings *mapSettings, float tau, QgsChunkLoaderFactory *loaderFactory, bool ownsFactory, int primitivesBudget = std::numeric_limits<int>::max(), Qt3DCore::QNode *parent = nullptr );
+    QgsChunkedEntity(
+      Qgs3DMapSettings *mapSettings, float tau, QgsChunkLoaderFactory *loaderFactory, bool ownsFactory, int primitivesBudget = std::numeric_limits<int>::max(), Qt3DCore::QNode *parent = nullptr
+    );
     ~QgsChunkedEntity() override;
 
     //! Called when e.g. camera changes and entity may need updated
@@ -88,7 +81,7 @@ class QgsChunkedEntity : public Qgs3DMapSceneEntity
     //! Returns list of active nodes - i.e. nodes that are get rendered
     QList<QgsChunkNode *> activeNodes() const { return mActiveNodes; }
     //! Returns the root node of the whole quadtree hierarchy of nodes
-    QgsChunkNode *rootNode() const { return mRootNode; }
+    QgsChunkNode *rootNode() const { return mRootNode.get(); }
 
     /**
      * Checks if \a ray intersects the entity by using the specified parameters in \a context and returns information about the hits.
@@ -99,7 +92,7 @@ class QgsChunkedEntity : public Qgs3DMapSceneEntity
      * \note The ray uses World coordinates.
      * \since QGIS 3.32
      */
-    virtual QVector<QgsRayCastingUtils::RayHit> rayIntersection( const QgsRayCastingUtils::Ray3D &ray, const QgsRayCastingUtils::RayCastContext &context ) const;
+    virtual QList<QgsRayCastHit> rayIntersection( const QgsRay3D &ray, const QgsRayCastContext &context ) const;
 
   protected:
     //! Cancels the background job that is currently in progress
@@ -127,7 +120,7 @@ class QgsChunkedEntity : public Qgs3DMapSceneEntity
 
   protected:
     //! root node of the quadtree hierarchy
-    QgsChunkNode *mRootNode = nullptr;
+    std::unique_ptr<QgsChunkNode> mRootNode;
     //! A chunk has been loaded recently? let's display it!
     bool mNeedsUpdate = false;
 
@@ -144,9 +137,9 @@ class QgsChunkedEntity : public Qgs3DMapSceneEntity
     //! True if entity owns the factory
     bool mOwnsFactory = true;
     //! queue of chunks to be loaded
-    QgsChunkList *mChunkLoaderQueue = nullptr;
+    std::unique_ptr<QgsChunkList> mChunkLoaderQueue;
     //! queue of chunk to be eventually replaced
-    QgsChunkList *mReplacementQueue = nullptr;
+    std::unique_ptr<QgsChunkList> mReplacementQueue;
     //! list of nodes that are being currently used for rendering
     QList<QgsChunkNode *> mActiveNodes;
     //! number of nodes omitted during frustum culling - for the curious ones

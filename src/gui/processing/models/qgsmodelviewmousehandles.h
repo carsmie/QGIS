@@ -17,13 +17,15 @@
 #ifndef QGSMODELVIEWMOUSEHANDLES_H
 #define QGSMODELVIEWMOUSEHANDLES_H
 
-#define SIP_NO_FILE
 
-#include "qgsgraphicsviewmousehandles.h"
-#include <QPointer>
 #include <memory>
 
 #include "qgis_gui.h"
+#include "qgsgraphicsviewmousehandles.h"
+
+#include <QPointer>
+
+#define SIP_NO_FILE
 
 class QgsModelGraphicsView;
 class QgsModelGraphicsScene;

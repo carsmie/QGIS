@@ -14,14 +14,20 @@
  ***************************************************************************/
 
 #include "qgsvaliditycheckresultswidget.h"
-#include "moc_qgsvaliditycheckresultswidget.cpp"
-#include "qgsvaliditycheckregistry.h"
+
 #include "qgsapplication.h"
 #include "qgsfeedback.h"
 #include "qgsproxyprogresstask.h"
-#include <QProgressDialog>
+#include "qgsvaliditycheckregistry.h"
+
 #include <QDialogButtonBox>
+#include <QProgressDialog>
 #include <QPushButton>
+#include <QString>
+
+#include "moc_qgsvaliditycheckresultswidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 //
 // QgsValidityCheckResultsModel
@@ -30,8 +36,7 @@
 QgsValidityCheckResultsModel::QgsValidityCheckResultsModel( const QList<QgsValidityCheckResult> &results, QObject *parent )
   : QAbstractItemModel( parent )
   , mResults( results )
-{
-}
+{}
 
 QModelIndex QgsValidityCheckResultsModel::index( int row, int column, const QModelIndex &parent ) const
 {
@@ -76,10 +81,10 @@ QVariant QgsValidityCheckResultsModel::data( const QModelIndex &index, int role 
       switch ( res.type )
       {
         case QgsValidityCheckResult::Critical:
-          return QgsApplication::getThemeIcon( QStringLiteral( "/mIconCritical.svg" ) );
+          return QgsApplication::getThemeIcon( u"/mIconCritical.svg"_s );
 
         case QgsValidityCheckResult::Warning:
-          return QgsApplication::getThemeIcon( QStringLiteral( "/mIconWarning.svg" ) );
+          return QgsApplication::getThemeIcon( u"/mIconWarning.svg"_s );
       }
       break;
 
@@ -150,9 +155,7 @@ bool QgsValidityCheckResultsWidget::runChecks( int type, const QgsValidityCheckC
       QCoreApplication::processEvents();
     }
   } );
-  connect( progressDialog.get(), &QProgressDialog::canceled, progressDialog.get(), [&] {
-    feedback->cancel();
-  } );
+  connect( progressDialog.get(), &QProgressDialog::canceled, progressDialog.get(), [&] { feedback->cancel(); } );
 
   QgsApplication::taskManager()->addTask( proxyTask );
 

@@ -16,8 +16,8 @@
 #ifndef QGSPOINTCLOUDEDITINGINDEX_H
 #define QGSPOINTCLOUDEDITINGINDEX_H
 
-#include "qgspointcloudindex.h"
 #include "qgis_core.h"
+#include "qgspointcloudindex.h"
 
 #define SIP_NO_FILE
 
@@ -35,24 +35,24 @@ class QgsPointCloudLayer;
 class CORE_EXPORT QgsPointCloudEditingIndex : public QgsAbstractPointCloudIndex
 {
   public:
-    //! Ctor
-    explicit QgsPointCloudEditingIndex( QgsPointCloudLayer *layer );
+    //! Constructor
+    explicit QgsPointCloudEditingIndex( const QgsPointCloudIndex &index );
 
-    void load( const QString &fileName ) override;
+    void load( const QString &fileName, const QString &authcfg = QString() ) override;
     bool isValid() const override;
     Qgis::PointCloudAccessType accessType() const override;
     QgsCoordinateReferenceSystem crs() const override;
     qint64 pointCount() const override;
     QVariantMap originalMetadata() const override;
 
-    bool hasNode( const QgsPointCloudNodeId &n ) const override;
-    QgsPointCloudNode getNode( const QgsPointCloudNodeId &id ) const override;
+    bool hasNode( QgsPointCloudNodeId n ) const override;
+    QgsPointCloudNode getNode( QgsPointCloudNodeId id ) const override;
 
     bool setSubsetString( const QString &subset ) override;
     QString subsetString() const override;
 
-    std::unique_ptr< QgsPointCloudBlock > nodeData( const QgsPointCloudNodeId &n, const QgsPointCloudRequest &request ) override;
-    QgsPointCloudBlockRequest *asyncNodeData( const QgsPointCloudNodeId &n, const QgsPointCloudRequest &request ) override;
+    std::unique_ptr< QgsPointCloudBlock > nodeData( QgsPointCloudNodeId n, const QgsPointCloudRequest &request ) override;
+    QgsPointCloudBlockRequest *asyncNodeData( QgsPointCloudNodeId n, const QgsPointCloudRequest &request ) override;
 
     bool updateNodeData( const QHash<QgsPointCloudNodeId, QByteArray> &data ) override;
 

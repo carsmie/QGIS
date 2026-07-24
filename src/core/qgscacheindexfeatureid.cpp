@@ -14,15 +14,14 @@
  ***************************************************************************/
 
 #include "qgscacheindexfeatureid.h"
-#include "qgsfeaturerequest.h"
+
 #include "qgscachedfeatureiterator.h"
+#include "qgsfeaturerequest.h"
 #include "qgsvectorlayercache.h"
 
 QgsCacheIndexFeatureId::QgsCacheIndexFeatureId( QgsVectorLayerCache *cachedVectorLayer )
   : C( cachedVectorLayer )
-{
-
-}
+{}
 
 void QgsCacheIndexFeatureId::flushFeature( const QgsFeatureId fid )
 {
@@ -30,8 +29,7 @@ void QgsCacheIndexFeatureId::flushFeature( const QgsFeatureId fid )
 }
 
 void QgsCacheIndexFeatureId::flush()
-{
-}
+{}
 
 void QgsCacheIndexFeatureId::requestCompleted( const QgsFeatureRequest &featureRequest, const QgsFeatureIds &fids )
 {
@@ -75,4 +73,3 @@ bool QgsCacheIndexFeatureId::getCacheIterator( QgsFeatureIterator &featureIterat
 
   return false;
 }
-

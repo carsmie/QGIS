@@ -3,7 +3,7 @@
                          -------------------
     begin                : January 2017
     copyright            : (C) 2017 by Loïc Bartoletti
-    email                : lbartoletti at tuxfamily dot org
+    email                : lituus at free dot fr
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,9 +20,9 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgspolygon.h"
 #include "qgscircle.h"
 #include "qgslinestring.h"
+#include "qgspolygon.h"
 
 /**
  * \ingroup core
@@ -32,11 +32,12 @@
 class CORE_EXPORT QgsTriangle : public QgsPolygon
 {
   public:
-
+    // clang-format off
     /**
      * Constructor for an empty triangle geometry.
      */
     QgsTriangle() SIP_HOLDGIL;
+    // clang-format on
 
     /**
      * Construct a QgsTriangle from three QgsPoint.
@@ -91,6 +92,7 @@ class CORE_EXPORT QgsTriangle : public QgsPolygon
     void setInteriorRings( const QVector< QgsCurve *> &rings ) = delete; // cppcheck-suppress duplInheritedMember
     //! Inherited method not used. You cannot delete or insert a vertex directly. Returns always FALSE.
     bool deleteVertex( QgsVertexId position ) override;
+    bool deleteVertices( const QSet<QgsVertexId> &positions ) override;
     //! Inherited method not used. You cannot delete or insert a vertex directly. Returns always FALSE.
     bool insertVertex( QgsVertexId position, const QgsPoint &vertex ) override;
     bool moveVertex( QgsVertexId vId, const QgsPoint &newPos ) override;

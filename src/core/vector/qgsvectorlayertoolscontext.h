@@ -16,10 +16,10 @@
 #ifndef QGSVECTORLAYERTOOLSCONTEXT_H
 #define QGSVECTORLAYERTOOLSCONTEXT_H
 
-#include "qgsexpressioncontext.h"
-#include "qgis_core.h"
-
 #include <memory>
+
+#include "qgis_core.h"
+#include "qgsexpressioncontext.h"
 
 /**
  * \ingroup core
@@ -31,7 +31,6 @@
 class CORE_EXPORT QgsVectorLayerToolsContext
 {
   public:
-
     QgsVectorLayerToolsContext() = default;
 
     QgsVectorLayerToolsContext( const QgsVectorLayerToolsContext &other );
@@ -97,7 +96,6 @@ class CORE_EXPORT QgsVectorLayerToolsContext
     void setHideParent( bool hide ) { mHideParent = hide; }
 
   private:
-
     std::unique_ptr< QgsExpressionContext > mExpressionContext;
     std::unique_ptr< QgsExpressionContextScope > mAdditionalExpressionContextScope;
 

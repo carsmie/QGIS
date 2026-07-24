@@ -21,14 +21,18 @@
 #include <memory>
 
 #include "qgis_core.h"
+#include "qgsabstractprofilesource.h"
+#include "qgscoordinatetransform.h"
 #include "qgsinterval.h"
 #include "qgsmaplayer.h"
 #include "qgsmeshdataprovider.h"
 #include "qgsmeshrenderersettings.h"
-#include "qgsmeshtimesettings.h"
 #include "qgsmeshsimplificationsettings.h"
-#include "qgscoordinatetransform.h"
-#include "qgsabstractprofilesource.h"
+#include "qgsmeshtimesettings.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsMapLayerRenderer;
 struct QgsMeshLayerRendererCache;
@@ -101,33 +105,31 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
 {
     Q_OBJECT
   public:
-
     /**
      * Setting options for loading mesh layers.
      */
     struct LayerOptions
     {
-
-      /**
+        /**
        * Constructor for LayerOptions with optional \a transformContext.
        * \note transformContext argument was added in QGIS 3.8
        */
-      explicit LayerOptions( const QgsCoordinateTransformContext &transformContext = QgsCoordinateTransformContext( ) )
-        : transformContext( transformContext )
-      {}
+        explicit LayerOptions( const QgsCoordinateTransformContext &transformContext = QgsCoordinateTransformContext() )
+          : transformContext( transformContext )
+        {}
 
-      /**
+        /**
        * Coordinate transform context
        */
-      QgsCoordinateTransformContext transformContext;
+        QgsCoordinateTransformContext transformContext;
 
-      /**
+        /**
        * Set to TRUE if the default layer style should be loaded.
        * \since QGIS 3.22
        */
-      bool loadDefaultStyle = true;
+        bool loadDefaultStyle = true;
 
-      /**
+        /**
        * Controls whether the layer is allowed to have an invalid/unknown CRS.
        *
        * If TRUE, then no validation will be performed on the layer's CRS and the layer
@@ -140,7 +142,7 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
        *
        * \since QGIS 3.10
        */
-      bool skipCrsValidation = false;
+        bool skipCrsValidation = false;
     };
 
     /**
@@ -156,8 +158,9 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
      * \param providerLib  The name of the data provider, e.g., "mesh_memory", "mdal"
      * \param options general mesh layer options
      */
-    explicit QgsMeshLayer( const QString &path = QString(), const QString &baseName = QString(), const QString &providerLib = QStringLiteral( "mesh_memory" ),
-                           const QgsMeshLayer::LayerOptions &options = QgsMeshLayer::LayerOptions() );
+    explicit QgsMeshLayer(
+      const QString &path = QString(), const QString &baseName = QString(), const QString &providerLib = u"mesh_memory"_s, const QgsMeshLayer::LayerOptions &options = QgsMeshLayer::LayerOptions()
+    );
 
     ~QgsMeshLayer() override;
 
@@ -165,24 +168,26 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
     QgsMeshLayer &operator=( QgsMeshLayer const &rhs ) = delete;
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsMeshLayer: '%1' (%2)>" ).arg( sipCpp->name(), sipCpp->dataProvider() ? sipCpp->dataProvider()->name() : QStringLiteral( "Invalid" ) );
+    QString str = u"<QgsMeshLayer: '%1' (%2)>"_s.arg( sipCpp->name(), sipCpp->dataProvider() ? sipCpp->dataProvider()->name() : u"Invalid"_s );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
-    QgsMeshDataProvider *dataProvider() override;
+      QgsMeshDataProvider *dataProvider() override;
     const QgsMeshDataProvider *dataProvider() const override SIP_SKIP;
     QgsMeshLayer *clone() const override SIP_FACTORY;
     QgsRectangle extent() const override;
     QgsMapLayerRenderer *createMapRenderer( QgsRenderContext &rendererContext ) override SIP_FACTORY;
-    QgsAbstractProfileSource *profileSource() override {return this;}
+    QgsAbstractProfileSource *profileSource() override { return this; }
+    QString profileSourceId() const override { return id(); }
+    QString profileSourceName() const override { return name(); }
     QgsAbstractProfileGenerator *createProfileGenerator( const QgsProfileRequest &request ) override SIP_FACTORY;
-    bool readSymbology( const QDomNode &node, QString &errorMessage,
-                        QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) override;
-    bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage,
-                         const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const override;
+    bool readSymbology( const QDomNode &node, QString &errorMessage, QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) override;
+    bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const override;
     bool writeStyle( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, StyleCategories categories = AllStyleCategories ) const override;
     bool readStyle( const QDomNode &node, QString &errorMessage, QgsReadWriteContext &context, StyleCategories categories = AllStyleCategories ) override;
     QString encodedSource( const QString &source, const QgsReadWriteContext &context ) const override;
@@ -196,10 +201,10 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
     QString htmlMetadata() const override;
     bool isEditable() const override;
     bool supportsEditing() const override;
-    QString loadDefaultStyle( bool &resultFlag SIP_OUT ) FINAL;
+    QString loadDefaultStyle( bool &resultFlag SIP_OUT ) final;
 
     /**
-     * Adds datasets to the mesh from file with \a path. Use the the time \a defaultReferenceTime as reference time is not provided in the file
+     * Adds datasets to the mesh from file with \a path. Use the time \a defaultReferenceTime as reference time is not provided in the file
      *
      * \param path the path to the datasets file
      * \param defaultReferenceTime reference time used if not provided in the file
@@ -315,6 +320,14 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
      * \param repaint should the update of renderer settings trigger repaint and emit rendererChanged signal
      */
     void setRendererSettings( const QgsMeshRendererSettings &settings, const bool repaint = true );
+
+    /**
+     * Invalidates the cache used by the renderer to store the values of the active
+     * scalar and vector dataset groups.
+     *
+     * \since QGIS 4.4
+     */
+    void invalidateRendererCache();
 
     /**
      * Returns time format settings
@@ -958,7 +971,7 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
      * \see setLabelsEnabled()
      * \since QGIS 3.36
      */
-    const QgsAbstractMeshLayerLabeling *labeling() const SIP_SKIP { return mLabeling; }
+    const QgsAbstractMeshLayerLabeling *labeling() const SIP_SKIP { return mLabeling.get(); }
 
     /**
      * Access to labeling configuration. May be NULLPTR if labeling is not used.
@@ -966,7 +979,7 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
      * \see labelsEnabled()
      * \since QGIS 3.36
      */
-    QgsAbstractMeshLayerLabeling *labeling() { return mLabeling; }
+    QgsAbstractMeshLayerLabeling *labeling() { return mLabeling.get(); }
 
     /**
      * Sets labeling configuration. Takes ownership of the object.
@@ -1002,6 +1015,18 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
      * \since QGIS 3.42
      */
     bool datasetsPathUnique( const QString &path );
+
+    /**
+     * Returns the list of extra dataset URIs associated with this layer
+     *
+     * \since QGIS 4.0
+     */
+    QStringList extraDatasetUris() const { return mExtraDatasetUri; }
+
+    using QgsMapLayer::loadNamedStyle;
+    QString loadNamedStyle(
+      const QString &uri, bool &resultFlag SIP_OUT, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories, Qgis::LoadStyleFlags flags = Qgis::LoadStyleFlags()
+    ) override;
 
   public slots:
 
@@ -1043,11 +1068,10 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
     void reloaded();
 
   private: // Private methods
-
     /**
      * Returns TRUE if the provider is in read-only mode
      */
-    bool isReadOnly() const override {return true;}
+    bool isReadOnly() const override { return true; }
 
     /**
      * Binds layer to a specific data provider
@@ -1076,7 +1100,7 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
 
   private:
     //! Pointer to data provider derived from the abastract base class QgsMeshDataProvider
-    QgsMeshDataProvider *mDataProvider = nullptr;
+    std::unique_ptr<QgsMeshDataProvider> mDataProvider;
 
     //! List of extra dataset uri associated with this layer
     QStringList mExtraDatasetUri;
@@ -1116,7 +1140,7 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
     bool mLabelsEnabled = false;
 
     //! Labeling configuration
-    QgsAbstractMeshLayerLabeling *mLabeling = nullptr;
+    std::unique_ptr<QgsAbstractMeshLayerLabeling> mLabeling;
 
     //! Returns the exact position in map coordinates of the closest vertex in the search area
     int closestEdge( const QgsPointXY &point, double searchRadius, QgsPointXY &projectedPoint ) const;
@@ -1132,8 +1156,7 @@ class CORE_EXPORT QgsMeshLayer : public QgsMapLayer, public QgsAbstractProfileSo
     QgsMeshRendererSettings accordSymbologyWithGroupName( const QgsMeshRendererSettings &settings, const QMap<QString, int> &nameToIndex );
     void checkSymbologyConsistency();
 
-    void setDataSourcePrivate( const QString &dataSource, const QString &baseName, const QString &provider,
-                               const QgsDataProvider::ProviderOptions &options, Qgis::DataProviderReadFlags flags ) final;
+    void setDataSourcePrivate( const QString &dataSource, const QString &baseName, const QString &provider, const QgsDataProvider::ProviderOptions &options, Qgis::DataProviderReadFlags flags ) final;
 };
 
 #endif //QGSMESHLAYER_H

@@ -12,18 +12,16 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "qgstest.h"
-
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QLocale>
-
 #include <memory>
 
 #include "qgsgenericspatialindex.h"
-#include "qgstest.h"
 #include "qgslabelposition.h"
+#include "qgstest.h"
+
+#include <QLocale>
+#include <QObject>
+#include <QString>
+#include <QStringList>
 
 class TestQgsGenericSpatialIndex : public QObject
 {
@@ -40,20 +38,16 @@ class TestQgsGenericSpatialIndex : public QObject
 };
 
 void TestQgsGenericSpatialIndex::initTestCase()
-{
-}
+{}
 
 void TestQgsGenericSpatialIndex::cleanupTestCase()
-{
-}
+{}
 
 void TestQgsGenericSpatialIndex::init()
-{
-}
+{}
 
 void TestQgsGenericSpatialIndex::cleanup()
-{
-}
+{}
 
 void TestQgsGenericSpatialIndex::testIndex()
 {

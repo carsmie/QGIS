@@ -15,27 +15,25 @@
  ***************************************************************************/
 
 #include "qgsfieldmappingwidget.h"
-#include "moc_qgsfieldmappingwidget.cpp"
-#include "qgsfieldexpressionwidget.h"
-#include "qgsexpression.h"
-#include "qgsprocessingaggregatewidgets.h"
-#include "qgsvectorlayer.h"
-#include "qgsvectordataprovider.h"
-#include "QItemSelectionModel"
 
+#include "qgsexpression.h"
+#include "qgsfieldexpressionwidget.h"
+#include "qgsprocessingaggregatewidgets.h"
+#include "qgsvectordataprovider.h"
+#include "qgsvectorlayer.h"
+
+#include <QItemSelectionModel>
 #include <QTableView>
 #include <QVBoxLayout>
+
+#include "moc_qgsfieldmappingwidget.cpp"
 
 #ifdef ENABLE_MODELTEST
 #include "modeltest.h"
 #endif
 
 QgsFieldMappingWidget::QgsFieldMappingWidget(
-  QWidget *parent,
-  const QgsFields &sourceFields,
-  const QgsFields &destinationFields,
-  const QMap<QString, QString> &expressions,
-  const QList< QgsVectorDataProvider::NativeType > &nativeTypes
+  QWidget *parent, const QgsFields &sourceFields, const QgsFields &destinationFields, const QMap<QString, QString> &expressions, const QList< QgsVectorDataProvider::NativeType > &nativeTypes
 )
   : QgsPanelWidget( parent )
 {
@@ -243,8 +241,7 @@ std::list<int> QgsFieldMappingWidget::selectedRows()
 
 QgsFieldMappingExpressionDelegate::QgsFieldMappingExpressionDelegate( QObject *parent )
   : QStyledItemDelegate( parent )
-{
-}
+{}
 
 void QgsFieldMappingExpressionDelegate::setModelData( QWidget *editor, QAbstractItemModel *model, const QModelIndex &index ) const
 {
@@ -323,8 +320,7 @@ QWidget *QgsFieldMappingExpressionDelegate::createEditor( QWidget *parent, const
 QgsFieldMappingTypeDelegate::QgsFieldMappingTypeDelegate( const QList< QgsVectorDataProvider::NativeType > &nativeTypes, QObject *parent )
   : QStyledItemDelegate( parent )
   , mNativeTypes( nativeTypes.isEmpty() ? QgsFieldMappingModel::supportedDataTypes() : nativeTypes )
-{
-}
+{}
 
 QWidget *QgsFieldMappingTypeDelegate::createEditor( QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {

@@ -20,13 +20,15 @@
 #ifndef QGSWMSRENDERER_H
 #define QGSWMSRENDERER_H
 
+#include "qgseditformconfig.h"
+#include "qgsfeaturefilter.h"
+#include "qgslayertreemodellegendnode.h"
 #include "qgslayoutatlas.h"
+#include "qgsmaprendererjob.h"
 #include "qgsserversettings.h"
 #include "qgswmsparameters.h"
 #include "qgswmsrendercontext.h"
-#include "qgsfeaturefilter.h"
-#include "qgslayertreemodellegendnode.h"
-#include "qgseditformconfig.h"
+
 #include <QDomDocument>
 #include <QMap>
 #include <QString>
@@ -40,6 +42,7 @@ class QgsMapRendererTask;
 class QgsMapSettings;
 class QgsPointXY;
 class QgsRasterLayer;
+class QgsMeshLayer;
 class QgsRectangle;
 class QgsRenderContext;
 class QgsVectorLayer;
@@ -236,7 +239,18 @@ namespace QgsWms
        * \param filterGeom Geometry for filtering selected features
        * \returns TRUE in case of success
        */
-      bool featureInfoFromVectorLayer( QgsVectorLayer *layer, const QgsPointXY *infoPoint, int nFeatures, QDomDocument &infoDocument, QDomElement &layerElement, const QgsMapSettings &mapSettings, QgsRenderContext &renderContext, const QString &version, QgsRectangle *featureBBox = nullptr, QgsGeometry *filterGeom = nullptr ) const;
+      bool featureInfoFromVectorLayer(
+        QgsVectorLayer *layer,
+        const QgsPointXY *infoPoint,
+        int nFeatures,
+        QDomDocument &infoDocument,
+        QDomElement &layerElement,
+        const QgsMapSettings &mapSettings,
+        QgsRenderContext &renderContext,
+        const QString &version,
+        QgsRectangle *featureBBox = nullptr,
+        QgsGeometry *filterGeom = nullptr
+      ) const;
 
       /**
        * Recursively called to write tab layout groups to XML
@@ -249,7 +263,16 @@ namespace QgsWms
        * \param renderContext Context to use for feature rendering
        * \param attributes attributes for access control
        */
-      void writeAttributesTabGroup( const QgsAttributeEditorElement *group, QgsVectorLayer *layer, const QgsFields &fields, QgsAttributes &featureAttributes, QDomDocument &doc, QDomElement &featureElem, QgsRenderContext &renderContext, QStringList *attributes = nullptr ) const;
+      void writeAttributesTabGroup(
+        const QgsAttributeEditorElement *group,
+        QgsVectorLayer *layer,
+        const QgsFields &fields,
+        QgsAttributes &featureAttributes,
+        QDomDocument &doc,
+        QDomElement &featureElem,
+        QgsRenderContext &renderContext,
+        QStringList *attributes = nullptr
+      ) const;
 
       /**
        * Writes attributes to XML document using the group/attribute layout defined in the tab layout
@@ -262,7 +285,16 @@ namespace QgsWms
        * \param renderContext Context to use for feature rendering
        * \param attributes attributes for access control
        */
-      void writeAttributesTabLayout( QgsEditFormConfig &config, QgsVectorLayer *layer, const QgsFields &fields, QgsAttributes &featureAttributes, QDomDocument &doc, QDomElement &featureElem, QgsRenderContext &renderContext, QStringList *attributes = nullptr ) const;
+      void writeAttributesTabLayout(
+        QgsEditFormConfig &config,
+        QgsVectorLayer *layer,
+        const QgsFields &fields,
+        QgsAttributes &featureAttributes,
+        QDomDocument &doc,
+        QDomElement &featureElem,
+        QgsRenderContext &renderContext,
+        QStringList *attributes = nullptr
+      ) const;
 
       /**
        * Writes a vectorlayer attribute into the XML document
@@ -275,10 +307,25 @@ namespace QgsWms
        * \param renderContext Context to use for feature rendering
        * \param attributes attributes for access control
        */
-      void writeVectorLayerAttribute( int attributeIndex, QgsVectorLayer *layer, const QgsFields &fields, QgsAttributes &featureAttributes, QDomDocument &doc, QDomElement &featureElem, QgsRenderContext &renderContext, QStringList *attributes = nullptr ) const;
+      void writeVectorLayerAttribute(
+        int attributeIndex,
+        QgsVectorLayer *layer,
+        const QgsFields &fields,
+        QgsAttributes &featureAttributes,
+        QDomDocument &doc,
+        QDomElement &featureElem,
+        QgsRenderContext &renderContext,
+        QStringList *attributes = nullptr
+      ) const;
 
       //! Appends feature info xml for the layer to the layer element of the dom document
-      bool featureInfoFromRasterLayer( QgsRasterLayer *layer, const QgsMapSettings &mapSettings, const QgsPointXY *infoPoint, const QgsRenderContext &renderContext, QDomDocument &infoDocument, QDomElement &layerElement, const QString &version ) const;
+      bool featureInfoFromMeshLayer(
+        QgsMeshLayer *layer, const QgsMapSettings &mapSettings, const QgsPointXY *infoPoint, const QgsRenderContext &renderContext, QDomDocument &infoDocument, QDomElement &layerElement, const QString &version
+      ) const;
+      //! Appends feature info xml for the layer to the layer element of the dom document
+      bool featureInfoFromRasterLayer(
+        QgsRasterLayer *layer, const QgsMapSettings &mapSettings, const QgsPointXY *infoPoint, const QgsRenderContext &renderContext, QDomDocument &infoDocument, QDomElement &layerElement, const QString &version
+      ) const;
 
       //! Record which symbols would be used if the map was in the current configuration of renderer. This is useful for content-based legend
       void runHitTest( const QgsMapSettings &mapSettings, HitTest &hitTest ) const;
@@ -332,6 +379,8 @@ namespace QgsWms
       bool configurePrintLayout( QgsPrintLayout *c, const QgsMapSettings &mapSettings, QgsLayoutAtlas *atlas );
 
       void removeTemporaryLayers();
+
+      void logRenderingErrors( const QgsMapRendererJob::Errors &errors ) const;
 
       void handlePrintErrors( const QgsLayout *layout ) const;
 

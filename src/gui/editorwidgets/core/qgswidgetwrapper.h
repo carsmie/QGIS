@@ -16,8 +16,8 @@
 #ifndef QGSWIDGETWRAPPER_H
 #define QGSWIDGETWRAPPER_H
 
-#include <QObject>
 #include <QMap>
+#include <QObject>
 #include <QVariant>
 
 class QgsVectorLayer;
@@ -181,10 +181,7 @@ class GUI_EXPORT QgsWidgetWrapper : public QObject
      *
      * \note not available in Python bindings
      */
-    QgsPropertyCollection &dataDefinedProperties() SIP_SKIP
-    {
-      return mPropertyCollection;
-    }
+    QgsPropertyCollection &dataDefinedProperties() SIP_SKIP { return mPropertyCollection; }
 
     /**
      * Returns a reference to the editor widget's property collection, used for data defined overrides.
@@ -275,7 +272,7 @@ class GUI_EXPORT QgsWidgetWrapper : public QObject
     QWidget *mWidget = nullptr;
     QWidget *mParent = nullptr;
     QgsVectorLayer *mLayer = nullptr;
-    bool mInitialized;
+    bool mInitialized = false;
 };
 
 // We'll use this class inside a QVariant in the widgets properties

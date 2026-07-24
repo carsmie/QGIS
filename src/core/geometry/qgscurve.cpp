@@ -15,13 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgscurve.h"
+
 #include <memory>
 
-#include "qgscurve.h"
-#include "qgslinestring.h"
-#include "qgspoint.h"
-#include "qgsmultipoint.h"
 #include "qgsgeos.h"
+#include "qgslinestring.h"
+#include "qgsmultipoint.h"
+#include "qgspoint.h"
 #include "qgsvertexid.h"
 
 bool QgsCurve::operator==( const QgsAbstractGeometry &other ) const
@@ -47,8 +48,7 @@ bool QgsCurve::isClosed2D() const
   const QgsPoint start = startPoint();
   const QgsPoint end = endPoint();
 
-  return qgsDoubleNear( start.x(), end.x() ) &&
-         qgsDoubleNear( start.y(), end.y() );
+  return qgsDoubleNear( start.x(), end.x() ) && qgsDoubleNear( start.y(), end.y() );
 }
 bool QgsCurve::isClosed() const
 {
@@ -263,6 +263,11 @@ bool QgsCurve::isValid( QString &error, Qgis::GeometryValidityFlags flags ) cons
   return res;
 }
 
+bool QgsCurve::hasVertex( QgsVertexId id ) const
+{
+  return id.part == 0 && id.ring == 0 && id.vertex >= 0 && id.vertex < numPoints();
+}
+
 QPolygonF QgsCurve::asQPolygonF() const
 {
   std::unique_ptr< QgsLineString > segmentized( curveToLine() );
@@ -296,6 +301,7 @@ void QgsCurve::clearCache() const
   mHasCachedValidity = false;
   mValidityFailureReason.clear();
   mHasCachedSummedUpArea = false;
+  mHasCachedSummedUpArea3D = false;
   QgsAbstractGeometry::clearCache();
 }
 
@@ -314,9 +320,21 @@ QgsPoint QgsCurve::childPoint( int index ) const
   return point;
 }
 
-bool QgsCurve::snapToGridPrivate( double hSpacing, double vSpacing, double dSpacing, double mSpacing,
-                                  const QVector<double> &srcX, const QVector<double> &srcY, const QVector<double> &srcZ, const QVector<double> &srcM,
-                                  QVector<double> &outX, QVector<double> &outY, QVector<double> &outZ, QVector<double> &outM, bool removeRedundantPoints ) const
+bool QgsCurve::snapToGridPrivate(
+  double hSpacing,
+  double vSpacing,
+  double dSpacing,
+  double mSpacing,
+  const QVector<double> &srcX,
+  const QVector<double> &srcY,
+  const QVector<double> &srcZ,
+  const QVector<double> &srcM,
+  QVector<double> &outX,
+  QVector<double> &outY,
+  QVector<double> &outZ,
+  QVector<double> &outM,
+  bool removeRedundantPoints
+) const
 {
   const int length = numPoints();
   if ( length < 2 )
@@ -377,16 +395,12 @@ bool QgsCurve::snapToGridPrivate( double hSpacing, double vSpacing, double dSpac
       bool previousPointRedundant = false;
       if ( removeRedundantPoints && outSize > 1 && !hasZ && !hasM )
       {
-        previousPointRedundant = QgsGeometryUtilsBase::leftOfLine( outX.at( outSize - 1 ),
-                                 outY.at( outSize - 1 ),
-                                 outX.at( outSize - 2 ),
-                                 outY.at( outSize - 2 ),
-                                 roundedX, roundedY ) == 0;
+        previousPointRedundant = QgsGeometryUtilsBase::leftOfLine( outX.at( outSize - 1 ), outY.at( outSize - 1 ), outX.at( outSize - 2 ), outY.at( outSize - 2 ), roundedX, roundedY ) == 0;
       }
       if ( previousPointRedundant )
       {
-        outX[ outSize - 1 ] = roundedX;
-        outY[ outSize - 1 ] = roundedY;
+        outX[outSize - 1] = roundedX;
+        outY[outSize - 1] = roundedY;
       }
       else
       {
@@ -409,17 +423,13 @@ bool QgsCurve::snapToGridPrivate( double hSpacing, double vSpacing, double dSpac
   if ( removeRedundantPoints && isClosed() && outSize > 4 && !hasZ && !hasM )
   {
     // maybe first/last vertex is redundant, let's try to remove that too
-    const bool firstVertexIsRedundant = QgsGeometryUtilsBase::leftOfLine( outX.at( 0 ),
-                                        outY.at( 0 ),
-                                        outX.at( outSize - 2 ),
-                                        outY.at( outSize - 2 ),
-                                        outX.at( 1 ), outY.at( 1 ) ) == 0;
+    const bool firstVertexIsRedundant = QgsGeometryUtilsBase::leftOfLine( outX.at( 0 ), outY.at( 0 ), outX.at( outSize - 2 ), outY.at( outSize - 2 ), outX.at( 1 ), outY.at( 1 ) ) == 0;
     if ( firstVertexIsRedundant )
     {
       outX.removeAt( 0 );
       outY.removeAt( 0 );
-      outX[ outSize - 2 ] = outX.at( 0 );
-      outY[ outSize - 2 ] = outY.at( 0 );
+      outX[outSize - 2] = outX.at( 0 );
+      outY[outSize - 2] = outY.at( 0 );
     }
   }
 

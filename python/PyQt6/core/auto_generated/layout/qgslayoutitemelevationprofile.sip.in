@@ -9,7 +9,7 @@
 
 
 
-class QgsLayoutItemElevationProfile: QgsLayoutItem
+class QgsLayoutItemElevationProfile : QgsLayoutItem
 {
 %Docstring(signature="appended")
 A layout item subclass for elevation profile plots.
@@ -21,7 +21,6 @@ A layout item subclass for elevation profile plots.
 #include "qgslayoutitemelevationprofile.h"
 %End
   public:
-
     QgsLayoutItemElevationProfile( QgsLayout *layout );
 %Docstring
 Constructor for QgsLayoutItemElevationProfile, with the specified parent
@@ -69,6 +68,23 @@ Returns the list of map layers participating in the elevation profile.
 Sets the list of map ``layers`` participating in the elevation profile.
 
 .. seealso:: :py:func:`layers`
+%End
+
+    QList<QgsAbstractProfileSource *> sources() const;
+%Docstring
+Returns the list of sources participating in the elevation profile.
+
+It includes both layer profile sources and custom sources from the
+profile source registry.
+
+.. seealso:: :py:func:`setSources`
+%End
+
+    void setSources( const QList<QgsAbstractProfileSource *> &sources );
+%Docstring
+Sets the list of ``sources`` participating in the elevation profile.
+
+.. seealso:: :py:func:`sources`
 %End
 
     void setProfileCurve( QgsCurve *curve /Transfer/ );

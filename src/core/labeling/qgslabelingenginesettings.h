@@ -15,9 +15,10 @@
 #ifndef QGSLABELINGENGINESETTINGS_H
 #define QGSLABELINGENGINESETTINGS_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
+
 #include <QColor>
 
 class QgsProject;
@@ -33,8 +34,7 @@ class QgsReadWriteContext;
 class CORE_EXPORT QgsLabelingEngineSettings
 {
   public:
-
-    // TODO QGIS 4 - remove
+    // TODO QGIS 5 - remove
 
     /**
      * Search methods in the PAL library to remove colliding labels
@@ -53,7 +53,10 @@ class CORE_EXPORT QgsLabelingEngineSettings
     ~QgsLabelingEngineSettings();
 
     QgsLabelingEngineSettings( const QgsLabelingEngineSettings &other );
+    SIP_SKIP QgsLabelingEngineSettings( QgsLabelingEngineSettings &&other );
+
     QgsLabelingEngineSettings &operator=( const QgsLabelingEngineSettings &other );
+    QgsLabelingEngineSettings &operator=( QgsLabelingEngineSettings &&other );
 
     //! Returns the configuration to the defaults
     void clear();
@@ -65,7 +68,13 @@ class CORE_EXPORT QgsLabelingEngineSettings
     //! Test whether a particular flag is enabled
     bool testFlag( Qgis::LabelingFlag f ) const { return mFlags.testFlag( f ); }
     //! Sets whether a particual flag is enabled
-    void setFlag( Qgis::LabelingFlag f, bool enabled = true ) { if ( enabled ) mFlags |= f; else mFlags &= ~static_cast< int >( f ); }
+    void setFlag( Qgis::LabelingFlag f, bool enabled = true )
+    {
+      if ( enabled )
+        mFlags |= f;
+      else
+        mFlags &= ~static_cast< int >( f );
+    }
 
     /**
      * Returns the maximum number of line label candidate positions per centimeter.
@@ -133,7 +142,7 @@ class CORE_EXPORT QgsLabelingEngineSettings
      */
     Q_DECL_DEPRECATED Search searchMethod() const SIP_DEPRECATED { return Chain; }
 
-    // TODO QGIS 4.0 -- remove these, and just use read/writeXml directly:
+    // TODO QGIS 5.0 -- remove these, and just use read/writeXml directly:
 
     /**
      * Read configuration of the labeling engine from a project
@@ -184,7 +193,7 @@ class CORE_EXPORT QgsLabelingEngineSettings
      */
     void resolveReferences( const QgsProject *project ); // cppcheck-suppress functionConst
 
-    // TODO QGIS 4.0: In reality the text render format settings don't only apply to labels, but also
+    // TODO QGIS 5.0: In reality the text render format settings don't only apply to labels, but also
     // ANY text rendered using QgsTextRenderer (including some non-label text items in layouts).
     // These methods should possibly be moved out of here and into the general QgsProject settings.
 
@@ -194,10 +203,7 @@ class CORE_EXPORT QgsLabelingEngineSettings
      * \see setDefaultTextRenderFormat()
      * \since QGIS 3.4.3
      */
-    Qgis::TextRenderFormat defaultTextRenderFormat() const
-    {
-      return mDefaultTextRenderFormat;
-    }
+    Qgis::TextRenderFormat defaultTextRenderFormat() const { return mDefaultTextRenderFormat; }
 
     /**
      * Sets the default text rendering \a format for the labels.
@@ -205,10 +211,7 @@ class CORE_EXPORT QgsLabelingEngineSettings
      * \see defaultTextRenderFormat()
      * \since QGIS 3.4.3
      */
-    void setDefaultTextRenderFormat( Qgis::TextRenderFormat format )
-    {
-      mDefaultTextRenderFormat = format;
-    }
+    void setDefaultTextRenderFormat( Qgis::TextRenderFormat format ) { mDefaultTextRenderFormat = format; }
 
     /**
      * Returns the color to use when rendering unplaced labels.
@@ -303,7 +306,6 @@ class CORE_EXPORT QgsLabelingEngineSettings
     Qgis::TextRenderFormat mDefaultTextRenderFormat = Qgis::TextRenderFormat::AlwaysOutlines;
 
     std::vector< std::unique_ptr< QgsAbstractLabelingEngineRule > > mEngineRules;
-
 };
 
 #endif // QGSLABELINGENGINESETTINGS_H

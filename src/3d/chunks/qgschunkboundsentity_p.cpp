@@ -14,15 +14,14 @@
  ***************************************************************************/
 
 #include "qgschunkboundsentity_p.h"
-#include "moc_qgschunkboundsentity_p.cpp"
 
-#include <Qt3DExtras/QPhongMaterial>
-
-#include "qgsaabb.h"
 #include "qgs3dwiredmesh_p.h"
+#include "qgsaabb.h"
 #include "qgsbox3d.h"
 #include "qgsgeotransform.h"
+#include "qgsunlitmaterial.h"
 
+#include "moc_qgschunkboundsentity_p.cpp"
 
 ///@cond PRIVATE
 
@@ -33,8 +32,9 @@ QgsChunkBoundsEntity::QgsChunkBoundsEntity( const QgsVector3D &vertexDataOrigin,
   mAabbMesh = new Qgs3DWiredMesh;
   addComponent( mAabbMesh );
 
-  Qt3DExtras::QPhongMaterial *bboxesMaterial = new Qt3DExtras::QPhongMaterial;
-  bboxesMaterial->setAmbient( Qt::red );
+  auto *bboxesMaterial = new QgsUnlitMaterial();
+  bboxesMaterial->setColor( Qt::red );
+  bboxesMaterial->setCastsShadows( false );
   addComponent( bboxesMaterial );
 
   QgsGeoTransform *transform = new QgsGeoTransform;

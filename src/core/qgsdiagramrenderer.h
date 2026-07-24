@@ -17,20 +17,22 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
+#include "qgscoordinatetransform.h"
+#include "qgsdiagram.h"
+#include "qgsexpressioncontext.h"
+#include "qgsmapunitscale.h"
+#include "qgspropertycollection.h"
+#include "qgsreadwritecontext.h"
+
 #include <QColor>
+#include <QDomDocument>
 #include <QFont>
 #include <QList>
 #include <QPointF>
 #include <QSizeF>
-#include <QDomDocument>
+#include <QString>
 
-#include "qgsexpressioncontext.h"
-#include "qgscoordinatetransform.h"
-#include "qgspropertycollection.h"
-
-#include "qgsdiagram.h"
-#include "qgsreadwritecontext.h"
-#include "qgsmapunitscale.h"
+using namespace Qt::StringLiterals;
 
 class QgsDiagramRenderer;
 class QgsFeature;
@@ -45,7 +47,10 @@ class QgsPaintEffect;
 class QgsDataDefinedSizeLegend;
 class QgsLineSymbol;
 
-namespace pal SIP_SKIP { class Layer; }
+namespace pal SIP_SKIP
+{
+  class Layer;
+}
 
 /**
  * \ingroup core
@@ -59,22 +64,21 @@ namespace pal SIP_SKIP { class Layer; }
 class CORE_EXPORT QgsDiagramLayerSettings
 {
   public:
-
     //avoid inclusion of QgsPalLabeling
     enum Placement
     {
-      AroundPoint = 0, // Point / Polygon
-      OverPoint, // Point / Polygon
-      Line, // Line / Polygon
-      Curved, // Line
-      Horizontal, // Polygon
-      Free // Polygon
+      AroundPoint = 0, //!< Point / Polygon
+      OverPoint,       //!< Point / Polygon
+      Line,            //!< Line / Polygon
+      Curved,          //!< Line
+      Horizontal,      //!< Polygon
+      Free             //!< Polygon
     };
 
     //! Line placement flags for controlling line based placements
     enum LinePlacementFlag SIP_ENUM_BASETYPE( IntFlag )
     {
-      OnLine    = 1,
+      OnLine = 1,
       AboveLine = 1 << 1,
       BelowLine = 1 << 2,
       MapOrientation = 1 << 4,
@@ -87,19 +91,19 @@ class CORE_EXPORT QgsDiagramLayerSettings
      * Data definable properties.
      */
     enum class Property SIP_MONKEYPATCH_SCOPEENUM_UNNEST( QgsDiagramLayerSettings, Property ) : int
-      {
+    {
       BackgroundColor, //!< Diagram background color
-      StrokeColor, //!< Stroke color
-      StrokeWidth, //!< Stroke width
-      PositionX, //!< X-coordinate data defined diagram position
-      PositionY, //!< Y-coordinate data defined diagram position
-      Distance, //!< Distance to diagram from feature
-      Priority, //!< Diagram priority (between 0 and 10)
-      ZIndex, //!< Z-index for diagram ordering
-      IsObstacle, //!< Whether diagram features act as obstacles for other diagrams/labels
-      Show, //!< Whether to show the diagram
-      AlwaysShow, //!< Whether the diagram should always be shown, even if it overlaps other diagrams/labels
-      StartAngle, //!< Angle offset for pie diagram
+      StrokeColor,     //!< Stroke color
+      StrokeWidth,     //!< Stroke width
+      PositionX,       //!< X-coordinate data defined diagram position
+      PositionY,       //!< Y-coordinate data defined diagram position
+      Distance,        //!< Distance to diagram from feature
+      Priority,        //!< Diagram priority (between 0 and 10)
+      ZIndex,          //!< Z-index for diagram ordering
+      IsObstacle,      //!< Whether diagram features act as obstacles for other diagrams/labels
+      Show,            //!< Whether to show the diagram
+      AlwaysShow,      //!< Whether the diagram should always be shown, even if it overlaps other diagrams/labels
+      StartAngle,      //!< Angle offset for pie diagram
     };
     // *INDENT-ON*
 
@@ -121,8 +125,10 @@ class CORE_EXPORT QgsDiagramLayerSettings
     QgsDiagramLayerSettings();
 
     QgsDiagramLayerSettings( const QgsDiagramLayerSettings &rh );
+    SIP_SKIP QgsDiagramLayerSettings( QgsDiagramLayerSettings &&rh );
 
     QgsDiagramLayerSettings &operator=( const QgsDiagramLayerSettings &rh );
+    QgsDiagramLayerSettings &operator=( QgsDiagramLayerSettings &&rh );
 
     ~QgsDiagramLayerSettings();
 
@@ -308,7 +314,6 @@ class CORE_EXPORT QgsDiagramLayerSettings
     void setDataDefinedProperties( const QgsPropertyCollection &collection ) { mDataDefinedProperties = collection; }
 
   private:
-
     //! Associated coordinate transform, or invalid transform for no transformation
     QgsCoordinateTransform mCt;
 
@@ -347,7 +352,6 @@ class CORE_EXPORT QgsDiagramLayerSettings
 
     //! Property definitions
     static QgsPropertiesDefinition sPropertyDefinitions;
-
 };
 
 /**
@@ -362,7 +366,6 @@ class CORE_EXPORT QgsDiagramLayerSettings
 class CORE_EXPORT QgsDiagramSettings
 {
   public:
-
     enum LabelPlacementMethod
     {
       Height,
@@ -384,7 +387,7 @@ class CORE_EXPORT QgsDiagramSettings
      */
     enum Direction
     {
-      Clockwise, //!< Clockwise orientation
+      Clockwise,        //!< Clockwise orientation
       Counterclockwise, //!< Counter-clockwise orientation
     };
 
@@ -691,7 +694,6 @@ class CORE_EXPORT QgsDiagramSettings
     void setPaintEffect( QgsPaintEffect *effect SIP_TRANSFER );
 
   private:
-
     double mSpacing = 0;
     Qgis::RenderUnit mSpacingUnit = Qgis::RenderUnit::Millimeters;
     QgsMapUnitScale mSpacingMapUnitScale;
@@ -705,7 +707,6 @@ class CORE_EXPORT QgsDiagramSettings
     bool mShowAxis = false;
     std::unique_ptr< QgsLineSymbol > mAxisLineSymbol;
     std::unique_ptr< QgsPaintEffect > mPaintEffect;
-
 };
 
 /**
@@ -737,18 +738,17 @@ class CORE_EXPORT QgsDiagramInterpolationSettings
 
 class CORE_EXPORT QgsDiagramRenderer
 {
-
 #ifdef SIP_RUN
     SIP_CONVERT_TO_SUBCLASS_CODE
-    if ( sipCpp->rendererName() == QLatin1String( "SingleCategory" ) )
+    if ( sipCpp->rendererName() == "SingleCategory"_L1 )
       sipType = sipType_QgsSingleCategoryDiagramRenderer;
-    else if ( sipCpp->rendererName() == QLatin1String( "LinearlyInterpolated" ) )
+    else if ( sipCpp->rendererName() == "LinearlyInterpolated"_L1 )
       sipType = sipType_QgsLinearlyInterpolatedDiagramRenderer;
-    else if ( sipCpp->rendererName() == QLatin1String( "Stacked" ) )
+    else if ( sipCpp->rendererName() == "Stacked"_L1 )
       sipType = sipType_QgsStackedDiagramRenderer;
     else
       sipType = NULL;
-    SIP_END
+  SIP_END
 #endif
 
   public:
@@ -1013,14 +1013,14 @@ class CORE_EXPORT QgsStackedDiagramRenderer : public QgsDiagramRenderer
     QgsStackedDiagramRenderer *clone() const override SIP_FACTORY;
 
     //! Returns size of the diagram for a feature in map units. Returns an invalid QSizeF in case of error
-    virtual QSizeF sizeMapUnits( const QgsFeature &feature, const QgsRenderContext &c ) const override;
+    QSizeF sizeMapUnits( const QgsFeature &feature, const QgsRenderContext &c ) const override;
 
     /**
      * Renders the diagram for a specified feature at a specific position in the
      * passed render context, taking all renderers and their own diagrams into account.
      * Diagram rendering is delegated to renderer's diagram.
      */
-    virtual void renderDiagram( const QgsFeature &feature, QgsRenderContext &c, QPointF pos, const QgsPropertyCollection &properties = QgsPropertyCollection() ) const override;
+    void renderDiagram( const QgsFeature &feature, QgsRenderContext &c, QPointF pos, const QgsPropertyCollection &properties = QgsPropertyCollection() ) const override;
 
     //! Returns list with all diagram settings in the renderer
     QList<QgsDiagramSettings> diagramSettings() const override;

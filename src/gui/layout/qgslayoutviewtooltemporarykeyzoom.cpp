@@ -14,16 +14,18 @@
  ***************************************************************************/
 
 #include "qgslayoutviewtooltemporarykeyzoom.h"
-#include "moc_qgslayoutviewtooltemporarykeyzoom.cpp"
-#include "qgslayoutviewmouseevent.h"
+
 #include "qgslayoutview.h"
-#include <QScrollBar>
+#include "qgslayoutviewmouseevent.h"
+
 #include <QApplication>
+#include <QScrollBar>
+
+#include "moc_qgslayoutviewtooltemporarykeyzoom.cpp"
 
 QgsLayoutViewToolTemporaryKeyZoom::QgsLayoutViewToolTemporaryKeyZoom( QgsLayoutView *view )
   : QgsLayoutViewToolZoom( view )
-{
-}
+{}
 
 void QgsLayoutViewToolTemporaryKeyZoom::layoutReleaseEvent( QgsLayoutViewMouseEvent *event )
 {

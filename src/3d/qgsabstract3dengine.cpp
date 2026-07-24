@@ -14,7 +14,6 @@
  ***************************************************************************/
 
 #include "qgsabstract3dengine.h"
-#include "moc_qgsabstract3dengine.cpp"
 
 #include "qgsframegraph.h"
 #include "qgslogger.h"
@@ -22,10 +21,11 @@
 #include <Qt3DRender/QRenderCapture>
 #include <Qt3DRender/QRenderSettings>
 
+#include "moc_qgsabstract3dengine.cpp"
+
 QgsAbstract3DEngine::QgsAbstract3DEngine( QObject *parent )
   : QObject( parent )
-{
-}
+{}
 
 void QgsAbstract3DEngine::requestCaptureImage()
 {

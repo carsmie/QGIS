@@ -14,13 +14,20 @@
  ***************************************************************************/
 
 #include "qgslayoutviewtoolmoveitemcontent.h"
-#include "moc_qgslayoutviewtoolmoveitemcontent.cpp"
-#include "qgslayoutviewmouseevent.h"
-#include "qgslayoutview.h"
+
 #include "qgslayout.h"
 #include "qgslayoutitemnodeitem.h"
-#include "qgssettings.h"
 #include "qgslayoutundostack.h"
+#include "qgslayoutview.h"
+#include "qgslayoutviewmouseevent.h"
+#include "qgssettings.h"
+#include "qgssettingsregistrygui.h"
+
+#include <QString>
+
+#include "moc_qgslayoutviewtoolmoveitemcontent.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayoutViewToolMoveItemContent::QgsLayoutViewToolMoveItemContent( QgsLayoutView *view )
   : QgsLayoutViewTool( view, tr( "Select" ) )
@@ -101,9 +108,8 @@ void QgsLayoutViewToolMoveItemContent::wheelEvent( QWheelEvent *event )
   if ( !item || !item->isSelected() )
     return;
 
-  const QgsSettings settings;
-  double zoomFactor = settings.value( QStringLiteral( "qgis/zoom_factor" ), 2.0 ).toDouble();
-  bool reverseZoom = settings.value( QStringLiteral( "qgis/reverse_wheel_zoom" ), false ).toBool();
+  double zoomFactor = QgsSettingsRegistryGui::settingsZoomFactor->value();
+  bool reverseZoom = QgsSettingsRegistryGui::settingsReverseWheelZoom->value();
   bool zoomIn = reverseZoom ? event->angleDelta().y() < 0 : event->angleDelta().y() > 0;
 
   // "Normal" mouse have an angle delta of 120, precision mouses provide data faster, in smaller steps

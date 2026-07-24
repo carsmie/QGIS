@@ -18,15 +18,16 @@
 #define QGSATTRIBUTETYPEDIALOG_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
 
 #include "ui_qgsattributetypeedit.h"
 
+#include "qgis_gui.h"
 #include "qgseditorconfigwidget.h"
 #include "qgsfeature.h"
-#include "qgsvectordataprovider.h"
 #include "qgshelp.h"
-#include "qgis_gui.h"
+#include "qgsvectordataprovider.h"
+
+#define SIP_NO_FILE
 
 class QWidget;
 class QStandardItem;
@@ -75,20 +76,20 @@ class GUI_EXPORT QgsAttributeTypeDialog : public QWidget, private Ui::QgsAttribu
     bool labelOnTop() const;
 
     /**
-     * Setter for checkbox to reuse last entered values for the field.
+     * Setter for checkbox to remember last entered values by default for the field.
      *
-     * \see reuseLastValues()
-     * \since QGIS 3.20
+     * \see reuseLastValuePolicy()
+     * \since QGIS 4.0
      */
-    void setReuseLastValues( bool reuse );
+    void setReuseLastValuePolicy( Qgis::AttributeFormReuseLastValuePolicy policy );
 
     /**
-     * Getter for checkbox to reuse last entered values for the field.
+     * Getter for checkbox to remember last entered values by default for the field.
      *
-     * \see setReuseLastValues()
-     * \since QGIS 3.20
+     * \see setReuseLastValuePolicy()
+     * \since QGIS 4.0
      */
-    bool reuseLastValues() const;
+    Qgis::AttributeFormReuseLastValuePolicy reuseLastValuePolicy() const;
 
     /**
      * Setter for label alias
@@ -99,6 +100,19 @@ class GUI_EXPORT QgsAttributeTypeDialog : public QWidget, private Ui::QgsAttribu
      * Getter for label alias
      */
     QString alias() const;
+
+    /**
+     * Sets the custom comment and triggers an update of the displayed text, which defaults to the provider comment if \a customComment is NULL.
+     * \since QGIS 4.2
+     */
+    void setCustomComment( const QString &customComment );
+
+    /**
+     * Returns the custom comment.
+     * The custom comment is NULL when the displayed text matches the provider comment.
+     * \since QGIS 4.2
+     */
+    QString customComment() const;
 
     /**
      * Sets the data defined properties to \a properties.
@@ -113,8 +127,8 @@ class GUI_EXPORT QgsAttributeTypeDialog : public QWidget, private Ui::QgsAttribu
     QgsPropertyCollection dataDefinedProperties() const;
 
     /**
-     * Setter for label comment
-     */
+    * Sets the comment and triggers an update of the displayed text, which sets the custom comment as is but defaults to the comment when the custom comment is NULL.
+    */
     void setComment( const QString &comment );
 
     /**
@@ -299,13 +313,19 @@ class GUI_EXPORT QgsAttributeTypeDialog : public QWidget, private Ui::QgsAttribu
 
     void defaultExpressionChanged();
 
+    void updateReuseLastValuePolicyLabel();
+
     void updateSplitPolicyLabel();
 
     void updateDuplicatePolicyLabel();
 
     void updateMergePolicyLabel();
 
+    void displayedCommentChanged();
+
   private:
+    void updateDisplayedComment();
+
     QgsVectorLayer *mLayer = nullptr;
     int mFieldIdx;
 
@@ -319,6 +339,10 @@ class GUI_EXPORT QgsAttributeTypeDialog : public QWidget, private Ui::QgsAttribu
     QgsFeature mPreviewFeature;
 
     QgsPropertyCollection mDataDefinedProperties;
+
+    QAction *mClearAction = nullptr;
+    QString mComment;
+    QString mCustomComment;
 };
 
 #endif

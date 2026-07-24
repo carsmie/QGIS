@@ -16,13 +16,16 @@
 // along with CppSheets. If not, see <https://www.gnu.org/licenses/>.
 
 #include "qgstableeditorwidget.h"
-#include "moc_qgstableeditorwidget.cpp"
+
 #include "qgsnumericformat.h"
-#include <QStringList>
-#include <QKeyEvent>
+
 #include <QHeaderView>
+#include <QKeyEvent>
 #include <QMenu>
 #include <QPlainTextEdit>
+#include <QStringList>
+
+#include "moc_qgstableeditorwidget.cpp"
 
 QgsTableEditorWidget::QgsTableEditorWidget( QWidget *parent )
   : QTableWidget( parent )
@@ -330,8 +333,7 @@ bool QgsTableEditorWidget::hasMergedCells( const QModelIndexList &list ) const
 {
   for ( const QModelIndex &index : list )
   {
-    if ( rowSpan( index.row(), index.column() ) > 1
-         || columnSpan( index.row(), index.column() ) > 1 )
+    if ( rowSpan( index.row(), index.column() ) > 1 || columnSpan( index.row(), index.column() ) > 1 )
       return true;
   }
   return false;
@@ -535,8 +537,7 @@ QgsNumericFormat *QgsTableEditorWidget::selectionNumericFormat()
         f = mNumericFormats.value( i );
         first = false;
       }
-      else if ( ( !f && !mNumericFormats.value( i ) )
-                || ( f && mNumericFormats.value( i ) && *f == *mNumericFormats.value( i ) ) )
+      else if ( ( !f && !mNumericFormats.value( i ) ) || ( f && mNumericFormats.value( i ) && *f == *mNumericFormats.value( i ) ) )
         continue;
       else
       {
@@ -565,8 +566,7 @@ bool QgsTableEditorWidget::hasMixedSelectionNumericFormat()
         f = mNumericFormats.value( i );
         first = false;
       }
-      else if ( ( !f && !mNumericFormats.value( i ) )
-                || ( f && mNumericFormats.value( i ) && *f == *mNumericFormats.value( i ) ) )
+      else if ( ( !f && !mNumericFormats.value( i ) ) || ( f && mNumericFormats.value( i ) && *f == *mNumericFormats.value( i ) ) )
         continue;
       else
       {
@@ -692,7 +692,7 @@ QgsTextFormat QgsTableEditorWidget::selectionTextFormat()
     QgsTextFormat cellFormat = model()->data( index, TextFormat ).value<QgsTextFormat>();
     if ( first )
     {
-      format = cellFormat;
+      format = std::move( cellFormat );
       first = false;
     }
     else if ( cellFormat == format )
@@ -863,16 +863,12 @@ bool QgsTableEditorWidget::isHeaderCellSelected() const
 
 bool QgsTableEditorWidget::canMergeSelection() const
 {
-  return selectedIndexes().size() > 1
-         && !isHeaderCellSelected()
-         && isRectangularSelection( selectedIndexes() );
+  return selectedIndexes().size() > 1 && !isHeaderCellSelected() && isRectangularSelection( selectedIndexes() );
 }
 
 bool QgsTableEditorWidget::canSplitSelection() const
 {
-  return !selectedIndexes().empty()
-         && !isHeaderCellSelected()
-         && hasMergedCells( selectedIndexes() );
+  return !selectedIndexes().empty() && !isHeaderCellSelected() && hasMergedCells( selectedIndexes() );
 }
 
 void QgsTableEditorWidget::insertRowsBelow()
@@ -1565,8 +1561,7 @@ void QgsTableEditorTextEdit::changeEvent( QEvent *e )
 
 QgsTableEditorDelegate::QgsTableEditorDelegate( QObject *parent )
   : QStyledItemDelegate( parent )
-{
-}
+{}
 
 void QgsTableEditorDelegate::setWeakEditorMode( bool weakEditorMode )
 {
@@ -1578,9 +1573,9 @@ QWidget *QgsTableEditorDelegate::createEditor( QWidget *parent, const QStyleOpti
   QgsTableEditorTextEdit *w = new QgsTableEditorTextEdit( parent );
   w->setWeakEditorMode( mWeakEditorMode );
 
-  if ( !w->style()->styleHint( QStyle::SH_ItemView_DrawDelegateFrame, 0, w ) )
+  if ( !w->style()->styleHint( QStyle::SH_ItemView_DrawDelegateFrame, nullptr, w ) )
     w->setFrameShape( QFrame::NoFrame );
-  if ( !w->style()->styleHint( QStyle::SH_ItemView_ShowDecorationSelected, 0, w ) )
+  if ( !w->style()->styleHint( QStyle::SH_ItemView_ShowDecorationSelected, nullptr, w ) )
     w->setWidgetOwnsGeometry( true );
 
   return w;

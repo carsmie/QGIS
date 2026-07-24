@@ -14,17 +14,17 @@
  ***************************************************************************/
 
 #include "qgscopyfiletask.h"
-#include "moc_qgscopyfiletask.cpp"
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QDir>
+
+#include "moc_qgscopyfiletask.cpp"
 
 QgsCopyFileTask::QgsCopyFileTask( const QString &source, const QString &destination )
-  : mSource( source ),
-    mDestination( destination )
-{
-}
+  : mSource( source )
+  , mDestination( destination )
+{}
 
 bool QgsCopyFileTask::run()
 {
@@ -54,8 +54,16 @@ bool QgsCopyFileTask::run()
     return false;
   }
 
-  fileSource.open( QIODevice::ReadOnly );
-  fileDestination.open( QIODevice::WriteOnly );
+  if ( !fileSource.open( QIODevice::ReadOnly ) )
+  {
+    mErrorString = tr( "Could not open '%1' for reading" ).arg( mSource );
+    return false;
+  }
+  if ( !fileDestination.open( QIODevice::WriteOnly ) )
+  {
+    mErrorString = tr( "Could not open '%1' for writing" ).arg( mDestination );
+    return false;
+  }
 
   const int size = fileSource.size();
   const int chunkSize = std::clamp( size / 100, 1024, 1024 * 1024 );

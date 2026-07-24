@@ -16,16 +16,16 @@
  ***************************************************************************/
 
 #include "qgslayoutpicturewidget.h"
-#include "moc_qgslayoutpicturewidget.cpp"
+
 #include "qgsapplication.h"
+#include "qgsexpressionbuilderdialog.h"
+#include "qgsfilecontentsourcelineedit.h"
+#include "qgslayout.h"
 #include "qgslayoutitemmap.h"
 #include "qgslayoutitempicture.h"
-#include "qgslayout.h"
-#include "qgsexpressionbuilderdialog.h"
-#include "qgssvgcache.h"
 #include "qgssettings.h"
+#include "qgssvgcache.h"
 #include "qgssvgselectorwidget.h"
-#include "qgsfilecontentsourcelineedit.h"
 
 #include <QDoubleValidator>
 #include <QFileDialog>
@@ -34,7 +34,12 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QProgressDialog>
+#include <QString>
 #include <QSvgRenderer>
+
+#include "moc_qgslayoutpicturewidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayoutPictureWidget::QgsLayoutPictureWidget( QgsLayoutItemPicture *picture )
   : QgsLayoutItemBaseWidget( nullptr, picture )
@@ -44,7 +49,7 @@ QgsLayoutPictureWidget::QgsLayoutPictureWidget( QgsLayoutItemPicture *picture )
 
   mSvgSelectorWidget->setAllowParameters( true );
   mSvgSelectorWidget->sourceLineEdit()->setPropertyOverrideToolButtonVisible( true );
-  mSvgSelectorWidget->sourceLineEdit()->setLastPathSettingsKey( QStringLiteral( "/UI/lastSVGMarkerDir" ) );
+  mSvgSelectorWidget->sourceLineEdit()->setLastPathSettingsKey( u"/UI/lastComposerPictureDir"_s );
   mSvgSelectorWidget->initParametersModel( layoutObject(), coverageLayer() );
 
   mResizeModeComboBox->addItem( tr( "Zoom" ), QgsLayoutItemPicture::Zoom );
@@ -63,6 +68,9 @@ QgsLayoutPictureWidget::QgsLayoutPictureWidget( QgsLayoutItemPicture *picture )
   mAnchorPointComboBox->addItem( tr( "Bottom Center" ), QgsLayoutItem::LowerMiddle );
   mAnchorPointComboBox->addItem( tr( "Bottom Right" ), QgsLayoutItem::LowerRight );
 
+  mClipItemComboBox->setCurrentLayout( picture->layout() );
+  mClipItemComboBox->setItemFlags( QgsLayoutItem::FlagProvidesClipPath );
+
   connect( mPictureRotationSpinBox, static_cast<void ( QDoubleSpinBox::* )( double )>( &QDoubleSpinBox::valueChanged ), this, &QgsLayoutPictureWidget::mPictureRotationSpinBox_valueChanged );
   connect( mRotationFromComposerMapCheckBox, &QCheckBox::stateChanged, this, &QgsLayoutPictureWidget::mRotationFromComposerMapCheckBox_stateChanged );
   connect( mResizeModeComboBox, static_cast<void ( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ), this, &QgsLayoutPictureWidget::mResizeModeComboBox_currentIndexChanged );
@@ -78,16 +86,26 @@ QgsLayoutPictureWidget::QgsLayoutPictureWidget( QgsLayoutItemPicture *picture )
   connect( mRadioSVG, &QRadioButton::toggled, this, &QgsLayoutPictureWidget::modeChanged );
   connect( mRadioRaster, &QRadioButton::toggled, this, &QgsLayoutPictureWidget::modeChanged );
 
-  mSvgSelectorWidget->sourceLineEdit()->setLastPathSettingsKey( QStringLiteral( "/UI/lastComposerPictureDir" ) );
+  connect( mClipToItemCheckBox, &QGroupBox::toggled, this, [this]( bool active ) {
+    mPicture->beginCommand( tr( "Toggle Picture Clipping" ) );
+    mPicture->setClipToItem( active );
+    mPicture->endCommand();
+  } );
+
+  connect( mClipItemComboBox, &QgsLayoutItemComboBox::itemChanged, this, [this]( QgsLayoutItem *item ) {
+    mPicture->beginCommand( tr( "Change Picture Clipping Item" ) );
+    mPicture->setClippingItem( item );
+    mPicture->endCommand();
+  } );
 
   setPanelTitle( tr( "Picture Properties" ) );
 
   mFillColorButton->setAllowOpacity( true );
   mFillColorButton->setColorDialogTitle( tr( "Select Fill Color" ) );
-  mFillColorButton->setContext( QStringLiteral( "composer" ) );
+  mFillColorButton->setContext( u"composer"_s );
   mStrokeColorButton->setAllowOpacity( true );
   mStrokeColorButton->setColorDialogTitle( tr( "Select Stroke Color" ) );
-  mStrokeColorButton->setContext( QStringLiteral( "composer" ) );
+  mStrokeColorButton->setContext( u"composer"_s );
 
   mFillColorDDBtn->registerLinkedWidget( mFillColorButton );
   mStrokeColorDDBtn->registerLinkedWidget( mStrokeColorButton );
@@ -277,6 +295,8 @@ void QgsLayoutPictureWidget::setGuiElementValues()
     mFillColorButton->blockSignals( true );
     mStrokeColorButton->blockSignals( true );
     mStrokeWidthSpinBox->blockSignals( true );
+    mClipToItemCheckBox->blockSignals( true );
+    mClipItemComboBox->blockSignals( true );
 
     mPictureRotationSpinBox->setValue( mPicture->pictureRotation() );
 
@@ -335,6 +355,9 @@ void QgsLayoutPictureWidget::setGuiElementValues()
     mStrokeColorButton->setColor( mPicture->svgStrokeColor() );
     mStrokeWidthSpinBox->setValue( mPicture->svgStrokeWidth() );
 
+    mClipToItemCheckBox->setChecked( mPicture->clipToItem() );
+    mClipItemComboBox->setItem( mPicture->clippingItem() );
+
     mRotationFromComposerMapCheckBox->blockSignals( false );
     mPictureRotationSpinBox->blockSignals( false );
     mComposerMapComboBox->blockSignals( false );
@@ -345,6 +368,8 @@ void QgsLayoutPictureWidget::setGuiElementValues()
     mFillColorButton->blockSignals( false );
     mStrokeColorButton->blockSignals( false );
     mStrokeWidthSpinBox->blockSignals( false );
+    mClipToItemCheckBox->blockSignals( false );
+    mClipItemComboBox->blockSignals( false );
 
     populateDataDefinedButtons();
   }
@@ -362,7 +387,24 @@ void QgsLayoutPictureWidget::updateSvgParamGui( bool resetValues )
   QColor defaultFill, defaultStroke;
   double defaultStrokeWidth, defaultFillOpacity, defaultStrokeOpacity;
   bool hasDefaultFillColor, hasDefaultFillOpacity, hasDefaultStrokeColor, hasDefaultStrokeWidth, hasDefaultStrokeOpacity;
-  QgsApplication::svgCache()->containsParams( picturePath, hasFillParam, hasDefaultFillColor, defaultFill, hasFillOpacityParam, hasDefaultFillOpacity, defaultFillOpacity, hasStrokeParam, hasDefaultStrokeColor, defaultStroke, hasStrokeWidthParam, hasDefaultStrokeWidth, defaultStrokeWidth, hasStrokeOpacityParam, hasDefaultStrokeOpacity, defaultStrokeOpacity );
+  QgsApplication::svgCache()->containsParams(
+    picturePath,
+    hasFillParam,
+    hasDefaultFillColor,
+    defaultFill,
+    hasFillOpacityParam,
+    hasDefaultFillOpacity,
+    defaultFillOpacity,
+    hasStrokeParam,
+    hasDefaultStrokeColor,
+    defaultStroke,
+    hasStrokeWidthParam,
+    hasDefaultStrokeWidth,
+    defaultStrokeWidth,
+    hasStrokeOpacityParam,
+    hasDefaultStrokeOpacity,
+    defaultStrokeOpacity
+  );
 
   if ( resetValues )
   {

@@ -153,6 +153,10 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
       }
     },
     "schemas": {
+      "anyObject": {
+        "description": "any JSON object",
+        "type": "object"
+      },
       "collectionInfo": {
         "properties": {
           "crs": {
@@ -528,7 +532,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
       "name": ""
     },
     "title": "QGIS TestProject",
-    "version": ""
+    "version": "1.0.0"
   },
   "openapi": "3.0.1",
   "paths": {
@@ -568,7 +572,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
             "description": "An error occurred."
           }
         },
-        "summary": "WFS 3.0 Landing Page",
+        "summary": "OGC API Landing Page",
         "tags": [
           "Capabilities"
         ]
@@ -702,7 +706,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
     },
     "/wfs3/collections/exclude_attribute/items": {
       "get": {
-        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) or GeoJSON (.json).",
+        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeatures_testlayer_èé_2_a5f61891_b949_43e3_ad30_84013fc922de",
         "parameters": [
           {
@@ -802,81 +806,11 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         "tags": [
           "Features"
         ]
-      },
-      "post": {
-        "description": "Adds a new feature to the collection {collectionId}",
-        "operationId": "getFeatures_testlayer_èé_2_a5f61891_b949_43e3_ad30_84013fc922de_POST",
-        "responses": {
-          "201": {
-            "description": "A new feature was successfully added to the collection"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Adds a new feature to the collection {collectionId}",
-        "tags": [
-          "edit",
-          "insert"
-        ]
       }
     },
     "/wfs3/collections/exclude_attribute/items/{featureId}": {
-      "delete": {
-        "description": "Deletes the feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeatureDELETE",
-        "responses": {
-          "201": {
-            "description": "The feature was successfully deleted from the collection"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Deletes the feature with ID {featureId} in the collection {collectionId}",
-        "tags": [
-          "edit",
-          "delete"
-        ]
-      },
       "get": {
-        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html or GeoJSON (.json).",
+        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html), GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeature_testlayer_èé_2_a5f61891_b949_43e3_ad30_84013fc922de_GET",
         "parameters": [
           {
@@ -919,19 +853,22 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         "tags": [
           "Features"
         ]
-      },
-      "patch": {
-        "description": "Changes attributes of feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeaturePATCH",
+      }
+    },
+    "/wfs3/collections/exclude_attribute/schema": {
+      "get": {
+        "description": "Return the JSON schema of the collection with ID {collectionId}.",
+        "operationId": "getCollectionSchema_testlayer_èé_2_a5f61891_b949_43e3_ad30_84013fc922de_GET",
         "responses": {
           "200": {
-            "description": "The feature was successfully updated"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
+            "content": {
+              "application/schema+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/anyObject"
+                }
+              }
+            },
+            "description": "Retrieve the schema of the 'A test vector layer exclude attrs' feature collection."
           },
           "default": {
             "content": {
@@ -949,44 +886,9 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
             "description": "An error occurred."
           }
         },
-        "summary": "Changes attributes of feature with ID {featureId} in the collection {collectionId}",
+        "summary": "Retrieve the schema of the 'A test vector layer exclude attrs' feature collection",
         "tags": [
-          "edit"
-        ]
-      },
-      "put": {
-        "description": "Replaces the feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeaturePUT",
-        "responses": {
-          "200": {
-            "description": "The feature was successfully updated"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Replaces the feature with ID {featureId} in the collection {collectionId}",
-        "tags": [
-          "edit",
-          "replace"
+          "Capabilities"
         ]
       }
     },
@@ -1034,7 +936,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
     },
     "/wfs3/collections/fields_alias/items": {
       "get": {
-        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) or GeoJSON (.json).",
+        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeatures_testlayer_èé_cf86cf11_222f_4b62_929c_12cfc82b9774",
         "parameters": [
           {
@@ -1145,81 +1047,11 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         "tags": [
           "Features"
         ]
-      },
-      "post": {
-        "description": "Adds a new feature to the collection {collectionId}",
-        "operationId": "getFeatures_testlayer_èé_cf86cf11_222f_4b62_929c_12cfc82b9774_POST",
-        "responses": {
-          "201": {
-            "description": "A new feature was successfully added to the collection"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Adds a new feature to the collection {collectionId}",
-        "tags": [
-          "edit",
-          "insert"
-        ]
       }
     },
     "/wfs3/collections/fields_alias/items/{featureId}": {
-      "delete": {
-        "description": "Deletes the feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeatureDELETE",
-        "responses": {
-          "201": {
-            "description": "The feature was successfully deleted from the collection"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Deletes the feature with ID {featureId} in the collection {collectionId}",
-        "tags": [
-          "edit",
-          "delete"
-        ]
-      },
       "get": {
-        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html or GeoJSON (.json).",
+        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html), GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeature_testlayer_èé_cf86cf11_222f_4b62_929c_12cfc82b9774_GET",
         "parameters": [
           {
@@ -1262,19 +1094,22 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         "tags": [
           "Features"
         ]
-      },
-      "patch": {
-        "description": "Changes attributes of feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeaturePATCH",
+      }
+    },
+    "/wfs3/collections/fields_alias/schema": {
+      "get": {
+        "description": "Return the JSON schema of the collection with ID {collectionId}.",
+        "operationId": "getCollectionSchema_testlayer_èé_cf86cf11_222f_4b62_929c_12cfc82b9774_GET",
         "responses": {
           "200": {
-            "description": "The feature was successfully updated"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
+            "content": {
+              "application/schema+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/anyObject"
+                }
+              }
+            },
+            "description": "Retrieve the schema of the 'A test vector layer with aliases' feature collection."
           },
           "default": {
             "content": {
@@ -1292,44 +1127,9 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
             "description": "An error occurred."
           }
         },
-        "summary": "Changes attributes of feature with ID {featureId} in the collection {collectionId}",
+        "summary": "Retrieve the schema of the 'A test vector layer with aliases' feature collection",
         "tags": [
-          "edit"
-        ]
-      },
-      "put": {
-        "description": "Replaces the feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeaturePUT",
-        "responses": {
-          "200": {
-            "description": "The feature was successfully updated"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Replaces the feature with ID {featureId} in the collection {collectionId}",
-        "tags": [
-          "edit",
-          "replace"
+          "Capabilities"
         ]
       }
     },
@@ -1377,7 +1177,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
     },
     "/wfs3/collections/layer1_with_short_name/items": {
       "get": {
-        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) or GeoJSON (.json).",
+        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeatures_testlayer_c0988fd7_97ca_451d_adbc_37ad6d10583a",
         "parameters": [
           {
@@ -1488,81 +1288,11 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         "tags": [
           "Features"
         ]
-      },
-      "post": {
-        "description": "Adds a new feature to the collection {collectionId}",
-        "operationId": "getFeatures_testlayer_c0988fd7_97ca_451d_adbc_37ad6d10583a_POST",
-        "responses": {
-          "201": {
-            "description": "A new feature was successfully added to the collection"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Adds a new feature to the collection {collectionId}",
-        "tags": [
-          "edit",
-          "insert"
-        ]
       }
     },
     "/wfs3/collections/layer1_with_short_name/items/{featureId}": {
-      "delete": {
-        "description": "Deletes the feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeatureDELETE",
-        "responses": {
-          "201": {
-            "description": "The feature was successfully deleted from the collection"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Deletes the feature with ID {featureId} in the collection {collectionId}",
-        "tags": [
-          "edit",
-          "delete"
-        ]
-      },
       "get": {
-        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html or GeoJSON (.json).",
+        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html), GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeature_testlayer_c0988fd7_97ca_451d_adbc_37ad6d10583a_GET",
         "parameters": [
           {
@@ -1605,19 +1335,22 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         "tags": [
           "Features"
         ]
-      },
-      "patch": {
-        "description": "Changes attributes of feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeaturePATCH",
+      }
+    },
+    "/wfs3/collections/layer1_with_short_name/schema": {
+      "get": {
+        "description": "Return the JSON schema of the collection with ID {collectionId}.",
+        "operationId": "getCollectionSchema_testlayer_c0988fd7_97ca_451d_adbc_37ad6d10583a_GET",
         "responses": {
           "200": {
-            "description": "The feature was successfully updated"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
+            "content": {
+              "application/schema+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/anyObject"
+                }
+              }
+            },
+            "description": "Retrieve the schema of the 'A Layer1 with a short name' feature collection."
           },
           "default": {
             "content": {
@@ -1635,44 +1368,9 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
             "description": "An error occurred."
           }
         },
-        "summary": "Changes attributes of feature with ID {featureId} in the collection {collectionId}",
+        "summary": "Retrieve the schema of the 'A Layer1 with a short name' feature collection",
         "tags": [
-          "edit"
-        ]
-      },
-      "put": {
-        "description": "Replaces the feature with ID {featureId} in the collection {collectionId}",
-        "operationId": "getFeaturePUT",
-        "responses": {
-          "200": {
-            "description": "The feature was successfully updated"
-          },
-          "403": {
-            "description": "Forbidden: the operation requested was not authorized"
-          },
-          "500": {
-            "description": "Posted data could not be parsed correctly or another error occurred"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exception"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "An error occurred."
-          }
-        },
-        "summary": "Replaces the feature with ID {featureId} in the collection {collectionId}",
-        "tags": [
-          "edit",
-          "replace"
+          "Capabilities"
         ]
       }
     },
@@ -1720,7 +1418,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
     },
     "/wfs3/collections/testlayer èé/items": {
       "get": {
-        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) or GeoJSON (.json).",
+        "description": "Every feature in a dataset belongs to a collection. A dataset may consist of multiple feature collections. A feature collection is often a collection of features of a similar type, based on a common schema. Use content negotiation or specify a file extension to request HTML (.html) GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeatures_testlayer20150528120452665",
         "parameters": [
           {
@@ -1905,7 +1603,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         ]
       },
       "get": {
-        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html or GeoJSON (.json).",
+        "description": "Retrieve a feature with ID {featureId} from the collection with ID {collectionId}; use content negotiation or specify a file extension to request HTML (.html), GeoJSON (.json) or FlatGeobuf (.fgb).",
         "operationId": "getFeature_testlayer20150528120452665_GET",
         "parameters": [
           {
@@ -2019,9 +1717,46 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
         ]
       }
     },
+    "/wfs3/collections/testlayer èé/schema": {
+      "get": {
+        "description": "Return the JSON schema of the collection with ID {collectionId}.",
+        "operationId": "getCollectionSchema_testlayer20150528120452665_GET",
+        "responses": {
+          "200": {
+            "content": {
+              "application/schema+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/anyObject"
+                }
+              }
+            },
+            "description": "Retrieve the schema of the 'A test wfs vector layer èé' feature collection."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/exception"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "An error occurred."
+          }
+        },
+        "summary": "Retrieve the schema of the 'A test wfs vector layer èé' feature collection",
+        "tags": [
+          "Capabilities"
+        ]
+      }
+    },
     "/wfs3/conformance": {
       "get": {
-        "description": "List all requirements classes specified in a standard (e.g., WFS 3.0 Part 1: Core) that the server conforms to.",
+        "description": "List all requirements classes specified in a standard (e.g., OGCAPI Features 1.0 Part 1: Core) that the server conforms to.",
         "operationId": "getRequirementClasses",
         "responses": {
           "200": {
@@ -2037,7 +1772,7 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
                 }
               }
             },
-            "description": "List all requirements classes specified in a standard (e.g., WFS 3.0 Part 1: Core) that the server conforms to."
+            "description": "List all requirements classes specified in a standard (e.g., OGCAPI Features 1.0 Part 1: Core) that the server conforms to."
           },
           "default": {
             "content": {
@@ -2076,5 +1811,6 @@ Content-Type: application/vnd.oai.openapi+json;version=3.0
       "description": "Access to data (features).",
       "name": "Features"
     }
-  ]
+  ],
+  "timeStamp": "2019-07-05T12:27:07Z"
 }

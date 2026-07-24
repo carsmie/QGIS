@@ -17,14 +17,16 @@
 #define QGSATTRIBUTEWIDGETEDIT_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
+
+#include "ui_qgsattributewidgeteditgroupbox.h"
+#include "ui_qgsattributewidgetrelationeditwidget.h"
+
+#include "qgis_gui.h"
+#include "qgsattributesformmodel.h"
 
 #include <QWidget>
 
-#include "qgsattributesformmodel.h"
-#include "ui_qgsattributewidgeteditgroupbox.h"
-#include "ui_qgsattributewidgetrelationeditwidget.h"
-#include "qgis_gui.h"
+#define SIP_NO_FILE
 
 class QgsAbstractRelationEditorConfigWidget;
 

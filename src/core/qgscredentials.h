@@ -17,14 +17,14 @@
 #ifndef QGSCREDENTIALS_H
 #define QGSCREDENTIALS_H
 
+#include "qgis_core.h"
+#include "qgis_sip.h"
+
 #include <QMap>
 #include <QMutex>
 #include <QObject>
 #include <QPair>
 #include <QString>
-
-#include "qgis_core.h"
-#include "qgis_sip.h"
 
 /**
  * \ingroup core
@@ -45,7 +45,6 @@
 class CORE_EXPORT QgsCredentials
 {
   public:
-
     virtual ~QgsCredentials() = default;
 
     /**
@@ -99,7 +98,6 @@ class CORE_EXPORT QgsCredentials
     QMutex *mutex() { return &mAuthMutex; }
 
   protected:
-
     QgsCredentials() = default;
 
     //! request a password

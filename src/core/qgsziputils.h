@@ -18,6 +18,7 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
+
 #include <QStringList>
 
 /**
@@ -28,7 +29,6 @@
 class CORE_EXPORT QgsZipUtils
 {
   public:
-
     /**
      * Returns TRUE if the file name is a zipped file ( i.e with a '.qgz'
      *  extension, FALSE otherwise.
@@ -89,6 +89,12 @@ class CORE_EXPORT QgsZipUtils
      */
     static const QStringList files( const QString &zip );
 
+    /**
+     * Extracts a file from a zip archive, returns TRUE on success.
+     *
+     * \since QGIS 4.0
+     */
+    static bool extractFileFromZip( const QString &zipFilename, const QString &filenameInZip, QByteArray &bytesOut SIP_OUT );
 };
 
 #endif //QGSZIPUTILS_H

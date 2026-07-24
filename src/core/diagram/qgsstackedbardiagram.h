@@ -16,11 +16,12 @@
 #ifndef QGSSTACKEDBARDIAGRAM_H
 #define QGSSTACKEDBARDIAGRAM_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsdiagram.h"
-#include <QPen>
+
 #include <QBrush>
+#include <QPen>
 
 class QgsFeature;
 class QPainter;
@@ -38,7 +39,7 @@ class QgsRenderContext;
  *
  * \since QGIS 3.12
  */
-class CORE_EXPORT QgsStackedBarDiagram: public QgsDiagram SIP_NODEFAULTCTORS
+class CORE_EXPORT QgsStackedBarDiagram : public QgsDiagram SIP_NODEFAULTCTORS
 {
   public:
     static const QString DIAGRAM_NAME_STACKED_BAR SIP_SKIP;
@@ -56,7 +57,7 @@ class CORE_EXPORT QgsStackedBarDiagram: public QgsDiagram SIP_NODEFAULTCTORS
 
   private:
     QBrush mCategoryBrush;
-    QPen   mPen;
+    QPen mPen;
     bool mApplySpacingAdjust = false;
 };
 

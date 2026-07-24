@@ -18,10 +18,11 @@
 #ifndef QGSALGORITHMPDALREPROJECT_H
 #define QGSALGORITHMPDALREPROJECT_H
 
-#define SIP_NO_FILE
 
 #include "qgis_sip.h"
 #include "qgspdalalgorithmbase.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 
@@ -39,6 +40,7 @@ class QgsPdalReprojectAlgorithm : public QgsPdalAlgorithmBase
     QString groupId() const override;
     QStringList tags() const override;
     QString shortHelpString() const override;
+    QString shortDescription() const override;
     QgsPdalReprojectAlgorithm *createInstance() const override SIP_FACTORY;
 
     QStringList createArgumentLists( const QVariantMap &parameters, QgsProcessingContext &context, QgsProcessingFeedback *feedback ) override;

@@ -13,30 +13,33 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgstest.h"
-
 #include "qgisapp.h"
 #include "qgsadvanceddigitizingdockwidget.h"
 #include "qgsgeometry.h"
 #include "qgsmapcanvas.h"
 #include "qgsmapcanvassnappingutils.h"
-#include "qgssnappingconfig.h"
-#include "qgsmaptooladdfeature.h"
 #include "qgsmapcanvastracer.h"
+#include "qgsmapmouseevent.h"
+#include "qgsmaptooladdfeature.h"
 #include "qgsproject.h"
 #include "qgssettings.h"
 #include "qgssettingsregistrycore.h"
+#include "qgssnappingconfig.h"
+#include "qgstest.h"
 #include "qgsvectorlayer.h"
 #include "qgswkbtypes.h"
-#include "qgsmapmouseevent.h"
 #include "testqgsmaptoolutils.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 bool operator==( const QgsGeometry &g1, const QgsGeometry &g2 )
 {
   if ( g1.isNull() && g2.isNull() )
     return true;
   else
-    return g1.equals( g2 );
+    return g1.isExactlyEqual( g2 );
 }
 
 namespace QTest
@@ -89,10 +92,6 @@ void TestQgsMapToolAddFeatureLineZ::initTestCase()
   QgsApplication::init();
   QgsApplication::initQgis();
 
-  // Set up the QSettings environment
-  QCoreApplication::setOrganizationName( QStringLiteral( "QGIS" ) );
-  QCoreApplication::setOrganizationDomain( QStringLiteral( "qgis.org" ) );
-  QCoreApplication::setApplicationName( QStringLiteral( "QGIS-TEST" ) );
   QgsSettings settings;
   settings.clear();
 
@@ -100,10 +99,10 @@ void TestQgsMapToolAddFeatureLineZ::initTestCase()
 
   mCanvas = new QgsMapCanvas();
 
-  mCanvas->setDestinationCrs( QgsCoordinateReferenceSystem( QStringLiteral( "EPSG:27700" ) ) );
+  mCanvas->setDestinationCrs( QgsCoordinateReferenceSystem( u"EPSG:27700"_s ) );
 
   // make testing layers
-  mLayerLine = new QgsVectorLayer( QStringLiteral( "LineString?crs=EPSG:27700" ), QStringLiteral( "layer line" ), QStringLiteral( "memory" ) );
+  mLayerLine = new QgsVectorLayer( u"LineString?crs=EPSG:27700"_s, u"layer line"_s, u"memory"_s );
   QVERIFY( mLayerLine->isValid() );
   QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mLayerLine );
 
@@ -121,7 +120,7 @@ void TestQgsMapToolAddFeatureLineZ::initTestCase()
   QCOMPARE( mLayerLine->undoStack()->index(), 1 );
 
   // make testing layers
-  mLayerLineZ = new QgsVectorLayer( QStringLiteral( "LineStringZ?crs=EPSG:27700" ), QStringLiteral( "layer line Z" ), QStringLiteral( "memory" ) );
+  mLayerLineZ = new QgsVectorLayer( u"LineStringZ?crs=EPSG:27700"_s, u"layer line Z"_s, u"memory"_s );
   QVERIFY( mLayerLineZ->isValid() );
   QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mLayerLineZ );
 
@@ -143,17 +142,21 @@ void TestQgsMapToolAddFeatureLineZ::initTestCase()
   QCOMPARE( mCanvas->mapSettings().visibleExtent(), QgsRectangle( 0, 0, 8, 8 ) );
 
   // make layer for topologicalEditing with Z
-  mLayerTopoZ = new QgsVectorLayer( QStringLiteral( "MultiLineStringZ?crs=EPSG:27700" ), QStringLiteral( "layer topologicalEditing Z" ), QStringLiteral( "memory" ) );
+  mLayerTopoZ = new QgsVectorLayer( u"MultiLineStringZ?crs=EPSG:27700"_s, u"layer topologicalEditing Z"_s, u"memory"_s );
   QVERIFY( mLayerTopoZ->isValid() );
   QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mLayerTopoZ );
 
   mLayerTopoZ->startEditing();
   QgsFeature topoFeat;
-  topoFeat.setGeometry( QgsGeometry::fromWkt( "MultiLineStringZ ("
-                                              "(10 0 0, 10 10 0),"
-                                              "(20 0 10, 20 10 10),"
-                                              "(30 0 0, 30 10 10)"
-                                              ")" ) );
+  topoFeat.setGeometry(
+    QgsGeometry::fromWkt(
+      "MultiLineStringZ ("
+      "(10 0 0, 10 10 0),"
+      "(20 0 10, 20 10 10),"
+      "(30 0 0, 30 10 10)"
+      ")"
+    )
+  );
 
   mLayerTopoZ->addFeature( topoFeat );
   QCOMPARE( mLayerTopoZ->featureCount(), ( long ) 1 );

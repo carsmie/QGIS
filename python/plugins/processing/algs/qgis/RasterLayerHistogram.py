@@ -22,20 +22,19 @@ __copyright__ = "(C) 2013, Victor Olaya"
 import warnings
 
 from qgis.core import (
-    QgsProcessingParameterRasterLayer,
-    QgsProcessingParameterBand,
-    QgsProcessingParameterNumber,
-    QgsProcessingParameterFileDestination,
     QgsProcessingException,
+    QgsProcessingParameterBand,
+    QgsProcessingParameterFileDestination,
+    QgsProcessingParameterNumber,
+    QgsProcessingParameterRasterLayer,
 )
+from qgis.PyQt.QtCore import QCoreApplication
+
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import raster
 
-from qgis.PyQt.QtCore import QCoreApplication
-
 
 class RasterLayerHistogram(QgisAlgorithm):
-
     INPUT = "INPUT"
     BINS = "BINS"
     OUTPUT = "OUTPUT"
@@ -77,6 +76,12 @@ class RasterLayerHistogram(QgisAlgorithm):
 
     def shortDescription(self):
         return self.tr("Generates a histogram with the values of a raster layer.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm generates a histogram with the values of a raster layer.\n"
+            "The raster layer must have a single band."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         try:

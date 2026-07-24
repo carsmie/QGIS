@@ -20,25 +20,25 @@ __date__ = "January 2013"
 __copyright__ = "(C) 2013, Victor Olaya"
 
 import warnings
+
 from qgis.core import (
+    QgsExpression,
+    QgsExpressionContext,
+    QgsExpressionContextUtils,
+    QgsFeatureRequest,
     QgsProcessingException,
+    QgsProcessingParameterBoolean,
+    QgsProcessingParameterExpression,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
     QgsProcessingParameterFileDestination,
     QgsProcessingParameterString,
-    QgsProcessingParameterBoolean,
-    QgsProcessingParameterExpression,
-    QgsExpression,
-    QgsExpressionContext,
-    QgsExpressionContextUtils,
     QgsProcessingUtils,
-    QgsFeatureRequest,
 )
+from qgis.PyQt.QtCore import QCoreApplication
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.tools import vector
-
-from qgis.PyQt.QtCore import QCoreApplication
 
 
 class VectorLayerScatterplot(QgisAlgorithm):
@@ -138,6 +138,11 @@ class VectorLayerScatterplot(QgisAlgorithm):
 
     def shortDescription(self):
         return self.tr("Creates a simple X - Y scatter plot for a vector layer.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm creates a simple X - Y scatter plot for a vector layer."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         try:

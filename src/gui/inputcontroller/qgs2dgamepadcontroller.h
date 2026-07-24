@@ -16,8 +16,9 @@
 #ifndef QGS2DGAMEPADCONTROLLER_H
 #define QGS2DGAMEPADCONTROLLER_H
 
-#include "qgis_sip.h"
 #include "qgsconfig.h"
+
+#include "qgis_sip.h"
 
 SIP_IF_MODULE( HAVE_QTGAMEPAD )
 
@@ -57,7 +58,7 @@ class GUI_EXPORT QgsGamepad2DMapController : public QgsAbstract2DMapController
       sipType = sipType_QgsGamepad2DMapController;
     else
       sipType = nullptr;
-    SIP_END
+  SIP_END
 #endif
 
   public:

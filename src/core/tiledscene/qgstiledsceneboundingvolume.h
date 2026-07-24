@@ -19,13 +19,13 @@
 #ifndef QGSTILEDSCENEBOUNDINGVOLUME_H
 #define QGSTILEDSCENEBOUNDINGVOLUME_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgsbox3d.h"
+#include "qgscoordinatetransform.h"
 #include "qgsmatrix4x4.h"
 #include "qgsorientedbox3d.h"
-#include "qgscoordinatetransform.h"
 
 class QgsMatrix4x4;
 
@@ -38,7 +38,6 @@ class QgsMatrix4x4;
 class CORE_EXPORT QgsTiledSceneBoundingVolume
 {
   public:
-
     /**
      * Constructor for QgsTiledSceneBoundingVolume, with the specified oriented \a box.
      */
@@ -78,9 +77,7 @@ class CORE_EXPORT QgsTiledSceneBoundingVolume
     QgsOrientedBox3D box() const { return mBox; }
 
   private:
-
     QgsOrientedBox3D mBox;
-
 };
 
 #endif // QGSTILEDSCENEBOUNDINGVOLUME_H

@@ -17,14 +17,15 @@
 #define QGSFIELDKITREGISTRY_H
 
 #include <memory>
+
+#include "qgis_core.h"
+#include "qgis_sip.h"
+#include "qgsfieldformatter.h"
+
 #include <QHash>
-#include <QString>
 #include <QObject>
 #include <QReadWriteLock>
-
-#include "qgis_sip.h"
-#include "qgis_core.h"
-#include "qgsfieldformatter.h"
+#include <QString>
 
 class QgsVectorLayer;
 
@@ -41,7 +42,6 @@ class CORE_EXPORT QgsFieldFormatterRegistry : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * You should not normally need to create your own field formatter registry.
      *

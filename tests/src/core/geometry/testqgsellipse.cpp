@@ -12,15 +12,16 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "qgstest.h"
-#include <QObject>
-#include <QString>
+#include <memory>
 
 #include "qgsellipse.h"
 #include "qgslinestring.h"
 #include "qgspoint.h"
-
+#include "qgstest.h"
 #include "testgeometryutils.h"
+
+#include <QObject>
+#include <QString>
 
 class TestQgsEllipse : public QObject
 {
@@ -317,7 +318,10 @@ void TestQgsEllipse::boundingBox()
 
   QCOMPARE( QgsEllipse( QgsPoint( 0, 0 ), 13, 9, 300 ).boundingBox().toString( 4 ).toStdString(), QgsRectangle( QgsPointXY( -12.12436, -10.14889 ), QgsPointXY( 12.12436, 10.14889 ) ).toString( 4 ).toStdString() );
 
-  QCOMPARE( QgsEllipse( QgsPoint( 0, 0 ), 13, 9, 300 - 90 ).boundingBox().toString( 4 ).toStdString(), QgsRectangle( QgsPointXY( -10.14889, -12.12436 ), QgsPointXY( 10.14889, 12.12436 ) ).toString( 4 ).toStdString() );
+  QCOMPARE(
+    QgsEllipse( QgsPoint( 0, 0 ), 13, 9, 300 - 90 ).boundingBox().toString( 4 ).toStdString(),
+    QgsRectangle( QgsPointXY( -10.14889, -12.12436 ), QgsPointXY( 10.14889, 12.12436 ) ).toString( 4 ).toStdString()
+  );
 }
 
 void TestQgsEllipse::orientedBoundingBox()
@@ -327,7 +331,7 @@ void TestQgsEllipse::orientedBoundingBox()
 
   QgsLineString *ext = new QgsLineString();
   ext->setPoints( QgsPointSequence() << QgsPoint( 5, 2 ) << QgsPoint( 5, -2 ) << QgsPoint( -5, -2 ) << QgsPoint( -5, 2 ) );
-  poly1.reset( new QgsPolygon() );
+  poly1 = std::make_unique<QgsPolygon>();
   poly1->setExteriorRing( ext );
 
   QgsEllipse elp( QgsPoint( 0, 0 ), 5, 2 );

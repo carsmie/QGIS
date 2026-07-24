@@ -14,42 +14,22 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsauthconfigurationstorage.h"
+
 #include "moc_qgsauthconfigurationstorage.cpp"
 
 QgsAuthConfigurationStorage::QgsAuthConfigurationStorage( const QMap<QString, QVariant> &configuration )
   : mConfiguration( configuration )
 {
   // Forward all specific signals to the generic one
-  connect( this, &QgsAuthConfigurationStorage::methodConfigChanged, this, [ this ]
-  {
-    emit storageChanged( id() );
-  } );
-  connect( this, &QgsAuthConfigurationStorage::masterPasswordChanged, this, [ this ]
-  {
-    emit storageChanged( id() );
-  } );
-  connect( this, &QgsAuthConfigurationStorage::authSettingsChanged, this, [ this ]
-  {
-    emit storageChanged( id() );
-  } );
+  connect( this, &QgsAuthConfigurationStorage::methodConfigChanged, this, [this] { emit storageChanged( id() ); } );
+  connect( this, &QgsAuthConfigurationStorage::masterPasswordChanged, this, [this] { emit storageChanged( id() ); } );
+  connect( this, &QgsAuthConfigurationStorage::authSettingsChanged, this, [this] { emit storageChanged( id() ); } );
 
 #ifndef QT_NO_SSL
-  connect( this, &QgsAuthConfigurationStorage::certIdentityChanged, this, [ this ]
-  {
-    emit storageChanged( id() );
-  } );
-  connect( this, &QgsAuthConfigurationStorage::certAuthorityChanged, this, [ this ]
-  {
-    emit storageChanged( id() );
-  } );
-  connect( this, &QgsAuthConfigurationStorage::sslCertCustomConfigChanged, this, [ this ]
-  {
-    emit storageChanged( id() );
-  } );
-  connect( this, &QgsAuthConfigurationStorage::sslCertTrustPolicyChanged, this, [ this ]
-  {
-    emit storageChanged( id() );
-  } );
+  connect( this, &QgsAuthConfigurationStorage::certIdentityChanged, this, [this] { emit storageChanged( id() ); } );
+  connect( this, &QgsAuthConfigurationStorage::certAuthorityChanged, this, [this] { emit storageChanged( id() ); } );
+  connect( this, &QgsAuthConfigurationStorage::sslCertCustomConfigChanged, this, [this] { emit storageChanged( id() ); } );
+  connect( this, &QgsAuthConfigurationStorage::sslCertTrustPolicyChanged, this, [this] { emit storageChanged( id() ); } );
 #endif
 }
 

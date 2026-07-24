@@ -18,9 +18,10 @@
 #ifndef QGSPROJECTVERSION_H
 #define QGSPROJECTVERSION_H
 
+#include "qgis_core.h"
+
 #include <QString>
 #include <QStringList>
-#include "qgis_core.h"
 
 /**
  * \ingroup core
@@ -31,9 +32,7 @@
  */
 class CORE_EXPORT QgsProjectVersion
 {
-
   public:
-
     /**
      * Creates a new NULL version
      */
@@ -52,17 +51,17 @@ class CORE_EXPORT QgsProjectVersion
     /**
      * Returns the major version number.
      */
-    int majorVersion() const { return mMajor;}
+    int majorVersion() const { return mMajor; }
 
     /**
      * Returns the minor version number.
      */
-    int minorVersion() const { return mMinor;}
+    int minorVersion() const { return mMinor; }
 
     /**
      * Returns the sub version number.
      */
-    int subVersion() const { return mSub;}
+    int subVersion() const { return mSub; }
 
     /**
      * Returns a string representation of the version.

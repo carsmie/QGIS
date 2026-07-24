@@ -14,13 +14,12 @@
  ***************************************************************************/
 
 #include "qgspixmaplabel.h"
-#include "moc_qgspixmaplabel.cpp"
 
+#include "moc_qgspixmaplabel.cpp"
 
 QgsPixmapLabel::QgsPixmapLabel( QWidget *parent )
   : QLabel( parent )
-{
-}
+{}
 
 void QgsPixmapLabel::setPixmap( const QPixmap &p )
 {

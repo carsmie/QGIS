@@ -9,6 +9,8 @@
 
 
 
+
+
 class QgsDiagram /NoDefaultCtors/
 {
 %Docstring(signature="appended")
@@ -19,7 +21,6 @@ Base class for all diagram types.
 #include "qgsdiagram.h"
 %End
   public:
-
 %ConvertToSubClassCode
     if ( sipCpp->diagramName() == QLatin1String( "Pie" ) )
       sipType = sipType_QgsPieDiagram;
@@ -82,7 +83,6 @@ specified value.
 %End
 
   protected:
-
     QgsDiagram();
     QgsDiagram( const QgsDiagram &other );
 

@@ -15,14 +15,17 @@
 #ifndef QGSBLOCKINGNETWORKREQUEST_H
 #define QGSBLOCKINGNETWORKREQUEST_H
 
-#include "qgis_core.h"
-#include "qgsnetworkreply.h"
-#include "qgsfeedback.h"
-#include "qgis.h"
-#include <QThread>
-#include <QObject>
 #include <functional>
+
+#include "qgis.h"
+#include "qgis_core.h"
+#include "qgsfeedback.h"
+#include "qgsnetworkreply.h"
+
+#include <QHttpMultiPart>
+#include <QObject>
 #include <QPointer>
+#include <QThread>
 
 class QNetworkRequest;
 class QNetworkReply;
@@ -48,13 +51,12 @@ class CORE_EXPORT QgsBlockingNetworkRequest : public QObject
 {
     Q_OBJECT
   public:
-
     //! Error codes
     enum ErrorCode
     {
-      NoError, //!< No error was encountered
-      NetworkError, //!< A network error occurred
-      TimeoutError, //!< Timeout was reached before a reply was received
+      NoError,              //!< No error was encountered
+      NetworkError,         //!< A network error occurred
+      TimeoutError,         //!< Timeout was reached before a reply was received
       ServerExceptionError, //!< An exception was raised by the server
     };
 
@@ -71,10 +73,21 @@ class CORE_EXPORT QgsBlockingNetworkRequest : public QObject
     Q_DECLARE_FLAGS( RequestFlags, RequestFlag )
     Q_FLAG( RequestFlags )
 
-    //! Constructor for QgsBlockingNetworkRequest
-    explicit QgsBlockingNetworkRequest();
+    /**
+     * Constructor for QgsBlockingNetworkRequest.
+     *
+     * The \a flags argument was added in QGIS 4.0
+     */
+    explicit QgsBlockingNetworkRequest( Qgis::NetworkRequestFlags flags = Qgis::NetworkRequestFlags() );
 
     ~QgsBlockingNetworkRequest() override;
+
+    /**
+     * Returns the network request flags.
+     *
+     * \since QGIS 4.0
+     */
+    Qgis::NetworkRequestFlags flags() const { return mFlags; }
 
     /**
      * Performs a "get" operation on the specified \a request.
@@ -129,6 +142,14 @@ class CORE_EXPORT QgsBlockingNetworkRequest : public QObject
      * Performs a "post" operation on the specified \a request, using the given \a data.
      */
     ErrorCode post( QNetworkRequest &request, const QByteArray &data, bool forceRefresh = false, QgsFeedback *feedback = nullptr );
+
+    /**
+     * This is an overloaded function.
+     *
+     * Performs a "post" operation on the specified \a request, using the given \a data.
+     * \since QGIS 4.2
+     */
+    ErrorCode post( QNetworkRequest &request, QHttpMultiPart *data, bool forceRefresh = false, QgsFeedback *feedback = nullptr );
 
     /**
      * Performs a "head" operation on the specified \a request.
@@ -256,7 +277,8 @@ class CORE_EXPORT QgsBlockingNetworkRequest : public QObject
     void replyFinished();
     void requestTimedOut( QNetworkReply *reply );
 
-  private :
+  private:
+    Qgis::NetworkRequestFlags mFlags;
 
     //! The reply to the request
     QNetworkReply *mReply = nullptr;
@@ -264,7 +286,7 @@ class CORE_EXPORT QgsBlockingNetworkRequest : public QObject
     Qgis::HttpMethod mMethod = Qgis::HttpMethod::Get;
 
     //! payload data used in PUT/POST request
-    QIODevice *mPayloadData;
+    std::variant<QIODevice *, QHttpMultiPart *> mPayloadDataVariant;
 
     //! Authentication configuration ID
     QString mAuthCfg;
@@ -316,13 +338,9 @@ class DownloaderThread : public QThread
     DownloaderThread( const std::function<void()> &function, QObject *parent = nullptr )
       : QThread( parent )
       , mFunction( function )
-    {
-    }
+    {}
 
-    void run() override
-    {
-      mFunction();
-    }
+    void run() override { mFunction(); }
 
   private:
     std::function<void()> mFunction;

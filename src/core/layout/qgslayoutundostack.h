@@ -18,12 +18,12 @@
 #ifndef QGSLAYOUTUNDOSTACK_H
 #define QGSLAYOUTUNDOSTACK_H
 
-#include "qgis_sip.h"
-#include "qgis_core.h"
-#include "qgslayoutundocommand.h"
-#include "qgslayoutitem.h"
-
 #include <memory>
+
+#include "qgis_core.h"
+#include "qgis_sip.h"
+#include "qgslayoutitem.h"
+#include "qgslayoutundocommand.h"
 
 class QgsLayout;
 class QUndoStack;
@@ -37,7 +37,6 @@ class CORE_EXPORT QgsLayoutUndoStack : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsLayoutUndoStack, for the specified parent \a layout.
      */
@@ -143,7 +142,6 @@ class CORE_EXPORT QgsLayoutUndoStack : public QObject
     void indexChanged();
 
   private:
-
     QgsLayout *mLayout = nullptr;
 
     std::unique_ptr< QUndoStack > mUndoStack;

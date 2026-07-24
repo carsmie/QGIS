@@ -14,13 +14,16 @@
  ***************************************************************************/
 
 #include "qgsprocessingmatrixparameterdialog.h"
-#include "moc_qgsprocessingmatrixparameterdialog.cpp"
+
 #include "qgsgui.h"
-#include <QStandardItemModel>
-#include <QStandardItem>
-#include <QPushButton>
+
 #include <QLineEdit>
+#include <QPushButton>
+#include <QStandardItem>
+#include <QStandardItemModel>
 #include <QToolButton>
+
+#include "moc_qgsprocessingmatrixparameterdialog.cpp"
 
 ///@cond NOT_STABLE
 
@@ -205,9 +208,7 @@ void QgsProcessingMatrixParameterPanel::showDialog()
 
     panel->openPanel( mPanelWidget );
 
-    connect( mPanelWidget, &QgsPanelWidget::widgetChanged, this, [this] {
-      setValue( mPanelWidget->table() );
-    } );
+    connect( mPanelWidget, &QgsPanelWidget::widgetChanged, this, [this] { setValue( mPanelWidget->table() ); } );
   }
 }
 

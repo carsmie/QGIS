@@ -17,6 +17,7 @@
 #define QGSLEGENDRENDERER_H
 
 #include "qgis_core.h"
+
 #include <QPointF>
 
 class QRectF;
@@ -47,7 +48,6 @@ class QgsLayerTreeFilterProxyModel;
 class CORE_EXPORT QgsLegendRenderer
 {
   public:
-
     /**
      * Constructor for QgsLegendRenderer. The ownership of the legend model is not changed,
      * and the model must exist for the lifetime of this renderer.
@@ -146,7 +146,6 @@ class CORE_EXPORT QgsLegendRenderer
     static Qgis::LegendComponent nodeLegendStyle( QgsLayerTreeNode *node, QgsLayerTreeModel *model );
 
   private:
-
 #ifndef SIP_RUN
 
     /**
@@ -159,7 +158,6 @@ class CORE_EXPORT QgsLegendRenderer
     class LegendComponent
     {
       public:
-
         LegendComponent() = default;
 
         QObject *item = nullptr;
@@ -211,7 +209,6 @@ class CORE_EXPORT QgsLegendRenderer
     class LegendComponentGroup
     {
       public:
-
         //! List of child components belonging to this group.
         QList<LegendComponent> components;
 
@@ -225,7 +222,6 @@ class CORE_EXPORT QgsLegendRenderer
          * TRUE if a forced column break should be placed just before the group
          */
         bool placeColumnBreakBeforeGroup = false;
-
     };
 
     /**
@@ -234,11 +230,7 @@ class CORE_EXPORT QgsLegendRenderer
     class ColumnContext
     {
       public:
-
-        ColumnContext()
-          : left( 0 )
-          , right( 0 )
-        {}
+        ColumnContext() {}
 
         //! Left edge of column
         double left = 0;
@@ -325,7 +317,7 @@ class CORE_EXPORT QgsLegendRenderer
     Qgis::LegendComponent nodeLegendStyle( QgsLayerTreeNode *node );
 
     QgsLayerTreeModel *mLegendModel = nullptr;
-    std::unique_ptr< QgsLayerTreeFilterProxyModel >mProxyModel;
+    std::unique_ptr< QgsLayerTreeFilterProxyModel > mProxyModel;
 
     QgsLegendSettings mSettings;
 

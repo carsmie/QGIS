@@ -17,6 +17,8 @@
 #ifndef QGSRASTERLAYERPROFILEGENERATOR_H
 #define QGSRASTERLAYERPROFILEGENERATOR_H
 
+#include <memory>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsabstractprofilesurfacegenerator.h"
@@ -24,7 +26,7 @@
 #include "qgscoordinatetransformcontext.h"
 #include "qgscurve.h"
 
-#include <memory>
+#define SIP_NO_FILE
 
 class QgsProfileRequest;
 class QgsRasterLayer;
@@ -33,7 +35,6 @@ class QgsRasterBlockFeedback;
 class QgsLineSymbol;
 class QgsProfileSnapContext;
 
-#define SIP_NO_FILE
 
 /**
  * \brief Implementation of QgsAbstractProfileResults for raster layers.
@@ -44,14 +45,12 @@ class QgsProfileSnapContext;
  */
 class CORE_EXPORT QgsRasterLayerProfileResults : public QgsAbstractProfileSurfaceResults
 {
-
   public:
-
     QString type() const override;
+    using QgsAbstractProfileSurfaceResults::identify;
     QVector<QgsProfileIdentifyResults> identify( const QgsProfilePoint &point, const QgsProfileIdentifyContext &context ) override;
 
   private:
-
     QPointer< QgsRasterLayer > mLayer;
 
     friend class QgsRasterLayerProfileGenerator;
@@ -66,9 +65,7 @@ class CORE_EXPORT QgsRasterLayerProfileResults : public QgsAbstractProfileSurfac
  */
 class CORE_EXPORT QgsRasterLayerProfileGenerator : public QgsAbstractProfileSurfaceGenerator
 {
-
   public:
-
     /**
      * Constructor for QgsRasterLayerProfileGenerator.
      */
@@ -81,6 +78,7 @@ class CORE_EXPORT QgsRasterLayerProfileGenerator : public QgsAbstractProfileSurf
     bool generateProfile( const QgsProfileGenerationContext &context = QgsProfileGenerationContext() ) override;
     QgsAbstractProfileResults *takeResults() override;
     QgsFeedback *feedback() const override;
+    QString type() const override;
 
   private:
     QString mId;
@@ -107,7 +105,6 @@ class CORE_EXPORT QgsRasterLayerProfileGenerator : public QgsAbstractProfileSurf
     double mStepDistance = std::numeric_limits<double>::quiet_NaN();
 
     friend class QgsRasterLayerProfileResults;
-
 };
 
 #endif // QGSRASTERLAYERPROFILEGENERATOR_H

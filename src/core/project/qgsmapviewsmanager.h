@@ -18,10 +18,11 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include <QObject>
+
 #include <QDomDocument>
 #include <QDomElement>
 #include <QMap>
+#include <QObject>
 
 class QgsProject;
 
@@ -42,7 +43,6 @@ class CORE_EXPORT QgsMapViewsManager : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsMapViewsManager. The project will become the parent object for this
      * manager.

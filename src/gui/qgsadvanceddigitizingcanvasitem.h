@@ -16,11 +16,10 @@
 #ifndef QGSADVANCEDDIGITIZINGCANVASITEM_H
 #define QGSADVANCEDDIGITIZINGCANVASITEM_H
 
-#include <QPen>
-
-#include "qgsmapcanvasitem.h"
 #include "qgis_gui.h"
+#include "qgsmapcanvasitem.h"
 
+#include <QPen>
 
 class QgsAdvancedDigitizingDockWidget;
 
@@ -43,12 +42,13 @@ class GUI_EXPORT QgsAdvancedDigitizingCanvasItem : public QgsMapCanvasItem
       sipType = sipType_QgsAdvancedDigitizingCanvasItem;
     else
       sipType = nullptr;
-    SIP_END
+  SIP_END
 #endif
 
   public:
     explicit QgsAdvancedDigitizingCanvasItem( QgsMapCanvas *canvas, QgsAdvancedDigitizingDockWidget *cadDockWidget );
 
+    using QgsMapCanvasItem::paint;
     void paint( QPainter *painter ) override;
     void updatePosition() override;
 

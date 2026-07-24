@@ -17,21 +17,25 @@
 #ifndef QGSSENSORTHINGSSOURCEWIDGET_H
 #define QGSSENSORTHINGSSOURCEWIDGET_H
 
+#include "ui_qgssensorthingssourcewidgetbase.h"
+
+#include "qgis.h"
 #include "qgsprovidersourcewidget.h"
 #include "qgssensorthingsutils.h"
-#include "qgis.h"
-#include "ui_qgssensorthingssourcewidgetbase.h"
+
 #include <QDialog>
-#include <QVariantMap>
 #include <QPointer>
 #include <QStyledItemDelegate>
+#include <QVariantMap>
+
+#define SIP_NO_FILE
 
 class QgsExtentWidget;
 class QgsSensorThingsConnectionPropertiesTask;
+class QgsSensorThingsConnectionCapabilitiesTask;
 class QTableView;
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 
 class QgsSensorThingsExpansionsModel : public QAbstractItemModel
@@ -127,7 +131,7 @@ class QgsSensorThingsRemoveExpansionDelegate : public QStyledItemDelegate SIP_SK
 };
 
 
-class QgsSensorThingsSourceWidget : public QgsProviderSourceWidget, protected Ui::QgsSensorThingsSourceWidgetBase
+class QgsSensorThingsSourceWidget : public QgsProviderSourceWidget, private Ui::QgsSensorThingsSourceWidgetBase
 {
     Q_OBJECT
 
@@ -152,8 +156,10 @@ class QgsSensorThingsSourceWidget : public QgsProviderSourceWidget, protected Ui
 
     void entityTypeChanged();
     void validate();
+    void retrieveEntities();
     void retrieveTypes();
     void connectionPropertiesTaskCompleted();
+    void connectionCapabilitiesTaskCompleted();
 
   private:
     void setCurrentEntityType( Qgis::SensorThingsEntity type );
@@ -165,6 +171,7 @@ class QgsSensorThingsSourceWidget : public QgsProviderSourceWidget, protected Ui
     QVariantMap mSourceParts;
     bool mIsValid = false;
     QPointer<QgsSensorThingsConnectionPropertiesTask> mPropertiesTask;
+    QPointer<QgsSensorThingsConnectionCapabilitiesTask> mCapabilitiesTask;
 };
 
 ///@endcond

@@ -27,33 +27,29 @@
 class CORE_EXPORT QgsAlignRasterData
 {
   public:
-
     //! Definition of one raster layer for alignment
     struct RasterItem
     {
-      RasterItem( const QString &input, const QString &output )
-        : inputFilename( input )
-        , outputFilename( output )
-        , resampleMethod( Qgis::GdalResampleAlgorithm::RA_NearestNeighbour )
-        , rescaleValues( false )
-        , srcCellSizeInDestCRS( 0.0 )
-      {}
+        RasterItem( const QString &input, const QString &output )
+          : inputFilename( input )
+          , outputFilename( output )
+        {}
 
-      virtual ~RasterItem() = default;
+        virtual ~RasterItem() = default;
 
-      //! filename of the source raster
-      QString inputFilename;
-      //! filename of the newly created aligned raster (will be overwritten if exists already)
-      QString outputFilename;
-      //! resampling method to be used
-      Qgis::GdalResampleAlgorithm resampleMethod;
-      //! rescaling of values according to the change of pixel size
-      bool rescaleValues;
+        //! filename of the source raster
+        QString inputFilename;
+        //! filename of the newly created aligned raster (will be overwritten if exists already)
+        QString outputFilename;
+        //! resampling method to be used
+        Qgis::GdalResampleAlgorithm resampleMethod = Qgis::GdalResampleAlgorithm::RA_NearestNeighbour;
+        //! rescaling of values according to the change of pixel size
+        bool rescaleValues = false;
 
-      // private part
+        // private part
 
-      //! used for rescaling of values (if necessary)
-      double srcCellSizeInDestCRS;
+        //! used for rescaling of values (if necessary)
+        double srcCellSizeInDestCRS = 0.0;
     };
     typedef QList<QgsAlignRasterData::RasterItem> RasterItemList;
 };

@@ -16,14 +16,15 @@
 #ifndef QGSAUTHCONFIGURATIONSTORAGEREGISTRY_H
 #define QGSAUTHCONFIGURATIONSTORAGEREGISTRY_H
 
+#include <memory>
+
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 
-#include <QObject>
 #include <QMap>
 #include <QMutex>
-#include <memory>
+#include <QObject>
 
 class QgsAuthConfigurationStorage;
 
@@ -38,17 +39,16 @@ class QgsAuthConfigurationStorage;
  *
  * \since QGIS 3.40
  */
-class CORE_EXPORT QgsAuthConfigurationStorageRegistry: public QObject
+class CORE_EXPORT QgsAuthConfigurationStorageRegistry : public QObject
 {
     Q_OBJECT
   public:
-
     /**
      * Creates a new QgsAuthConfigurationStorageRegistry instance.
      */
     QgsAuthConfigurationStorageRegistry();
 
-    virtual ~QgsAuthConfigurationStorageRegistry();
+    ~QgsAuthConfigurationStorageRegistry() override;
 
     /**
      * Add an authentication configuration storage to the registry.
@@ -126,7 +126,6 @@ class CORE_EXPORT QgsAuthConfigurationStorageRegistry: public QObject
     void storageRemoved( const QString &id );
 
   private:
-
     mutable QMutex mMutex;
 
     std::vector<std::unique_ptr<QgsAuthConfigurationStorage>> mStorages;

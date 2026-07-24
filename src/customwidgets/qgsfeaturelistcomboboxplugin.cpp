@@ -13,17 +13,17 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "qgiscustomwidgets.h"
 #include "qgsfeaturelistcomboboxplugin.h"
-#include "moc_qgsfeaturelistcomboboxplugin.cpp"
+
+#include "qgiscustomwidgets.h"
 #include "qgsfeaturelistcombobox.h"
 
+#include "moc_qgsfeaturelistcomboboxplugin.cpp"
 
 QgsFeatureListComboBoxPlugin::QgsFeatureListComboBoxPlugin( QObject *parent )
   : QObject( parent )
   , mInitialized( false )
-{
-}
+{}
 
 QString QgsFeatureListComboBoxPlugin::name() const
 {
@@ -81,17 +81,19 @@ QString QgsFeatureListComboBoxPlugin::whatsThis() const
 
 QString QgsFeatureListComboBoxPlugin::domXml() const
 {
-  return QString( "<ui language=\"c++\">\n"
-                  " <widget class=\"%1\" name=\"mFeatureListComboBox\">\n"
-                  "  <property name=\"geometry\">\n"
-                  "   <rect>\n"
-                  "    <x>0</x>\n"
-                  "    <y>0</y>\n"
-                  "    <width>90</width>\n"
-                  "    <height>27</height>\n"
-                  "   </rect>\n"
-                  "  </property>\n"
-                  " </widget>\n"
-                  "</ui>\n" )
+  return QString(
+           "<ui language=\"c++\">\n"
+           " <widget class=\"%1\" name=\"mFeatureListComboBox\">\n"
+           "  <property name=\"geometry\">\n"
+           "   <rect>\n"
+           "    <x>0</x>\n"
+           "    <y>0</y>\n"
+           "    <width>90</width>\n"
+           "    <height>27</height>\n"
+           "   </rect>\n"
+           "  </property>\n"
+           " </widget>\n"
+           "</ui>\n"
+  )
     .arg( name() );
 }

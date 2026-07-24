@@ -16,9 +16,11 @@
 #ifndef QGSMAPTOOLZOOM_H
 #define QGSMAPTOOLZOOM_H
 
-#include "qgsmaptool.h"
-#include <QRect>
 #include "qgis_gui.h"
+#include "qgsmaptool.h"
+#include "qobjectuniqueptr.h"
+
+#include <QRect>
 
 class QgsRubberBand;
 
@@ -56,12 +58,12 @@ class GUI_EXPORT QgsMapToolZoom : public QgsMapTool
     bool mNativeZoomOut;
 
     //! Flag to indicate a map canvas drag operation is taking place
-    bool mDragging;
+    bool mDragging = false;
 
     //! Flag to indicate the user has canceled the current zoom operation
     bool mCanceled = false;
 
-    QgsRubberBand *mRubberBand = nullptr;
+    QObjectUniquePtr<QgsRubberBand> mRubberBand;
 
     QCursor mZoomOutCursor;
     QCursor mZoomInCursor;

@@ -14,18 +14,21 @@
  ***************************************************************************/
 
 #include "qgskeyvaluewidgetfactory.h"
-#include "qgskeyvaluewidgetwrapper.h"
+
 #include "qgsdummyconfigdlg.h"
 #include "qgsfields.h"
+#include "qgskeyvaluewidgetwrapper.h"
 #include "qgsvectorlayer.h"
 
-#include <QVariant>
 #include <QSettings>
+#include <QString>
+#include <QVariant>
 
-QgsKeyValueWidgetFactory::QgsKeyValueWidgetFactory( const QString &name )
-  : QgsEditorWidgetFactory( name )
-{
-}
+using namespace Qt::StringLiterals;
+
+QgsKeyValueWidgetFactory::QgsKeyValueWidgetFactory( const QString &name, const QIcon &icon )
+  : QgsEditorWidgetFactory( name, icon )
+{}
 
 QgsEditorWidgetWrapper *QgsKeyValueWidgetFactory::create( QgsVectorLayer *vl, int fieldIdx, QWidget *editor, QWidget *parent ) const
 {
@@ -43,9 +46,10 @@ QgsEditorConfigWidget *QgsKeyValueWidgetFactory::configWidget( QgsVectorLayer *v
 unsigned int QgsKeyValueWidgetFactory::fieldScore( const QgsVectorLayer *vl, int fieldIdx ) const
 {
   const QgsField field = vl->fields().field( fieldIdx );
-  if ( field.type() == QMetaType::Type::QVariantMap && ( field.typeName().compare( QStringLiteral( "JSON" ), Qt::CaseSensitivity::CaseInsensitive ) == 0 || field.subType() == QMetaType::Type::QString ) )
+  // Handle the json field
+  if ( field.typeName().compare( u"json"_s, Qt::CaseInsensitive ) == 0 || field.typeName().compare( u"jsonb"_s, Qt::CaseInsensitive ) == 0 )
   {
-    // Look for the first not-null value (limiting to the first 20 features) and check if it is really a map
+    // Look for the values in the first 20 features check if it contains only maps
     const int MAX_FEATURE_LIMIT { 20 };
     QgsFeatureRequest req;
     req.setFlags( Qgis::FeatureRequestFlag::NoGeometry );
@@ -55,6 +59,8 @@ unsigned int QgsKeyValueWidgetFactory::fieldScore( const QgsVectorLayer *vl, int
     QgsFeatureIterator featureIt { vl->getFeatures( req ) };
     // The counter is an extra safety measure in case the provider does not respect the limit
     int featureCount = 0;
+    bool foundNotNull = false;
+    bool foundInvalidValue = false; // An invalid value is any value that is not a JSON object (map) or an object with nested or invalid values
     while ( featureIt.nextFeature( f ) )
     {
       ++featureCount;
@@ -66,28 +72,73 @@ unsigned int QgsKeyValueWidgetFactory::fieldScore( const QgsVectorLayer *vl, int
       const QVariant value( f.attribute( fieldIdx ) );
       if ( !value.isNull() )
       {
-        switch ( value.type() )
+        foundNotNull = true;
+
+        // Read the object from string or map
+        QJsonObject jsonObject;
+        bool validObject = false;
+        if ( value.type() == QVariant::Type::Map )
         {
-          case QVariant::Type::Map:
+          validObject = true;
+          jsonObject = QJsonObject::fromVariantMap( value.toMap() );
+        }
+        else
+        {
+          const QJsonDocument doc = QJsonDocument::fromJson( value.toString().toUtf8() );
+          if ( doc.isObject() )
           {
-            return 20;
+            validObject = true;
+            jsonObject = doc.object();
           }
-          default:
-          case QVariant::Type::String:
+        }
+        if ( validObject ) // empty object {} counts as valid as well
+        {
+          // It's a map, check the first 20 entries if flat (not nested)
+          int count = 0;
+          for ( auto it = jsonObject.begin(); it != jsonObject.end(); ++it )
           {
-            const QJsonDocument doc = QJsonDocument::fromJson( value.toString().toUtf8() );
-            if ( doc.isObject() )
+            if ( count >= 20 )
             {
-              return 20;
+              break;
             }
-            else
+            count++;
+            const QJsonValue childValue = it.value();
+            if ( childValue.isObject() || childValue.isArray() || childValue.isUndefined() )
             {
-              return 0;
+              // Stop when we find the first nested object
+              foundInvalidValue = true;
+              break;
             }
           }
+          if ( foundInvalidValue )
+          {
+            break;
+          }
+        }
+        else
+        {
+          // Stop when we find the first non-map value
+          foundInvalidValue = true;
+          break;
         }
       }
     }
+    if ( foundNotNull )
+    {
+      if ( !foundInvalidValue )
+      {
+        return 20;
+      }
+      else
+      {
+        return 5;
+      }
+    }
+    else
+    {
+      return 10;
+    }
   }
+
   return field.type() == QMetaType::Type::QVariantMap && field.subType() != QMetaType::Type::UnknownType ? 20 : 0;
 }

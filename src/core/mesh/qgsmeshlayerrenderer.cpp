@@ -15,40 +15,44 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <memory>
-#include <QSet>
-#include <QPair>
-#include <QLinearGradient>
-#include <QBrush>
-#include <QPointer>
-#include <algorithm>
-#include <QElapsedTimer>
-
 #include "qgsmeshlayerrenderer.h"
-#include "moc_qgsmeshlayerrenderer.cpp"
 
+#include <algorithm>
+#include <memory>
+
+#include "qgsapplication.h"
+#include "qgscolorrampshader.h"
+#include "qgsexpressioncontextutils.h"
 #include "qgslogger.h"
+#include "qgsmapclippingutils.h"
+#include "qgsmaplayerelevationproperties.h"
 #include "qgsmeshlayer.h"
-#include "qgspointxy.h"
-#include "qgssinglebandpseudocolorrenderer.h"
-#include "qgsrastershader.h"
+#include "qgsmeshlayerelevationproperties.h"
 #include "qgsmeshlayerinterpolator.h"
-#include "qgsmeshlayerutils.h"
-#include "qgsmeshvectorrenderer.h"
 #include "qgsmeshlayerlabeling.h"
 #include "qgsmeshlayerlabelprovider.h"
-#include "qgsmapclippingutils.h"
-#include "qgscolorrampshader.h"
-#include "qgsmaplayerelevationproperties.h"
-#include "qgsapplication.h"
-#include "qgsruntimeprofiler.h"
-#include "qgsexpressioncontextutils.h"
-#include "qgsmeshlayerelevationproperties.h"
+#include "qgsmeshlayerutils.h"
+#include "qgsmeshvectorrenderer.h"
+#include "qgspointxy.h"
+#include "qgsrastershader.h"
 #include "qgsrenderedlayerstatistics.h"
+#include "qgsruntimeprofiler.h"
+#include "qgssinglebandpseudocolorrenderer.h"
+#include "qgsthreadingutils.h"
 
-QgsMeshLayerRenderer::QgsMeshLayerRenderer(
-  QgsMeshLayer *layer,
-  QgsRenderContext &context )
+#include <QBrush>
+#include <QElapsedTimer>
+#include <QLinearGradient>
+#include <QPair>
+#include <QPointer>
+#include <QSet>
+#include <QString>
+
+#include "moc_qgsmeshlayerrenderer.cpp"
+
+using namespace Qt::StringLiterals;
+
+QgsMeshLayerRenderer::QgsMeshLayerRenderer( QgsMeshLayer *layer, QgsRenderContext &context )
   : QgsMapLayerRenderer( layer->id(), &context )
   , mIsEditable( layer->isEditable() )
   , mLayerName( layer->name() )
@@ -161,8 +165,7 @@ QgsMeshLayerRenderer::QgsMeshLayerRenderer(
 
   mClippingRegions = QgsMapClippingUtils::collectClippingRegionsForLayer( *renderContext(), layer );
 
-  if ( !context.testFlag( Qgis::RenderContextFlag::RenderPreviewJob )
-       && !( context.flags() & Qgis::RenderContextFlag::Render3DMap ) )
+  if ( !context.testFlag( Qgis::RenderContextFlag::RenderPreviewJob ) && !( context.flags() & Qgis::RenderContextFlag::Render3DMap ) )
   {
     const QgsMeshDatasetIndex activeDatasetIndex = layer->activeScalarDatasetIndex( context );
 
@@ -172,18 +175,16 @@ QgsMeshLayerRenderer::QgsMeshLayerRenderer(
       const double previousMin = scalarRendererSettings.classificationMinimum();
       const double previousMax = scalarRendererSettings.classificationMaximum();
 
-      if ( scalarRendererSettings.extent() == Qgis::MeshRangeExtent::UpdatedCanvas &&
-           scalarRendererSettings.limits() == Qgis::MeshRangeLimit::MinimumMaximum )
+      if ( scalarRendererSettings.extent() == Qgis::MeshRangeExtent::UpdatedCanvas && scalarRendererSettings.limits() == Qgis::MeshRangeLimit::MinimumMaximum )
       {
         double min, max;
 
-        const bool found  = layer->minimumMaximumActiveScalarDataset( context.extent(), activeDatasetIndex, min, max );
+        const bool found = layer->minimumMaximumActiveScalarDataset( context.extent(), activeDatasetIndex, min, max );
 
         if ( found )
         {
           if ( previousMin != min || previousMax != max )
           {
-
             scalarRendererSettings.setClassificationMinimumMaximum( min, max );
             mRendererSettings.setScalarSettings( activeDatasetIndex.group(), scalarRendererSettings );
 
@@ -248,11 +249,10 @@ void QgsMeshLayerRenderer::copyScalarDatasetValues( QgsMeshLayer *layer )
   const int datasetGroupCount = layer->datasetGroupCount();
   const QgsMeshRendererScalarSettings::DataResamplingMethod method = mRendererSettings.scalarSettings( datasetIndex.group() ).dataResamplingMethod();
   QgsMeshLayerRendererCache *cache = layer->rendererCache();
-  if ( ( cache->mDatasetGroupsCount == datasetGroupCount ) &&
-       ( cache->mActiveScalarDatasetIndex == datasetIndex ) &&
-       ( cache->mDataInterpolationMethod ==  method ) &&
-       ( QgsMesh3DAveragingMethod::equals( cache->mScalarAveragingMethod.get(), mRendererSettings.averagingMethod() ) )
-     )
+  if ( ( cache->mDatasetGroupsCount == datasetGroupCount )
+       && ( cache->mActiveScalarDatasetIndex == datasetIndex )
+       && ( cache->mDataInterpolationMethod == method )
+       && ( QgsMesh3DAveragingMethod::equals( cache->mScalarAveragingMethod.get(), mRendererSettings.averagingMethod() ) ) )
   {
     mScalarDatasetValues = cache->mScalarDatasetValues;
     mScalarActiveFaceFlagValues = cache->mScalarActiveFaceFlagValues;
@@ -270,11 +270,7 @@ void QgsMeshLayerRenderer::copyScalarDatasetValues( QgsMeshLayer *layer )
 
     // populate scalar values
     const int count = QgsMeshLayerUtils::datasetValuesCount( &mNativeMesh, mScalarDataType );
-    const QgsMeshDataBlock vals = QgsMeshLayerUtils::datasetValues(
-                                    layer,
-                                    datasetIndex,
-                                    0,
-                                    count );
+    const QgsMeshDataBlock vals = QgsMeshLayerUtils::datasetValues( layer, datasetIndex, 0, count );
 
     if ( vals.isValid() )
     {
@@ -287,10 +283,7 @@ void QgsMeshLayerRenderer::copyScalarDatasetValues( QgsMeshLayer *layer )
     }
 
     // populate face active flag, always defined on faces
-    mScalarActiveFaceFlagValues = layer->areFacesActive(
-                                    datasetIndex,
-                                    0,
-                                    mNativeMesh.faces.count() );
+    mScalarActiveFaceFlagValues = layer->areFacesActive( datasetIndex, 0, mNativeMesh.faces.count() );
 
     // for data on faces, there could be request to interpolate the data to vertices
     if ( method != QgsMeshRendererScalarSettings::NoResampling )
@@ -298,24 +291,12 @@ void QgsMeshLayerRenderer::copyScalarDatasetValues( QgsMeshLayer *layer )
       if ( mScalarDataType == QgsMeshDatasetGroupMetadata::DataType::DataOnFaces )
       {
         mScalarDataType = QgsMeshDatasetGroupMetadata::DataType::DataOnVertices;
-        mScalarDatasetValues = QgsMeshLayerUtils::interpolateFromFacesData(
-                                 mScalarDatasetValues,
-                                 &mNativeMesh,
-                                 &mTriangularMesh,
-                                 &mScalarActiveFaceFlagValues,
-                                 method
-                               );
+        mScalarDatasetValues = QgsMeshLayerUtils::interpolateFromFacesData( mScalarDatasetValues, &mNativeMesh, &mTriangularMesh, &mScalarActiveFaceFlagValues, method );
       }
       else if ( mScalarDataType == QgsMeshDatasetGroupMetadata::DataType::DataOnVertices )
       {
         mScalarDataType = QgsMeshDatasetGroupMetadata::DataType::DataOnFaces;
-        mScalarDatasetValues = QgsMeshLayerUtils::resampleFromVerticesToFaces(
-                                 mScalarDatasetValues,
-                                 &mNativeMesh,
-                                 &mTriangularMesh,
-                                 &mScalarActiveFaceFlagValues,
-                                 method
-                               );
+        mScalarDatasetValues = QgsMeshLayerUtils::resampleFromVerticesToFaces( mScalarDatasetValues, &mNativeMesh, &mTriangularMesh, &mScalarActiveFaceFlagValues, method );
       }
     }
 
@@ -348,10 +329,9 @@ void QgsMeshLayerRenderer::copyVectorDatasetValues( QgsMeshLayer *layer )
   // Find out if we can use cache up to date. If yes, use it and return
   const int datasetGroupCount = layer->datasetGroupCount();
   QgsMeshLayerRendererCache *cache = layer->rendererCache();
-  if ( ( cache->mDatasetGroupsCount == datasetGroupCount ) &&
-       ( cache->mActiveVectorDatasetIndex == datasetIndex ) &&
-       ( QgsMesh3DAveragingMethod::equals( cache->mVectorAveragingMethod.get(), mRendererSettings.averagingMethod() ) )
-     )
+  if ( ( cache->mDatasetGroupsCount == datasetGroupCount )
+       && ( cache->mActiveVectorDatasetIndex == datasetIndex )
+       && ( QgsMesh3DAveragingMethod::equals( cache->mVectorAveragingMethod.get(), mRendererSettings.averagingMethod() ) ) )
   {
     mVectorDatasetValues = cache->mVectorDatasetValues;
     mVectorDatasetValuesMag = cache->mVectorDatasetValuesMag;
@@ -372,7 +352,7 @@ void QgsMeshLayerRenderer::copyVectorDatasetValues( QgsMeshLayer *layer )
     const bool isScalar = metadata.isScalar();
     if ( isScalar )
     {
-      QgsDebugError( QStringLiteral( "Dataset has no vector values" ) );
+      QgsDebugError( u"Dataset has no vector values"_s );
     }
     else
     {
@@ -382,11 +362,7 @@ void QgsMeshLayerRenderer::copyVectorDatasetValues( QgsMeshLayer *layer )
       mVectorDatasetGroupMagMaximum = metadata.maximum();
 
       const int count = QgsMeshLayerUtils::datasetValuesCount( &mNativeMesh, mVectorDataType );
-      mVectorDatasetValues = QgsMeshLayerUtils::datasetValues(
-                               layer,
-                               datasetIndex,
-                               0,
-                               count );
+      mVectorDatasetValues = QgsMeshLayerUtils::datasetValues( layer, datasetIndex, 0, count );
 
       if ( mVectorDatasetValues.isValid() )
         mVectorDatasetValuesMag = QgsMeshLayerUtils::calculateMagnitudes( mVectorDatasetValues );
@@ -418,14 +394,16 @@ void QgsMeshLayerRenderer::copyVectorDatasetValues( QgsMeshLayer *layer )
 
 bool QgsMeshLayerRenderer::render()
 {
+  QgsScopedThreadName threadName( u"render:%1"_s.arg( mLayerName ) );
+
   std::unique_ptr< QgsScopedRuntimeProfile > profile;
   std::unique_ptr< QgsScopedRuntimeProfile > preparingProfile;
   if ( mEnableProfile )
   {
-    profile = std::make_unique< QgsScopedRuntimeProfile >( mLayerName, QStringLiteral( "rendering" ), layerId() );
+    profile = std::make_unique< QgsScopedRuntimeProfile >( mLayerName, u"rendering"_s, layerId() );
     if ( mPreparationTime > 0 )
-      QgsApplication::profiler()->record( QObject::tr( "Create renderer" ), mPreparationTime / 1000.0, QStringLiteral( "rendering" ) );
-    preparingProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Preparing render" ), QStringLiteral( "rendering" ) );
+      QgsApplication::profiler()->record( QObject::tr( "Create renderer" ), mPreparationTime / 1000.0, u"rendering"_s );
+    preparingProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Preparing render" ), u"rendering"_s );
   }
 
   mReadyToCompose = false;
@@ -467,38 +445,28 @@ bool QgsMeshLayerRenderer::forceRasterRender() const
 
 void QgsMeshLayerRenderer::renderMesh()
 {
-  if ( !mRendererSettings.nativeMeshSettings().isEnabled() && !mIsEditable &&
-       !mRendererSettings.edgeMeshSettings().isEnabled() &&
-       !mRendererSettings.triangularMeshSettings().isEnabled() )
+  if ( !mRendererSettings.nativeMeshSettings().isEnabled() && !mIsEditable && !mRendererSettings.edgeMeshSettings().isEnabled() && !mRendererSettings.triangularMeshSettings().isEnabled() )
     return;
 
   std::unique_ptr< QgsScopedRuntimeProfile > renderProfile;
   if ( mEnableProfile )
   {
-    renderProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Rendering mesh" ), QStringLiteral( "rendering" ) );
+    renderProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Rendering mesh" ), u"rendering"_s );
   }
 
   // triangular mesh
   const QList<int> trianglesInExtent = mTriangularMesh.faceIndexesForRectangle( renderContext()->mapExtent() );
   if ( mRendererSettings.triangularMeshSettings().isEnabled() )
   {
-    renderFaceMesh(
-      mRendererSettings.triangularMeshSettings(),
-      mTriangularMesh.triangles(),
-      trianglesInExtent );
+    renderFaceMesh( mRendererSettings.triangularMeshSettings(), mTriangularMesh.triangles(), trianglesInExtent );
   }
 
   // native mesh
-  if ( ( mRendererSettings.nativeMeshSettings().isEnabled() || mIsEditable ) &&
-       mTriangularMesh.levelOfDetail() == 0 )
+  if ( ( mRendererSettings.nativeMeshSettings().isEnabled() || mIsEditable ) && mTriangularMesh.levelOfDetail() == 0 )
   {
-    const QSet<int> nativeFacesInExtent = QgsMeshUtils::nativeFacesFromTriangles( trianglesInExtent,
-                                          mTriangularMesh.trianglesToNativeFaces() );
+    const QSet<int> nativeFacesInExtent = QgsMeshUtils::nativeFacesFromTriangles( trianglesInExtent, mTriangularMesh.trianglesToNativeFaces() );
 
-    renderFaceMesh(
-      mRendererSettings.nativeMeshSettings(),
-      mNativeMesh.faces,
-      nativeFacesInExtent.values() );
+    renderFaceMesh( mRendererSettings.nativeMeshSettings(), mNativeMesh.faces, nativeFacesInExtent.values() );
   }
 
   // edge mesh
@@ -565,10 +533,7 @@ void QgsMeshLayerRenderer::renderEdgeMesh( const QgsMeshRendererMeshSettings &se
   painter->restore();
 };
 
-void QgsMeshLayerRenderer::renderFaceMesh(
-  const QgsMeshRendererMeshSettings &settings,
-  const QVector<QgsMeshFace> &faces,
-  const QList<int> &facesInExtent )
+void QgsMeshLayerRenderer::renderFaceMesh( const QgsMeshRendererMeshSettings &settings, const QVector<QgsMeshFace> &faces, const QList<int> &facesInExtent )
 {
   Q_ASSERT( settings.isEnabled() || mIsEditable );
 
@@ -630,19 +595,17 @@ void QgsMeshLayerRenderer::renderScalarDataset()
   std::unique_ptr< QgsScopedRuntimeProfile > renderProfile;
   if ( mEnableProfile )
   {
-    renderProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Rendering scalar datasets" ), QStringLiteral( "rendering" ) );
+    renderProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Rendering scalar datasets" ), u"rendering"_s );
   }
 
   const QgsMeshRendererScalarSettings scalarSettings = mRendererSettings.scalarSettings( groupIndex );
 
-  if ( ( mTriangularMesh.contains( QgsMesh::ElementType::Face ) ) &&
-       ( mScalarDataType != QgsMeshDatasetGroupMetadata::DataType::DataOnEdges ) )
+  if ( ( mTriangularMesh.contains( QgsMesh::ElementType::Face ) ) && ( mScalarDataType != QgsMeshDatasetGroupMetadata::DataType::DataOnEdges ) )
   {
     renderScalarDatasetOnFaces( scalarSettings );
   }
 
-  if ( ( mTriangularMesh.contains( QgsMesh::ElementType::Edge ) ) &&
-       ( mScalarDataType != QgsMeshDatasetGroupMetadata::DataType::DataOnFaces ) )
+  if ( ( mTriangularMesh.contains( QgsMesh::ElementType::Edge ) ) && ( mScalarDataType != QgsMeshDatasetGroupMetadata::DataType::DataOnFaces ) )
   {
     renderScalarDatasetOnEdges( scalarSettings );
   }
@@ -701,8 +664,7 @@ QColor QgsMeshLayerRenderer::colorAt( QgsColorRampShader *shader, double val ) c
 
 QgsPointXY QgsMeshLayerRenderer::fractionPoint( const QgsPointXY &p1, const QgsPointXY &p2, double fraction ) const
 {
-  const QgsPointXY pt( p1.x() + fraction * ( p2.x() - p1.x() ),
-                       p1.y() + fraction * ( p2.y() - p1.y() ) );
+  const QgsPointXY pt( p1.x() + fraction * ( p2.x() - p1.x() ), p1.y() + fraction * ( p2.y() - p1.y() ) );
   return pt;
 }
 
@@ -712,16 +674,11 @@ void QgsMeshLayerRenderer::renderScalarDatasetOnFaces( const QgsMeshRendererScal
 
   QgsColorRampShader *fcn = new QgsColorRampShader( scalarSettings.colorRampShader() );
   QgsRasterShader *sh = new QgsRasterShader();
-  sh->setRasterShaderFunction( fcn );  // takes ownership of fcn
-  QgsMeshLayerInterpolator interpolator( mTriangularMesh,
-                                         mScalarDatasetValues,
-                                         mScalarActiveFaceFlagValues,
-                                         mScalarDataType,
-                                         context,
-                                         mOutputSize );
+  sh->setRasterShaderFunction( fcn ); // takes ownership of fcn
+  QgsMeshLayerInterpolator interpolator( mTriangularMesh, mScalarDatasetValues, mScalarActiveFaceFlagValues, mScalarDataType, context, mOutputSize );
   interpolator.setSpatialIndexActive( mIsMeshSimplificationActive );
   interpolator.setElevationMapSettings( mRenderElevationMap, mElevationScale, mElevationOffset );
-  QgsSingleBandPseudoColorRenderer renderer( &interpolator, 0, sh );  // takes ownership of sh
+  QgsSingleBandPseudoColorRenderer renderer( &interpolator, 0, sh ); // takes ownership of sh
   renderer.setClassificationMin( scalarSettings.classificationMinimum() );
   renderer.setClassificationMax( scalarSettings.classificationMaximum() );
   renderer.setOpacity( scalarSettings.opacity() );
@@ -751,22 +708,25 @@ void QgsMeshLayerRenderer::renderVectorDataset()
   std::unique_ptr< QgsScopedRuntimeProfile > renderProfile;
   if ( mEnableProfile )
   {
-    renderProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Rendering vector datasets" ), QStringLiteral( "rendering" ) );
+    renderProfile = std::make_unique< QgsScopedRuntimeProfile >( QObject::tr( "Rendering vector datasets" ), u"rendering"_s );
   }
 
-  std::unique_ptr<QgsMeshVectorRenderer> renderer( QgsMeshVectorRenderer::makeVectorRenderer(
-        mTriangularMesh,
-        mVectorDatasetValues,
-        mVectorActiveFaceFlagValues,
-        mVectorDatasetValuesMag,
-        mVectorDatasetMagMaximum,
-        mVectorDatasetMagMinimum,
-        mVectorDataType,
-        mRendererSettings.vectorSettings( groupIndex ),
-        *renderContext(),
-        mLayerExtent,
-        mFeedback.get(),
-        mOutputSize ) );
+  std::unique_ptr<QgsMeshVectorRenderer> renderer(
+    QgsMeshVectorRenderer::makeVectorRenderer(
+      mTriangularMesh,
+      mVectorDatasetValues,
+      mVectorActiveFaceFlagValues,
+      mVectorDatasetValuesMag,
+      mVectorDatasetMagMaximum,
+      mVectorDatasetMagMinimum,
+      mVectorDataType,
+      mRendererSettings.vectorSettings( groupIndex ),
+      *renderContext(),
+      mLayerExtent,
+      mFeedback.get(),
+      mOutputSize
+    )
+  );
 
   if ( renderer )
     renderer->draw();
@@ -786,7 +746,7 @@ void QgsMeshLayerRenderer::prepareLabeling( QgsMeshLayer *layer, QSet<QString> &
         auto c = context.expressionContext();
 
         c.appendScope( QgsExpressionContextUtils::meshExpressionScope( mLabelProvider->labelFaces() ? QgsMesh::Face : QgsMesh::Vertex ) );
-        c.lastScope()->setVariable( QStringLiteral( "_native_mesh" ), QVariant::fromValue( mNativeMesh ) );
+        c.lastScope()->setVariable( u"_native_mesh"_s, QVariant::fromValue( mNativeMesh ) );
         context.setExpressionContext( c );
 
         engine->addProvider( mLabelProvider );
@@ -807,7 +767,7 @@ void QgsMeshLayerRenderer::registerLabelFeatures()
 
   QgsRenderContext &context = *renderContext();
 
-  QgsExpressionContextScope *scope = context.expressionContext().activeScopeForVariable( QStringLiteral( "_native_mesh" ) );
+  QgsExpressionContextScope *scope = context.expressionContext().activeScopeForVariable( u"_native_mesh"_s );
 
   const QList<int> trianglesInExtent = mTriangularMesh.faceIndexesForRectangle( renderContext()->mapExtent() );
 
@@ -815,8 +775,7 @@ void QgsMeshLayerRenderer::registerLabelFeatures()
   {
     if ( !mTriangularMesh.contains( QgsMesh::ElementType::Face ) )
       return;
-    const QSet<int> nativeFacesInExtent = QgsMeshUtils::nativeFacesFromTriangles( trianglesInExtent,
-                                          mTriangularMesh.trianglesToNativeFaces() );
+    const QSet<int> nativeFacesInExtent = QgsMeshUtils::nativeFacesFromTriangles( trianglesInExtent, mTriangularMesh.trianglesToNativeFaces() );
 
     for ( const int i : nativeFacesInExtent )
     {
@@ -826,7 +785,7 @@ void QgsMeshLayerRenderer::registerLabelFeatures()
       if ( i < 0 || i >= mNativeMesh.faces.count() )
         continue;
 
-      scope->setVariable( QStringLiteral( "_mesh_face_index" ), i, false );
+      scope->setVariable( u"_mesh_face_index"_s, i, false );
 
       QgsFeature f( i );
       QgsGeometry geom = QgsMeshUtils::toGeometry( mNativeMesh.face( i ), mNativeMesh.vertices );
@@ -838,8 +797,7 @@ void QgsMeshLayerRenderer::registerLabelFeatures()
   {
     if ( !mTriangularMesh.contains( QgsMesh::ElementType::Vertex ) )
       return;
-    const QSet<int> nativeVerticesInExtent = QgsMeshUtils::nativeVerticesFromTriangles( trianglesInExtent,
-        mTriangularMesh.triangles() );
+    const QSet<int> nativeVerticesInExtent = QgsMeshUtils::nativeVerticesFromTriangles( trianglesInExtent, mTriangularMesh.triangles() );
 
     for ( const int i : nativeVerticesInExtent )
     {
@@ -849,7 +807,7 @@ void QgsMeshLayerRenderer::registerLabelFeatures()
       if ( i < 0 || i >= mNativeMesh.vertexCount() )
         continue;
 
-      scope->setVariable( QStringLiteral( "_mesh_vertex_index" ), i, false );
+      scope->setVariable( u"_mesh_vertex_index"_s, i, false );
 
       QgsFeature f( i );
       QgsGeometry geom = QgsGeometry( new QgsPoint( mNativeMesh.vertex( i ) ) );

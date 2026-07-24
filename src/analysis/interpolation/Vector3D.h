@@ -18,6 +18,7 @@
 #define VECTOR3D_H
 
 #include <cmath>
+
 #include "qgis_analysis.h"
 
 #define SIP_NO_FILE
@@ -82,8 +83,7 @@ inline Vector3D::Vector3D( double x, double y, double z )
   : mX( x )
   , mY( y )
   , mZ( z )
-{
-}
+{}
 
 //-------------------------------------------setter and getters-------------------------------
 

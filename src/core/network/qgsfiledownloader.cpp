@@ -14,24 +14,29 @@
  ***************************************************************************/
 
 #include "qgsfiledownloader.h"
-#include "moc_qgsfiledownloader.cpp"
-#include "qgsnetworkaccessmanager.h"
-#include "qgssetrequestinitiator_p.h"
+
 #include "qgsapplication.h"
 #include "qgsauthmanager.h"
-#include "qgsvariantutils.h"
 #include "qgslogger.h"
+#include "qgsnetworkaccessmanager.h"
+#include "qgssetrequestinitiator_p.h"
+#include "qgsvariantutils.h"
 
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QString>
+
+#include "moc_qgsfiledownloader.cpp"
+
+using namespace Qt::StringLiterals;
+
 #ifndef QT_NO_SSL
 #include <QSslError>
 #endif
 
 QgsFileDownloader::QgsFileDownloader( const QUrl &url, const QString &outputFileName, const QString &authcfg, bool delayStart, Qgis::HttpMethod httpMethod, const QByteArray &data )
   : mUrl( url )
-  , mDownloadCanceled( false )
   , mHttpMethod( httpMethod )
   , mData( data )
 {
@@ -58,7 +63,7 @@ void QgsFileDownloader::startDownload()
 
   QNetworkRequest request( mUrl );
   request.setAttribute( QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::RedirectPolicy::NoLessSafeRedirectPolicy );
-  QgsSetRequestInitiatorClass( request, QStringLiteral( "QgsFileDownloader" ) );
+  QgsSetRequestInitiatorClass( request, u"QgsFileDownloader"_s );
   if ( !mAuthCfg.isEmpty() )
   {
     QgsApplication::authManager()->updateNetworkRequest( request, mAuthCfg );
@@ -89,7 +94,7 @@ void QgsFileDownloader::startDownload()
     case Qgis::HttpMethod::Head:
     case Qgis::HttpMethod::Put:
     case Qgis::HttpMethod::Delete:
-      QgsDebugError( QStringLiteral( "Unsupported HTTP method: %1" ).arg( qgsEnumValueToKey( mHttpMethod ) ) );
+      QgsDebugError( u"Unsupported HTTP method: %1"_s.arg( qgsEnumValueToKey( mHttpMethod ) ) );
       // not supported
       break;
   }
@@ -128,7 +133,7 @@ void QgsFileDownloader::onSslErrors( QNetworkReply *reply, const QList<QSslError
   {
     QStringList errorMessages;
     errorMessages.reserve( errors.size() + 1 );
-    errorMessages <<  QStringLiteral( "SSL Errors: " );
+    errorMessages << u"SSL Errors: "_s;
 
     for ( const QSslError &error : errors )
       errorMessages << error.errorString();
@@ -162,7 +167,7 @@ void QgsFileDownloader::onReadyRead()
     error( tr( "No output filename specified" ) );
     onFinished();
   }
-  else if ( ! mFile.isOpen() && ! mFile.open( QIODevice::WriteOnly | QIODevice::Truncate ) )
+  else if ( !mFile.isOpen() && !mFile.open( QIODevice::WriteOnly | QIODevice::Truncate ) )
   {
     error( tr( "Cannot open output file: %1" ).arg( mFile.fileName() ) );
     onFinished();
@@ -177,7 +182,7 @@ void QgsFileDownloader::onReadyRead()
 void QgsFileDownloader::onFinished()
 {
   // when canceled
-  if ( ! mErrors.isEmpty() || mDownloadCanceled )
+  if ( !mErrors.isEmpty() || mDownloadCanceled )
   {
     if ( mFile.isOpen() )
       mFile.close();
@@ -216,4 +221,3 @@ void QgsFileDownloader::onDownloadProgress( qint64 bytesReceived, qint64 bytesTo
   }
   emit downloadProgress( bytesReceived, bytesTotal );
 }
-

@@ -18,9 +18,9 @@
 #ifndef QGSVIRTUALLAYERTASK_H
 #define QGSVIRTUALLAYERTASK_H
 
-#include "qgsvirtuallayerdefinition.h"
 #include "qgstaskmanager.h"
 #include "qgsvectorlayer.h"
+#include "qgsvirtuallayerdefinition.h"
 
 /**
  * \ingroup core
@@ -35,7 +35,6 @@ class CORE_EXPORT QgsVirtualLayerTask : public QgsTask
     Q_OBJECT
 
   public:
-
     /**
      * Constructor.
      * \param definition The definition to use for initializing the virtual layer

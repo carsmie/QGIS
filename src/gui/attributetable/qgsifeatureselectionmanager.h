@@ -16,10 +16,11 @@
 #ifndef QGSIFEATURESELECTIONMANAGER_H
 #define QGSIFEATURESELECTIONMANAGER_H
 
-#include <QObject>
-#include "qgis_sip.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
 #include "qgsfeatureid.h"
+
+#include <QObject>
 
 /**
  * \ingroup gui
@@ -34,7 +35,8 @@ class GUI_EXPORT QgsIFeatureSelectionManager : public QObject
 
   public:
     QgsIFeatureSelectionManager( QObject *parent SIP_TRANSFERTHIS )
-      : QObject( parent ) {}
+      : QObject( parent )
+    {}
 
     /**
      * Returns the number of features that are selected in this layer.

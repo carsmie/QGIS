@@ -18,11 +18,12 @@
 #ifndef QGSORACLETRANSACTION_H
 #define QGSORACLETRANSACTION_H
 
-#include "qgstransaction.h"
 #include "qgis_sip.h"
+#include "qgstransaction.h"
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
-#define SIP_NO_FILE
 
 class QgsOracleConn;
 

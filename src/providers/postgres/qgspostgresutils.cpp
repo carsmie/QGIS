@@ -1,5 +1,5 @@
 /***************************************************************************
-      qgspostgresutils.cpp  -  Utils for PostgreSQL/PostGIS 
+      qgspostgresutils.cpp  -  Utils for PostgreSQL/PostGIS
                              -------------------
     begin                : Jan 2, 2004
     copyright            : (C) 2003 by Gary E.Sherman
@@ -15,8 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgslogger.h"
 #include "qgspostgresutils.h"
+
+#include "qgslogger.h"
+#include "qgsstringutils.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 // ----------
 
@@ -38,7 +44,7 @@ void QgsPostgresSharedData::ensureFeaturesCountedAtLeast( long long fetched )
    */
   if ( mFeaturesCounted > 0 && mFeaturesCounted < fetched )
   {
-    QgsDebugMsgLevel( QStringLiteral( "feature count adjusted from %1 to %2" ).arg( mFeaturesCounted ).arg( fetched ), 2 );
+    QgsDebugMsgLevel( u"feature count adjusted from %1 to %2"_s.arg( mFeaturesCounted ).arg( fetched ), 2 );
     mFeaturesCounted = fetched;
   }
 }
@@ -150,25 +156,25 @@ void QgsPostgresSharedData::setFieldSupportsEnumValues( int index, bool isSuppor
 
 // ----------
 
-QString QgsPostgresUtils::whereClause( QgsFeatureId featureId, const QgsFields &fields, QgsPostgresConn *conn, QgsPostgresPrimaryKeyType pkType, const QList<int> &pkAttrs, const std::shared_ptr<QgsPostgresSharedData> &sharedData )
+QString QgsPostgresUtils::whereClause(
+  QgsFeatureId featureId, const QgsFields &fields, QgsPostgresConn *conn, QgsPostgresPrimaryKeyType pkType, const QList<int> &pkAttrs, const std::shared_ptr<QgsPostgresSharedData> &sharedData
+)
 {
   QString whereClause;
 
   switch ( pkType )
   {
     case PktTid:
-      whereClause = QStringLiteral( "ctid='(%1,%2)'" )
-                      .arg( FID_TO_NUMBER( featureId ) >> 16 )
-                      .arg( FID_TO_NUMBER( featureId ) & 0xffff );
+      whereClause = u"ctid='(%1,%2)'"_s.arg( FID_TO_NUMBER( featureId ) >> 16 ).arg( FID_TO_NUMBER( featureId ) & 0xffff );
       break;
 
     case PktOid:
-      whereClause = QStringLiteral( "oid=%1" ).arg( featureId );
+      whereClause = u"oid=%1"_s.arg( featureId );
       break;
 
     case PktInt:
       Q_ASSERT( pkAttrs.size() == 1 );
-      whereClause = QStringLiteral( "%1=%2" ).arg( QgsPostgresConn::quotedIdentifier( fields.at( pkAttrs[0] ).name() ) ).arg( QgsPostgresUtils::fid_to_int32pk( featureId ) );
+      whereClause = u"%1=%2"_s.arg( QgsPostgresConn::quotedIdentifier( fields.at( pkAttrs[0] ).name() ) ).arg( QgsPostgresUtils::fid_to_int32pk( featureId ) );
       break;
 
     case PktInt64:
@@ -183,7 +189,7 @@ QString QgsPostgresUtils::whereClause( QgsFeatureId featureId, const QgsFields &
         if ( !QgsVariantUtils::isNull( pkVals[0] ) )
           whereClause += '=' + pkVals[0].toString();
         else
-          whereClause += QLatin1String( " IS NULL" );
+          whereClause += " IS NULL"_L1;
       }
     }
     break;
@@ -203,31 +209,33 @@ QString QgsPostgresUtils::whereClause( QgsFeatureId featureId, const QgsFields &
 
           whereClause += delim + conn->fieldExpressionForWhereClause( fld, static_cast<QMetaType::Type>( pkVals[i].userType() ) );
           if ( QgsVariantUtils::isNull( pkVals[i] ) )
-            whereClause += QLatin1String( " IS NULL" );
+            whereClause += " IS NULL"_L1;
           else
             whereClause += '=' + QgsPostgresConn::quotedValue( pkVals[i] ); // remove toString as it must be handled by quotedValue function
 
-          delim = QStringLiteral( " AND " );
+          delim = u" AND "_s;
         }
       }
       else
       {
-        QgsDebugError( QStringLiteral( "FAILURE: Key values for feature %1 not found." ).arg( featureId ) );
-        whereClause = QStringLiteral( "NULL" );
+        QgsDebugError( u"FAILURE: Key values for feature %1 not found."_s.arg( featureId ) );
+        whereClause = u"NULL"_s;
       }
     }
     break;
 
     case PktUnknown:
       Q_ASSERT( !"FAILURE: Primary key unknown" );
-      whereClause = QStringLiteral( "NULL" );
+      whereClause = u"NULL"_s;
       break;
   }
 
   return whereClause;
 }
 
-QString QgsPostgresUtils::whereClause( const QgsFeatureIds &featureIds, const QgsFields &fields, QgsPostgresConn *conn, QgsPostgresPrimaryKeyType pkType, const QList<int> &pkAttrs, const std::shared_ptr<QgsPostgresSharedData> &sharedData )
+QString QgsPostgresUtils::whereClause(
+  const QgsFeatureIds &featureIds, const QgsFields &fields, QgsPostgresConn *conn, QgsPostgresPrimaryKeyType pkType, const QList<int> &pkAttrs, const std::shared_ptr<QgsPostgresSharedData> &sharedData
+)
 {
   auto lookupKeyWhereClause = [featureIds, fields, sharedData, pkAttrs] {
     if ( featureIds.isEmpty() )
@@ -235,7 +243,7 @@ QString QgsPostgresUtils::whereClause( const QgsFeatureIds &featureIds, const Qg
 
     //simple primary key, so prefer to use an "IN (...)" query. These are much faster then multiple chained ...OR... clauses
     QString delim;
-    QString expr = QStringLiteral( "%1 IN (" ).arg( QgsPostgresConn::quotedIdentifier( fields.at( pkAttrs[0] ).name() ) );
+    QString expr = u"%1 IN ("_s.arg( QgsPostgresConn::quotedIdentifier( fields.at( pkAttrs[0] ).name() ) );
 
     for ( const QgsFeatureId featureId : std::as_const( featureIds ) )
     {
@@ -262,7 +270,7 @@ QString QgsPostgresUtils::whereClause( const QgsFeatureIds &featureIds, const Qg
       if ( !featureIds.isEmpty() )
       {
         QString delim;
-        expr = QStringLiteral( "%1 IN (" ).arg( ( pkType == PktOid ? QStringLiteral( "oid" ) : QgsPostgresConn::quotedIdentifier( fields.at( pkAttrs[0] ).name() ) ) );
+        expr = u"%1 IN ("_s.arg( ( pkType == PktOid ? u"oid"_s : QgsPostgresConn::quotedIdentifier( fields.at( pkAttrs[0] ).name() ) ) );
 
         for ( const QgsFeatureId featureId : std::as_const( featureIds ) )
         {
@@ -292,7 +300,7 @@ QString QgsPostgresUtils::whereClause( const QgsFeatureIds &featureIds, const Qg
       {
         whereClauses << whereClause( featureId, fields, conn, pkType, pkAttrs, sharedData );
       }
-      return whereClauses.isEmpty() ? QString() : whereClauses.join( QLatin1String( " OR " ) ).prepend( '(' ).append( ')' );
+      return whereClauses.isEmpty() ? QString() : whereClauses.join( " OR "_L1 ).prepend( '(' ).append( ')' );
     }
   }
   return QString(); //avoid warning
@@ -305,24 +313,24 @@ QString QgsPostgresUtils::andWhereClauses( const QString &c1, const QString &c2 
   if ( c2.isEmpty() )
     return c1;
 
-  return QStringLiteral( "(%1) AND (%2)" ).arg( c1, c2 );
+  return u"(%1) AND (%2)"_s.arg( c1, c2 );
 }
 
 void QgsPostgresUtils::replaceInvalidXmlChars( QString &xml )
 {
-  static const QRegularExpression replaceRe { QStringLiteral( "([\\x00-\\x08\\x0B-\\x1F\\x7F])" ) };
+  const thread_local QRegularExpression replaceRe { u"([\\x00-\\x08\\x0B-\\x1F\\x7F])"_s };
   QRegularExpressionMatchIterator it { replaceRe.globalMatch( xml ) };
   while ( it.hasNext() )
   {
     const QRegularExpressionMatch match { it.next() };
     const QChar c { match.captured( 1 ).at( 0 ) };
-    xml.replace( c, QStringLiteral( "UTF-8[%1]" ).arg( c.unicode() ) );
+    xml.replace( c, u"UTF-8[%1]"_s.arg( c.unicode() ) );
   }
 }
 
 void QgsPostgresUtils::restoreInvalidXmlChars( QString &xml )
 {
-  static const QRegularExpression replaceRe { QStringLiteral( R"raw(UTF-8\[(\d+)\])raw" ) };
+  const thread_local QRegularExpression replaceRe { QStringLiteral( R"raw(UTF-8\[(\d+)\])raw" ) };
   QRegularExpressionMatchIterator it { replaceRe.globalMatch( xml ) };
   while ( it.hasNext() )
   {
@@ -331,7 +339,7 @@ void QgsPostgresUtils::restoreInvalidXmlChars( QString &xml )
     const ushort code { match.captured( 1 ).toUShort( &ok ) };
     if ( ok )
     {
-      xml.replace( QStringLiteral( "UTF-8[%1]" ).arg( code ), QChar( code ) );
+      xml.replace( u"UTF-8[%1]"_s.arg( code ), QChar( code ) );
     }
   }
 }
@@ -360,8 +368,7 @@ bool QgsPostgresUtils::deleteLayer( const QString &uri, QString &errCause )
   }
 
   // handle deletion of views
-  QString sqlViewCheck = QStringLiteral( "SELECT relkind FROM pg_class WHERE oid=regclass(%1)::oid" )
-                           .arg( QgsPostgresConn::quotedValue( schemaTableName ) );
+  QString sqlViewCheck = u"SELECT relkind FROM pg_class WHERE oid=regclass(%1)::oid"_s.arg( QgsPostgresConn::quotedValue( schemaTableName ) );
   QgsPostgresResult resViewCheck( conn->LoggedPQexec( "QgsPostgresUtils", sqlViewCheck ) );
   const QString type = resViewCheck.PQgetvalue( 0, 0 );
   const Qgis::PostgresRelKind relKind = QgsPostgresConn::relKindFromValue( type );
@@ -371,12 +378,11 @@ bool QgsPostgresUtils::deleteLayer( const QString &uri, QString &errCause )
     case Qgis::PostgresRelKind::View:
     case Qgis::PostgresRelKind::MaterializedView:
     {
-      QString sql = QStringLiteral( "DROP %1VIEW %2" ).arg( type == QLatin1String( "m" ) ? QStringLiteral( "MATERIALIZED " ) : QString(), schemaTableName );
+      QString sql = u"DROP %1VIEW %2"_s.arg( type == "m"_L1 ? u"MATERIALIZED "_s : QString(), schemaTableName );
       QgsPostgresResult result( conn->LoggedPQexec( "QgsPostgresUtils", sql ) );
       if ( result.PQresultStatus() != PGRES_COMMAND_OK )
       {
-        errCause = QObject::tr( "Unable to delete view %1: \n%2" )
-                     .arg( schemaTableName, result.PQresultErrorMessage() );
+        errCause = QObject::tr( "Unable to delete view %1: \n%2" ).arg( schemaTableName, result.PQresultErrorMessage() );
         conn->unref();
         return false;
       }
@@ -399,17 +405,18 @@ bool QgsPostgresUtils::deleteLayer( const QString &uri, QString &errCause )
       // These should have special handling!
 
       // check the geometry column count
-      QString sql = QString( "SELECT count(*) "
-                             "FROM geometry_columns, pg_class, pg_namespace "
-                             "WHERE f_table_name=relname AND f_table_schema=nspname "
-                             "AND pg_class.relnamespace=pg_namespace.oid "
-                             "AND f_table_schema=%1 AND f_table_name=%2" )
+      QString sql = QString(
+                      "SELECT count(*) "
+                      "FROM geometry_columns, pg_class, pg_namespace "
+                      "WHERE f_table_name=relname AND f_table_schema=nspname "
+                      "AND pg_class.relnamespace=pg_namespace.oid "
+                      "AND f_table_schema=%1 AND f_table_name=%2"
+      )
                       .arg( QgsPostgresConn::quotedValue( schemaName ), QgsPostgresConn::quotedValue( tableName ) );
       QgsPostgresResult result( conn->LoggedPQexec( "QgsPostgresUtils", sql ) );
       if ( result.PQresultStatus() != PGRES_TUPLES_OK )
       {
-        errCause = QObject::tr( "Unable to delete layer %1: \n%2" )
-                     .arg( schemaTableName, result.PQresultErrorMessage() );
+        errCause = QObject::tr( "Unable to delete layer %1: \n%2" ).arg( schemaTableName, result.PQresultErrorMessage() );
         conn->unref();
         return false;
       }
@@ -419,21 +426,18 @@ bool QgsPostgresUtils::deleteLayer( const QString &uri, QString &errCause )
       if ( !geometryCol.isEmpty() && count > 1 )
       {
         // the table has more geometry columns, drop just the geometry column
-        sql = QStringLiteral( "SELECT DropGeometryColumn(%1,%2,%3)" )
-                .arg( QgsPostgresConn::quotedValue( schemaName ), QgsPostgresConn::quotedValue( tableName ), QgsPostgresConn::quotedValue( geometryCol ) );
+        sql = u"SELECT DropGeometryColumn(%1,%2,%3)"_s.arg( QgsPostgresConn::quotedValue( schemaName ), QgsPostgresConn::quotedValue( tableName ), QgsPostgresConn::quotedValue( geometryCol ) );
       }
       else
       {
         // drop the table
-        sql = QStringLiteral( "SELECT DropGeometryTable(%1,%2)" )
-                .arg( QgsPostgresConn::quotedValue( schemaName ), QgsPostgresConn::quotedValue( tableName ) );
+        sql = u"SELECT DropGeometryTable(%1,%2)"_s.arg( QgsPostgresConn::quotedValue( schemaName ), QgsPostgresConn::quotedValue( tableName ) );
       }
 
       result = conn->LoggedPQexec( "QgsPostgresUtils", sql );
       if ( result.PQresultStatus() != PGRES_TUPLES_OK )
       {
-        errCause = QObject::tr( "Unable to delete layer %1: \n%2" )
-                     .arg( schemaTableName, result.PQresultErrorMessage() );
+        errCause = QObject::tr( "Unable to delete layer %1: \n%2" ).arg( schemaTableName, result.PQresultErrorMessage() );
         conn->unref();
         return false;
       }
@@ -462,14 +466,12 @@ bool QgsPostgresUtils::deleteSchema( const QString &schema, const QgsDataSourceU
   }
 
   // drop the schema
-  QString sql = QStringLiteral( "DROP SCHEMA %1 %2" )
-                  .arg( schemaName, cascade ? QStringLiteral( "CASCADE" ) : QString() );
+  QString sql = u"DROP SCHEMA %1 %2"_s.arg( schemaName, cascade ? u"CASCADE"_s : QString() );
 
   QgsPostgresResult result( conn->LoggedPQexec( "QgsPostgresUtils", sql ) );
   if ( result.PQresultStatus() != PGRES_COMMAND_OK )
   {
-    errCause = QObject::tr( "Unable to delete schema %1: \n%2" )
-                 .arg( schemaName, result.PQresultErrorMessage() );
+    errCause = QObject::tr( "Unable to delete schema %1: \n%2" ).arg( schemaName, result.PQresultErrorMessage() );
     conn->unref();
     return false;
   }
@@ -478,37 +480,64 @@ bool QgsPostgresUtils::deleteSchema( const QString &schema, const QgsDataSourceU
   return true;
 }
 
-bool QgsPostgresUtils::tableExists( QgsPostgresConn *conn, const QString &name )
+bool QgsPostgresUtils::tableExists( QgsPostgresConn *conn, const QString &schema, const QString &table )
 {
-  QgsPostgresResult res( conn->LoggedPQexec( QStringLiteral( "tableExists" ), "SELECT EXISTS ( SELECT oid FROM pg_catalog.pg_class WHERE relname=" + QgsPostgresConn::quotedValue( name ) + ")" ) );
-  return res.PQgetvalue( 0, 0 ).startsWith( 't' );
+  QString sql;
+
+  if ( schema.isEmpty() )
+  {
+    sql = u"SELECT EXISTS ( SELECT oid FROM pg_catalog.pg_class WHERE relname= %1)"_s.arg( QgsPostgresConn::quotedValue( table ) );
+  }
+  else
+  {
+    sql = u"SELECT EXISTS ( SELECT 1 FROM information_schema.tables WHERE table_name = %1 AND table_schema = %2)"_s.arg( QgsPostgresConn::quotedValue( table ), QgsPostgresConn::quotedValue( schema ) );
+  }
+
+  QgsPostgresResult res( conn->LoggedPQexec( u"tableExists"_s, sql ) );
+  return res.PQgetvalue( 0, 0 ).startsWith( 't'_L1 );
 }
 
-bool QgsPostgresUtils::columnExists( QgsPostgresConn *conn, const QString &table, const QString &column )
+bool QgsPostgresUtils::columnExists( QgsPostgresConn *conn, const QString &schema, const QString &table, const QString &column )
 {
-  QgsPostgresResult res( conn->LoggedPQexec( QStringLiteral( "columnExists" ), "SELECT COUNT(*) FROM information_schema.columns WHERE table_name=" + QgsPostgresConn::quotedValue( table ) + " and column_name=" + QgsPostgresConn::quotedValue( column ) ) );
-  return res.PQgetvalue( 0, 0 ).toInt() > 0;
+  QString sqlWhereClause = u"table_name = %1 AND column_name = %3"_s.arg( QgsPostgresConn::quotedValue( table ), QgsPostgresConn::quotedValue( column ) );
+
+  if ( !schema.isEmpty() )
+  {
+    sqlWhereClause.append( u" AND table_schema = %1"_s.arg( QgsPostgresConn::quotedValue( schema ) ) );
+  }
+
+  const QString sql = QStringLiteral(
+                        "SELECT EXISTS( SELECT 1 FROM information_schema.columns "
+                        "WHERE %1)"
+  )
+                        .arg( sqlWhereClause );
+
+  QgsPostgresResult res( conn->LoggedPQexec( u"columnExists"_s, sql ) );
+  return res.PQgetvalue( 0, 0 ).startsWith( 't'_L1 );
 }
 
 bool QgsPostgresUtils::createStylesTable( QgsPostgresConn *conn, QString loggedClass )
 {
-  QgsPostgresResult res( conn->LoggedPQexec( loggedClass, "CREATE TABLE layer_styles("
-                                                          "id SERIAL PRIMARY KEY"
-                                                          ",f_table_catalog varchar"
-                                                          ",f_table_schema varchar"
-                                                          ",f_table_name varchar"
-                                                          ",f_geometry_column varchar"
-                                                          ",styleName text"
-                                                          ",styleQML xml"
-                                                          ",styleSLD xml"
-                                                          ",useAsDefault boolean"
-                                                          ",description text"
-                                                          ",owner varchar(63) DEFAULT CURRENT_USER"
-                                                          ",ui xml"
-                                                          ",update_time timestamp DEFAULT CURRENT_TIMESTAMP"
-                                                          ",type varchar"
-                                                          ",r_raster_column varchar"
-                                                          ")" ) );
+  QgsPostgresResult res( conn->LoggedPQexec(
+    loggedClass,
+    "CREATE TABLE layer_styles("
+    "id SERIAL PRIMARY KEY"
+    ",f_table_catalog varchar"
+    ",f_table_schema varchar"
+    ",f_table_name varchar"
+    ",f_geometry_column varchar"
+    ",styleName text"
+    ",styleQML xml"
+    ",styleSLD xml"
+    ",useAsDefault boolean"
+    ",description text"
+    ",owner varchar(63) DEFAULT CURRENT_USER"
+    ",ui xml"
+    ",update_time timestamp DEFAULT CURRENT_TIMESTAMP"
+    ",type varchar"
+    ",r_raster_column varchar"
+    ")"
+  ) );
 
   return res.PQresultStatus() == PGRES_COMMAND_OK;
 }
@@ -516,8 +545,7 @@ bool QgsPostgresUtils::createStylesTable( QgsPostgresConn *conn, QString loggedC
 bool QgsPostgresUtils::createProjectsTable( QgsPostgresConn *conn, const QString &schemaName )
 {
   // try to create projects table
-  const QString sql = QStringLiteral( "CREATE TABLE %1.qgis_projects(name TEXT PRIMARY KEY, metadata JSONB, content BYTEA)" )
-                        .arg( QgsPostgresConn::quotedIdentifier( schemaName ) );
+  const QString sql = u"CREATE TABLE IF NOT EXISTS %1.qgis_projects(name TEXT PRIMARY KEY, metadata JSONB, content BYTEA, comment TEXT DEFAULT '')"_s.arg( QgsPostgresConn::quotedIdentifier( schemaName ) );
 
   QgsPostgresResult res( conn->PQexec( sql ) );
   if ( res.PQresultStatus() != PGRES_COMMAND_OK )
@@ -531,9 +559,7 @@ bool QgsPostgresUtils::createProjectsTable( QgsPostgresConn *conn, const QString
 bool QgsPostgresUtils::deleteProjectFromSchema( QgsPostgresConn *conn, const QString &projectName, const QString &schemaName )
 {
   //delete the project from db
-  const QString sql = QStringLiteral( "DELETE FROM %1.qgis_projects WHERE name=%2" )
-                        .arg( QgsPostgresConn::quotedIdentifier( schemaName ) )
-                        .arg( QgsPostgresConn::quotedValue( projectName ) );
+  const QString sql = u"DELETE FROM %1.qgis_projects WHERE name=%2"_s.arg( QgsPostgresConn::quotedIdentifier( schemaName ) ).arg( QgsPostgresConn::quotedValue( projectName ) );
 
   QgsPostgresResult result( conn->PQexec( sql ) );
   if ( result.PQresultStatus() != PGRES_COMMAND_OK )
@@ -547,8 +573,8 @@ bool QgsPostgresUtils::deleteProjectFromSchema( QgsPostgresConn *conn, const QSt
 bool QgsPostgresUtils::projectsTableExists( QgsPostgresConn *conn, const QString &schemaName )
 {
   const QString tableName( "qgis_projects" );
-  const QString sql( QStringLiteral( "SELECT COUNT(*) FROM information_schema.tables WHERE table_name=%1 and table_schema=%2" )
-                       .arg( QgsPostgresConn::quotedValue( tableName ), QgsPostgresConn::quotedValue( schemaName ) )
+  const QString sql(
+    u"SELECT COUNT(*) FROM information_schema.tables WHERE table_name=%1 and table_schema=%2"_s.arg( QgsPostgresConn::quotedValue( tableName ), QgsPostgresConn::quotedValue( schemaName ) )
   );
   QgsPostgresResult res( conn->PQexec( sql ) );
 
@@ -558,4 +584,257 @@ bool QgsPostgresUtils::projectsTableExists( QgsPostgresConn *conn, const QString
   }
 
   return res.PQgetvalue( 0, 0 ).toInt() > 0;
+}
+
+bool QgsPostgresUtils::copyProjectToSchema( QgsPostgresConn *conn, const QString &originalSchema, const QString &projectName, const QString &targetSchema )
+{
+  //copy from one schema to another
+  const QString sql = u"INSERT INTO %1.qgis_projects SELECT * FROM %2.qgis_projects WHERE name=%3;"_s.arg( QgsPostgresConn::quotedIdentifier( targetSchema ) )
+                        .arg( QgsPostgresConn::quotedIdentifier( originalSchema ) )
+                        .arg( QgsPostgresConn::quotedValue( projectName ) );
+
+  QgsPostgresResult result( conn->PQexec( sql ) );
+  if ( result.PQresultStatus() != PGRES_COMMAND_OK )
+  {
+    return false;
+  }
+
+  return true;
+}
+
+bool QgsPostgresUtils::moveProjectToSchema( QgsPostgresConn *conn, const QString &originalSchema, const QString &projectName, const QString &targetSchema )
+{
+  conn->begin();
+
+  if ( !QgsPostgresUtils::copyProjectToSchema( conn, originalSchema, projectName, targetSchema ) )
+  {
+    return false;
+  }
+
+  if ( QgsPostgresUtils::qgisProjectVersioningEnabled( conn, originalSchema ) )
+  {
+    if ( !QgsPostgresUtils::enableQgisProjectVersioning( conn, targetSchema ) )
+    {
+      return false;
+    }
+
+    if ( !QgsPostgresUtils::moveProjectVersions( conn, originalSchema, projectName, targetSchema ) )
+    {
+      return false;
+    }
+  }
+
+  if ( !QgsPostgresUtils::deleteProjectFromSchema( conn, projectName, originalSchema ) )
+  {
+    return false;
+  }
+
+  conn->commit();
+  return true;
+}
+
+bool QgsPostgresUtils::setProjectComment( QgsPostgresConn *conn, const QString &projectName, const QString &schemaName, const QString &comment )
+{
+  const QString sql = QStringLiteral(
+                        "ALTER TABLE %1.qgis_projects ADD COLUMN IF NOT EXISTS comment TEXT DEFAULT '';"
+                        "UPDATE %1.qgis_projects SET comment = %3 WHERE name = %2"
+  )
+                        .arg( QgsPostgresConn::quotedIdentifier( schemaName ), QgsPostgresConn::quotedValue( projectName ), QgsPostgresConn::quotedValue( comment ) );
+
+  QgsPostgresResult res( conn->PQexec( sql ) );
+  return res.PQresultStatus() == PGRES_COMMAND_OK;
+}
+
+QString QgsPostgresUtils::projectComment( QgsPostgresConn *conn, const QString &schemaName, const QString &projectName )
+{
+  const QString sql = u"SELECT comment FROM %1.qgis_projects WHERE name = %2"_s.arg( QgsPostgresConn::quotedIdentifier( schemaName ), QgsPostgresConn::quotedValue( projectName ) );
+
+  QgsPostgresResult res( conn->PQexec( sql ) );
+  if ( res.PQresultStatus() != PGRES_TUPLES_OK )
+  {
+    return QString();
+  }
+
+  return res.PQgetvalue( 0, 0 );
+}
+
+bool QgsPostgresUtils::addCommentColumnToProjectsTable( QgsPostgresConn *conn, const QString &schemaName )
+{
+  const QString sqlAddColumn = u"ALTER TABLE %1.qgis_projects ADD COLUMN IF NOT EXISTS comment TEXT DEFAULT ''"_s.arg( QgsPostgresConn::quotedIdentifier( schemaName ) );
+
+  QgsPostgresResult resAddColumn( conn->PQexec( sqlAddColumn ) );
+  return resAddColumn.PQresultStatus() == PGRES_COMMAND_OK;
+}
+
+bool QgsPostgresUtils::enableQgisProjectVersioning( QgsPostgresConn *conn, const QString &schema )
+{
+  // ensure that the qgis_projects table exists
+  if ( !QgsPostgresUtils::createProjectsTable( conn, schema ) )
+  {
+    return false;
+  }
+
+  // if the qgis_projects table has old format (no comment column) it needs to be updated first
+  if ( !QgsPostgresUtils::addCommentColumnToProjectsTable( conn, schema ) )
+  {
+    return false;
+  }
+
+  // create the necessary table for project versioning
+  const QString sqlCreateTable = QStringLiteral(
+                                   "CREATE TABLE IF NOT EXISTS %1.qgis_projects_versions ("
+                                   "id SERIAL PRIMARY KEY, "
+                                   "name TEXT, "
+                                   "metadata JSONB, "
+                                   "content BYTEA, "
+                                   "date_saved TEXT NOT NULL, "
+                                   "comment TEXT"
+                                   ")"
+  )
+                                   .arg( QgsPostgresConn::quotedIdentifier( schema ) );
+
+  QgsPostgresResult resultCreateTable( conn->PQexec( sqlCreateTable ) );
+  if ( resultCreateTable.PQresultStatus() != PGRES_COMMAND_OK )
+  {
+    return false;
+  }
+
+  const QString sqlFunctionTrigger = QStringLiteral( R"(
+CREATE OR REPLACE FUNCTION %1.sync_qgis_project_version()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'DELETE' THEN
+        DELETE FROM %1.qgis_projects_versions
+        WHERE name = OLD.NAME;
+
+    ELSIF TG_OP = 'UPDATE' THEN
+      IF NEW.name IS DISTINCT FROM OLD.name THEN
+        UPDATE %1.qgis_projects_versions SET name = NEW.name WHERE name = OLD.name;
+      END IF;
+      IF NEW.content IS DISTINCT FROM OLD.content THEN
+          INSERT INTO %1.qgis_projects_versions ( name, metadata, content, comment, date_saved )
+            VALUES (OLD.name, OLD.metadata, OLD.content, OLD.comment,
+            NOW()::TIMESTAMP(0)::TEXT
+          );
+
+          DELETE FROM %1.qgis_projects_versions
+          WHERE id IN(
+            SELECT id FROM %1.qgis_projects_versions
+            WHERE name = NEW.name
+            ORDER BY (metadata->>'last_modified_time')::TIMESTAMP DESC
+            OFFSET 10
+          );
+      END IF;
+  END IF;
+
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER qgis_project_versions
+    BEFORE UPDATE OR DELETE ON %1.qgis_projects
+    FOR EACH ROW EXECUTE FUNCTION %1.sync_qgis_project_version();
+)" )
+                                       .arg( QgsPostgresConn::quotedIdentifier( schema ) );
+
+  QgsPostgresResult resultCreateTrigger( conn->PQexec( sqlFunctionTrigger ) );
+  return resultCreateTrigger.PQresultStatus() == PGRES_COMMAND_OK;
+}
+
+bool QgsPostgresUtils::disableQgisProjectVersioning( QgsPostgresConn *conn, const QString &schema )
+{
+  const QString sqlDropTrigger = u"DROP TRIGGER IF EXISTS qgis_project_versions ON %1.qgis_projects;"_s.arg( QgsPostgresConn::quotedIdentifier( schema ) );
+
+  QgsPostgresResult result( conn->PQexec( sqlDropTrigger ) );
+  return result.PQresultStatus() == PGRES_COMMAND_OK;
+}
+
+bool QgsPostgresUtils::qgisProjectVersioningEnabled( QgsPostgresConn *conn, const QString &schema )
+{
+  const QString sqlCheck = QStringLiteral(
+                             "SELECT EXISTS ("
+                             "SELECT 1 "
+                             "FROM information_schema.triggers "
+                             "WHERE trigger_schema = %1 "
+                             "AND trigger_name = 'qgis_project_versions' "
+                             "AND event_object_table = 'qgis_projects'"
+                             ") AS trigger_exists, "
+                             "EXISTS ("
+                             "SELECT 1 "
+                             "FROM information_schema.tables "
+                             "WHERE table_schema = %1 "
+                             "AND table_name = 'qgis_projects_versions' "
+                             ") AS table_exists;"
+  )
+                             .arg( QgsPostgresConn::quotedValue( schema ) );
+
+  QgsPostgresResult res( conn->PQexec( sqlCheck ) );
+  return res.PQgetvalue( 0, 0 ).startsWith( 't'_L1 ) && res.PQgetvalue( 0, 1 ).startsWith( 't'_L1 );
+}
+
+bool QgsPostgresUtils::moveProjectVersions( QgsPostgresConn *conn, const QString &originalSchema, const QString &project, const QString &targetSchema )
+{
+  const QString sqlCopy = u"INSERT INTO %1.qgis_projects_versions SELECT * FROM %2.qgis_projects_versions WHERE name=%3;"_s.arg( QgsPostgresConn::quotedIdentifier( targetSchema ) )
+                            .arg( QgsPostgresConn::quotedIdentifier( originalSchema ) )
+                            .arg( QgsPostgresConn::quotedValue( project ) );
+
+  QgsPostgresResult resCopy( conn->PQexec( sqlCopy ) );
+
+  if ( resCopy.PQresultStatus() != PGRES_COMMAND_OK )
+  {
+    return false;
+  }
+
+  const QString sqlDelete = u"DELETE FROM %1.qgis_projects_versions WHERE name=%2;"_s.arg( QgsPostgresConn::quotedIdentifier( originalSchema ) ).arg( QgsPostgresConn::quotedValue( project ) );
+  ;
+
+  QgsPostgresResult resDelete( conn->PQexec( sqlDelete ) );
+
+  if ( resDelete.PQresultStatus() != PGRES_COMMAND_OK )
+  {
+    return false;
+  }
+
+  return true;
+}
+
+bool QgsPostgresUtils::renameProject( QgsPostgresConn *conn, const QString &schemaName, const QString &oldProjectName, const QString &newProjectName )
+{
+  const QString sql = u"UPDATE %1.qgis_projects SET name=%2 WHERE name=%3"_s.arg( QgsPostgresConn::quotedIdentifier( schemaName ) )
+                        .arg( QgsPostgresConn::quotedValue( newProjectName ) )
+                        .arg( QgsPostgresConn::quotedValue( oldProjectName ) );
+
+  QgsPostgresResult result( conn->PQexec( sql ) );
+  if ( result.PQresultStatus() != PGRES_COMMAND_OK )
+  {
+    return false;
+  }
+
+  return true;
+}
+
+QStringList QgsPostgresUtils::projectNamesInSchema( QgsPostgresConn *conn, const QString &schema )
+{
+  QStringList projects;
+
+  if ( !QgsPostgresUtils::projectsTableExists( conn, schema ) )
+  {
+    return projects;
+  }
+
+  const QString sql = u"SELECT name FROM %1.qgis_projects"_s.arg( QgsPostgresConn::quotedIdentifier( schema ) );
+
+  QgsPostgresResult res( conn->PQexec( sql ) );
+  if ( res.PQresultStatus() != PGRES_TUPLES_OK )
+  {
+    return projects;
+  }
+
+  const int rows = res.PQntuples();
+  for ( int i = 0; i < rows; ++i )
+  {
+    projects << res.PQgetvalue( i, 0 );
+  }
+
+  return projects;
 }

@@ -18,9 +18,9 @@
 
 #include "qgsmapunitscale.h"
 
-#include <QSharedDataPointer>
-#include <QPainter>
 #include <QDomElement>
+#include <QPainter>
+#include <QSharedDataPointer>
 
 class QgsTextShadowSettingsPrivate;
 class QgsVectorLayer;
@@ -35,22 +35,23 @@ class QgsPropertyCollection;
 class CORE_EXPORT QgsTextShadowSettings
 {
   public:
-
     /**
      * Placement positions for text shadow.
      */
     enum ShadowPlacement
     {
       ShadowLowest = 0, //!< Draw shadow below all text components
-      ShadowText, //!< Draw shadow under text
-      ShadowBuffer, //!< Draw shadow under buffer
-      ShadowShape //!< Draw shadow under background shape
+      ShadowText,       //!< Draw shadow under text
+      ShadowBuffer,     //!< Draw shadow under buffer
+      ShadowShape       //!< Draw shadow under background shape
     };
 
     QgsTextShadowSettings();
     QgsTextShadowSettings( const QgsTextShadowSettings &other );
+    SIP_SKIP QgsTextShadowSettings( QgsTextShadowSettings &&other );
 
     QgsTextShadowSettings &operator=( const QgsTextShadowSettings &other );
+    QgsTextShadowSettings &operator=( QgsTextShadowSettings &&other );
 
     ~QgsTextShadowSettings();
 
@@ -309,9 +310,7 @@ class CORE_EXPORT QgsTextShadowSettings
     QSet<QString> referencedFields( const QgsRenderContext &context ) const;
 
   private:
-
     QSharedDataPointer<QgsTextShadowSettingsPrivate> d;
-
 };
 
 #endif // QGSTEXTSHADOWSETTINGS_H

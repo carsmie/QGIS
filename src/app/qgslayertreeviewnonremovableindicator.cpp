@@ -14,23 +14,26 @@
  ***************************************************************************/
 
 #include "qgslayertreeviewnonremovableindicator.h"
-#include "moc_qgslayertreeviewnonremovableindicator.cpp"
 
 #include "qgslayertree.h"
 #include "qgslayertreemodel.h"
 #include "qgslayertreeutils.h"
 #include "qgslayertreeview.h"
 
+#include <QString>
+
+#include "moc_qgslayertreeviewnonremovableindicator.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLayerTreeViewNonRemovableIndicatorProvider::QgsLayerTreeViewNonRemovableIndicatorProvider( QgsLayerTreeView *view )
   : QgsLayerTreeViewIndicatorProvider( view )
-{
-}
+{}
 
 QString QgsLayerTreeViewNonRemovableIndicatorProvider::iconName( QgsMapLayer *layer )
 {
   Q_UNUSED( layer )
-  return QStringLiteral( "/mIndicatorNonRemovable.svg" );
+  return u"/mIndicatorNonRemovable.svg"_s;
 }
 
 QString QgsLayerTreeViewNonRemovableIndicatorProvider::tooltipText( QgsMapLayer *layer )

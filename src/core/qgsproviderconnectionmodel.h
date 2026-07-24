@@ -16,12 +16,12 @@
 #ifndef QGSPROVIDERCONNECTIONMODEL_H
 #define QGSPROVIDERCONNECTIONMODEL_H
 
+#include "qgis_core.h"
+#include "qgis_sip.h"
+
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 #include <QStringList>
-
-#include "qgis_core.h"
-#include "qgis_sip.h"
 
 class QgsProviderMetadata;
 
@@ -40,7 +40,6 @@ class CORE_EXPORT QgsProviderConnectionModel : public QAbstractItemModel
     Q_OBJECT
 
   public:
-
     // *INDENT-OFF*
 
     /**
@@ -51,10 +50,10 @@ class CORE_EXPORT QgsProviderConnectionModel : public QAbstractItemModel
      */
     enum class CustomRole SIP_MONKEYPATCH_SCOPEENUM_UNNEST( QgsProviderConnectionModel, Role ) : int
     {
-      ConnectionName SIP_MONKEYPATCH_COMPAT_NAME(RoleConnectionName) = Qt::UserRole, //!< Connection name
-      Uri SIP_MONKEYPATCH_COMPAT_NAME(RoleUri), //!< Connection URI string
-      Configuration SIP_MONKEYPATCH_COMPAT_NAME(RoleConfiguration), //!< Connection configuration variant map
-      Empty SIP_MONKEYPATCH_COMPAT_NAME(RoleEmpty), //!< Entry is an empty entry
+      ConnectionName SIP_MONKEYPATCH_COMPAT_NAME( RoleConnectionName ) = Qt::UserRole, //!< Connection name
+      Uri SIP_MONKEYPATCH_COMPAT_NAME( RoleUri ),                                      //!< Connection URI string
+      Configuration SIP_MONKEYPATCH_COMPAT_NAME( RoleConfiguration ),                  //!< Connection configuration variant map
+      Empty SIP_MONKEYPATCH_COMPAT_NAME( RoleEmpty ),                                  //!< Entry is an empty entry
     };
     Q_ENUM( CustomRole )
     // *INDENT-ON*

@@ -32,12 +32,11 @@ class QgsLineSymbol;
  * \brief A layout item subclass for elevation profile plots.
  * \since QGIS 3.30
  */
-class CORE_EXPORT QgsLayoutItemElevationProfile: public QgsLayoutItem
+class CORE_EXPORT QgsLayoutItemElevationProfile : public QgsLayoutItem
 {
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsLayoutItemElevationProfile, with the specified parent \a layout.
      */
@@ -84,6 +83,22 @@ class CORE_EXPORT QgsLayoutItemElevationProfile: public QgsLayoutItem
      * \see layers()
      */
     void setLayers( const QList< QgsMapLayer * > &layers );
+
+    /**
+     * Returns the list of sources participating in the elevation profile.
+     *
+     * It includes both layer profile sources and custom sources from the profile source registry.
+     *
+     * \see setSources()
+     */
+    QList<QgsAbstractProfileSource *> sources() const;
+
+    /**
+     * Sets the list of \a sources participating in the elevation profile.
+     *
+     * \see sources()
+     */
+    void setSources( const QList<QgsAbstractProfileSource *> &sources );
 
     /**
      * Sets the cross section profile \a curve, which represents the line along which the profile should be generated.
@@ -192,10 +207,7 @@ class CORE_EXPORT QgsLayoutItemElevationProfile: public QgsLayoutItem
      * \see setSubsectionsSymbol()
      * \since QGIS 3.44
      */
-    QgsLineSymbol *subsectionsSymbol()
-    {
-      return mSubsectionsSymbol.get();
-    }
+    QgsLineSymbol *subsectionsSymbol() { return mSubsectionsSymbol.get(); }
 
     /**
      * Sets the \a symbol used to draw the subsections. If \a symbol is NULLPTR, the subsections are not drawn.
@@ -229,11 +241,13 @@ class CORE_EXPORT QgsLayoutItemElevationProfile: public QgsLayoutItem
 
     void recreateCachedImageInBackground();
     void profileGenerationFinished();
-  private:
+    void setSourcesPrivate();
 
+  private:
     std::unique_ptr< QgsLayoutItemElevationProfilePlot > mPlot;
 
     QList< QgsMapLayerRef > mLayers;
+    QList< std::variant< QgsMapLayerRef, QgsAbstractProfileSource * > > mSources;
 
     QgsCoordinateReferenceSystem mCrs;
     Qgis::DistanceUnit mDistanceUnit = Qgis::DistanceUnit::Unknown;
@@ -257,8 +271,6 @@ class CORE_EXPORT QgsLayoutItemElevationProfile: public QgsLayoutItem
     double mPreviewScaleFactor = 0;
     std::unique_ptr< QPainter > mPainter;
     std::unique_ptr< QgsProfilePlotRenderer > mRenderJob;
-
-
 };
 
 #endif //QGSLAYOUTITEMELEVATIONPROFILE_H

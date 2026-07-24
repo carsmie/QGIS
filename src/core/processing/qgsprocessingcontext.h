@@ -18,17 +18,17 @@
 #ifndef QGSPROCESSINGCONTEXT_H
 #define QGSPROCESSINGCONTEXT_H
 
-#include "qgis_core.h"
 #include "qgis.h"
-#include "qgsproject.h"
+#include "qgis_core.h"
 #include "qgsexpressioncontext.h"
 #include "qgsprocessingfeedback.h"
-#include "qgsprocessingutils.h"
-#include "qgsprocessingmodelresult.h"
 #include "qgsprocessingmodelconfig.h"
+#include "qgsprocessingmodelresult.h"
+#include "qgsprocessingutils.h"
+#include "qgsproject.h"
 
-#include <QThread>
 #include <QPointer>
+#include <QThread>
 
 class QgsProcessingLayerPostProcessorInterface;
 
@@ -44,7 +44,6 @@ class QgsProcessingLayerPostProcessorInterface;
 class CORE_EXPORT QgsProcessingContext
 {
   public:
-
     //! Flags that affect how processing algorithms are run
     enum Flag SIP_ENUM_BASETYPE( IntFlag )
     {
@@ -88,11 +87,13 @@ class CORE_EXPORT QgsProcessingContext
       mModelResult = other.mModelResult;
     }
 
+    // clang-format off
     /**
      * Returns any flags set in the context.
      * \see setFlags()
      */
     QgsProcessingContext::Flags flags() const SIP_HOLDGIL { return mFlags; }
+    // clang-format on
 
     /**
      * Sets \a flags for the context.
@@ -423,6 +424,7 @@ class CORE_EXPORT QgsProcessingContext
 #ifndef SIP_RUN
     void setInvalidGeometryCallback( const std::function< void( const QgsFeature & ) > &callback ) { mInvalidGeometryCallback = callback; mUseDefaultInvalidGeometryCallback = false; }
 #else
+// clang-format off
     void setInvalidGeometryCallback( SIP_PYCALLABLE / AllowNone / );
     % MethodCode
     Py_BEGIN_ALLOW_THREADS
@@ -436,6 +438,7 @@ class CORE_EXPORT QgsProcessingContext
 
     Py_END_ALLOW_THREADS
     % End
+// clang-format on
 #endif
 
     /**
@@ -462,6 +465,7 @@ class CORE_EXPORT QgsProcessingContext
 #ifndef SIP_RUN
     void setTransformErrorCallback( const std::function< void( const QgsFeature & ) > &callback ) { mTransformErrorCallback = callback; }
 #else
+// clang-format off
     void setTransformErrorCallback( SIP_PYCALLABLE / AllowNone / );
     % MethodCode
     Py_BEGIN_ALLOW_THREADS
@@ -475,6 +479,7 @@ class CORE_EXPORT QgsProcessingContext
 
     Py_END_ALLOW_THREADS
     % End
+// clang-format on
 #endif
 
     /**
@@ -603,9 +608,9 @@ class CORE_EXPORT QgsProcessingContext
     /**
      * Returns the preferred raster format to use for raster outputs.
      *
-     * This method returns a file extension to use when creating raster outputs (e.g. "tif"). Generally,
-     * it is preferable to use the extension associated with a particular parameter, which can be retrieved through
-     * QgsProcessingDestinationParameter::defaultFileExtension(). However, in some cases, a specific parameter
+     * This method returns a file format to use when creating raster outputs (e.g. "GTiff"). Generally,
+     * it is preferable to use the format associated with a particular parameter, which can be retrieved through
+     * QgsProcessingParameterRasterDestination::defaultFileFormat(). However, in some cases, a specific parameter
      * may not be available to call this method on (e.g. for an algorithm which has only an output folder parameter
      * and which creates multiple output layers in that folder). In this case, the format returned by this
      * function should be used when creating these outputs.
@@ -616,6 +621,8 @@ class CORE_EXPORT QgsProcessingContext
      * \see setPreferredRasterFormat()
      * \see preferredVectorFormat()
      *
+     * \note Since QGIS 4.0, this method returns a GDAL format name. In prior versions, this was a file extension.
+     *
      * \since QGIS 3.10
      */
     QString preferredRasterFormat() const SIP_HOLDGIL { return mPreferredRasterFormat; }
@@ -623,15 +630,17 @@ class CORE_EXPORT QgsProcessingContext
     /**
      * Sets the preferred raster \a format to use for raster outputs.
      *
-     * This method sets a file extension to use when creating raster outputs (e.g. "tif"). Generally,
-     * it is preferable to use the extension associated with a particular parameter, which can be retrieved through
-     * QgsProcessingDestinationParameter::defaultFileExtension(). However, in some cases, a specific parameter
+     * This method sets a file format to use when creating raster outputs (e.g. "GTiff"). Generally,
+     * it is preferable to use the format associated with a particular parameter, which can be retrieved through
+     * QgsProcessingParameterRasterDestination::defaultFileFormat(). However, in some cases, a specific parameter
      * may not be available to call this method on (e.g. for an algorithm which has only an output folder parameter
      * and which creates multiple output layers in that folder). In this case, the format set by this
      * function will be used when creating these outputs.
      *
      * \see preferredRasterFormat()
      * \see setPreferredVectorFormat()
+     *
+     * \note Since QGIS 4.0, this method expects a GDAL format name. In prior versions, this was a file extension.
      *
      * \since QGIS 3.10
      */

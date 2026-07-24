@@ -18,15 +18,14 @@
 #ifndef QGSDELIMITEDTEXTPROVIDER_H
 #define QGSDELIMITEDTEXTPROVIDER_H
 
-#include <QStringList>
-#include <QRegularExpression>
-
-#include "qgsvectordataprovider.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgsdelimitedtextfile.h"
 #include "qgsfields.h"
-
 #include "qgsprovidermetadata.h"
+#include "qgsvectordataprovider.h"
+
+#include <QRegularExpression>
+#include <QStringList>
 
 class QgsFeature;
 class QgsField;
@@ -105,10 +104,7 @@ class QgsDelimitedTextProvider final : public QgsVectorDataProvider
     bool supportsSubsetString() const override;
     QString subsetStringDialect() const override;
     QString subsetStringHelpUrl() const override;
-    QString subsetString() const override
-    {
-      return mSubsetString;
-    }
+    QString subsetString() const override { return mSubsetString; }
     /* new functions */
 
     /**

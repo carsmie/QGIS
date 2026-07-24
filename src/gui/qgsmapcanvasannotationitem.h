@@ -21,7 +21,8 @@
 #ifdef SIP_RUN
 //%ModuleHeaderCode
 // For ConvertToSubClassCode.
-#include <qgsmapcanvasannotationitem.h>
+#include "qgsmapcanvasannotationitem.h"
+
 //%End
 #endif
 
@@ -48,7 +49,7 @@ class GUI_EXPORT QgsMapCanvasAnnotationItem : public QObject, public QgsMapCanva
     }
     else
       sipType = nullptr;
-    SIP_END
+  SIP_END
 #endif
 
   public:
@@ -77,10 +78,7 @@ class GUI_EXPORT QgsMapCanvasAnnotationItem : public QObject, public QgsMapCanva
      * Returns the item's annotation.
      * \note not available in Python bindings
      */
-    const QgsAnnotation *annotation() const SIP_SKIP
-    {
-      return mAnnotation;
-    }
+    const QgsAnnotation *annotation() const SIP_SKIP { return mAnnotation; }
 
     /**
      * Returns the item's annotation.
@@ -91,6 +89,7 @@ class GUI_EXPORT QgsMapCanvasAnnotationItem : public QObject, public QgsMapCanva
 
     QRectF boundingRect() const override;
 
+    using QgsMapCanvasItem::paint;
     void paint( QPainter *painter ) override;
 
     /**

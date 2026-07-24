@@ -17,16 +17,16 @@
 #ifndef QGSATTRIBUTEDIALOG_H
 #define QGSATTRIBUTEDIALOG_H
 
-#include "qgsattributeeditorcontext.h"
+#include "qgis_gui.h"
 #include "qgis_sip.h"
+#include "qgsattributeeditorcontext.h"
 #include "qgsattributeform.h"
-#include "qgstrackedvectorlayertools.h"
 #include "qgsmaplayeractioncontextgenerator.h"
+#include "qgstrackedvectorlayertools.h"
 
 #include <QDialog>
-#include <QMenuBar>
 #include <QGridLayout>
-#include "qgis_gui.h"
+#include <QMenuBar>
 
 class QgsHighlight;
 class QgsActionMenu;
@@ -52,7 +52,14 @@ class GUI_EXPORT QgsAttributeDialog : public QDialog, public QgsMapLayerActionCo
      * \param context           The context in which this dialog is created
      *
      */
-    QgsAttributeDialog( QgsVectorLayer *vl, QgsFeature *thepFeature, bool featureOwner, QWidget *parent SIP_TRANSFERTHIS = nullptr, bool showDialogButtons = true, const QgsAttributeEditorContext &context = QgsAttributeEditorContext() );
+    QgsAttributeDialog(
+      QgsVectorLayer *vl,
+      QgsFeature *thepFeature,
+      bool featureOwner,
+      QWidget *parent SIP_TRANSFERTHIS = nullptr,
+      bool showDialogButtons = true,
+      const QgsAttributeEditorContext &context = QgsAttributeEditorContext()
+    );
 
     ~QgsAttributeDialog() override;
 
@@ -62,16 +69,22 @@ class GUI_EXPORT QgsAttributeDialog : public QDialog, public QgsMapLayerActionCo
      */
     void setHighlight( QgsHighlight *h );
 
-    QgsAttributeForm *attributeForm() { return mAttributeForm; }
+    /**
+     * Returns the attribute form.
+     */
+    QgsAttributeForm *attributeForm() const { return mAttributeForm; }
 
-    const QgsFeature *feature() { return &mAttributeForm->feature(); }
+    /**
+     * Returns the current feature of the attribute form.
+     */
+    const QgsFeature *feature() const { return &mAttributeForm->feature(); }
 
     /**
      * Is this dialog editable?
      *
      * \returns returns TRUE, if this dialog was created in an editable manner.
      */
-    bool editable() { return mAttributeForm->editable(); }
+    bool editable() const { return mAttributeForm->editable(); }
 
     /**
      * Toggles the form mode.
@@ -123,7 +136,7 @@ class GUI_EXPORT QgsAttributeDialog : public QDialog, public QgsMapLayerActionCo
     QgsHighlight *mHighlight = nullptr;
     QString mReturnvarname;
     QgsAttributeForm *mAttributeForm = nullptr;
-    QgsFeature *mOwnedFeature = nullptr;
+    std::unique_ptr<QgsFeature> mOwnedFeature;
     QgsMessageBar *mMessageBar = nullptr;
 
     QgsTrackedVectorLayerTools mTrackedVectorLayerTools;

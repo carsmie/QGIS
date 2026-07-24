@@ -26,11 +26,11 @@ class QgsMeshDatasetIndex;
 
 #include "qgis.h"
 #include "qgis_sip.h"
+#include "qgsmaplayerrenderer.h"
+#include "qgsrasterinterface.h"
+#include "qgstriangularmesh.h"
 
 #include <QSize>
-#include "qgsmaplayerrenderer.h"
-#include "qgstriangularmesh.h"
-#include "qgsrasterinterface.h"
 
 class QgsRenderContext;
 
@@ -47,12 +47,14 @@ class QgsMeshLayerInterpolator : public QgsRasterInterface SIP_SKIP
 {
   public:
     //! Ctor
-    QgsMeshLayerInterpolator( const QgsTriangularMesh &m,
-                              const QVector<double> &datasetValues,
-                              const QgsMeshDataBlock &activeFaceFlagValues,
-                              QgsMeshDatasetGroupMetadata::DataType dataType,
-                              const QgsRenderContext &context,
-                              const QSize &size );
+    QgsMeshLayerInterpolator(
+      const QgsTriangularMesh &m,
+      const QVector<double> &datasetValues,
+      const QgsMeshDataBlock &activeFaceFlagValues,
+      QgsMeshDatasetGroupMetadata::DataType dataType,
+      const QgsRenderContext &context,
+      const QSize &size
+    );
     ~QgsMeshLayerInterpolator() override;
 
     QgsRasterInterface *clone() const override;

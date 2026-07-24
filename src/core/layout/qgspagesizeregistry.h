@@ -19,9 +19,10 @@
 #define QGSPAGESIZEREGISTRY_H
 
 #include "qgslayoutsize.h"
-#include <QString>
-#include <QSizeF>
+
 #include <QList>
+#include <QSizeF>
+#include <QString>
 
 /**
  * \ingroup core
@@ -30,9 +31,7 @@
  */
 class CORE_EXPORT QgsPageSize
 {
-
   public:
-
     QgsPageSize();
 
     /**
@@ -71,7 +70,6 @@ class CORE_EXPORT QgsPageSize
 class CORE_EXPORT QgsPageSizeRegistry
 {
   public:
-
     /**
      * Creates a registry and populates it with known sizes
      */
@@ -110,7 +108,6 @@ class CORE_EXPORT QgsPageSizeRegistry
     bool decodePageSize( const QString &string, QgsPageSize &size ) const;
 
   private:
-
     QList< QgsPageSize > mPageSizes;
 };
 

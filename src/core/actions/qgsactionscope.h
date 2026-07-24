@@ -17,8 +17,9 @@
 #define QGSACTIONSCOPE_H
 
 #include "qgis_core.h"
-#include <QString>
 #include "qgsexpressioncontext.h"
+
+#include <QString>
 
 /**
  * \ingroup core
@@ -49,16 +50,18 @@ class CORE_EXPORT QgsActionScope
 {
   public:
 #ifdef SIP_RUN
+    // clang-format off
     % TypeCode
 #include <QHash>
     % End
+// clang-format on
 #endif
 
-    /**
+      /**
      * Creates a new invalid action scope.
      *
      */
-    explicit QgsActionScope();
+      explicit QgsActionScope();
 
     /**
      * Creates a new action scope.
@@ -151,6 +154,8 @@ class CORE_EXPORT QgsActionScope
      * Returns TRUE if this scope is valid.
      */
     bool isValid() const;
+
+    // clang-format off
 #ifdef SIP_RUN
     long __hash__();
     % MethodCode
@@ -159,12 +164,13 @@ class CORE_EXPORT QgsActionScope
 #endif
 
   private:
+    // clang-format on
     QString mId;
     QString mTitle;
     QString mDescription;
     QgsExpressionContextScope mExpressionContextScope;
 };
 
-CORE_EXPORT uint qHash( const QgsActionScope &key, uint seed = 0 ) SIP_SKIP;
+CORE_EXPORT size_t qHash( const QgsActionScope &key, size_t seed = 0 ) SIP_SKIP;
 
 #endif // QGSACTIONSCOPE_H

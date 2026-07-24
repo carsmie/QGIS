@@ -22,9 +22,8 @@ __copyright__ = "(C) 2017, Jorge Gustavo Rocha"
 import os
 import pathlib
 import tempfile
+import unittest
 
-from qgis.PyQt.QtCore import QTemporaryDir
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import (
     Qgis,
     QgsEllipseSymbolLayer,
@@ -44,10 +43,10 @@ from qgis.core import (
     QgsUnitTypes,
     QgsVectorLayer,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.PyQt.QtCore import QTemporaryDir
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 from qgis.testing.mocked import get_iface
-
 from utilities import unitTestDataPath
 
 start_app()
@@ -446,6 +445,28 @@ class TestQgsSymbolLayerReadSld(QgisTestCase):
         self.assertEqual(first_size, second_size)
         self.assertEqual(first_unit, second_unit)
 
+    def testAnchorPoint(self):
+        # create a layer
+        layer = createLayerWithOnePoint()
+
+        sld = "symbol_layer/AnchorPointBelowLeft.sld"
+        sld_path = os.path.join(TEST_DATA_DIR, sld)
+        layer.loadSldStyle(sld_path)
+        quadrant = layer.labeling().settings().pointSettings().quadrant()
+        self.assertEqual(quadrant, Qgis.LabelQuadrantPosition.BelowLeft)
+
+        sld = "symbol_layer/AnchorPointOver.sld"
+        sld_path = os.path.join(TEST_DATA_DIR, sld)
+        layer.loadSldStyle(sld_path)
+        quadrant = layer.labeling().settings().pointSettings().quadrant()
+        self.assertEqual(quadrant, Qgis.LabelQuadrantPosition.Over)
+
+        sld = "symbol_layer/AnchorPointAboveRight.sld"
+        sld_path = os.path.join(TEST_DATA_DIR, sld)
+        layer.loadSldStyle(sld_path)
+        quadrant = layer.labeling().settings().pointSettings().quadrant()
+        self.assertEqual(quadrant, Qgis.LabelQuadrantPosition.AboveRight)
+
     def test_Literal_within_CSSParameter_and_Text(self):
         layer = createLayerWithOneLine()
         mFilePath = os.path.join(
@@ -505,6 +526,19 @@ class TestQgsSymbolLayerReadSld(QgisTestCase):
         self.assertEqual(settings.xOffset, 1)
         self.assertEqual(settings.yOffset, 0)
         self.assertEqual(settings.offsetUnits, QgsUnitTypes.RenderUnit.RenderPixels)
+
+    def test_read_font_decimal(self):
+        layer = createLayerWithOnePoint()
+        mFilePath = os.path.join(
+            TEST_DATA_DIR, "symbol_layer/external_sld/decimal_font_size.sld"
+        )
+        layer.loadSldStyle(mFilePath)
+
+        settings = layer.labeling().settings()
+        format = settings.format()
+
+        self.assertEqual(format.size(), 13.5)
+        self.assertEqual(format.sizeUnit(), QgsUnitTypes.RenderUnit.RenderPixels)
 
     def test_read_circle(self):
         """Test wellknown name circle polygon fill"""

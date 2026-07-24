@@ -48,7 +48,6 @@ class QgsFrameGraph;
 class Qgs3DMapSettings;
 class Qgs3DAxis;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup qgis_3d
@@ -63,9 +62,7 @@ class _3D_EXPORT Qgs3DAxisRenderView : public QgsAbstractRenderView
     /**
      * Constructor for Qgs3DAxisRenderView with the specified \a parent object.
      */
-    Qgs3DAxisRenderView( const QString &viewName, Qgs3DMapCanvas *canvas,             //
-                         QgsCameraController *cameraCtrl, Qgs3DMapSettings *settings, //
-                         Qgs3DAxis *axis3D );
+    Qgs3DAxisRenderView( const QString &viewName, Qgs3DMapCanvas *canvas, QgsCameraController *cameraCtrl, Qgs3DMapSettings *settings, Qgs3DAxis *axis3D );
 
     //! Returns the viewport associated to this renderview
     Qt3DRender::QViewport *viewport() const;
@@ -82,7 +79,7 @@ class _3D_EXPORT Qgs3DAxisRenderView : public QgsAbstractRenderView
     //! Returns camera used for billboarded labels
     Qt3DRender::QCamera *labelCamera() const;
 
-    virtual void updateWindowResize( int width, int height ) override;
+    void updateWindowResize( int width, int height ) override;
 
     //! Updates viewport horizontal \a position
     void onHorizontalPositionChanged( Qt::AnchorPoint position );

@@ -18,12 +18,14 @@
 #ifndef QGSALGORITHMEXTRACTZMVALUES_H
 #define QGSALGORITHMEXTRACTZMVALUES_H
 
-#define SIP_NO_FILE
+
+#include <functional>
 
 #include "qgis_sip.h"
 #include "qgsprocessingalgorithm.h"
 #include "qgsstatisticalsummary.h"
-#include <functional>
+
+#define SIP_NO_FILE
 
 ///@cond PRIVATE
 

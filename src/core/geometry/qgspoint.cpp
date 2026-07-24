@@ -17,21 +17,27 @@
 
 
 #include "qgspoint.h"
-#include "moc_qgspoint.cpp"
-#include "qgsapplication.h"
-#include "qgscoordinatetransform.h"
-#include "qgsgeometryutils.h"
-#include "qgswkbptr.h"
-#include "qgsgeometrytransformer.h"
-#include "qgsbox3d.h"
 
 #include <cmath>
+#include <nlohmann/json.hpp>
+
+#include "qgsapplication.h"
+#include "qgsbox3d.h"
+#include "qgscoordinatetransform.h"
+#include "qgsgeometrytransformer.h"
+#include "qgsgeometryutils.h"
+#include "qgswkbptr.h"
+
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QPainter>
 #include <QPainterPath>
 #include <QRegularExpression>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <nlohmann/json.hpp>
+#include <QString>
+
+#include "moc_qgspoint.cpp"
+
+using namespace Qt::StringLiterals;
 
 /***************************************************************************
  * This class is considered CRITICAL and any change MUST be accompanied with
@@ -96,6 +102,33 @@ QgsPoint::QgsPoint( Qgis::WkbType wkbType, double x, double y, double z, double 
   mWkbType = wkbType;
 }
 
+QgsPoint::QgsPoint( const QVector3D &vect, double m )
+  : mX( vect.x() )
+  , mY( vect.y() )
+  , mZ( vect.z() )
+  , mM( m )
+{
+  mWkbType = QgsWkbTypes::zmType( Qgis::WkbType::Point, !std::isnan( mZ ), !std::isnan( mM ) );
+}
+
+QgsPoint::QgsPoint( const QVector4D &vect )
+  : mX( vect.x() )
+  , mY( vect.y() )
+  , mZ( vect.z() )
+  , mM( vect.w() )
+{
+  mWkbType = QgsWkbTypes::zmType( Qgis::WkbType::Point, !std::isnan( mZ ), !std::isnan( mM ) );
+}
+
+QgsPoint::QgsPoint( const QgsVector3D &vect, double m )
+  : mX( vect.x() )
+  , mY( vect.y() )
+  , mZ( vect.z() )
+  , mM( m )
+{
+  mWkbType = QgsWkbTypes::zmType( Qgis::WkbType::Point, !std::isnan( mZ ), !std::isnan( mM ) );
+}
+
 /***************************************************************************
  * This class is considered CRITICAL and any change MUST be accompanied with
  * full unit tests.
@@ -110,10 +143,9 @@ QgsPoint *QgsPoint::clone() const
 QgsPoint *QgsPoint::snappedToGrid( double hSpacing, double vSpacing, double dSpacing, double mSpacing, bool ) const
 {
   // helper function
-  auto gridifyValue = []( double value, double spacing, bool extraCondition = true ) -> double
-  {
+  auto gridifyValue = []( double value, double spacing, bool extraCondition = true ) -> double {
     if ( spacing > 0 && extraCondition )
-      return  std::round( value / spacing ) * spacing;
+      return std::round( value / spacing ) * spacing;
     else
       return value;
   };
@@ -179,11 +211,10 @@ bool QgsPoint::fromWkt( const QString &wkt )
   QString secondWithoutParentheses = parts.second;
   secondWithoutParentheses = secondWithoutParentheses.remove( '(' ).remove( ')' ).simplified().remove( ' ' );
   parts.second = parts.second.remove( '(' ).remove( ')' );
-  if ( ( parts.second.compare( QLatin1String( "EMPTY" ), Qt::CaseInsensitive ) == 0 ) ||
-       secondWithoutParentheses.isEmpty() )
+  if ( ( parts.second.compare( "EMPTY"_L1, Qt::CaseInsensitive ) == 0 ) || secondWithoutParentheses.isEmpty() )
     return true;
 
-  const thread_local QRegularExpression rx( QStringLiteral( "\\s" ) );
+  const thread_local QRegularExpression rx( u"\\s"_s );
   QStringList coordinates = parts.second.split( rx, Qt::SkipEmptyParts );
 
   // So far the parser hasn't looked at the coordinates. We'll avoid having anything but numbers and return NULL instead of 0 as a coordinate.
@@ -197,7 +228,7 @@ bool QgsPoint::fromWkt( const QString &wkt )
   // True
   // p.asWkt()
   // 'Point (0 -1.43209999999999993)'
-  const thread_local QRegularExpression rxIsNumber( QStringLiteral( "^[+-]?(\\d\\.?\\d*[Ee][+\\-]?\\d+|(\\d+\\.\\d*|\\d*\\.\\d+)|\\d+)$" ) );
+  const thread_local QRegularExpression rxIsNumber( u"^[+-]?(\\d\\.?\\d*[Ee][+\\-]?\\d+|(\\d+\\.\\d*|\\d*\\.\\d+)|\\d+)$"_s );
   if ( coordinates.filter( rxIsNumber ).size() != coordinates.size() )
     return false;
 
@@ -268,10 +299,10 @@ QString QgsPoint::asWkt( int precision ) const
   QString wkt = wktTypeStr();
 
   if ( isEmpty() )
-    wkt += QLatin1String( " EMPTY" );
+    wkt += " EMPTY"_L1;
   else
   {
-    wkt += QLatin1String( " (" );
+    wkt += " ("_L1;
     wkt += qgsDoubleToString( mX, precision ) + ' ' + qgsDoubleToString( mY, precision );
     if ( is3D() )
       wkt += ' ' + qgsDoubleToString( mZ, precision );
@@ -284,16 +315,16 @@ QString QgsPoint::asWkt( int precision ) const
 
 QDomElement QgsPoint::asGml2( QDomDocument &doc, int precision, const QString &ns, const QgsAbstractGeometry::AxisOrder axisOrder ) const
 {
-  QDomElement elemPoint = doc.createElementNS( ns, QStringLiteral( "Point" ) );
-  QDomElement elemCoordinates = doc.createElementNS( ns, QStringLiteral( "coordinates" ) );
+  QDomElement elemPoint = doc.createElementNS( ns, u"Point"_s );
+  QDomElement elemCoordinates = doc.createElementNS( ns, u"coordinates"_s );
 
   // coordinate separator
-  const QString cs = QStringLiteral( "," );
+  const QString cs = u","_s;
   // tuple separator
-  const QString ts = QStringLiteral( " " );
+  const QString ts = u" "_s;
 
-  elemCoordinates.setAttribute( QStringLiteral( "cs" ), cs );
-  elemCoordinates.setAttribute( QStringLiteral( "ts" ), ts );
+  elemCoordinates.setAttribute( u"cs"_s, cs );
+  elemCoordinates.setAttribute( u"ts"_s, ts );
 
   QString strCoordinates;
   if ( axisOrder == QgsAbstractGeometry::AxisOrder::XY )
@@ -307,9 +338,9 @@ QDomElement QgsPoint::asGml2( QDomDocument &doc, int precision, const QString &n
 
 QDomElement QgsPoint::asGml3( QDomDocument &doc, int precision, const QString &ns, const QgsAbstractGeometry::AxisOrder axisOrder ) const
 {
-  QDomElement elemPoint = doc.createElementNS( ns, QStringLiteral( "Point" ) );
-  QDomElement elemPosList = doc.createElementNS( ns, QStringLiteral( "pos" ) );
-  elemPosList.setAttribute( QStringLiteral( "srsDimension" ), is3D() ? 3 : 2 );
+  QDomElement elemPoint = doc.createElementNS( ns, u"Point"_s );
+  QDomElement elemPosList = doc.createElementNS( ns, u"pos"_s );
+  elemPosList.setAttribute( u"srsDimension"_s, is3D() ? 3 : 2 );
   QString strCoordinates;
   if ( axisOrder == QgsAbstractGeometry::AxisOrder::XY )
     strCoordinates = qgsDoubleToString( mX, precision ) + ' ' + qgsDoubleToString( mY, precision );
@@ -324,14 +355,13 @@ QDomElement QgsPoint::asGml3( QDomDocument &doc, int precision, const QString &n
 }
 
 
-json QgsPoint::asJsonObject( int precision ) const
+json QgsPoint::asJsonObject( int precision, Qgis::GeoJsonProfile profile ) const
 {
-  json j
-  {
+  json j {
     { "type", "Point" },
     { "coordinates", json::array() },
   };
-  if ( ! isEmpty() )
+  if ( !isEmpty() )
   {
     j["coordinates"].push_back( qgsRound( mX, precision ) );
     j["coordinates"].push_back( qgsRound( mY, precision ) );
@@ -339,13 +369,17 @@ json QgsPoint::asJsonObject( int precision ) const
     {
       j["coordinates"].push_back( qgsRound( mZ, precision ) );
     }
+    if ( isMeasure() && ( profile == Qgis::GeoJsonProfile::JsonFg || profile == Qgis::GeoJsonProfile::JsonFgPlus ) )
+    {
+      j["coordinates"].push_back( qgsRound( mM, precision ) );
+    }
   }
   return j;
 }
 
 QString QgsPoint::asKml( int precision ) const
 {
-  return QStringLiteral( "<Point><coordinates>%1,%2</coordinates></Point>" ).arg( qgsDoubleToString( mX, precision ), qgsDoubleToString( mY, precision ) );
+  return u"<Point><coordinates>%1,%2</coordinates></Point>"_s.arg( qgsDoubleToString( mX, precision ), qgsDoubleToString( mY, precision ) );
 }
 
 void QgsPoint::draw( QPainter &p ) const
@@ -464,7 +498,18 @@ bool QgsPoint::deleteVertex( QgsVertexId position )
   return false;
 }
 
-double QgsPoint::closestSegment( const QgsPoint &pt, QgsPoint &segmentPt,  QgsVertexId &vertexAfter, int *leftOf, double epsilon ) const
+bool QgsPoint::deleteVertices( const QSet<QgsVertexId> &positions )
+{
+  Q_UNUSED( positions )
+  return false;
+}
+
+bool QgsPoint::hasVertex( QgsVertexId position ) const
+{
+  return position.part == 0 && position.ring == 0 && position.vertex == 0;
+}
+
+double QgsPoint::closestSegment( const QgsPoint &pt, QgsPoint &segmentPt, QgsVertexId &vertexAfter, int *leftOf, double epsilon ) const
 {
   Q_UNUSED( pt )
   Q_UNUSED( segmentPt )
@@ -472,7 +517,7 @@ double QgsPoint::closestSegment( const QgsPoint &pt, QgsPoint &segmentPt,  QgsVe
   if ( leftOf )
     *leftOf = 0;
   Q_UNUSED( epsilon )
-  return -1;  // no segments - return error
+  return -1; // no segments - return error
 }
 
 bool QgsPoint::nextVertex( QgsVertexId &id, QgsPoint &vertex ) const
@@ -667,7 +712,7 @@ bool QgsPoint::transform( QgsAbstractGeometryTransformer *transformer, QgsFeedba
   return res;
 }
 
-void QgsPoint::filterVertices( const std::function<bool ( const QgsPoint & )> & )
+void QgsPoint::filterVertices( const std::function<bool( const QgsPoint & )> & )
 {
   // no meaning for points
 }
@@ -745,7 +790,7 @@ QgsBox3D QgsPoint::boundingBox3D() const
 
 QString QgsPoint::geometryType() const
 {
-  return QStringLiteral( "Point" );
+  return u"Point"_s;
 }
 
 int QgsPoint::dimension() const

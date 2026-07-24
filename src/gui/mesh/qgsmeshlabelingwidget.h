@@ -16,16 +16,17 @@
 #define QGSMESHLABELINGWIDGET_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
+
+#include "ui_qgsmeshlabelingwidget.h"
+
+#include "qgis_gui.h"
+#include "qgsmaplayerconfigwidget.h"
+#include "qgsmeshlayerlabeling.h"
+#include "qgspallabeling.h"
 
 #include <QWidget>
 
-#include "ui_qgsmeshlabelingwidget.h"
-#include "qgspallabeling.h"
-#include "qgsmeshlayerlabeling.h"
-#include "qgis_gui.h"
-
-#include "qgsmaplayerconfigwidget.h"
+#define SIP_NO_FILE
 
 class QgsLabelingGui;
 class QgsMapCanvas;

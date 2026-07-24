@@ -13,26 +13,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QItemDelegate>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QPainter>
-#include <QToolButton>
-
 #include "qgsattributetabledelegate.h"
-#include "moc_qgsattributetabledelegate.cpp"
+
+#include "qgsactionmanager.h"
 #include "qgsattributetablefiltermodel.h"
 #include "qgsattributetablemodel.h"
 #include "qgsattributetableview.h"
 #include "qgseditorwidgetregistry.h"
 #include "qgseditorwidgetwrapper.h"
 #include "qgsfeatureselectionmodel.h"
-#include "qgsvectordataprovider.h"
-#include "qgsactionmanager.h"
 #include "qgsgui.h"
-#include "qgsvectorlayerjoininfo.h"
-#include "qgsvectorlayerjoinbuffer.h"
 #include "qgsrendercontext.h"
+#include "qgsvectordataprovider.h"
+#include "qgsvectorlayerjoinbuffer.h"
+#include "qgsvectorlayerjoininfo.h"
+
+#include <QComboBox>
+#include <QItemDelegate>
+#include <QLineEdit>
+#include <QPainter>
+#include <QToolButton>
+
+#include "moc_qgsattributetabledelegate.cpp"
 
 QgsVectorLayer *QgsAttributeTableDelegate::layer( const QAbstractItemModel *model )
 {
@@ -122,9 +124,7 @@ void QgsAttributeTableDelegate::setModelData( QWidget *editor, QAbstractItemMode
   }
   newValues.append( eww->additionalFieldValues() );
 
-  if ( ( oldValue != newValues.at( 0 ) && newValues.at( 0 ).isValid() )
-       || QgsVariantUtils::isNull( oldValue ) != QgsVariantUtils::isNull( newValues.at( 0 ) )
-       || newValues.count() > 1 )
+  if ( ( oldValue != newValues.at( 0 ) && newValues.at( 0 ).isValid() ) || QgsVariantUtils::isNull( oldValue ) != QgsVariantUtils::isNull( newValues.at( 0 ) ) || newValues.count() > 1 )
   {
     // This fixes https://github.com/qgis/QGIS/issues/24398
     QgsFeatureRequest request( fid );
@@ -177,7 +177,9 @@ void QgsAttributeTableDelegate::setFeatureSelectionModel( QgsFeatureSelectionMod
 
 void QgsAttributeTableDelegate::paint( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
-  const QgsAttributeTableFilterModel::ColumnType columnType = static_cast<QgsAttributeTableFilterModel::ColumnType>( index.model()->data( index, static_cast<int>( QgsAttributeTableFilterModel::CustomRole::Type ) ).toInt() );
+  const QgsAttributeTableFilterModel::ColumnType columnType = static_cast<QgsAttributeTableFilterModel::ColumnType>(
+    index.model()->data( index, static_cast<int>( QgsAttributeTableFilterModel::CustomRole::Type ) ).toInt()
+  );
 
   if ( columnType == QgsAttributeTableFilterModel::ColumnTypeActionButton )
   {

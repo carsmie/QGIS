@@ -19,9 +19,11 @@
 #define QGSCOLORRAMPLEGENDNODEWIDGET_H
 
 
-#include "qgis_gui.h"
 #include "ui_qgscolorramplegendnodewidgetbase.h"
+
+#include "qgis_gui.h"
 #include "qgscolorramplegendnodesettings.h"
+
 #include <QDialog>
 
 class QDialogButtonBox;
@@ -123,7 +125,11 @@ class GUI_EXPORT QgsColorRampLegendNodeDialog : public QDialog
      *
      * Since QGIS 3.38, the \a capabilities argument can be used to fine-tune settings exposed in the dialog.
      */
-    QgsColorRampLegendNodeDialog( const QgsColorRampLegendNodeSettings &settings, QWidget *parent SIP_TRANSFERTHIS = nullptr, QgsColorRampLegendNodeWidget::Capabilities capabilities = QgsColorRampLegendNodeWidget::Capability::AllCapabilities );
+    QgsColorRampLegendNodeDialog(
+      const QgsColorRampLegendNodeSettings &settings,
+      QWidget *parent SIP_TRANSFERTHIS = nullptr,
+      QgsColorRampLegendNodeWidget::Capabilities capabilities = QgsColorRampLegendNodeWidget::Capability::AllCapabilities
+    );
 
     /**
      * Returns the legend node settings as defined by the dialog.

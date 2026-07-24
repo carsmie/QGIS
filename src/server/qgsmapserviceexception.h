@@ -18,12 +18,13 @@
 #ifndef QGSMAPSERVICEEXCEPTION
 #define QGSMAPSERVICEEXCEPTION
 
-#define SIP_NO_FILE
+
+#include "qgis_server.h"
+#include "qgsserverexception.h"
 
 #include <QString>
 
-#include "qgsserverexception.h"
-#include "qgis_server.h"
+#define SIP_NO_FILE
 
 /**
  * \ingroup server

@@ -16,9 +16,12 @@
 #ifndef QGSSYMBOL3DWIDGET_H
 #define QGSSYMBOL3DWIDGET_H
 
-#include <QWidget>
 #include <memory>
+
+#include "qgspanelwidget.h"
 #include "qgsstyle.h"
+
+#include <QWidget>
 
 class QLabel;
 class QStackedWidget;
@@ -34,7 +37,7 @@ class QgsVectorLayer;
 /**
  * Widget for selection of 3D symbol
  */
-class QgsSymbol3DWidget : public QWidget
+class QgsSymbol3DWidget : public QgsPanelWidget
 {
     Q_OBJECT
 
@@ -44,11 +47,10 @@ class QgsSymbol3DWidget : public QWidget
     //! Returns a new symbol instance or NULLPTR
     std::unique_ptr<QgsAbstract3DSymbol> symbol();
 
-    //! Sets symbol (does not take ownership)
+    //! Sets symbol and layer (does not take ownership)
     void setSymbol( const QgsAbstract3DSymbol *symbol, QgsVectorLayer *vlayer );
 
-  signals:
-    void widgetChanged();
+    void setDockMode( bool dockMode ) override;
 
   private slots:
 

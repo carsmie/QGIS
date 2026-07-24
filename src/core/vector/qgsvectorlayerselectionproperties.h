@@ -19,8 +19,8 @@
 #ifndef QGSVECTORLAYERSELECTIONPROPERTIES_H
 #define QGSVECTORLAYERSELECTIONPROPERTIES_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgsmaplayerselectionproperties.h"
 
@@ -38,9 +38,10 @@ class QgsSymbol;
 class CORE_EXPORT QgsVectorLayerSelectionProperties : public QgsMapLayerSelectionProperties
 {
     Q_OBJECT
+    Q_PROPERTY( Qgis::SelectionRenderingMode selectionRenderingMode READ selectionRenderingMode WRITE setSelectionRenderingMode NOTIFY selectionRenderingModeChanged )
+    Q_PROPERTY( QColor selectionColor READ selectionColor WRITE setSelectionColor NOTIFY selectionColorChanged )
 
   public:
-
     /**
      * Constructor for QgsVectorLayerSelectionProperties, with the specified \a parent object.
      */
@@ -104,8 +105,27 @@ class CORE_EXPORT QgsVectorLayerSelectionProperties : public QgsMapLayerSelectio
      */
     void setSelectionSymbol( QgsSymbol *symbol SIP_TRANSFER );
 
-  private:
+  signals:
 
+    /**
+     * Emitted whenever the selection rendering mode changes.
+     * \since QGIS 4.0
+     */
+    void selectionRenderingModeChanged();
+
+    /**
+     * Emitted whenever the selection color changes.
+     * \since QGIS 4.0
+     */
+    void selectionColorChanged();
+
+    /**
+     * Emitted whenever the selection symbol changes.
+     * \since QGIS 4.0
+     */
+    void selectionSymbolChanged();
+
+  private:
     Qgis::SelectionRenderingMode mSelectionRenderingMode = Qgis::SelectionRenderingMode::Default;
     QColor mSelectionColor;
     std::unique_ptr< QgsSymbol > mSelectionSymbol;

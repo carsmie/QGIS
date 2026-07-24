@@ -18,6 +18,7 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
+
 #include <QFlags>
 
 /**
@@ -31,8 +32,6 @@
 class CORE_EXPORT QgsLabeling
 {
   public:
-
-
 };
 
 

@@ -15,20 +15,24 @@
 
 
 #include "qgslabelsettingswidgetbase.h"
-#include "moc_qgslabelsettingswidgetbase.cpp"
+
+#include "qgsauxiliarystorage.h"
 #include "qgsexpressioncontextutils.h"
+#include "qgsgui.h"
 #include "qgsnewauxiliaryfielddialog.h"
 #include "qgsnewauxiliarylayerdialog.h"
 #include "qgspropertyoverridebutton.h"
-#include "qgsauxiliarystorage.h"
-#include "qgsgui.h"
 
+#include <QString>
+
+#include "moc_qgslabelsettingswidgetbase.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsLabelSettingsWidgetBase::QgsLabelSettingsWidgetBase( QWidget *parent, QgsMapLayer *vl )
   : QgsPanelWidget( parent )
   , mLayer( vl )
-{
-}
+{}
 
 void QgsLabelSettingsWidgetBase::setContext( const QgsSymbolWidgetContext &context )
 {
@@ -41,8 +45,7 @@ QgsSymbolWidgetContext QgsLabelSettingsWidgetBase::context() const
 }
 
 void QgsLabelSettingsWidgetBase::setGeometryType( Qgis::GeometryType )
-{
-}
+{}
 
 QgsExpressionContext QgsLabelSettingsWidgetBase::createExpressionContext() const
 {
@@ -133,7 +136,7 @@ void QgsLabelSettingsWidgetBase::setDataDefinedProperties( const QgsPropertyColl
 {
   mDataDefinedProperties = dataDefinedProperties;
 
-  const auto overrideButtons = findChildren<QgsPropertyOverrideButton *>();
+  const QList<QgsPropertyOverrideButton *> overrideButtons = findChildren<QgsPropertyOverrideButton *>();
   for ( QgsPropertyOverrideButton *button : overrideButtons )
   {
     const QgsPalLayerSettings::Property key = static_cast<QgsPalLayerSettings::Property>( button->propertyKey() );
@@ -142,8 +145,7 @@ void QgsLabelSettingsWidgetBase::setDataDefinedProperties( const QgsPropertyColl
 }
 
 void QgsLabelSettingsWidgetBase::updateDataDefinedProperties( QgsPropertyCollection & )
-{
-}
+{}
 
 void QgsLabelSettingsWidgetBase::registerDataDefinedButton( QgsPropertyOverrideButton *button, QgsPalLayerSettings::Property key )
 {
@@ -173,7 +175,7 @@ QgsLabelSettingsWidgetDialog::QgsLabelSettingsWidgetDialog( QgsLabelSettingsWidg
   vLayout->addWidget( mButtonBox );
   setLayout( vLayout );
 
-  setObjectName( QStringLiteral( "QgsLabelSettingsWidgetDialog" ) );
+  setObjectName( u"QgsLabelSettingsWidgetDialog"_s );
   QgsGui::enableAutoGeometryRestore( this );
 }
 

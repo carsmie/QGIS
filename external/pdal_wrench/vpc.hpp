@@ -64,13 +64,16 @@ struct VirtualPointCloud
         std::vector<SchemaItem> schema;  // we're not using it, just for STAC export
         std::vector<StatsItem> stats;
 
-        // support for overview point clouds - currently we assume a file refers to at most a single overview file
-        // (when building VPC with overviews, we create one overview file for all source data)
-        std::string overviewFilename;
+        // support for overview point clouds - a file may refer to one or more overview files
+        // (when building VPC with overviews, multiple overview tiles may be created)
+        std::vector<std::string> overviewFilenames;
     };
+    
+    ~VirtualPointCloud();
 
     std::vector<File> files;
     std::string crsWkt;  // valid WKT for CRS of all files (or empty string if undefined, or "_mix_" if a mixture of CRS was seen)
+    std::string downloadedFilename;  // local copy of a remote VPC fetched in read()
 
     void clear();
     void dump();

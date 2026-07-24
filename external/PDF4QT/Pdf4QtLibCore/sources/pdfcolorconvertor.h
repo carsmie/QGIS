@@ -1,25 +1,32 @@
-//    Copyright (C) 2023 Jakub Melka
+// MIT License
 //
-//    This file is part of PDF4QT.
+// Copyright (c) 2018-2025 Jakub Melka and Contributors
 //
-//    PDF4QT is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    with the written consent of the copyright owner, any later version.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//    PDF4QT is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Lesser General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with PDF4QT.  If not, see <https://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #ifndef PDFCOLORCONVERTOR_H
 #define PDFCOLORCONVERTOR_H
 
 #include "pdfglobal.h"
 
+#include <QPen>
+#include <QBrush>
 #include <QColor>
 #include <QImage>
 
@@ -103,7 +110,36 @@ public:
     QColor getBackgroundColor() const;
     QColor getForegroundColor() const;
 
+    QPen convert(const QPen& pen, bool background = false, bool foreground = true) const;
+    QBrush convert(const QBrush& brush, bool background = false, bool foreground = true) const;
+
 private:
+    /// Applies the opacity of the original source color to an already converted color.
+    /// This is used by color conversion modes that replace RGB components with a
+    /// predefined color, such as custom foreground/background colors. The predefined
+    /// color can have its own alpha value, but it must still respect the transparency
+    /// of the original PDF paint color; otherwise transparent fills or masks can become
+    /// fully opaque after conversion.
+    /// \param color Converted color whose RGB components and own alpha should be kept.
+    /// \param sourceColor Original color before conversion; its alpha is multiplied into
+    /// the converted color alpha.
+    /// \return Converted color with alpha adjusted by the source color transparency.
+    static QColor applySourceAlpha(QColor color, QColor sourceColor);
+
+    /// Converts a source color into the custom foreground/background color scale.
+    /// The conversion preserves the source lightness relationship by treating dark
+    /// source colors as foreground and light source colors as background. This keeps
+    /// vector graphics and raster images consistent in custom color mode.
+    ///
+    /// The returned alpha is also blended from the configured foreground/background
+    /// alpha values and then multiplied by the source alpha. This preserves both the
+    /// custom color opacity settings and the original PDF transparency.
+    /// \param sourceColor Original color before conversion.
+    /// \param foregroundColor Custom foreground color used for dark source colors.
+    /// \param backgroundColor Custom background color used for light source colors.
+    /// \return Custom color equivalent of the source color.
+    static QColor mixCustomColors(QColor sourceColor, QColor foregroundColor, QColor backgroundColor);
+
     /// Correct lightness using sigmoid function
     /// \return Adjusted lightness normalized in range [0.0, 1.0]
     /// \param lightness Lightness in range [0.0, 1.0]

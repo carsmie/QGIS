@@ -17,15 +17,14 @@
 #define QGSDEMTERRAINGENERATOR_H
 
 #include "qgis_3d.h"
-
+#include "qgscoordinatetransformcontext.h"
+#include "qgsrasterlayer.h"
 #include "qgsterraingenerator.h"
 
-class QgsRasterLayer;
+#define SIP_NO_FILE
+
 class QgsDemHeightMapGenerator;
 
-#include "qgsmaplayerref.h"
-
-#define SIP_NO_FILE
 
 /**
  * \ingroup qgis_3d
@@ -44,7 +43,7 @@ class _3D_EXPORT QgsDemTerrainGenerator : public QgsTerrainGenerator
      */
     static QgsTerrainGenerator *create() SIP_FACTORY;
 
-    QgsDemTerrainGenerator() = default;
+    QgsDemTerrainGenerator();
     ~QgsDemTerrainGenerator() override;
 
     //! Sets raster layer with elevation model to be used for terrain generation
@@ -70,7 +69,7 @@ class _3D_EXPORT QgsDemTerrainGenerator : public QgsTerrainGenerator
     float skirtHeight() const { return mSkirtHeight; }
 
     //! Returns height map generator object - takes care of extraction of elevations from the layer)
-    QgsDemHeightMapGenerator *heightMapGenerator() { return mHeightMapGenerator; }
+    QgsDemHeightMapGenerator *heightMapGenerator() { return mHeightMapGenerator.get(); }
 
     QgsTerrainGenerator *clone() const override SIP_FACTORY;
     Type type() const override;
@@ -80,10 +79,12 @@ class _3D_EXPORT QgsDemTerrainGenerator : public QgsTerrainGenerator
 
     QgsChunkLoader *createChunkLoader( QgsChunkNode *node ) const override SIP_FACTORY;
 
+    QgsTerrainGenerator::Capabilities capabilities() const override;
+
   private:
     void updateGenerator();
 
-    QgsDemHeightMapGenerator *mHeightMapGenerator = nullptr;
+    std::unique_ptr<QgsDemHeightMapGenerator> mHeightMapGenerator;
 
     QgsCoordinateReferenceSystem mCrs;
 

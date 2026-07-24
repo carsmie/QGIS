@@ -13,10 +13,12 @@
 *                                                                         *
 ***************************************************************************/
 #include "qgsdatabaseschemamodel.h"
-#include "moc_qgsdatabaseschemamodel.cpp"
-#include "qgsproviderregistry.h"
-#include "qgsprovidermetadata.h"
+
 #include "qgsabstractdatabaseproviderconnection.h"
+#include "qgsprovidermetadata.h"
+#include "qgsproviderregistry.h"
+
+#include "moc_qgsdatabaseschemamodel.cpp"
 
 QgsDatabaseSchemaModel::QgsDatabaseSchemaModel( const QString &provider, const QString &connection, QObject *parent )
   : QAbstractItemModel( parent )
@@ -133,7 +135,7 @@ void QgsDatabaseSchemaModel::refresh()
   {
     if ( !newSchemas.contains( oldSchema ) )
     {
-      const int r = mSchemas.indexOf( oldSchema ) ;
+      const int r = mSchemas.indexOf( oldSchema );
       beginRemoveRows( QModelIndex(), r + ( mAllowEmpty ? 1 : 0 ), r + ( mAllowEmpty ? 1 : 0 ) );
       mSchemas.removeAt( r );
       endRemoveRows();

@@ -18,9 +18,11 @@
 #define QGSSENSORTHINGSCONNECTIONWIDGET_H
 
 #include "ui_qgssensorthingsconnectionwidgetbase.h"
+
 #include <QVariantMap>
 
 #define SIP_NO_FILE
+
 ///@cond PRIVATE
 
 class QgsSensorThingsConnectionWidget : public QWidget, private Ui::QgsSensorThingsConnectionWidgetBase

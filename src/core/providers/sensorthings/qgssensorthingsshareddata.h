@@ -16,18 +16,20 @@
 #ifndef QGSSENSORTHINGSSHAREDDATA_H
 #define QGSSENSORTHINGSSHAREDDATA_H
 
-#include "qgsfields.h"
 #include "qgscoordinatereferencesystem.h"
-#include "qgshttpheaders.h"
 #include "qgsfeature.h"
-#include "qgsspatialindex.h"
+#include "qgsfields.h"
+#include "qgshttpheaders.h"
 #include "qgssensorthingsutils.h"
+#include "qgsspatialindex.h"
 
 #include <QReadWriteLock>
+#include <QVersionNumber>
+
+#define SIP_NO_FILE
 
 class QgsFeedback;
 
-#define SIP_NO_FILE
 ///@cond PRIVATE
 
 /**
@@ -35,7 +37,6 @@ class QgsFeedback;
  */
 class QgsSensorThingsSharedData
 {
-
   public:
     QgsSensorThingsSharedData( const QString &uri );
 
@@ -56,20 +57,21 @@ class QgsSensorThingsSharedData
 
     bool hasCachedAllFeatures() const;
     bool getFeature( QgsFeatureId id, QgsFeature &f, QgsFeedback *feedback = nullptr );
-    QgsFeatureIds getFeatureIdsInExtent( const QgsRectangle &extent, QgsFeedback *feedback, const QString &thisPage, QString &nextPage,
-                                         const QgsFeatureIds &alreadyFetchedIds );
+    QgsFeatureIds getFeatureIdsInExtent( const QgsRectangle &extent, QgsFeedback *feedback, const QString &thisPage, QString &nextPage, const QgsFeatureIds &alreadyFetchedIds );
 
     void clearCache();
 
   private:
-
-    bool processFeatureRequest( QString &nextPage, QgsFeedback *feedback,
-                                const std::function< void( const QgsFeature & ) > &fetchedFeatureCallback,
-                                const std::function< bool() > &continueFetchingCallback,
-                                const std::function< void() > &onNoMoreFeaturesCallback );
+    bool processFeatureRequest(
+      QString &nextPage,
+      QgsFeedback *feedback,
+      const std::function< void( const QgsFeature & ) > &fetchedFeatureCallback,
+      const std::function< bool() > &continueFetchingCallback,
+      const std::function< void() > &onNoMoreFeaturesCallback
+    );
 
     friend class QgsSensorThingsProvider;
-    mutable QReadWriteLock mReadWriteLock{ QReadWriteLock::Recursive };
+    mutable QReadWriteLock mReadWriteLock { QReadWriteLock::Recursive };
 
     QString mAuthCfg;
     QgsHttpHeaders mHeaders;
@@ -77,6 +79,7 @@ class QgsSensorThingsSharedData
 
     mutable QString mError;
 
+    QVersionNumber mVersion = QVersionNumber( 1, 1 );
     QString mEntityBaseUri;
     QString mSubsetString;
     QString mExpandQueryString;

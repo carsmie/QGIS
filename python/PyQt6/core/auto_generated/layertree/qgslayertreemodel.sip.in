@@ -10,6 +10,8 @@
 
 
 
+
+
 class QgsLayerTreeModel : QAbstractItemModel
 {
 %Docstring(signature="appended")
@@ -317,7 +319,7 @@ Give the layer tree model hints about the currently associated map view
 so that legend nodes that use map units can be scaled correctly
 %End
 
-    void legendMapViewData( double *mapUnitsPerPixel /Out/, int *dpi /Out/, double *scale  /Out/ ) const;
+    void legendMapViewData( double *mapUnitsPerPixel /Out/, int *dpi /Out/, double *scale /Out/ ) const;
 %Docstring
 Gets hints about map view - to be used in legend nodes. Arguments that
 are not ``None`` will receive values. If there are no valid map view
@@ -348,6 +350,18 @@ which corresponds exactly to the view's screen properties in which this
 model is used.
 
 .. versionadded:: 3.32
+%End
+
+    void setTargetScreenProperties( const QSet< QgsScreenProperties > &properties );
+%Docstring
+Sets all target screen ``properties`` to use when generating icons for
+Qt.DecorationRole data.
+
+This allows icons to be generated at an icon device pixel ratio and DPI
+which corresponds exactly to the view's screen properties in which this
+model is used.
+
+.. versionadded:: 4.2
 %End
 
     QSet< QgsScreenProperties > targetScreenProperties() const;
@@ -393,6 +407,13 @@ progress.
 .. seealso:: :py:func:`hitTestCompleted`
 
 .. versionadded:: 3.32
+%End
+
+    void invalidateDisplayData();
+%Docstring
+Invalidates all cached display data throughout the model.
+
+.. versionadded:: 4.2
 %End
 
   signals:

@@ -14,11 +14,11 @@
  ***************************************************************************/
 
 #include "qgsvaliditycheckregistry.h"
+
 #include "qgsfeedback.h"
 
 QgsValidityCheckRegistry::QgsValidityCheckRegistry()
-{
-}
+{}
 
 QgsValidityCheckRegistry::~QgsValidityCheckRegistry()
 {

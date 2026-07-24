@@ -27,12 +27,6 @@
 // version without notice, or even be removed.
 //
 
-#define SIP_NO_FILE
-
-#include <QtConcurrent/QtConcurrentRun>
-#include <QFutureWatcher>
-#include <QElapsedTimer>
-#include <QMutex>
 
 #include "qgschunknode.h"
 #include "qgscoordinatetransformcontext.h"
@@ -40,8 +34,15 @@
 #include "qgsterraintileloader.h"
 #include "qgstilingscheme.h"
 
+#include <QElapsedTimer>
+#include <QFutureWatcher>
+#include <QMutex>
+
+#define SIP_NO_FILE
+
 class QgsRasterDataProvider;
 class QgsRasterLayer;
+class QgsRasterBlock;
 class QgsCoordinateTransformContext;
 class QgsTerrainGenerator;
 
@@ -113,13 +114,13 @@ class QgsDemHeightMapGenerator : public QObject
     const QgsRectangle mDtmExtent;
 
     //! cloned provider to be used in worker thread
-    QgsRasterDataProvider *mClonedProvider = nullptr;
+    std::unique_ptr<QgsRasterDataProvider> mClonedProvider;
 
     QgsTilingScheme mTilingScheme;
 
     int mResolution;
 
-    int mLastJobId;
+    int mLastJobId = 0;
 
     std::unique_ptr<QgsTerrainDownloader> mDownloader;
 
@@ -137,7 +138,7 @@ class QgsDemHeightMapGenerator : public QObject
     void lazyLoadDtmCoarseData( int res, const QgsRectangle &rect );
     mutable QMutex mLazyLoadDtmCoarseDataMutex;
     //! used for height queries
-    QByteArray mDtmCoarseData;
+    std::unique_ptr<QgsRasterBlock> mDtmCoarseRasterBlock;
 
     QgsCoordinateTransformContext mTransformContext;
 };

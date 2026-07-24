@@ -12,6 +12,17 @@ if (WITH_INTERNAL_LAZPERF)
   include_directories(
     ${CMAKE_SOURCE_DIR}/external/lazperf
   )
+
+  set(TEST_LAZPERF_SUPPRESSION_OPTIONS)
+  if(HAVE_WFLAG_SUGGEST_OVERRIDE)
+    list(APPEND TEST_LAZPERF_SUPPRESSION_OPTIONS "-Wno-suggest-override")
+  endif()
+  if(HAVE_WFLAG_SUGGEST_DESTRUCTOR_OVERRIDE)
+    list(APPEND TEST_LAZPERF_SUPPRESSION_OPTIONS "-Wno-suggest-destructor-override")
+  endif()
+  if (TEST_LAZPERF_SUPPRESSION_OPTIONS)
+    set_source_files_properties(testqgspointcloudediting.cpp PROPERTIES COMPILE_OPTIONS "${TEST_LAZPERF_SUPPRESSION_OPTIONS}")
+  endif()
 endif()
 
 if(HAVE_OPENCL)
@@ -192,6 +203,7 @@ set(TESTS
  testqgsstac.cpp
  testqgsstackeddiagram.cpp
  testqgsrelation.cpp
+ testqgsscopedconnection.cpp
  testqgsstatisticalsummary.cpp
  testqgsstoredexpressionmanager.cpp
  testqgsstringutils.cpp
@@ -228,12 +240,6 @@ set(TESTS
  testqobjectuniqueptr.cpp
  testziplayer.cpp
 )
-
-if(WITH_QTWEBKIT)
-  set(TESTS ${TESTS}
-    testqgslayouthtml.cpp
-  )
-endif()
 
 if(HAVE_OPENCL)
   set(TESTS ${TESTS}

@@ -13,20 +13,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsgeometrycheckcontext.h"
-#include "qgsgeometryengine.h"
-#include "qgsgeometrycollection.h"
 #include "qgsgeometryareacheck.h"
-#include "qgsfeaturepool.h"
-#include "qgsgeometrycheckerror.h"
 
-void QgsGeometryAreaCheck::collectErrors( const QMap<QString, QgsFeaturePool *> &featurePools, QList<QgsGeometryCheckError *> &errors, QStringList &messages, QgsFeedback *feedback, const LayerFeatureIds &ids ) const
+#include "qgsfeaturepool.h"
+#include "qgsfeedback.h"
+#include "qgsgeometrycheckcontext.h"
+#include "qgsgeometrycheckerror.h"
+#include "qgsgeometrycollection.h"
+#include "qgsgeometryengine.h"
+
+QgsGeometryCheck::Result QgsGeometryAreaCheck::collectErrors(
+  const QMap<QString, QgsFeaturePool *> &featurePools, QList<QgsGeometryCheckError *> &errors, QStringList &messages, QgsFeedback *feedback, const LayerFeatureIds &ids
+) const
 {
   Q_UNUSED( messages )
+
+  QMap<QString, QSet<QVariant>> uniqueIds;
   const QMap<QString, QgsFeatureIds> featureIds = ids.isEmpty() ? allLayerFeatureIds( featurePools ) : ids.toMap();
   const QgsGeometryCheckerUtils::LayerFeatures layerFeatures( featurePools, featureIds, compatibleGeometryTypes(), feedback, mContext );
   for ( const QgsGeometryCheckerUtils::LayerFeature &layerFeature : layerFeatures )
   {
+    if ( feedback && feedback->isCanceled() )
+    {
+      return QgsGeometryCheck::Result::Canceled;
+    }
+
+    if ( context()->uniqueIdFieldIndex != -1 )
+    {
+      QgsGeometryCheck::Result result = checkUniqueId( layerFeature, uniqueIds );
+      if ( result != QgsGeometryCheck::Result::Success )
+      {
+        return result;
+      }
+    }
+
     const QgsAbstractGeometry *geom = layerFeature.geometry().constGet();
     const double layerToMapUnits = scaleFactor( layerFeature.layer() );
     for ( int iPart = 0, nParts = geom->partCount(); iPart < nParts; ++iPart )
@@ -39,6 +59,7 @@ void QgsGeometryAreaCheck::collectErrors( const QMap<QString, QgsFeaturePool *> 
       }
     }
   }
+  return QgsGeometryCheck::Result::Success;
 }
 
 void QgsGeometryAreaCheck::fixError( const QMap<QString, QgsFeaturePool *> &featurePools, QgsGeometryCheckError *error, int method, const QMap<QString, int> &mergeAttributeIndices, Changes &changes ) const
@@ -107,7 +128,9 @@ bool QgsGeometryAreaCheck::checkThreshold( double layerToMapUnits, const QgsAbst
   return value < threshold;
 }
 
-bool QgsGeometryAreaCheck::mergeWithNeighbor( const QMap<QString, QgsFeaturePool *> &featurePools, const QString &layerId, QgsFeature &feature, int partIdx, int method, int mergeAttributeIndex, Changes &changes, QString &errMsg ) const
+bool QgsGeometryAreaCheck::mergeWithNeighbor(
+  const QMap<QString, QgsFeaturePool *> &featurePools, const QString &layerId, QgsFeature &feature, int partIdx, int method, int mergeAttributeIndex, Changes &changes, QString &errMsg
+) const
 {
   QgsFeaturePool *featurePool = featurePools[layerId];
 
@@ -135,7 +158,8 @@ bool QgsGeometryAreaCheck::mergeWithNeighbor( const QMap<QString, QgsFeaturePool
       {
         continue;
       }
-      const double len = QgsGeometryCheckerUtils::sharedEdgeLength( QgsGeometryCheckerUtils::getGeomPart( geom, partIdx ), QgsGeometryCheckerUtils::getGeomPart( testGeom, testPartIdx ), mContext->reducedTolerance );
+      const double len
+        = QgsGeometryCheckerUtils::sharedEdgeLength( QgsGeometryCheckerUtils::getGeomPart( geom, partIdx ), QgsGeometryCheckerUtils::getGeomPart( testGeom, testPartIdx ), mContext->reducedTolerance );
       if ( len > 0. )
       {
         if ( method == MergeLongestEdge || method == MergeLargestArea )

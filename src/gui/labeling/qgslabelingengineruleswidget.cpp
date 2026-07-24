@@ -14,18 +14,23 @@
  ***************************************************************************/
 
 #include "qgslabelingengineruleswidget.h"
-#include "moc_qgslabelingengineruleswidget.cpp"
+
 #include "qgsapplication.h"
-#include "qgslabelingengineruleregistry.h"
-#include "qgslabelingenginerule.h"
-#include "qgslabelingenginerulewidget.h"
 #include "qgsgui.h"
 #include "qgshelp.h"
+#include "qgslabelingenginerule.h"
+#include "qgslabelingengineruleregistry.h"
+#include "qgslabelingenginerulewidget.h"
 
-#include <QMenu>
 #include <QAction>
 #include <QDialogButtonBox>
+#include <QMenu>
 #include <QPushButton>
+#include <QString>
+
+#include "moc_qgslabelingengineruleswidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 //
 // QgsLabelingEngineRulesModel
@@ -33,8 +38,7 @@
 
 QgsLabelingEngineRulesModel::QgsLabelingEngineRulesModel( QObject *parent )
   : QAbstractItemModel( parent )
-{
-}
+{}
 
 Qt::ItemFlags QgsLabelingEngineRulesModel::flags( const QModelIndex &index ) const
 {
@@ -278,14 +282,10 @@ void QgsLabelingEngineRulesWidget::createTypesMenu()
       continue;
 
     QAction *action = new QAction( QgsApplication::labelingEngineRuleRegistry()->create( id )->displayType() );
-    connect( action, &QAction::triggered, this, [this, id] {
-      createRule( id );
-    } );
+    connect( action, &QAction::triggered, this, [this, id] { createRule( id ); } );
     actions << action;
   }
-  std::sort( actions.begin(), actions.end(), []( const QAction *a, const QAction *b ) -> bool {
-    return QString::localeAwareCompare( a->text(), b->text() ) < 0;
-  } );
+  std::sort( actions.begin(), actions.end(), []( const QAction *a, const QAction *b ) -> bool { return QString::localeAwareCompare( a->text(), b->text() ) < 0; } );
   mAddRuleMenu->addActions( actions );
 }
 
@@ -402,7 +402,7 @@ QgsLabelingEngineRulesDialog::QgsLabelingEngineRulesDialog( QWidget *parent, Qt:
   : QDialog( parent, flags )
 {
   setWindowTitle( tr( "Configure Rules" ) );
-  setObjectName( QStringLiteral( "QgsLabelingEngineRulesDialog" ) );
+  setObjectName( u"QgsLabelingEngineRulesDialog"_s );
 
   mWidget = new QgsLabelingEngineRulesWidget();
 
@@ -417,9 +417,7 @@ QgsLabelingEngineRulesDialog::QgsLabelingEngineRulesDialog( QWidget *parent, Qt:
 
   connect( mButtonBox->button( QDialogButtonBox::Ok ), &QAbstractButton::clicked, this, &QDialog::accept );
   connect( mButtonBox->button( QDialogButtonBox::Cancel ), &QAbstractButton::clicked, this, &QDialog::reject );
-  connect( mButtonBox, &QDialogButtonBox::helpRequested, this, [] {
-    QgsHelp::openHelp( QStringLiteral( "working_with_vector/vector_properties.html#labeling-rules" ) );
-  } );
+  connect( mButtonBox, &QDialogButtonBox::helpRequested, this, [] { QgsHelp::openHelp( u"working_with_vector/vector_properties.html#labeling-rules"_s ); } );
 }
 
 void QgsLabelingEngineRulesDialog::setRules( const QList<QgsAbstractLabelingEngineRule *> &rules )

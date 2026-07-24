@@ -16,29 +16,33 @@
  ***************************************************************************/
 
 #include "qgspointcloudclassifiedrendererwidget.h"
-#include "moc_qgspointcloudclassifiedrendererwidget.cpp"
-#include "qgscontrastenhancement.h"
-#include "qgspointcloudlayer.h"
-#include "qgspointcloudclassifiedrenderer.h"
-#include "qgsdoublevalidator.h"
-#include "qgsstyle.h"
-#include "qgsguiutils.h"
-#include "qgscompoundcolorwidget.h"
-#include "qgscolordialog.h"
-#include "qgsapplication.h"
-#include "qgscolorschemeregistry.h"
-#include "qgspointcloudrendererregistry.h"
 
-#include <QMimeData>
+#include "qgsapplication.h"
+#include "qgscolordialog.h"
+#include "qgscolorschemeregistry.h"
+#include "qgscompoundcolorwidget.h"
+#include "qgscontrastenhancement.h"
+#include "qgsdoublevalidator.h"
+#include "qgsguiutils.h"
+#include "qgspointcloudclassifiedrenderer.h"
+#include "qgspointcloudlayer.h"
+#include "qgspointcloudrendererregistry.h"
+#include "qgsstyle.h"
+
 #include <QInputDialog>
+#include <QMimeData>
+#include <QString>
+
+#include "moc_qgspointcloudclassifiedrendererwidget.cpp"
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
 QgsPointCloudClassifiedRendererModel::QgsPointCloudClassifiedRendererModel( QObject *parent )
   : QAbstractItemModel( parent )
-  , mMimeFormat( QStringLiteral( "application/x-qgspointcloudclassifiedrenderermodel" ) )
-{
-}
+  , mMimeFormat( u"application/x-qgspointcloudclassifiedrenderermodel"_s )
+{}
 
 void QgsPointCloudClassifiedRendererModel::setRendererCategories( const QgsPointCloudCategoryList &categories )
 {
@@ -132,7 +136,7 @@ QVariant QgsPointCloudClassifiedRendererModel::data( const QModelIndex &index, i
           if ( value < 0 )
             str = tr( "N/A" );
           else if ( value != 0 && std::round( value * 10 ) < 1 )
-            str = QStringLiteral( "< " ) + QLocale().toString( 0.1, 'f', 1 );
+            str = u"< "_s + QLocale().toString( 0.1, 'f', 1 );
           else
             str = QLocale().toString( mPercentages.value( category.value() ), 'f', 1 );
           return str;
@@ -467,12 +471,12 @@ QgsPointCloudRenderer *QgsPointCloudClassifiedRendererWidget::renderer()
   return renderer.release();
 }
 
-QgsPointCloudCategoryList QgsPointCloudClassifiedRendererWidget::categoriesList()
+QgsPointCloudCategoryList QgsPointCloudClassifiedRendererWidget::categoriesList() const
 {
   return mModel->categories();
 }
 
-QString QgsPointCloudClassifiedRendererWidget::attribute()
+QString QgsPointCloudClassifiedRendererWidget::attribute() const
 {
   return mAttributeComboBox->currentAttribute();
 }
@@ -514,8 +518,8 @@ void QgsPointCloudClassifiedRendererWidget::addCategories()
 
   const QgsPointCloudCategoryList currentCategories = mModel->categories();
 
-  const bool isClassificationAttribute = ( 0 == currentAttribute.compare( QStringLiteral( "Classification" ), Qt::CaseInsensitive ) );
-  const bool isBooleanAttribute = ( 0 == currentAttribute.compare( QStringLiteral( "Synthetic" ), Qt::CaseInsensitive ) || 0 == currentAttribute.compare( QStringLiteral( "KeyPoint" ), Qt::CaseInsensitive ) || 0 == currentAttribute.compare( QStringLiteral( "Withheld" ), Qt::CaseInsensitive ) || 0 == currentAttribute.compare( QStringLiteral( "Overlap" ), Qt::CaseInsensitive ) );
+  const bool isClassificationAttribute = ( 0 == currentAttribute.compare( u"Classification"_s, Qt::CaseInsensitive ) );
+  const bool isBooleanAttribute = ( 0 == currentAttribute.compare( u"Synthetic"_s, Qt::CaseInsensitive ) || 0 == currentAttribute.compare( u"KeyPoint"_s, Qt::CaseInsensitive ) || 0 == currentAttribute.compare( u"Withheld"_s, Qt::CaseInsensitive ) || 0 == currentAttribute.compare( u"Overlap"_s, Qt::CaseInsensitive ) );
 
   QList<int> providerCategories = stats.classesOf( currentAttribute );
 
@@ -527,6 +531,16 @@ void QgsPointCloudClassifiedRendererWidget::addCategories()
   const QgsPointCloudCategoryList defaultLayerCategories = isClassificationAttribute ? QgsPointCloudRendererRegistry::classificationAttributeCategories( mLayer ) : QgsPointCloudCategoryList();
 
   mBlockChangedSignal = true;
+
+  // If it is classification and we lack stats, lets use the full set of default categories
+  if ( isClassificationAttribute && providerCategories.isEmpty() )
+  {
+    for ( const QgsPointCloudCategory &c : defaultLayerCategories )
+    {
+      providerCategories.append( c.value() );
+    }
+  }
+
   for ( const int &providerCategory : std::as_const( providerCategories ) )
   {
     // does this category already exist?
@@ -616,9 +630,9 @@ void QgsPointCloudClassifiedRendererWidget::setFromCategories( QgsPointCloudCate
 
 void QgsPointCloudClassifiedRendererWidget::initialize()
 {
-  if ( mAttributeComboBox->findText( QStringLiteral( "Classification" ) ) > -1 )
+  if ( mAttributeComboBox->findText( u"Classification"_s ) > -1 )
   {
-    mAttributeComboBox->setAttribute( QStringLiteral( "Classification" ) );
+    mAttributeComboBox->setAttribute( u"Classification"_s );
   }
   else
   {

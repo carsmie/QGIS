@@ -14,30 +14,41 @@
  ***************************************************************************/
 
 #include "qgsjsonutils.h"
-#include "moc_qgsjsonutils.cpp"
+
+#include <nlohmann/json.hpp>
+
+#include "qgsapplication.h"
+#include "qgscircularstring.h"
+#include "qgscompoundcurve.h"
+#include "qgscurvepolygon.h"
+#include "qgsexception.h"
+#include "qgsfeatureid.h"
 #include "qgsfeatureiterator.h"
-#include "qgsogrutils.h"
+#include "qgsfieldformatter.h"
+#include "qgsfieldformatterregistry.h"
 #include "qgsgeometry.h"
-#include "qgsvectorlayer.h"
+#include "qgslinestring.h"
+#include "qgslogger.h"
+#include "qgsmulticurve.h"
+#include "qgsmultilinestring.h"
+#include "qgsmultipoint.h"
+#include "qgsmultipolygon.h"
+#include "qgsmultisurface.h"
+#include "qgsogrutils.h"
+#include "qgspolygon.h"
+#include "qgsproject.h"
 #include "qgsrelation.h"
 #include "qgsrelationmanager.h"
-#include "qgsproject.h"
-#include "qgsexception.h"
-#include "qgslogger.h"
-#include "qgsfieldformatterregistry.h"
-#include "qgsfieldformatter.h"
-#include "qgsapplication.h"
-#include "qgsfeatureid.h"
-#include "qgslinestring.h"
-#include "qgsmultipoint.h"
-#include "qgsmultilinestring.h"
-#include "qgspolygon.h"
-#include "qgsmultipolygon.h"
+#include "qgsvectorlayer.h"
 
-#include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonDocument>
+#include <QString>
 #include <QTextCodec>
-#include <nlohmann/json.hpp>
+
+#include "moc_qgsjsonutils.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsJsonExporter::QgsJsonExporter( QgsVectorLayer *vectorLayer, int precision )
   : mPrecision( precision )
@@ -49,8 +60,8 @@ QgsJsonExporter::QgsJsonExporter( QgsVectorLayer *vectorLayer, int precision )
     mTransform.setSourceCrs( mCrs );
   }
 
-  // Default 4326
-  mDestinationCrs = QgsCoordinateReferenceSystem( QStringLiteral( "EPSG:4326" ) );
+  // Default CRS84
+  mDestinationCrs = QgsCoordinateReferenceSystem( u"OGC:CRS84"_s );
   mTransform.setDestinationCrs( mDestinationCrs );
 }
 
@@ -80,18 +91,73 @@ QgsCoordinateReferenceSystem QgsJsonExporter::sourceCrs() const
   return mCrs;
 }
 
-QString QgsJsonExporter::exportFeature( const QgsFeature &feature, const QVariantMap &extraProperties,
-                                        const QVariant &id, int indent ) const
+QString QgsJsonExporter::exportFeature( const QgsFeature &feature, const QVariantMap &extraProperties, const QVariant &id, int indent, const QVariantMap &extraMembers ) const
 {
-  return QString::fromStdString( exportFeatureToJsonObject( feature, extraProperties, id ).dump( indent ) );
+  try
+  {
+    return QString::fromStdString( exportFeatureToJsonObject( feature, extraProperties, id, extraMembers ).dump( indent ) );
+  }
+  catch ( json::type_error &ex )
+  {
+    QgsLogger::warning( u"Cannot export feature to json: %1"_s.arg( ex.what() ) );
+    return QString();
+  }
+  catch ( json::other_error &ex )
+  {
+    QgsLogger::warning( u"Cannot export feature to json: %1"_s.arg( ex.what() ) );
+    return QString();
+  }
 }
 
-json QgsJsonExporter::exportFeatureToJsonObject( const QgsFeature &feature, const QVariantMap &extraProperties, const QVariant &id ) const
+json QgsJsonExporter::exportFeatureToJsonObject( const QgsFeature &feature, const QVariantMap &extraProperties, const QVariant &id, const QVariantMap &extraMembers ) const
 {
-  json featureJson
-  {
-    {  "type",  "Feature" },
+  // Required by RFC7946, but also needed for JSON-FG profiles if the source (or destination) CRS is not CRS84
+  QgsCoordinateTransform transformToCRS84 { mTransform };
+  transformToCRS84.setDestinationCrs( QgsCoordinateReferenceSystem( u"OGC:CRS84"_s ) );
+
+  const bool destinationCrsIsRfc7946Compliant = mDestinationCrs.authid() == "OGC:CRS84" || mDestinationCrs.authid() == "EPSG:4326" || mDestinationCrs.authid() == "CRS:84";
+  const bool sourceCrsIsRfc7946Compliant = ( mCrs.authid() == "OGC:CRS84" || mCrs.authid() == "CRS:84" || mCrs.authid() == "EPSG:4326" );
+  const bool requiresCRS84geom = mGeoJsonProfile == Qgis::GeoJsonProfile::Rfc7946 || mGeoJsonProfile == Qgis::GeoJsonProfile::JsonFgPlus;
+
+  QgsGeometry geom = feature.geometry();
+
+  const bool includeGeometryInformation { !geom.isNull() && mIncludeGeometry };
+  const Qgis::WkbType flatType = QgsWkbTypes::flatType( feature.geometry().wkbType() );
+  const bool featureHasM { QgsWkbTypes::hasM( geom.wkbType() ) };
+  const bool mainGeometryIsRfc7946Compliant {
+    !featureHasM
+    && destinationCrsIsRfc7946Compliant
+    && ( flatType == Qgis::WkbType::LineString || flatType == Qgis::WkbType::MultiLineString || flatType == Qgis::WkbType::Polygon || flatType == Qgis::WkbType::MultiPolygon || flatType == Qgis::WkbType::Point || flatType == Qgis::WkbType::MultiPoint || flatType == Qgis::WkbType::GeometryCollection )
   };
+
+  json featureJson {
+    { "type", "Feature" },
+  };
+
+  if ( !mOmitCollectionLevelInformation && ( mGeoJsonProfile == Qgis::GeoJsonProfile::JsonFgPlus || mGeoJsonProfile == Qgis::GeoJsonProfile::JsonFg ) )
+  {
+    featureJson["conformsTo"] = { "http://www.opengis.net/spec/json-fg-1/1.0/conf/core" };
+    if ( includeGeometryInformation )
+    {
+      if ( featureHasM )
+      {
+        featureJson["conformsTo"].push_back( "http://www.opengis.net/spec/json-fg-1/1.0/conf/measures" );
+        featureJson["measures"] = { { "enabled", true } };
+      }
+      QgsJsonUtils::addCrsInfo( featureJson, mDestinationCrs, mGeoJsonProfile );
+    }
+  }
+
+  //foreign members
+  if ( !extraMembers.isEmpty() )
+  {
+    QVariantMap::const_iterator it = extraMembers.constBegin();
+    for ( ; it != extraMembers.constEnd(); ++it )
+    {
+      featureJson[it.key().toStdString()] = QgsJsonUtils::jsonFromVariant( it.value() );
+    }
+  }
+
   if ( id.isValid() )
   {
     bool ok = false;
@@ -114,39 +180,150 @@ json QgsJsonExporter::exportFeatureToJsonObject( const QgsFeature &feature, cons
     featureJson["id"] = feature.id();
   }
 
-  QgsGeometry geom = feature.geometry();
-  if ( !geom.isNull() && mIncludeGeometry )
-  {
-    if ( mCrs.isValid() )
-    {
-      try
-      {
-        QgsGeometry transformed = geom;
-        if ( mTransformGeometries && transformed.transform( mTransform ) == Qgis::GeometryOperationResult::Success )
-          geom = transformed;
-      }
-      catch ( QgsCsException &cse )
-      {
-        Q_UNUSED( cse )
-      }
-    }
-    QgsRectangle box = geom.boundingBox();
+  // ////////////////////////////////////////
+  // Geometry handling
 
-    if ( QgsWkbTypes::flatType( geom.wkbType() ) != Qgis::WkbType::Point )
+  if ( includeGeometryInformation )
+  {
+    // If it is JSON-FG plus we need both CRS84 and the requested CRS
+    QgsGeometry transformedCRS84Geom = geom;
+    if ( mTransformGeometries )
     {
-      featureJson[ "bbox" ] =
+      if ( mCrs.isValid() && !sourceCrsIsRfc7946Compliant && ( requiresCRS84geom || destinationCrsIsRfc7946Compliant ) )
       {
-        qgsRound( box.xMinimum(), mPrecision ),
-        qgsRound( box.yMinimum(), mPrecision ),
-        qgsRound( box.xMaximum(), mPrecision ),
-        qgsRound( box.yMaximum(), mPrecision )
-      };
+        try
+        {
+          transformedCRS84Geom.transform( transformToCRS84 );
+        }
+        catch ( QgsCsException &cse )
+        {
+          Q_UNUSED( cse )
+        }
+      }
+      // Do we need to transform the main geometry to the destination CRS?
+      if ( mGeoJsonProfile != Qgis::GeoJsonProfile::Rfc7946 )
+      {
+        if ( destinationCrsIsRfc7946Compliant )
+        {
+          geom = transformedCRS84Geom;
+        }
+        else if ( mCrs.isValid() && mTransformGeometries )
+        {
+          try
+          {
+            geom.transform( mTransform );
+          }
+          catch ( QgsCsException &cse )
+          {
+            Q_UNUSED( cse )
+          }
+        }
+      }
     }
-    featureJson[ "geometry" ] = geom.asJsonObject( mPrecision );
+
+    std::function<void( json & )> invertCoords;
+    invertCoords = [&invertCoords]( json &geometry ) {
+      if ( geometry.contains( "coordinates" ) )
+      {
+        invertCoords( geometry["coordinates"] );
+      }
+      else if ( geometry.contains( "geometries" ) )
+      {
+        for ( json &geom : geometry["geometries"] )
+        {
+          invertCoords( geom );
+        }
+      }
+      else if ( geometry.is_array() && geometry.size() > 0 )
+      {
+        if ( geometry[0].is_array() )
+        {
+          for ( json &geom : geometry )
+          {
+            invertCoords( geom );
+          }
+        }
+        else
+        {
+          if ( geometry.size() >= 2 && geometry[0].is_number() && geometry[1].is_number() )
+          {
+            std::swap( geometry[0], geometry[1] );
+          }
+        }
+      }
+    };
+
+    auto addBbox = [&featureJson, &flatType, this]( const QgsGeometry &geometry ) {
+      if ( flatType == Qgis::WkbType::Point )
+      {
+        // For points, the bbox is just the coordinates of the point (or the points)
+        return;
+      }
+      auto bbox = geometry.boundingBox();
+      featureJson["bbox"]
+        = { qgsRound( bbox.xMinimum(), this->mPrecision ), qgsRound( bbox.yMinimum(), this->mPrecision ), qgsRound( bbox.xMaximum(), this->mPrecision ), qgsRound( bbox.yMaximum(), this->mPrecision ) };
+    };
+
+    switch ( mGeoJsonProfile )
+    {
+      case Qgis::GeoJsonProfile::Rfc7946:
+      {
+        featureJson["geometry"] = transformedCRS84Geom.asJsonObject( mPrecision, Qgis::GeoJsonProfile::Rfc7946 );
+        addBbox( transformedCRS84Geom );
+        break;
+      }
+      case Qgis::GeoJsonProfile::Legacy:
+      {
+        featureJson["geometry"] = geom.asJsonObject( mPrecision, Qgis::GeoJsonProfile::Rfc7946 );
+        addBbox( geom );
+        break;
+      }
+      case Qgis::GeoJsonProfile::JsonFgPlus:
+      {
+        // See: https://docs.ogc.org/is/21-045r1/21-045r1.html#_use_of_geometry_andor_place
+        // If the geometry is a valid GeoJSON geometry (that is, conformant to the GeoJSON RFC7946 specification),
+        // the geometry is encoded as the value of the "geometry" member. The "place" member then has the value null or is omitted.
+
+        // PLUS version: always add the fallback geometry as "geometry" member, so that the output is always compliant with RFC7946.
+        // If the geometry is not compliant with RFC7946 also add the original geometry as "place" member.
+        featureJson["geometry"] = transformedCRS84Geom.asJsonObject( mPrecision, Qgis::GeoJsonProfile::Rfc7946 );
+        addBbox( transformedCRS84Geom );
+        if ( !mainGeometryIsRfc7946Compliant )
+        {
+          json place = geom.asJsonObject( mPrecision, mGeoJsonProfile );
+          if ( mDestinationCrs.hasAxisInverted() )
+          {
+            invertCoords( place );
+          }
+          featureJson["place"] = place;
+        }
+        break;
+      }
+      case Qgis::GeoJsonProfile::JsonFg:
+      {
+        // See: https://docs.ogc.org/is/21-045r1/21-045r1.html#_use_of_geometry_andor_place
+        // Add "geometry" or "place" depending on whether the geometry is compliant with RFC7946 or not.
+        // In the latter case, the "geometry" member is omitted.
+        if ( !mainGeometryIsRfc7946Compliant )
+        {
+          json place = geom.asJsonObject( mPrecision, mGeoJsonProfile );
+          if ( mDestinationCrs.hasAxisInverted() )
+          {
+            invertCoords( place );
+          }
+          featureJson["place"] = place;
+        }
+        else
+        {
+          featureJson["geometry"] = geom.asJsonObject( mPrecision, mGeoJsonProfile );
+        }
+        break;
+      }
+    }
   }
   else
   {
-    featureJson[ "geometry"  ] = nullptr;
+    featureJson["geometry"] = nullptr;
   }
 
   // build up properties element
@@ -159,10 +336,7 @@ json QgsJsonExporter::exportFeatureToJsonObject( const QgsFeature &feature, cons
       QgsFields fields = mLayer ? mLayer->fields() : feature.fields();
       // List of formatters through we want to pass the values
       QStringList formattersAllowList;
-      formattersAllowList << QStringLiteral( "KeyValue" )
-                          << QStringLiteral( "List" )
-                          << QStringLiteral( "ValueRelation" )
-                          << QStringLiteral( "ValueMap" );
+      formattersAllowList << u"KeyValue"_s << u"List"_s << u"ValueRelation"_s << u"ValueMap"_s;
 
       for ( int i = 0; i < fields.count(); ++i )
       {
@@ -184,7 +358,7 @@ json QgsJsonExporter::exportFeatureToJsonObject( const QgsFeature &feature, cons
         {
           name = mLayer->attributeDisplayName( i );
         }
-        properties[ name.toStdString() ] = QgsJsonUtils::jsonFromVariant( val );
+        properties[name.toStdString()] = QgsJsonUtils::jsonFromVariant( val );
       }
     }
 
@@ -193,7 +367,7 @@ json QgsJsonExporter::exportFeatureToJsonObject( const QgsFeature &feature, cons
       QVariantMap::const_iterator it = extraProperties.constBegin();
       for ( ; it != extraProperties.constEnd(); ++it )
       {
-        properties[ it.key().toStdString() ] = QgsJsonUtils::jsonFromVariant( it.value() );
+        properties[it.key().toStdString()] = QgsJsonUtils::jsonFromVariant( it.value() );
       }
     }
 
@@ -226,11 +400,12 @@ json QgsJsonExporter::exportFeatureToJsonObject( const QgsFeature &feature, cons
             relatedFeatureAttributes += QgsJsonUtils::exportAttributesToJsonObject( relatedFet, childLayer, attributeWidgetCaches, mUseFieldFormatters );
           }
         }
-        properties[ relation.name().toStdString() ] = relatedFeatureAttributes;
+        properties[relation.name().toStdString()] = relatedFeatureAttributes;
       }
     }
   }
-  featureJson[ "properties" ] = properties;
+  featureJson["properties"] = properties;
+
   return featureJson;
 }
 
@@ -241,18 +416,55 @@ QString QgsJsonExporter::exportFeatures( const QgsFeatureList &features, int ind
 
 json QgsJsonExporter::exportFeaturesToJsonObject( const QgsFeatureList &features ) const
 {
-  json data
+  json data { { "type", "FeatureCollection" }, { "features", json::array() } };
+  const bool omitCollectionLevelInformation = mOmitCollectionLevelInformation;
+  mOmitCollectionLevelInformation = true;
+  switch ( mGeoJsonProfile )
   {
-    { "type", "FeatureCollection" },
-    { "features", json::array() }
-  };
-
-  QgsJsonUtils::addCrsInfo( data, mDestinationCrs );
-
-  for ( const QgsFeature &feature : std::as_const( features ) )
-  {
-    data["features"].push_back( exportFeatureToJsonObject( feature ) );
+    case Qgis::GeoJsonProfile::Legacy:
+    case Qgis::GeoJsonProfile::Rfc7946:
+    {
+      for ( const QgsFeature &feature : features )
+      {
+        data["features"].push_back( exportFeatureToJsonObject( feature ) );
+      }
+      break;
+    }
+    case Qgis::GeoJsonProfile::JsonFg:
+    case Qgis::GeoJsonProfile::JsonFgPlus:
+    {
+      json conformsTo = json::array( { { "http://www.opengis.net/spec/json-fg-1/1.0/conf/core" } } );
+      QgsJsonUtils::addCrsInfo( data, mDestinationCrs, mGeoJsonProfile );
+      bool hasCircularArcs = false;
+      bool hasMeasure = false;
+      for ( const QgsFeature &feature : features )
+      {
+        const QgsGeometry geom = feature.geometry();
+        const Qgis::WkbType flatType = QgsWkbTypes::flatType( geom.wkbType() );
+        if ( flatType == Qgis::WkbType::CircularString || flatType == Qgis::WkbType::CompoundCurve || flatType == Qgis::WkbType::CurvePolygon )
+        {
+          hasCircularArcs = true;
+        }
+        if ( QgsWkbTypes::hasM( feature.geometry().wkbType() ) )
+        {
+          hasMeasure = true;
+        }
+        data["features"].push_back( exportFeatureToJsonObject( feature ) );
+      }
+      if ( hasCircularArcs )
+      {
+        conformsTo.push_back( { "http://www.opengis.net/spec/json-fg-1/1.0/conf/circular-arcs" } );
+      }
+      if ( hasMeasure )
+      {
+        conformsTo.push_back( { "http://www.opengis.net/spec/json-fg-1/1.0/conf/measures" } );
+        data["measures"] = { { "enabled", true } };
+      }
+      data["conformsTo"] = conformsTo;
+      break;
+    }
   }
+  mOmitCollectionLevelInformation = omitCollectionLevelInformation;
   return data;
 }
 
@@ -260,6 +472,16 @@ void QgsJsonExporter::setDestinationCrs( const QgsCoordinateReferenceSystem &des
 {
   mDestinationCrs = destinationCrs;
   mTransform.setDestinationCrs( mDestinationCrs );
+}
+
+Qgis::GeoJsonProfile QgsJsonExporter::geoJsonProfile() const
+{
+  return mGeoJsonProfile;
+}
+
+void QgsJsonExporter::setGeoJsonProfile( Qgis::GeoJsonProfile profile )
+{
+  mGeoJsonProfile = profile;
 }
 
 //
@@ -285,7 +507,7 @@ QgsFields QgsJsonUtils::stringToFields( const QString &string, QTextCodec *encod
 QString QgsJsonUtils::encodeValue( const QVariant &value )
 {
   if ( QgsVariantUtils::isNull( value ) )
-    return QStringLiteral( "null" );
+    return u"null"_s;
 
   switch ( value.userType() )
   {
@@ -306,14 +528,8 @@ QString QgsJsonUtils::encodeValue( const QVariant &value )
 
     default:
     case QMetaType::Type::QString:
-      QString v = value.toString()
-                  .replace( '\\', QLatin1String( "\\\\" ) )
-                  .replace( '"', QLatin1String( "\\\"" ) )
-                  .replace( '\r', QLatin1String( "\\r" ) )
-                  .replace( '\b', QLatin1String( "\\b" ) )
-                  .replace( '\t', QLatin1String( "\\t" ) )
-                  .replace( '/', QLatin1String( "\\/" ) )
-                  .replace( '\n', QLatin1String( "\\n" ) );
+      QString v
+        = value.toString().replace( '\\', "\\\\"_L1 ).replace( '"', "\\\""_L1 ).replace( '\r', "\\r"_L1 ).replace( '\b', "\\b"_L1 ).replace( '\t', "\\t"_L1 ).replace( '/', "\\/"_L1 ).replace( '\n', "\\n"_L1 );
 
       return v.prepend( '"' ).append( '"' );
   }
@@ -326,7 +542,7 @@ QString QgsJsonUtils::exportAttributes( const QgsFeature &feature, QgsVectorLaye
   for ( int i = 0; i < fields.count(); ++i )
   {
     if ( i > 0 )
-      attrs += QLatin1String( ",\n" );
+      attrs += ",\n"_L1;
 
     QVariant val = feature.attributes().at( i );
 
@@ -350,9 +566,9 @@ QVariantList QgsJsonUtils::parseArray( const QString &json, QMetaType::Type type
   try
   {
     const auto jObj( json::parse( json.toStdString() ) );
-    if ( ! jObj.is_array() )
+    if ( !jObj.is_array() )
     {
-      throw json::parse_error::create( 0, 0, QStringLiteral( "JSON value must be an array" ).toStdString(), &jObj );
+      throw json::parse_error::create( 0, 0, u"JSON value must be an array"_s.toStdString(), &jObj );
     }
     for ( const auto &item : jObj )
     {
@@ -388,9 +604,9 @@ QVariantList QgsJsonUtils::parseArray( const QString &json, QMetaType::Type type
       // If a destination type was specified (it's not invalid), try to convert
       if ( type != QMetaType::Type::UnknownType )
       {
-        if ( ! v.convert( static_cast<int>( type ) ) )
+        if ( !v.convert( static_cast<int>( type ) ) )
         {
-          QgsLogger::warning( QStringLiteral( "Cannot convert json array element to specified type, ignoring: %1" ).arg( v.toString() ) );
+          QgsLogger::warning( u"Cannot convert json array element to specified type, ignoring: %1"_s.arg( v.toString() ) );
         }
         else
         {
@@ -406,7 +622,7 @@ QVariantList QgsJsonUtils::parseArray( const QString &json, QMetaType::Type type
   catch ( json::parse_error &ex )
   {
     errorMessage = ex.what();
-    QgsLogger::warning( QStringLiteral( "Cannot parse json (%1): %2" ).arg( ex.what(), json ) );
+    QgsLogger::warning( u"Cannot parse json (%1): %2"_s.arg( ex.what(), json ) );
   }
 
   return result;
@@ -417,11 +633,11 @@ QVariantList QgsJsonUtils::parseArray( const QString &json, QVariant::Type type 
   return parseArray( json, QgsVariantUtils::variantTypeToMetaType( type ) );
 }
 
-std::unique_ptr< QgsPoint> parsePointFromGeoJson( const json &coords )
+std::unique_ptr< QgsPoint> parsePointFromGeoJson( const json &coords, bool hasM = false )
 {
-  if ( !coords.is_array() || coords.size() < 2 || coords.size() > 3 )
+  if ( !coords.is_array() || coords.size() < 2 || coords.size() > 4 )
   {
-    QgsDebugError( QStringLiteral( "JSON Point geometry coordinates must be an array of two or three numbers" ) );
+    QgsDebugError( u"JSON Point geometry coordinates must be an array of two, three or four numbers"_s );
     return nullptr;
   }
 
@@ -431,53 +647,86 @@ std::unique_ptr< QgsPoint> parsePointFromGeoJson( const json &coords )
   {
     return std::make_unique< QgsPoint >( x, y );
   }
+  else if ( coords.size() == 3 )
+  {
+    const double zOrM = coords[2].get< double >();
+    if ( hasM )
+      return std::make_unique< QgsPoint >( x, y, std::numeric_limits<double>::quiet_NaN(), zOrM );
+    else
+      return std::make_unique< QgsPoint >( x, y, zOrM );
+  }
   else
   {
     const double z = coords[2].get< double >();
-    return std::make_unique< QgsPoint >( x, y, z );
+    const double m = coords[3].get< double >();
+    return std::make_unique< QgsPoint >( x, y, z, m );
   }
 }
 
-std::unique_ptr< QgsLineString> parseLineStringFromGeoJson( const json &coords )
+std::unique_ptr< QgsLineString> parseLineStringFromGeoJson( const json &coords, bool hasM = false )
 {
-  if ( !coords.is_array() || coords.size() < 2 )
+  if ( !coords.is_array() )
   {
-    QgsDebugError( QStringLiteral( "JSON LineString geometry coordinates must be an array of at least two points" ) );
+    QgsDebugError( u"JSON LineString geometry coordinates must be an array"_s );
     return nullptr;
   }
 
   const std::size_t coordsSize = coords.size();
 
+  if ( coordsSize == 0 )
+  {
+    // Empty LineString is valid, return an empty geometry
+    return std::make_unique< QgsLineString >();
+  }
+
+  if ( coordsSize < 2 )
+  {
+    QgsDebugError( u"JSON LineString geometry coordinates must contain at least two positions"_s );
+    return nullptr;
+  }
+
   QVector< double > x;
   QVector< double > y;
   QVector< double > z;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  x.resize( static_cast< int >( coordsSize ) );
-  y.resize( static_cast< int >( coordsSize ) );
-  z.resize( static_cast< int >( coordsSize ) );
-#else
+  QVector< double > m;
   x.resize( coordsSize );
   y.resize( coordsSize );
   z.resize( coordsSize );
-#endif
+  m.resize( coordsSize );
+
   double *xOut = x.data();
   double *yOut = y.data();
   double *zOut = z.data();
+  double *mOut = m.data();
   bool hasZ = false;
   for ( const auto &coord : coords )
   {
-    if ( !coord.is_array() || coord.size() < 2 || coord.size() > 3 )
+    if ( !coord.is_array() || coord.size() < 2 || coord.size() > 4 )
     {
-      QgsDebugError( QStringLiteral( "JSON LineString geometry coordinates must be an array of two or three numbers" ) );
+      QgsDebugError( u"JSON LineString geometry coordinates must be an array of two, three or four numbers"_s );
       return nullptr;
     }
 
     *xOut++ = coord[0].get< double >();
     *yOut++ = coord[1].get< double >();
-    if ( coord.size() == 3 )
+    if ( coord.size() == 4 )
     {
       *zOut++ = coord[2].get< double >();
-      hasZ = true;
+      *mOut++ = coord[3].get< double >();
+    }
+    else if ( coord.size() == 3 )
+    {
+      if ( hasM )
+      {
+        *mOut++ = coord[2].get< double >();
+        *zOut++ = std::numeric_limits< double >::quiet_NaN();
+      }
+      else
+      {
+        *zOut++ = coord[2].get< double >();
+        *mOut++ = std::numeric_limits< double >::quiet_NaN();
+        hasZ = true;
+      }
     }
     else
     {
@@ -485,19 +734,25 @@ std::unique_ptr< QgsLineString> parseLineStringFromGeoJson( const json &coords )
     }
   }
 
-  return std::make_unique< QgsLineString >( x, y, hasZ ? z : QVector<double>() );
+  return std::make_unique< QgsLineString >( x, y, hasZ ? z : QVector<double>(), hasM ? m : QVector<double>() );
 }
 
-std::unique_ptr< QgsPolygon > parsePolygonFromGeoJson( const json &coords )
+std::unique_ptr< QgsPolygon > parsePolygonFromGeoJson( const json &coords, bool hasM = false )
 {
-  if ( !coords.is_array() || coords.size() < 1 )
+  if ( !coords.is_array() )
   {
-    QgsDebugError( QStringLiteral( "JSON Polygon geometry coordinates must be an array" ) );
+    QgsDebugError( u"JSON Polygon geometry coordinates must be an array"_s );
     return nullptr;
   }
 
+  if ( coords.empty() )
+  {
+    // Empty polygon
+    return std::make_unique< QgsPolygon >();
+  }
+
   const std::size_t coordsSize = coords.size();
-  std::unique_ptr< QgsLineString > exterior = parseLineStringFromGeoJson( coords[0] );
+  std::unique_ptr< QgsLineString > exterior = parseLineStringFromGeoJson( coords[0], hasM );
   if ( !exterior )
   {
     return nullptr;
@@ -506,7 +761,7 @@ std::unique_ptr< QgsPolygon > parsePolygonFromGeoJson( const json &coords )
   auto polygon = std::make_unique< QgsPolygon >( exterior.release() );
   for ( std::size_t i = 1; i < coordsSize; ++i )
   {
-    std::unique_ptr< QgsLineString > ring = parseLineStringFromGeoJson( coords[i] );
+    std::unique_ptr< QgsLineString > ring = parseLineStringFromGeoJson( coords[i], hasM );
     if ( !ring )
     {
       return nullptr;
@@ -516,37 +771,39 @@ std::unique_ptr< QgsPolygon > parsePolygonFromGeoJson( const json &coords )
   return polygon;
 }
 
-std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geometry )
+std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geometry, bool hasMIn = false )
 {
+  const auto hasM = hasMIn || ( geometry.contains( "measures" ) && geometry["measures"].contains( "enabled" ) && geometry["measures"]["enabled"].get<bool>() );
+
   if ( !geometry.is_object() )
   {
-    QgsDebugError( QStringLiteral( "JSON geometry value must be an object" ) );
+    QgsDebugError( u"JSON geometry value must be an object"_s );
     return nullptr;
   }
 
   if ( !geometry.contains( "type" ) )
   {
-    QgsDebugError( QStringLiteral( "JSON geometry must contain 'type'" ) );
+    QgsDebugError( u"JSON geometry must contain 'type'"_s );
     return nullptr;
   }
 
   const QString type = QString::fromStdString( geometry["type"].get< std::string >() );
-  if ( type.compare( QLatin1String( "Point" ), Qt::CaseInsensitive ) == 0 )
+  if ( type.compare( "Point"_L1, Qt::CaseInsensitive ) == 0 )
   {
     if ( !geometry.contains( "coordinates" ) )
     {
-      QgsDebugError( QStringLiteral( "JSON Point geometry must contain 'coordinates'" ) );
+      QgsDebugError( u"JSON Point geometry must contain 'coordinates'"_s );
       return nullptr;
     }
 
     const json &coords = geometry["coordinates"];
-    return parsePointFromGeoJson( coords );
+    return parsePointFromGeoJson( coords, hasM );
   }
-  else if ( type.compare( QLatin1String( "MultiPoint" ), Qt::CaseInsensitive ) == 0 )
+  else if ( type.compare( "MultiPoint"_L1, Qt::CaseInsensitive ) == 0 )
   {
     if ( !geometry.contains( "coordinates" ) )
     {
-      QgsDebugError( QStringLiteral( "JSON MultiPoint geometry must contain 'coordinates'" ) );
+      QgsDebugError( u"JSON MultiPoint geometry must contain 'coordinates'"_s );
       return nullptr;
     }
 
@@ -554,7 +811,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
 
     if ( !coords.is_array() )
     {
-      QgsDebugError( QStringLiteral( "JSON MultiPoint geometry coordinates must be an array" ) );
+      QgsDebugError( u"JSON MultiPoint geometry coordinates must be an array"_s );
       return nullptr;
     }
 
@@ -562,7 +819,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
     multiPoint->reserve( static_cast< int >( coords.size() ) );
     for ( const auto &pointCoords : coords )
     {
-      std::unique_ptr< QgsPoint > point = parsePointFromGeoJson( pointCoords );
+      std::unique_ptr< QgsPoint > point = parsePointFromGeoJson( pointCoords, hasM );
       if ( !point )
       {
         return nullptr;
@@ -572,22 +829,22 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
 
     return multiPoint;
   }
-  else if ( type.compare( QLatin1String( "LineString" ), Qt::CaseInsensitive ) == 0 )
+  else if ( type.compare( "LineString"_L1, Qt::CaseInsensitive ) == 0 )
   {
     if ( !geometry.contains( "coordinates" ) )
     {
-      QgsDebugError( QStringLiteral( "JSON LineString geometry must contain 'coordinates'" ) );
+      QgsDebugError( u"JSON LineString geometry must contain 'coordinates'"_s );
       return nullptr;
     }
 
     const json &coords = geometry["coordinates"];
-    return parseLineStringFromGeoJson( coords );
+    return parseLineStringFromGeoJson( coords, hasM );
   }
-  else if ( type.compare( QLatin1String( "MultiLineString" ), Qt::CaseInsensitive ) == 0 )
+  else if ( type.compare( "MultiLineString"_L1, Qt::CaseInsensitive ) == 0 )
   {
     if ( !geometry.contains( "coordinates" ) )
     {
-      QgsDebugError( QStringLiteral( "JSON MultiLineString geometry must contain 'coordinates'" ) );
+      QgsDebugError( u"JSON MultiLineString geometry must contain 'coordinates'"_s );
       return nullptr;
     }
 
@@ -595,7 +852,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
 
     if ( !coords.is_array() )
     {
-      QgsDebugError( QStringLiteral( "JSON MultiLineString geometry coordinates must be an array" ) );
+      QgsDebugError( u"JSON MultiLineString geometry coordinates must be an array"_s );
       return nullptr;
     }
 
@@ -603,7 +860,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
     multiLineString->reserve( static_cast< int >( coords.size() ) );
     for ( const auto &lineCoords : coords )
     {
-      std::unique_ptr< QgsLineString > line = parseLineStringFromGeoJson( lineCoords );
+      std::unique_ptr< QgsLineString > line = parseLineStringFromGeoJson( lineCoords, hasM );
       if ( !line )
       {
         return nullptr;
@@ -613,28 +870,28 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
 
     return multiLineString;
   }
-  else if ( type.compare( QLatin1String( "Polygon" ), Qt::CaseInsensitive ) == 0 )
+  else if ( type.compare( "Polygon"_L1, Qt::CaseInsensitive ) == 0 )
   {
     if ( !geometry.contains( "coordinates" ) )
     {
-      QgsDebugError( QStringLiteral( "JSON Polygon geometry must contain 'coordinates'" ) );
+      QgsDebugError( u"JSON Polygon geometry must contain 'coordinates'"_s );
       return nullptr;
     }
 
     const json &coords = geometry["coordinates"];
-    if ( !coords.is_array() || coords.size() < 1 )
+    if ( !coords.is_array() )
     {
-      QgsDebugError( QStringLiteral( "JSON Polygon geometry coordinates must be an array of at least one ring" ) );
+      QgsDebugError( u"JSON Polygon geometry coordinates must be an array"_s );
       return nullptr;
     }
 
     return parsePolygonFromGeoJson( coords );
   }
-  else if ( type.compare( QLatin1String( "MultiPolygon" ), Qt::CaseInsensitive ) == 0 )
+  else if ( type.compare( "MultiPolygon"_L1, Qt::CaseInsensitive ) == 0 )
   {
     if ( !geometry.contains( "coordinates" ) )
     {
-      QgsDebugError( QStringLiteral( "JSON MultiPolygon geometry must contain 'coordinates'" ) );
+      QgsDebugError( u"JSON MultiPolygon geometry must contain 'coordinates'"_s );
       return nullptr;
     }
 
@@ -642,7 +899,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
 
     if ( !coords.is_array() )
     {
-      QgsDebugError( QStringLiteral( "JSON MultiPolygon geometry coordinates must be an array" ) );
+      QgsDebugError( u"JSON MultiPolygon geometry coordinates must be an array"_s );
       return nullptr;
     }
 
@@ -660,11 +917,197 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
 
     return multiPolygon;
   }
-  else if ( type.compare( QLatin1String( "GeometryCollection" ), Qt::CaseInsensitive ) == 0 )
+  // //////////////////////////////////////////////////////////////////////////////////////////////
+  // Handle JSON-FG types CircularString, CompoundCurve, CurvePolygon, MultiCurve, or MultiSurface.
+  else if ( type.compare( "CircularString"_L1, Qt::CaseInsensitive ) == 0 )
+  {
+    if ( !geometry.contains( "coordinates" ) )
+    {
+      QgsDebugError( u"JSON CircularString geometry must contain 'coordinates'"_s );
+      return nullptr;
+    }
+
+    const json &coords = geometry["coordinates"];
+
+    if ( coords.empty() )
+    {
+      return std::make_unique< QgsCircularString >();
+    }
+
+    if ( !coords.is_array() || coords.size() % 2 == 0 || coords.size() < 3 )
+    {
+      QgsDebugError( u"JSON CircularString geometry coordinates must be an array of at least 3 coordinates and the total number must be an odd number"_s );
+      return nullptr;
+    }
+
+    const bool hasZ = coords[0].is_array() && ( coords[0].size() > 3 || ( coords[0].size() == 3 && !hasM ) );
+
+    QVector<double> x;
+    x.reserve( coords.size() );
+    QVector<double> y;
+    y.reserve( coords.size() );
+    QVector<double> z;
+    if ( hasZ )
+      z.reserve( coords.size() );
+    QVector<double> m;
+    if ( hasM )
+      m.reserve( coords.size() );
+
+    for ( const auto &pointCoords : coords )
+    {
+      std::unique_ptr< QgsPoint > point = parsePointFromGeoJson( pointCoords, hasM );
+      if ( !point )
+      {
+        QgsDebugError( u"Invalid point in CircularString geometry"_s );
+        return nullptr;
+      }
+      x.append( point->x() );
+      y.append( point->y() );
+      if ( hasZ )
+        z.append( point->z() );
+      if ( hasM )
+        m.append( point->m() );
+    }
+    return std::make_unique< QgsCircularString >( x, y, z, m );
+  }
+  else if ( type.compare( "CompoundCurve"_L1, Qt::CaseInsensitive ) == 0 )
   {
     if ( !geometry.contains( "geometries" ) )
     {
-      QgsDebugError( QStringLiteral( "JSON GeometryCollection geometry must contain 'geometries'" ) );
+      QgsDebugError( u"JSON CompoundCurve geometry must contain 'geometries'"_s );
+      return nullptr;
+    }
+    const json &geometries = geometry["geometries"];
+    if ( !geometries.is_array() )
+    {
+      QgsDebugError( u"JSON CompoundCurve geometry geometries must be an array"_s );
+      return nullptr;
+    }
+    auto compoundCurve = std::make_unique< QgsCompoundCurve >();
+    for ( const auto &geometry : geometries )
+    {
+      std::unique_ptr< QgsAbstractGeometry > object = parseGeometryFromGeoJson( geometry, hasM );
+      if ( !object )
+      {
+        return nullptr;
+      }
+      const Qgis::WkbType flatType = QgsWkbTypes::flatType( object->wkbType() );
+      if ( flatType != Qgis::WkbType::LineString && flatType != Qgis::WkbType::CircularString )
+      {
+        QgsDebugError( u"JSON CompoundCurve geometries must be of type LineString or CircularString"_s );
+        return nullptr;
+      }
+      compoundCurve->addCurve( static_cast< QgsCurve * >( object.release() ) );
+    }
+    return compoundCurve;
+  }
+  else if ( type.compare( "CurvePolygon"_L1, Qt::CaseInsensitive ) == 0 )
+  {
+    if ( !geometry.contains( "geometries" ) )
+    {
+      QgsDebugError( u"JSON CurvePolygon geometry must contain 'geometries'"_s );
+      return nullptr;
+    }
+    const json &geometries = geometry["geometries"];
+    if ( !geometries.is_array() )
+    {
+      QgsDebugError( u"JSON CurvePolygon geometries must be an array"_s );
+      return nullptr;
+    }
+    auto curvePolygon = std::make_unique< QgsCurvePolygon>();
+    bool isExterior = true;
+    for ( const auto &geometry : geometries )
+    {
+      std::unique_ptr< QgsAbstractGeometry > object = parseGeometryFromGeoJson( geometry, hasM );
+      if ( !object )
+      {
+        return nullptr;
+      }
+      const Qgis::WkbType flatType = QgsWkbTypes::flatType( object->wkbType() );
+      if ( flatType != Qgis::WkbType::LineString && flatType != Qgis::WkbType::CircularString && flatType != Qgis::WkbType::CompoundCurve )
+      {
+        QgsDebugError( u"JSON CurvePolygon geometries must be of type LineString, CircularString or CompoundCurve"_s );
+        return nullptr;
+      }
+      if ( isExterior )
+      {
+        curvePolygon->setExteriorRing( static_cast< QgsCurve * >( object.release() ) );
+        isExterior = false;
+      }
+      else
+      {
+        curvePolygon->addInteriorRing( static_cast< QgsCurve * >( object.release() ) );
+      }
+    }
+    return curvePolygon;
+  }
+  else if ( type.compare( "MultiCurve"_L1, Qt::CaseInsensitive ) == 0 )
+  {
+    if ( !geometry.contains( "geometries" ) )
+    {
+      QgsDebugError( u"JSON MultiCurve geometry must contain 'geometries'"_s );
+      return nullptr;
+    }
+    const json &geometries = geometry["geometries"];
+    if ( !geometries.is_array() )
+    {
+      QgsDebugError( u"JSON MultiCurve geometries must be an array"_s );
+      return nullptr;
+    }
+    auto multiCurve = std::make_unique< QgsMultiCurve>();
+    for ( const auto &geometry : geometries )
+    {
+      std::unique_ptr< QgsAbstractGeometry > object = parseGeometryFromGeoJson( geometry, hasM );
+      if ( !object )
+      {
+        return nullptr;
+      }
+      const Qgis::WkbType flatType = QgsWkbTypes::flatType( object->wkbType() );
+      if ( flatType != Qgis::WkbType::LineString && flatType != Qgis::WkbType::CircularString && flatType != Qgis::WkbType::CompoundCurve )
+      {
+        QgsDebugError( u"JSON MultiCurve geometries must be of type LineString, CircularString or CompoundCurve"_s );
+        return nullptr;
+      }
+      multiCurve->addGeometry( static_cast< QgsCurve * >( object.release() ) );
+    }
+    return multiCurve;
+  }
+  else if ( type.compare( "MultiSurface"_L1, Qt::CaseInsensitive ) == 0 )
+  {
+    if ( !geometry.contains( "geometries" ) )
+    {
+      QgsDebugError( u"JSON MultiSurface geometry must contain 'geometries'"_s );
+      return nullptr;
+    }
+    const json &geometries = geometry["geometries"];
+    if ( !geometries.is_array() )
+    {
+      QgsDebugError( u"JSON MultiSurface geometries must be an array"_s );
+      return nullptr;
+    }
+    auto multiSurface = std::make_unique< QgsMultiSurface >();
+    for ( const auto &geometry : geometries )
+    {
+      std::unique_ptr< QgsAbstractGeometry > object = parseGeometryFromGeoJson( geometry, hasM );
+      if ( !object )
+      {
+        return nullptr;
+      }
+      const Qgis::WkbType flatType = QgsWkbTypes::flatType( object->wkbType() );
+      if ( flatType != Qgis::WkbType::Polygon && flatType != Qgis::WkbType::CurvePolygon )
+      {
+        QgsDebugError( u"JSON MultiSurface geometries must be of type Polygon or CurvePolygon"_s );
+        return nullptr;
+      }
+      multiSurface->addGeometry( static_cast< QgsSurface * >( object.release() ) );
+    }
+    return multiSurface;
+  }
+  else if ( type.compare( "GeometryCollection"_L1, Qt::CaseInsensitive ) == 0 )
+  {
+    if ( !geometry.contains( "geometries" ) )
+    {
+      QgsDebugError( u"JSON GeometryCollection geometry must contain 'geometries'"_s );
       return nullptr;
     }
 
@@ -672,7 +1115,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
 
     if ( !geometries.is_array() )
     {
-      QgsDebugError( QStringLiteral( "JSON GeometryCollection geometries must be an array" ) );
+      QgsDebugError( u"JSON GeometryCollection geometries must be an array"_s );
       return nullptr;
     }
 
@@ -680,7 +1123,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
     collection->reserve( static_cast< int >( geometries.size() ) );
     for ( const auto &geometry : geometries )
     {
-      std::unique_ptr< QgsAbstractGeometry > object = parseGeometryFromGeoJson( geometry );
+      std::unique_ptr< QgsAbstractGeometry > object = parseGeometryFromGeoJson( geometry, hasM );
       if ( !object )
       {
         return nullptr;
@@ -691,7 +1134,7 @@ std::unique_ptr< QgsAbstractGeometry > parseGeometryFromGeoJson( const json &geo
     return collection;
   }
 
-  QgsDebugError( QStringLiteral( "Unhandled GeoJSON geometry type: %1" ).arg( type ) );
+  QgsDebugError( u"Unhandled GeoJSON geometry type: %1"_s.arg( type ) );
   return nullptr;
 }
 
@@ -699,7 +1142,7 @@ QgsGeometry QgsJsonUtils::geometryFromGeoJson( const json &geometry )
 {
   if ( !geometry.is_object() )
   {
-    QgsDebugError( QStringLiteral( "JSON geometry value must be an object" ) );
+    QgsDebugError( u"JSON geometry value must be an object"_s );
     return QgsGeometry();
   }
 
@@ -715,9 +1158,14 @@ QgsGeometry QgsJsonUtils::geometryFromGeoJson( const QString &geometry )
   }
   catch ( json::parse_error &ex )
   {
-    QgsDebugError( QStringLiteral( "Cannot parse json (%1): %2" ).arg( geometry, ex.what() ) );
+    QgsDebugError( u"Cannot parse json (%1): %2"_s.arg( geometry, ex.what() ) );
     return QgsGeometry();
   }
+}
+
+QVariant QgsJsonUtils::geometryToGeoJsonVariant( const QgsGeometry &geometry )
+{
+  return jsonToVariant( geometry.asJsonObject() );
 }
 
 json QgsJsonUtils::jsonFromVariant( const QVariant &val )
@@ -733,7 +1181,7 @@ json QgsJsonUtils::jsonFromVariant( const QVariant &val )
     json jMap = json::object();
     for ( auto it = vMap.constBegin(); it != vMap.constEnd(); it++ )
     {
-      jMap[ it.key().toStdString() ] = jsonFromVariant( it.value() );
+      jMap[it.key().toStdString()] = jsonFromVariant( it.value() );
     }
     j = jMap;
   }
@@ -782,8 +1230,7 @@ QVariant QgsJsonUtils::parseJson( const std::string &jsonString )
 
   if ( !error.isEmpty() )
   {
-    QgsLogger::warning( QStringLiteral( "Cannot parse json (%1): %2" ).arg( error,
-                        QString::fromStdString( jsonString ) ) );
+    QgsLogger::warning( u"Cannot parse json (%1): %2"_s.arg( error, QString::fromStdString( jsonString ) ) );
   }
   return res;
 }
@@ -800,6 +1247,10 @@ QVariant QgsJsonUtils::parseJson( const std::string &jsonString, QString &error 
   {
     error = QString::fromStdString( ex.what() );
   }
+  catch ( json::type_error &ex )
+  {
+    error = QString::fromStdString( ex.what() );
+  }
   return QVariant();
 }
 
@@ -808,91 +1259,90 @@ QVariant QgsJsonUtils::jsonToVariant( const json &value )
   // tracks whether entire json string is a primitive
   bool isPrimitive = true;
 
-  std::function<QVariant( json )> _parser { [ & ]( json jObj ) -> QVariant {
-      QVariant result;
-      if ( jObj.is_array() )
+  std::function<QVariant( json )> _parser { [&]( json jObj ) -> QVariant {
+    QVariant result;
+    if ( jObj.is_array() )
+    {
+      isPrimitive = false;
+      QVariantList results;
+      results.reserve( jObj.size() );
+      for ( const auto &item : jObj )
       {
-        isPrimitive = false;
-        QVariantList results;
-        results.reserve( jObj.size() );
-        for ( const auto &item : jObj )
-        {
-          results.push_back( _parser( item ) );
-        }
-        result = results;
+        results.push_back( _parser( item ) );
       }
-      else if ( jObj.is_object() )
-      {
-        isPrimitive = false;
-        QVariantMap results;
-        for ( const auto  &item : jObj.items() )
-        {
-          const auto key { QString::fromStdString( item.key() ) };
-          const auto value {  _parser( item.value() ) };
-          results[ key ] = value;
-        }
-        result = results;
-      }
-      else
-      {
-        if ( jObj.is_number_unsigned() )
-        {
-          // Try signed int and long long first, fall back
-          // onto unsigned long long
-          const qulonglong num { jObj.get<qulonglong>() };
-          if ( num <= std::numeric_limits<int>::max() )
-          {
-            result = static_cast<int>( num );
-          }
-          else if ( num <= std::numeric_limits<qlonglong>::max() )
-          {
-            result = static_cast<qlonglong>( num );
-          }
-          else
-          {
-            result = num;
-          }
-        }
-        else if ( jObj.is_number_integer() )
-        {
-          const qlonglong num { jObj.get<qlonglong>() };
-          if ( num <= std::numeric_limits<int>::max() && num >= std::numeric_limits<int>::lowest() )
-          {
-            result = static_cast<int>( num );
-          }
-          else
-          {
-            result = num;
-          }
-        }
-        else if ( jObj.is_boolean() )
-        {
-          result = jObj.get<bool>();
-        }
-        else if ( jObj.is_number_float() )
-        {
-          // Note: it's a double and not a float on purpose
-          result = jObj.get<double>();
-        }
-        else if ( jObj.is_string() )
-        {
-          if ( isPrimitive && jObj.get<std::string>().length() == 0 )
-          {
-            result = QString::fromStdString( jObj.get<std::string>() ).append( "\"" ).insert( 0, "\"" );
-          }
-          else
-          {
-            result = QString::fromStdString( jObj.get<std::string>() );
-          }
-        }
-        else if ( jObj.is_null() )
-        {
-          // Do nothing (leave invalid)
-        }
-      }
-      return result;
+      result = results;
     }
-  };
+    else if ( jObj.is_object() )
+    {
+      isPrimitive = false;
+      QVariantMap results;
+      for ( const auto &item : jObj.items() )
+      {
+        const auto key { QString::fromStdString( item.key() ) };
+        const auto value { _parser( item.value() ) };
+        results[key] = value;
+      }
+      result = results;
+    }
+    else
+    {
+      if ( jObj.is_number_unsigned() )
+      {
+        // Try signed int and long long first, fall back
+        // onto unsigned long long
+        const qulonglong num { jObj.get<qulonglong>() };
+        if ( num <= std::numeric_limits<int>::max() )
+        {
+          result = static_cast<int>( num );
+        }
+        else if ( num <= std::numeric_limits<qlonglong>::max() )
+        {
+          result = static_cast<qlonglong>( num );
+        }
+        else
+        {
+          result = num;
+        }
+      }
+      else if ( jObj.is_number_integer() )
+      {
+        const qlonglong num { jObj.get<qlonglong>() };
+        if ( num <= std::numeric_limits<int>::max() && num >= std::numeric_limits<int>::lowest() )
+        {
+          result = static_cast<int>( num );
+        }
+        else
+        {
+          result = num;
+        }
+      }
+      else if ( jObj.is_boolean() )
+      {
+        result = jObj.get<bool>();
+      }
+      else if ( jObj.is_number_float() )
+      {
+        // Note: it's a double and not a float on purpose
+        result = jObj.get<double>();
+      }
+      else if ( jObj.is_string() )
+      {
+        if ( isPrimitive && jObj.get<std::string>().length() == 0 )
+        {
+          result = QString::fromStdString( jObj.get<std::string>() ).append( "\"" ).insert( 0, "\"" );
+        }
+        else
+        {
+          result = QString::fromStdString( jObj.get<std::string>() );
+        }
+      }
+      else if ( jObj.is_null() )
+      {
+        // Do nothing (leave invalid)
+      }
+    }
+    return result;
+  } };
 
   return _parser( value );
 }
@@ -922,13 +1372,31 @@ json QgsJsonUtils::exportAttributesToJsonObject( const QgsFeature &feature, QgsV
   return attrs;
 }
 
-void QgsJsonUtils::addCrsInfo( json &value, const QgsCoordinateReferenceSystem &crs )
+void QgsJsonUtils::addCrsInfo( json &value, const QgsCoordinateReferenceSystem &crs, Qgis::GeoJsonProfile profile )
 {
-  // When user request EPSG:4326 we return a compliant CRS84 lon/lat GeoJSON
-  // so no need to add CRS information
-  if ( crs.authid() == "OGC:CRS84" || crs.authid() == "EPSG:4326" )
+  if ( !crs.isValid() )
     return;
 
-  value["crs"]["type"] = "name";
-  value["crs"]["properties"]["name"] = crs.toOgcUrn().toStdString();
+  if ( crs.authid() == "EPSG:4326" || crs.authid() == "CRS:84" || crs.authid() == "OGC:CRS84" )
+  {
+    // per spec, default is WGS84, so no need to add anything
+    return;
+  }
+
+  switch ( profile )
+  {
+    case Qgis::GeoJsonProfile::Legacy:
+    case Qgis::GeoJsonProfile::Rfc7946:
+    {
+      value["crs"]["type"] = "name";
+      value["crs"]["properties"]["name"] = crs.toOgcUrn().toStdString();
+      break;
+    }
+    case Qgis::GeoJsonProfile::JsonFg:
+    case Qgis::GeoJsonProfile::JsonFgPlus:
+    {
+      value["coordRefSys"] = crs.toOgcUri().toStdString();
+      break;
+    }
+  }
 }

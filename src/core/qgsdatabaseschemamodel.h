@@ -16,13 +16,14 @@
 #ifndef QGSDATABASESCHEMAMODEL_H
 #define QGSDATABASESCHEMAMODEL_H
 
-#include <QAbstractItemModel>
-#include <QSortFilterProxyModel>
-#include <QStringList>
 #include <memory>
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
+
+#include <QAbstractItemModel>
+#include <QSortFilterProxyModel>
+#include <QStringList>
 
 class QgsProviderMetadata;
 class QgsAbstractDatabaseProviderConnection;
@@ -44,7 +45,6 @@ class CORE_EXPORT QgsDatabaseSchemaModel : public QAbstractItemModel
     Q_OBJECT
 
   public:
-
     // *INDENT-OFF*
 
     /**
@@ -55,7 +55,7 @@ class CORE_EXPORT QgsDatabaseSchemaModel : public QAbstractItemModel
      */
     enum class CustomRole SIP_MONKEYPATCH_SCOPEENUM_UNNEST( QgsDatabaseSchemaModel, Role ) : int
     {
-      Empty SIP_MONKEYPATCH_COMPAT_NAME(RoleEmpty) = Qt::UserRole, //!< Entry is an empty entry
+      Empty SIP_MONKEYPATCH_COMPAT_NAME( RoleEmpty ) = Qt::UserRole, //!< Entry is an empty entry
     };
     Q_ENUM( CustomRole )
     // *INDENT-ON*

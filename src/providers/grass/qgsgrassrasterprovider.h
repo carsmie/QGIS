@@ -20,11 +20,11 @@
 #ifndef QGSGRASSRASTERPROVIDER_H
 #define QGSGRASSRASTERPROVIDER_H
 
+#include "qgis_grass_lib.h"
+#include "qgscolorrampshader.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgsrasterdataprovider.h"
 #include "qgsrectangle.h"
-#include "qgscolorrampshader.h"
-#include "qgis_grass_lib.h"
 
 extern "C"
 {
@@ -184,7 +184,9 @@ class GRASS_LIB_EXPORT QgsGrassRasterProvider : public QgsRasterDataProvider
     bool readBlock( int bandNo, int xBlock, int yBlock, void *data ) override;
     bool readBlock( int bandNo, QgsRectangle const &viewExtent, int width, int height, void *data, QgsRasterBlockFeedback *feedback = nullptr ) override;
 
-    QgsRasterBandStats bandStatistics( int bandNo, Qgis::RasterBandStatistics stats = Qgis::RasterBandStatistic::All, const QgsRectangle &boundingBox = QgsRectangle(), int sampleSize = 0, QgsRasterBlockFeedback *feedback = nullptr ) override;
+    QgsRasterBandStats bandStatistics(
+      int bandNo, Qgis::RasterBandStatistics stats = Qgis::RasterBandStatistic::All, const QgsRectangle &boundingBox = QgsRectangle(), int sampleSize = 0, QgsRasterBlockFeedback *feedback = nullptr
+    ) override;
 
     QList<QgsColorRampShader::ColorRampItem> colorTable( int bandNo ) const override;
 

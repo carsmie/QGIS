@@ -15,8 +15,8 @@
 #ifndef QGSNULLSYMBOLRENDERER_H
 #define QGSNULLSYMBOLRENDERER_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsrenderer.h"
 
 class QgsSymbol;
@@ -32,9 +32,8 @@ class QgsSymbol;
 class CORE_EXPORT QgsNullSymbolRenderer : public QgsFeatureRenderer
 {
   public:
-
     QgsNullSymbolRenderer();
-    ~QgsNullSymbolRenderer();
+    ~QgsNullSymbolRenderer() override;
 
     QgsSymbol *symbolForFeature( const QgsFeature &feature, QgsRenderContext &context ) const override;
     QgsSymbol *originalSymbolForFeature( const QgsFeature &feature, QgsRenderContext &context ) const override;
@@ -66,10 +65,8 @@ class CORE_EXPORT QgsNullSymbolRenderer : public QgsFeatureRenderer
     static QgsNullSymbolRenderer *convertFromRenderer( const QgsFeatureRenderer *renderer ) SIP_FACTORY;
 
   private:
-
     //! Symbol to use for rendering selected features
     std::unique_ptr<QgsSymbol> mSymbol;
-
 };
 
 #endif // QGSNULLSYMBOLRENDERER_H

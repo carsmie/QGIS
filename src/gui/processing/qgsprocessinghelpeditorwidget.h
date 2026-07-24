@@ -16,18 +16,19 @@
 #ifndef QGSPROCESSINGHELPEDITORWIDGET_H
 #define QGSPROCESSINGHELPEDITORWIDGET_H
 
-#include "qgis.h"
-#include "qgis_gui.h"
 #include "ui_qgsprocessinghelpeditorwidgetbase.h"
 
+#include "qgis.h"
+#include "qgis_gui.h"
+
 #include <QDialog>
+
+#define SIP_NO_FILE
 
 class QgsProcessingAlgorithm;
 
 
 ///@cond NOT_STABLE
-
-#define SIP_NO_FILE
 
 
 /**

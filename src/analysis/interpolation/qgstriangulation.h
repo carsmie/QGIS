@@ -17,19 +17,21 @@
 #ifndef TRIANGULATION_H
 #define TRIANGULATION_H
 
-#include <QList>
-#include "qgis_sip.h"
-#include <QPainter>
 #include "TriangleInterpolator.h"
 #include "qgis_analysis.h"
+#include "qgis_sip.h"
 #include "qgsinterpolator.h"
 #include "qgsmeshdataprovider.h"
+
+#include <QList>
+#include <QPainter>
+
+#define SIP_NO_FILE
 
 class QgsFeatureSink;
 class QgsFields;
 class QgsFeedback;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup analysis

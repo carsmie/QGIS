@@ -19,11 +19,12 @@
 #ifndef QGSNETWORKREPLYPARSER_H
 #define QGSNETWORKREPLYPARSER_H
 
-#define SIP_NO_FILE
+
+#include "qgis_core.h"
 
 #include <QNetworkReply>
 
-#include "qgis_core.h"
+#define SIP_NO_FILE
 
 /**
  * \ingroup core
@@ -93,7 +94,7 @@ class CORE_EXPORT QgsNetworkReplyParser : public QObject
   private:
     QNetworkReply *mReply = nullptr;
 
-    bool mValid;
+    bool mValid = false;
 
     QString mError;
 

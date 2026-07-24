@@ -14,14 +14,19 @@ email                : marco.hugentobler at sourcepole dot com
  ***************************************************************************/
 
 #include "qgsmultilinestring.h"
+
+#include <nlohmann/json.hpp>
+
 #include "qgsabstractgeometry.h"
 #include "qgscurve.h"
 #include "qgsgeometryutils.h"
 #include "qgslinestring.h"
 #include "qgsmulticurve.h"
 
-#include <nlohmann/json.hpp>
 #include <QJsonObject>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsMultiLineString::QgsMultiLineString()
 {
@@ -68,7 +73,7 @@ const QgsLineString *QgsMultiLineString::lineStringN( int index ) const
 
 QString QgsMultiLineString::geometryType() const
 {
-  return QStringLiteral( "MultiLineString" );
+  return u"MultiLineString"_s;
 }
 
 QgsMultiLineString *QgsMultiLineString::createEmptyWithSameType() const
@@ -91,12 +96,12 @@ void QgsMultiLineString::clear()
 
 bool QgsMultiLineString::fromWkt( const QString &wkt )
 {
-  return fromCollectionWkt( wkt, {Qgis::WkbType::LineString }, QStringLiteral( "LineString" ) );
+  return fromCollectionWkt( wkt, { Qgis::WkbType::LineString }, u"LineString"_s );
 }
 
 QDomElement QgsMultiLineString::asGml2( QDomDocument &doc, int precision, const QString &ns, const AxisOrder axisOrder ) const
 {
-  QDomElement elemMultiLineString = doc.createElementNS( ns, QStringLiteral( "MultiLineString" ) );
+  QDomElement elemMultiLineString = doc.createElementNS( ns, u"MultiLineString"_s );
 
   if ( isEmpty() )
     return elemMultiLineString;
@@ -105,7 +110,7 @@ QDomElement QgsMultiLineString::asGml2( QDomDocument &doc, int precision, const 
   {
     if ( const QgsLineString *lineString = qgsgeometry_cast<const QgsLineString *>( geom ) )
     {
-      QDomElement elemLineStringMember = doc.createElementNS( ns, QStringLiteral( "lineStringMember" ) );
+      QDomElement elemLineStringMember = doc.createElementNS( ns, u"lineStringMember"_s );
       elemLineStringMember.appendChild( lineString->asGml2( doc, precision, ns, axisOrder ) );
       elemMultiLineString.appendChild( elemLineStringMember );
     }
@@ -116,7 +121,7 @@ QDomElement QgsMultiLineString::asGml2( QDomDocument &doc, int precision, const 
 
 QDomElement QgsMultiLineString::asGml3( QDomDocument &doc, int precision, const QString &ns, const QgsAbstractGeometry::AxisOrder axisOrder ) const
 {
-  QDomElement elemMultiCurve = doc.createElementNS( ns, QStringLiteral( "MultiCurve" ) );
+  QDomElement elemMultiCurve = doc.createElementNS( ns, u"MultiCurve"_s );
 
   if ( isEmpty() )
     return elemMultiCurve;
@@ -125,7 +130,7 @@ QDomElement QgsMultiLineString::asGml3( QDomDocument &doc, int precision, const 
   {
     if ( const QgsLineString *lineString = qgsgeometry_cast<const QgsLineString *>( geom ) )
     {
-      QDomElement elemCurveMember = doc.createElementNS( ns, QStringLiteral( "curveMember" ) );
+      QDomElement elemCurveMember = doc.createElementNS( ns, u"curveMember"_s );
       elemCurveMember.appendChild( lineString->asGml3( doc, precision, ns, axisOrder ) );
       elemMultiCurve.appendChild( elemCurveMember );
     }
@@ -134,9 +139,9 @@ QDomElement QgsMultiLineString::asGml3( QDomDocument &doc, int precision, const 
   return elemMultiCurve;
 }
 
-json QgsMultiLineString::asJsonObject( int precision ) const
+json QgsMultiLineString::asJsonObject( int precision, Qgis::GeoJsonProfile profile ) const
 {
-  json coordinates( json::array( ) );
+  json coordinates( json::array() );
   for ( const QgsAbstractGeometry *geom : mGeometries )
   {
     if ( qgsgeometry_cast<const QgsCurve *>( geom ) )
@@ -144,14 +149,10 @@ json QgsMultiLineString::asJsonObject( int precision ) const
       const QgsLineString *lineString = static_cast<const QgsLineString *>( geom );
       QgsPointSequence pts;
       lineString->points( pts );
-      coordinates.push_back( QgsGeometryUtils::pointsToJson( pts, precision ) );
+      coordinates.push_back( QgsGeometryUtils::pointsToJson( pts, precision, profile ) );
     }
   }
-  return
-  {
-    { "type",  "MultiLineString" },
-    { "coordinates", coordinates }
-  };
+  return { { "type", "MultiLineString" }, { "coordinates", coordinates } };
 }
 
 bool QgsMultiLineString::addGeometry( QgsAbstractGeometry *g )
@@ -258,17 +259,17 @@ QgsMultiLineString *QgsMultiLineString::measuredLine( double start, double end )
   }
 
   /* Calculate the total length of the line */
-  const double length{this->length()};
-  const double range{end - start};
-  double lengthSoFar{0.0};
+  const double length { this->length() };
+  const double range { end - start };
+  double lengthSoFar { 0.0 };
 
   result->reserve( numGeometries() );
   for ( int i = 0; i < numGeometries(); i++ )
   {
-    const double subLength{geometryN( i )->length()};
+    const double subLength { geometryN( i )->length() };
 
-    const double subStart{ ( start + range *lengthSoFar / length ) };
-    const double subEnd{ ( start + range * ( lengthSoFar + subLength ) / length ) };
+    const double subStart { ( start + range * lengthSoFar / length ) };
+    const double subEnd { ( start + range * ( lengthSoFar + subLength ) / length ) };
 
     std::unique_ptr< QgsLineString > measuredLine = qgsgeometry_cast<const QgsLineString *>( geometryN( i ) )->measuredLine( subStart, subEnd );
     result->addGeometry( measuredLine.release() );

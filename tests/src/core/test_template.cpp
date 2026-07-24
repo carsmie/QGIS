@@ -13,14 +13,18 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgstest.h"
+
 #include <QObject>
 #include <QString>
+
 //header for class being tested
 #include <[testClassLowerCaseName].h>
 
-class Test[testClassCamelCaseName] : public QObject {
-  Q_OBJECT private slots:
-    [TestMethods]
+class Test[testClassCamelCaseName] : public QObject
+{
+  Q_OBJECT
+private slots:
+  [TestMethods]
 };
 
 QGSTEST_MAIN( Test[testClassCamelCaseName] )

@@ -16,17 +16,16 @@
 #ifndef QGSPOLYMORPHICRELATION_H
 #define QGSPOLYMORPHICRELATION_H
 
-#include <QList>
-#include <QDomNode>
-#include <QPair>
-
 #include "qgis_core.h"
+#include "qgis_sip.h"
 #include "qgsfields.h"
 #include "qgsreadwritecontext.h"
-#include "qgsrelationcontext.h"
 #include "qgsrelation.h"
+#include "qgsrelationcontext.h"
 
-#include "qgis_sip.h"
+#include <QDomNode>
+#include <QList>
+#include <QPair>
 
 class QgsFeatureIterator;
 class QgsFeature;
@@ -61,7 +60,6 @@ class CORE_EXPORT QgsPolymorphicRelation
     Q_PROPERTY( bool isValid READ isValid )
 
   public:
-
     /**
      * Default constructor. Creates an invalid relation.
      */
@@ -79,6 +77,7 @@ class CORE_EXPORT QgsPolymorphicRelation
      * changed.
      */
     QgsPolymorphicRelation( const QgsPolymorphicRelation &other );
+    SIP_SKIP QgsPolymorphicRelation( QgsPolymorphicRelation &&other );
 
     /**
      * Copies a relation.
@@ -86,6 +85,7 @@ class CORE_EXPORT QgsPolymorphicRelation
      * changed.
      */
     QgsPolymorphicRelation &operator=( const QgsPolymorphicRelation &other );
+    QgsPolymorphicRelation &operator=( QgsPolymorphicRelation &&other );
 
     /**
      * Creates a relation from an XML structure. Used for reading .qgs projects.
@@ -188,6 +188,7 @@ class CORE_EXPORT QgsPolymorphicRelation
 #ifndef SIP_RUN
     QList< QgsRelation::FieldPair > fieldPairs() const;
 #else
+    // clang-format off
     QMap< QString, QString > fieldPairs() const;
     % MethodCode
     const QList< QgsRelation::FieldPair > &pairs = sipCpp->fieldPairs();
@@ -197,6 +198,7 @@ class CORE_EXPORT QgsPolymorphicRelation
       sipRes->insert( pair.first, pair.second );
     }
     % End
+// clang-format on
 #endif
 
     /**
@@ -296,7 +298,6 @@ class CORE_EXPORT QgsPolymorphicRelation
     QExplicitlySharedDataPointer<QgsPolymorphicRelationPrivate> d;
 
     QgsRelationContext mContext;
-
 };
 
 // Register QgsPolymorphicRelation for usage with QVariant

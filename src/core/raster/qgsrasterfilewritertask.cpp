@@ -16,23 +16,21 @@
  ***************************************************************************/
 
 #include "qgsrasterfilewritertask.h"
-#include "moc_qgsrasterfilewritertask.cpp"
-#include "qgsrasterinterface.h"
+
 #include "qgsrasterdataprovider.h"
+#include "qgsrasterinterface.h"
 #include "qgsrasterpipe.h"
 
-// Deprecated!
-QgsRasterFileWriterTask::QgsRasterFileWriterTask( const QgsRasterFileWriter &writer, QgsRasterPipe *pipe, int columns, int rows,
-    const QgsRectangle &outputExtent, const QgsCoordinateReferenceSystem &crs )
-  : QgsRasterFileWriterTask( writer, pipe, columns, rows, outputExtent, crs,
-                             ( pipe && pipe->provider() ) ? pipe->provider()->transformContext() : QgsCoordinateTransformContext() )
-{
-}
+#include "moc_qgsrasterfilewritertask.cpp"
 
-QgsRasterFileWriterTask::QgsRasterFileWriterTask( const QgsRasterFileWriter &writer, QgsRasterPipe *pipe, int columns, int rows,
-    const QgsRectangle &outputExtent,
-    const QgsCoordinateReferenceSystem &crs,
-    const QgsCoordinateTransformContext &transformContext )
+// Deprecated!
+QgsRasterFileWriterTask::QgsRasterFileWriterTask( const QgsRasterFileWriter &writer, QgsRasterPipe *pipe, int columns, int rows, const QgsRectangle &outputExtent, const QgsCoordinateReferenceSystem &crs )
+  : QgsRasterFileWriterTask( writer, pipe, columns, rows, outputExtent, crs, ( pipe && pipe->provider() ) ? pipe->provider()->transformContext() : QgsCoordinateTransformContext() )
+{}
+
+QgsRasterFileWriterTask::QgsRasterFileWriterTask(
+  const QgsRasterFileWriter &writer, QgsRasterPipe *pipe, int columns, int rows, const QgsRectangle &outputExtent, const QgsCoordinateReferenceSystem &crs, const QgsCoordinateTransformContext &transformContext
+)
   : QgsTask( tr( "Saving %1" ).arg( writer.outputUrl() ), QgsTask::CanCancel )
   , mWriter( writer )
   , mRows( rows )
@@ -81,5 +79,3 @@ void QgsRasterFileWriterTask::finished( bool result )
     emit errorOccurred( static_cast< int >( mError ), errorMsg );
   }
 }
-
-

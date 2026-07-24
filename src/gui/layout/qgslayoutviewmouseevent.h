@@ -16,9 +16,9 @@
 #ifndef QGSLAYOUTVIEWMOUSEEVENT_H
 #define QGSLAYOUTVIEWMOUSEEVENT_H
 
-#include <QMouseEvent>
-
 #include "qgis_gui.h"
+
+#include <QMouseEvent>
 
 class QgsLayoutView;
 class QGraphicsLineItem;
@@ -39,7 +39,7 @@ class GUI_EXPORT QgsLayoutViewMouseEvent : public QMouseEvent
       sipType = sipType_QgsLayoutViewMouseEvent;
     else
       sipType = 0;
-    SIP_END
+  SIP_END
 #endif
 
   public:

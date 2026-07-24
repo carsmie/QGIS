@@ -22,6 +22,12 @@
 #include "qgsfillsymbol.h"
 #include "qgsplot.h"
 
+#include <QString>
+
+using namespace Qt::StringLiterals;
+
+class QgsVectorLayerAbstractPlotDataGatherer;
+
 
 /**
  * \brief A simple bar chart class.
@@ -34,11 +40,10 @@
 class CORE_EXPORT QgsBarChartPlot : public Qgs2DXyPlot
 {
   public:
-
     QgsBarChartPlot();
-    ~QgsBarChartPlot() = default;
+    ~QgsBarChartPlot() override = default;
 
-    QString type() const override { return QStringLiteral( "bar" ); }
+    QString type() const override { return u"bar"_s; }
 
     void renderContent( QgsRenderContext &context, QgsPlotRenderContext &plotContext, const QRectF &plotArea, const QgsPlotData &plotData = QgsPlotData() ) override;
 
@@ -48,18 +53,31 @@ class CORE_EXPORT QgsBarChartPlot : public Qgs2DXyPlot
     /**
      * Returns the fill symbol for the series with matching \a index.
      */
-    QgsFillSymbol *fillSymbol( int index ) const;
+    QgsFillSymbol *fillSymbolAt( int index ) const;
 
     /**
      * Sets the fill \a symbol to use for the series with matching \a index.
      */
-    void setFillSymbol( int index, QgsFillSymbol *symbol SIP_TRANSFER );
+    void setFillSymbolAt( int index, QgsFillSymbol *symbol SIP_TRANSFER );
+
+    /**
+     * Returns the fill symbols list count.
+     */
+    int fillSymbolCount() const { return mFillSymbols.size(); }
 
     //! Returns a new bar chart.
     static QgsBarChartPlot *create() SIP_FACTORY;
 
-  private:
+    //! Returns a new data gatherer for a given bar chart \a plot.
+    static QgsVectorLayerAbstractPlotDataGatherer *createDataGatherer( QgsPlot *plot ) SIP_TRANSFERBACK;
 
+    /**
+     * Initializes properties of this plot from an existing \a plot, transferring all applicable
+     * settings.
+     */
+    void initFromPlot( const QgsPlot *plot ) override;
+
+  private:
     std::vector<std::unique_ptr<QgsFillSymbol>> mFillSymbols;
 };
 

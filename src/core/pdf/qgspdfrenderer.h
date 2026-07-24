@@ -18,11 +18,15 @@
 #ifndef QGSPDFRENDERER_H
 #define QGSPDFRENDERER_H
 
-#include "qgis_sip.h"
-#include "qgis_core.h"
 #include "qgsconfig.h"
-#include <QString>
+
 #include <memory>
+
+#include "qgis.h"
+#include "qgis_core.h"
+#include "qgis_sip.h"
+
+#include <QString>
 
 #ifdef HAVE_PDF4QT
 #endif
@@ -46,11 +50,10 @@ class PdfDocumentContainer;
 class CORE_EXPORT QgsPdfRenderer
 {
   public:
-
     /**
      * Constructs a PDF renderer for the file at the specified \a path.
      */
-    QgsPdfRenderer( const QString &path );
+    QgsPdfRenderer( const QString &path, Qgis::PdfRenderFlags flags = Qgis::PdfRenderFlags() );
     ~QgsPdfRenderer();
 
     QgsPdfRenderer( const QgsPdfRenderer &other ) = delete;
@@ -86,12 +89,12 @@ class CORE_EXPORT QgsPdfRenderer
     bool render( QPainter *painter, const QRectF &painterRect, int pageIndex ) SIP_THROW( QgsNotSupportedException );
 
   private:
-
 #ifdef SIP_RUN
     QgsPdfRenderer( const QgsPdfRenderer &other );
 #endif
 
     QString mPath;
+    Qgis::PdfRenderFlags mFlags;
 
 #ifdef HAVE_PDF4QT
     std::unique_ptr< PdfDocumentContainer> mDocumentContainer;

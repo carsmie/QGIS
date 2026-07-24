@@ -13,15 +13,15 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsmemoryfeatureiterator.h"
-#include "qgsmemoryprovider.h"
 
+#include "qgsexception.h"
+#include "qgsexpressioncontextutils.h"
 #include "qgsgeometry.h"
 #include "qgsgeometryengine.h"
 #include "qgslogger.h"
-#include "qgsspatialindex.h"
+#include "qgsmemoryprovider.h"
 #include "qgsproject.h"
-#include "qgsexception.h"
-#include "qgsexpressioncontextutils.h"
+#include "qgsspatialindex.h"
 
 ///@cond PRIVATE
 
@@ -287,8 +287,7 @@ QgsMemoryFeatureSource::QgsMemoryFeatureSource( const QgsMemoryProvider *p )
   , mSpatialIndex( p->mSpatialIndex ? std::make_unique< QgsSpatialIndex >( *p->mSpatialIndex ) : nullptr ) // just shallow copy
   , mSubsetString( p->mSubsetString )
   , mCrs( p->mCrs )
-{
-}
+{}
 
 QgsFeatureIterator QgsMemoryFeatureSource::getFeatures( const QgsFeatureRequest &request )
 {
@@ -302,9 +301,8 @@ QgsExpressionContext *QgsMemoryFeatureSource::expressionContext()
   if ( !mExpressionContext )
   {
     mExpressionContext = std::make_unique< QgsExpressionContext >(
-                           QList<QgsExpressionContextScope *>()
-                           << QgsExpressionContextUtils::globalScope()
-                           << QgsExpressionContextUtils::projectScope( QgsProject::instance() ) ); // skip-keyword-check
+      QList<QgsExpressionContextScope *>() << QgsExpressionContextUtils::globalScope() << QgsExpressionContextUtils::projectScope( QgsProject::instance() ) // skip-keyword-check
+    );
     mExpressionContext->setFields( mFields );
   }
   return mExpressionContext.get();

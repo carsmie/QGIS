@@ -12,20 +12,23 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <QPainter>
+#include "qgsgeorefdatapoint.h"
 
+#include "qgscoordinatereferencesystem.h"
+#include "qgsgcpcanvasitem.h"
 #include "qgsmapcanvas.h"
 #include "qgsmaptool.h"
-#include "qgsgcpcanvasitem.h"
-#include "qgscoordinatereferencesystem.h"
-#include "qgsgeorefdatapoint.h"
+
+#include <QPainter>
+
 #include "moc_qgsgeorefdatapoint.cpp"
 
-QgsGeorefDataPoint::QgsGeorefDataPoint( QgsMapCanvas *srcCanvas, QgsMapCanvas *dstCanvas, const QgsPointXY &sourceCoordinates, const QgsPointXY &destinationPoint, const QgsCoordinateReferenceSystem &destinationPointCrs, bool enabled )
+QgsGeorefDataPoint::QgsGeorefDataPoint(
+  QgsMapCanvas *srcCanvas, QgsMapCanvas *dstCanvas, const QgsPointXY &sourceCoordinates, const QgsPointXY &destinationPoint, const QgsCoordinateReferenceSystem &destinationPointCrs, bool enabled
+)
   : mSrcCanvas( srcCanvas )
   , mDstCanvas( dstCanvas )
   , mGcpPoint( sourceCoordinates, destinationPoint, destinationPointCrs, enabled )
-  , mId( -1 )
 {
   mGCPSourceItem = new QgsGCPCanvasItem( srcCanvas, this, true );
   mGCPDestinationItem = new QgsGCPCanvasItem( dstCanvas, this, false );
@@ -49,8 +52,7 @@ QgsGeorefDataPoint::QgsGeorefDataPoint( const QgsGeorefDataPoint &p )
   , mGcpPoint( p.mGcpPoint )
   , mId( p.id() )
   , mResidual( p.residual() )
-{
-}
+{}
 
 QgsGeorefDataPoint::~QgsGeorefDataPoint()
 {

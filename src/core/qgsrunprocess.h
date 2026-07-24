@@ -22,7 +22,8 @@
 #define QGSRUNPROCESS_H
 
 #include <QObject>
-#if QT_CONFIG(process)
+
+#if QT_CONFIG( process )
 #include <QProcess>
 #endif
 
@@ -44,7 +45,7 @@ class QgsMessageOutput;
  * On some platforms (e.g. iOS) , the process execution is skipped
  * https://lists.qt-project.org/pipermail/development/2015-July/022205.html
  */
-class CORE_EXPORT QgsRunProcess: public QObject SIP_NODEFAULTCTORS
+class CORE_EXPORT QgsRunProcess : public QObject SIP_NODEFAULTCTORS
 {
     Q_OBJECT
 
@@ -56,8 +57,7 @@ class CORE_EXPORT QgsRunProcess: public QObject SIP_NODEFAULTCTORS
     // The action argument contains string with the command.
     // If capture is true, the standard output and error from the process
     // will be sent to QgsMessageOutput - usually a dialog box.
-    static QgsRunProcess *create( const QString &action, bool capture ) SIP_FACTORY
-    { return new QgsRunProcess( action, capture ); }
+    static QgsRunProcess *create( const QString &action, bool capture ) SIP_FACTORY { return new QgsRunProcess( action, capture ); }
 
     /**
      * Splits the string \a command into a list of tokens, and returns
@@ -74,7 +74,7 @@ class CORE_EXPORT QgsRunProcess: public QObject SIP_NODEFAULTCTORS
     QgsRunProcess( const QString &action, bool capture ) SIP_FORCE;
     ~QgsRunProcess() override SIP_FORCE;
 
-#if QT_CONFIG(process)
+#if QT_CONFIG( process )
     // Deletes the instance of the class
     void die();
 
@@ -91,7 +91,7 @@ class CORE_EXPORT QgsRunProcess: public QObject SIP_NODEFAULTCTORS
 #endif // !(QT_CONFIG(process)
 };
 
-#if QT_CONFIG(process)
+#if QT_CONFIG( process )
 
 /**
  * \brief A thread safe class for performing blocking (sync) execution of external processes.
@@ -111,7 +111,6 @@ class CORE_EXPORT QgsBlockingProcess : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for the given \a program, with the specified list of \a arguments.
      *
@@ -126,6 +125,7 @@ class CORE_EXPORT QgsBlockingProcess : public QObject
      */
     void setStdOutHandler( const std::function< void( const QByteArray & ) > &handler ) { mStdoutHandler = handler; }
 #else
+    // clang-format off
 
     /**
      * Sets a handler function to call whenever content is written by the process to stdout.
@@ -143,6 +143,7 @@ class CORE_EXPORT QgsBlockingProcess : public QObject
 
     Py_END_ALLOW_THREADS
     % End
+// clang-format on
 #endif
 
 #ifndef SIP_RUN
@@ -152,6 +153,7 @@ class CORE_EXPORT QgsBlockingProcess : public QObject
      */
     void setStdErrHandler( const std::function< void( const QByteArray & ) > &handler ) { mStderrHandler = handler; }
 #else
+      // clang-format off
 
     /**
      * Sets a \a handler function to call whenever content is written by the process to stderr.
@@ -169,6 +171,7 @@ class CORE_EXPORT QgsBlockingProcess : public QObject
 
     Py_END_ALLOW_THREADS
     % End
+// clang-format on
 #endif
 
     /**
@@ -192,10 +195,26 @@ class CORE_EXPORT QgsBlockingProcess : public QObject
      */
     QProcess::ProcessError processError() const;
 
-  private:
+    /**
+     * Returns the process working directory.
+     *
+     * \see setWorkingDirectory()
+     * \since QGIS 4.2
+     */
+    QString workingDirectory() const;
 
+    /**
+     * Sets the process working \a directory.
+     *
+     * \see workingDirectory()
+     * \since QGIS 4.2
+     */
+    void setWorkingDirectory( const QString &directory );
+
+  private:
     QString mProcess;
     QStringList mArguments;
+    QString mWorkingDir;
     std::function< void( const QByteArray & ) > mStdoutHandler;
     std::function< void( const QByteArray & ) > mStderrHandler;
 
@@ -216,13 +235,9 @@ class ProcessThread : public QThread
     ProcessThread( const std::function<void()> &function, QObject *parent = nullptr )
       : QThread( parent )
       , mFunction( function )
-    {
-    }
+    {}
 
-    void run() override
-    {
-      mFunction();
-    }
+    void run() override { mFunction(); }
 
   private:
     std::function<void()> mFunction;

@@ -14,24 +14,27 @@
  ***************************************************************************/
 
 #include "qgsterraintileloader.h"
-#include "moc_qgsterraintileloader.cpp"
 
+#include "qgs3d.h"
 #include "qgs3dmapsettings.h"
 #include "qgs3dutils.h"
 #include "qgschunknode.h"
+#include "qgscoordinatetransform.h"
+#include "qgsmaterial.h"
+#include "qgsmaterial3dhandler.h"
 #include "qgsphongtexturedmaterial.h"
 #include "qgsterrainentity.h"
 #include "qgsterraingenerator.h"
-#include "qgsterraintextureimage_p.h"
 #include "qgsterraintexturegenerator_p.h"
+#include "qgsterraintextureimage_p.h"
 #include "qgsterraintileentity_p.h"
-#include "qgscoordinatetransform.h"
-#include "qgsmaterial.h"
 #include "qgstexturematerial.h"
 
-#include <Qt3DRender/QTexture>
-#include <Qt3DRender/QTechnique>
 #include <Qt3DRender/QCullFace>
+#include <Qt3DRender/QTechnique>
+#include <Qt3DRender/QTexture>
+
+#include "moc_qgsterraintileloader.cpp"
 
 /// @cond PRIVATE
 
@@ -52,9 +55,10 @@ void QgsTerrainTileLoader::loadTexture()
   mTextureJobId = mTerrain->textureGenerator()->render( mExtentMapCrs, mNode->tileId(), mTileDebugText );
 }
 
-void QgsTerrainTileLoader::createTextureComponent( QgsTerrainTileEntity *entity, bool isShadingEnabled, const QgsPhongMaterialSettings &shadingMaterial, bool useTexture )
+void QgsTerrainTileLoader::createTextureComponent( QgsTerrainTileEntity *entity, bool isShadingEnabled, const QgsPhongMaterialSettings &shadingMaterial, bool useTexture, const Qgs3DRenderContext &context )
 {
-  Qt3DRender::QTexture2D *texture = useTexture || !isShadingEnabled ? createTexture( entity ) : nullptr;
+  QgsMaterialContext materialContext = QgsMaterialContext::fromRenderContext( context );
+  Qt3DRender::QTexture2D *texture = useTexture || !isShadingEnabled ? createTexture( entity, materialContext ) : nullptr;
 
   QgsMaterial *material = nullptr;
   if ( texture )
@@ -78,9 +82,8 @@ void QgsTerrainTileLoader::createTextureComponent( QgsTerrainTileEntity *entity,
   }
   else
   {
-    QgsMaterialContext materialContext;
     materialContext.setIsSelected( false );
-    material = shadingMaterial.toMaterial( QgsMaterialSettingsRenderingTechnique::Triangles, materialContext );
+    material = Qgs3D::toMaterial( &shadingMaterial, Qgis::MaterialRenderingTechnique::Triangles, materialContext );
   }
 
   // no backface culling on terrain, to allow terrain to be viewed from underground
@@ -99,13 +102,13 @@ void QgsTerrainTileLoader::createTextureComponent( QgsTerrainTileEntity *entity,
   entity->addComponent( material ); // takes ownership if the component has no parent
 }
 
-Qt3DRender::QTexture2D *QgsTerrainTileLoader::createTexture( QgsTerrainTileEntity *entity )
+Qt3DRender::QTexture2D *QgsTerrainTileLoader::createTexture( QgsTerrainTileEntity *entity, const QgsMaterialContext &context )
 {
   Qt3DRender::QTexture2D *texture = new Qt3DRender::QTexture2D;
   QgsTerrainTextureImage *textureImage = new QgsTerrainTextureImage( mTextureImage, mExtentMapCrs, mTileDebugText );
+  Qgs3DUtils::setTextureFiltering( texture, context );
+  texture->setFormat( Qt3DRender::QAbstractTexture::SRGB8_Alpha8 );
   texture->addTextureImage( textureImage ); //texture take the ownership of textureImage if has no parant
-  texture->setMinificationFilter( Qt3DRender::QTexture2D::Linear );
-  texture->setMagnificationFilter( Qt3DRender::QTexture2D::Linear );
 
   entity->setTextureImage( textureImage );
 

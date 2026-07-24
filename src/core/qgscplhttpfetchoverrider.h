@@ -16,15 +16,17 @@
 #ifndef QGSCPLHTTPFETCHOVERRIDER_H
 #define QGSCPLHTTPFETCHOVERRIDER_H
 
-#define SIP_NO_FILE
 
-#include <QNetworkRequest>
-#include <QString>
-#include <QPointer>
+#include <cpl_http.h>
+#include <gdal.h>
 
 #include "qgis_core.h"
-#include "cpl_http.h"
-#include "gdal.h"
+
+#include <QNetworkRequest>
+#include <QPointer>
+#include <QString>
+
+#define SIP_NO_FILE
 
 class QgsFeedback;
 
@@ -64,15 +66,8 @@ class CORE_EXPORT QgsCPLHTTPFetchOverrider
     QThread *thread() const;
 
   private:
-
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,2,0)
-    static CPLHTTPResult *callback( const char *pszURL,
-                                    CSLConstList papszOptions,
-                                    GDALProgressFunc pfnProgress,
-                                    void *pProgressArg,
-                                    CPLHTTPFetchWriteFunc pfnWrite,
-                                    void *pWriteArg,
-                                    void *pUserData );
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION( 3, 2, 0 )
+    static CPLHTTPResult *callback( const char *pszURL, CSLConstList papszOptions, GDALProgressFunc pfnProgress, void *pProgressArg, CPLHTTPFetchWriteFunc pfnWrite, void *pWriteArg, void *pUserData );
 #endif
 
     QString mAuthCfg;

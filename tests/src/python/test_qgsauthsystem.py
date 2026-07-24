@@ -14,17 +14,8 @@ __copyright__ = "Copyright 2014, Boundless Spatial, Inc."
 
 import os
 import tempfile
+import unittest
 
-from qgis.PyQt.QtCore import QFileInfo, qDebug
-from qgis.PyQt.QtNetwork import (
-    QSsl,
-    QSslCertificate,
-    QSslError,
-    QSslSocket,
-    QSslConfiguration,
-)
-from qgis.PyQt.QtTest import QTest
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout
 from qgis.core import (
     QgsApplication,
     QgsAuthCertUtils,
@@ -34,9 +25,17 @@ from qgis.core import (
     QgsPkiBundle,
 )
 from qgis.gui import QgsAuthEditorWidgets
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.PyQt.QtCore import QFileInfo, qDebug
+from qgis.PyQt.QtNetwork import (
+    QSsl,
+    QSslCertificate,
+    QSslConfiguration,
+    QSslError,
+    QSslSocket,
+)
+from qgis.PyQt.QtTest import QTest
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 AUTHDBDIR = tempfile.mkdtemp()
@@ -48,7 +47,6 @@ PKIDATA = os.path.join(TESTDATA, "certs_keys")
 
 
 class TestQgsAuthManager(QgisTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -577,7 +575,7 @@ class TestQgsAuthManager(QgisTestCase):
         msg = "Auth db does not exist"
         self.assertTrue(os.path.exists(self.authm.authenticationDatabasePath()), msg)
 
-        QTest.qSleep(1000)  # necessary for new backup to have different name
+        QTest.qWait(1000)  # necessary for new backup to have different name
 
         msg = "Could not erase auth db"
         backup = None

@@ -10,17 +10,16 @@ __author__ = "Tim Sutton"
 __date__ = "20/08/2012"
 __copyright__ = "Copyright 2012, The QGIS Project"
 
-from qgis.core import QgsPointXY, QgsRectangle, QgsVector
 import unittest
-from qgis.testing import start_app, QgisTestCase
 
+from qgis.core import QgsPointXY, QgsRectangle, QgsVector
+from qgis.testing import QgisTestCase, start_app
 from utilities import compareWkt
 
 start_app()
 
 
 class TestQgsRectangle(QgisTestCase):
-
     def testCtor(self):
         rect = QgsRectangle(5.0, 5.0, 10.0, 10.0)
         self.assertEqual(rect.xMinimum(), 5.0)
@@ -113,7 +112,7 @@ class TestQgsRectangle(QgisTestCase):
     def testAsWktCoordinates(self):
         """Test that we can get a proper wkt representation fo the rect"""
         rect1 = QgsRectangle(0.0, 0.0, 5.0, 5.0)
-        myExpectedWkt = "0 0, " "5 5"
+        myExpectedWkt = "0 0, 5 5"
         myWkt = rect1.asWktCoordinates()
         myMessage = f"Expected: {myExpectedWkt}\nGot: {myWkt}\n"
         self.assertTrue(compareWkt(myWkt, myExpectedWkt), myMessage)
@@ -121,7 +120,7 @@ class TestQgsRectangle(QgisTestCase):
     def testAsWktPolygon(self):
         """Test that we can get a proper rect wkt polygon representation for rect"""
         rect1 = QgsRectangle(0.0, 0.0, 5.0, 5.0)
-        myExpectedWkt = "Polygon ((0 0, " "5 0, " "5 5, " "0 5, " "0 0))"
+        myExpectedWkt = "Polygon ((0 0, 5 0, 5 5, 0 5, 0 0))"
         myWkt = rect1.asWktPolygon()
         myMessage = f"Expected: {myExpectedWkt}\nGot: {myWkt}\n"
         self.assertTrue(compareWkt(myWkt, myExpectedWkt), myMessage)
@@ -181,6 +180,34 @@ class TestQgsRectangle(QgisTestCase):
         self.assertEqual(rect.yMinimum(), 0)
         self.assertEqual(rect.xMaximum(), 0.3)
         self.assertEqual(rect.yMaximum(), 0.2)
+
+    def testValid(self):
+        # a default rectangle is not valid
+        rect = QgsRectangle()
+        self.assertFalse(rect.isValid())
+
+        # all the values are valid, xMin < xMax, yMin, yMax
+        rect2 = QgsRectangle(10, 12, 15, 25)
+        self.assertTrue(rect2.isValid())
+
+        # xMax < xMin
+        # not valid
+        rect2.setXMaximum(9)
+        self.assertFalse(rect2.isValid())
+
+        # One of the coordinates is NaN
+        # not valid
+        rect3 = QgsRectangle(-3, 5, 2500, 4200)
+        self.assertTrue(rect3.isValid())
+        rect3.setYMinimum(float("nan"))
+        self.assertFalse(rect3.isValid())
+
+        # One of the coordinates is infinity
+        # not valid
+        rect4 = QgsRectangle(22, 15, 33, 55)
+        self.assertTrue(rect4.isValid())
+        rect4.setXMaximum(float("inf"))
+        self.assertFalse(rect4.isValid())
 
 
 if __name__ == "__main__":

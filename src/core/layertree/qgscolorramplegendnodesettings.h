@@ -16,12 +16,13 @@
 #ifndef QGSCOLORRAMPLEGENDNODESETTINGS_H
 #define QGSCOLORRAMPLEGENDNODESETTINGS_H
 
+#include <memory>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
-
 #include "qgstextformat.h"
+
 #include <QString>
-#include <memory>
 
 class QgsNumericFormat;
 class QgsReadWriteContext;
@@ -37,14 +38,13 @@ class QDomElement;
 class CORE_EXPORT QgsColorRampLegendNodeSettings
 {
   public:
-
     /**
      * Ramp directions
      */
     enum Direction
     {
       MinimumToMaximum, //!< Minimum value on bottom, maximum value on top
-      MaximumToMinimum,//!< Maximum value on bottom, minimum value on top
+      MaximumToMinimum, //!< Maximum value on bottom, minimum value on top
     };
 
     QgsColorRampLegendNodeSettings();
@@ -52,8 +52,10 @@ class CORE_EXPORT QgsColorRampLegendNodeSettings
     ~QgsColorRampLegendNodeSettings();
 
     QgsColorRampLegendNodeSettings( const QgsColorRampLegendNodeSettings &other );
+    SIP_SKIP QgsColorRampLegendNodeSettings( QgsColorRampLegendNodeSettings &&other );
 
     QgsColorRampLegendNodeSettings &operator=( const QgsColorRampLegendNodeSettings &other );
+    QgsColorRampLegendNodeSettings &operator=( QgsColorRampLegendNodeSettings &&other );
 
     /**
      * Returns the direction of the ramp.

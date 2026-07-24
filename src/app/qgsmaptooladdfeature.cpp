@@ -14,23 +14,25 @@
  ***************************************************************************/
 
 #include "qgsmaptooladdfeature.h"
-#include "moc_qgsmaptooladdfeature.cpp"
+
+#include "qgisapp.h"
 #include "qgsadvanceddigitizingdockwidget.h"
 #include "qgsexception.h"
+#include "qgsexpressioncontextutils.h"
+#include "qgsfeatureaction.h"
 #include "qgsgeometry.h"
+#include "qgslogger.h"
 #include "qgsmapcanvas.h"
 #include "qgsproject.h"
+#include "qgsrubberband.h"
 #include "qgssettingsentryimpl.h"
 #include "qgssettingsregistrycore.h"
 #include "qgsvectorlayer.h"
-#include "qgslogger.h"
-#include "qgsfeatureaction.h"
-#include "qgisapp.h"
-#include "qgsexpressioncontextutils.h"
-#include "qgsrubberband.h"
 #include "qgsvectorlayereditutils.h"
 
 #include <QSettings>
+
+#include "moc_qgsmaptooladdfeature.cpp"
 
 QgsMapToolAddFeature::QgsMapToolAddFeature( QgsMapCanvas *canvas, QgsAdvancedDigitizingDockWidget *cadDockWidget, CaptureMode mode )
   : QgsMapToolDigitizeFeature( canvas, cadDockWidget, mode )
@@ -44,8 +46,7 @@ QgsMapToolAddFeature::QgsMapToolAddFeature( QgsMapCanvas *canvas, QgsAdvancedDig
 
 QgsMapToolAddFeature::QgsMapToolAddFeature( QgsMapCanvas *canvas, CaptureMode mode )
   : QgsMapToolAddFeature( canvas, QgisApp::instance()->cadDockWidget(), mode )
-{
-}
+{}
 
 std::unique_ptr<QgsHighlight> QgsMapToolAddFeature::createHighlight( QgsVectorLayer *layer, const QgsFeature &f )
 {

@@ -14,20 +14,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QLineEdit>
-
 #include "qgslocaleawarenumericlineeditdelegate.h"
-#include "moc_qgslocaleawarenumericlineeditdelegate.cpp"
+
 #include "qgsdoublevalidator.h"
 #include "qgsguiutils.h"
+
+#include <QLineEdit>
+
+#include "moc_qgslocaleawarenumericlineeditdelegate.cpp"
 
 /// @cond PRIVATE
 
 QgsLocaleAwareNumericLineEditDelegate::QgsLocaleAwareNumericLineEditDelegate( Qgis::DataType dataType, QWidget *parent )
   : QStyledItemDelegate( parent )
   , mDataType( dataType )
-{
-}
+{}
 
 QWidget *QgsLocaleAwareNumericLineEditDelegate::createEditor( QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {

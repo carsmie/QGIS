@@ -9,6 +9,9 @@
 
 
 
+
+
+
 class QgsLayoutPageCollection : QObject, QgsLayoutSerializableObject
 {
 %Docstring(signature="appended")
@@ -19,7 +22,6 @@ A manager for a collection of pages in a layout.
 #include "qgslayoutpagecollection.h"
 %End
   public:
-
     explicit QgsLayoutPageCollection( QgsLayout *layout /TransferThis/ );
 %Docstring
 Constructor for :py:class:`QgsLayoutItemPage`, with the specified parent

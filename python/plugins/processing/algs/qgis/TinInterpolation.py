@@ -19,25 +19,24 @@ __author__ = "Alexander Bruy"
 __date__ = "October 2016"
 __copyright__ = "(C) 2016, Alexander Bruy"
 
-import os
 import math
+import os
 
-from qgis.PyQt.QtGui import QIcon
-
+from qgis.analysis import QgsGridFileWriter, QgsInterpolator, QgsTinInterpolator
 from qgis.core import (
-    QgsProcessingUtils,
-    QgsProcessing,
-    QgsProcessingParameterEnum,
-    QgsProcessingParameterNumber,
-    QgsProcessingParameterExtent,
-    QgsProcessingParameterDefinition,
-    QgsProcessingParameterRasterDestination,
-    QgsWkbTypes,
-    QgsProcessingParameterFeatureSink,
-    QgsProcessingException,
     QgsCoordinateReferenceSystem,
+    QgsProcessing,
+    QgsProcessingException,
+    QgsProcessingParameterDefinition,
+    QgsProcessingParameterEnum,
+    QgsProcessingParameterExtent,
+    QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterNumber,
+    QgsProcessingParameterRasterDestination,
+    QgsProcessingUtils,
+    QgsWkbTypes,
 )
-from qgis.analysis import QgsInterpolator, QgsTinInterpolator, QgsGridFileWriter
+from qgis.PyQt.QtGui import QIcon
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from processing.algs.qgis.ui.InterpolationWidgets import (
@@ -149,6 +148,17 @@ class TinInterpolation(QgisAlgorithm):
             "Generates a Triangulated Irregular Network (TIN) interpolation of a point vector layer."
         )
 
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm generates a Triangulated Irregular Network (TIN) interpolation of a point vector layer.\n"
+            "With the TIN method you can create a surface formed by triangles of nearest neighbor points."
+            "To do this, circumcircles around selected sample points are created and their intersections "
+            "are connected to a network of non overlapping and as compact as possible triangles."
+            "The resulting surfaces are not smooth.\n"
+            "The algorithm creates both the raster layer of the interpolated values "
+            "and the vector line layer with the triangulation boundaries."
+        )
+
     def processAlgorithm(self, parameters, context, feedback):
         interpolationData = ParameterInterpolationData.parseValue(
             parameters[self.INTERPOLATION_DATA]
@@ -223,4 +233,5 @@ class TinInterpolation(QgisAlgorithm):
         writer.writeFile(feedback)
         if triangulation_sink:
             triangulation_sink.finalize()
+            feedback.featureSinkFinalized(self.TRIANGULATION)
         return {self.OUTPUT: output, self.TRIANGULATION: triangulation_dest_id}

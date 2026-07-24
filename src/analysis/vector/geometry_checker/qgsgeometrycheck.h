@@ -16,18 +16,19 @@
 #ifndef QGS_GEOMETRY_CHECK_H
 #define QGS_GEOMETRY_CHECK_H
 
-#include <QApplication>
 #include <limits>
-#include <QStringList>
-#include <QPointer>
 
 #include "qgis_analysis.h"
 #include "qgsfeature.h"
-#include "qgsvectorlayer.h"
 #include "qgsgeometry.h"
 #include "qgsgeometrycheckerutils.h"
 #include "qgsgeometrycheckresolutionmethod.h"
 #include "qgssettings.h"
+#include "qgsvectorlayer.h"
+
+#include <QApplication>
+#include <QPointer>
+#include <QStringList>
 
 class QgsGeometryCheckError;
 class QgsFeaturePool;
@@ -108,15 +109,9 @@ class ANALYSIS_EXPORT QgsGeometryCheck
         QMap<QString, QgsFeatureIds> ids SIP_SKIP;
 
 #ifndef SIP_RUN
-        QMap<QString, QgsFeatureIds> toMap() const
-        {
-          return ids;
-        }
+        QMap<QString, QgsFeatureIds> toMap() const { return ids; }
 
-        bool isEmpty() const
-        {
-          return ids.isEmpty();
-        }
+        bool isEmpty() const { return ids.isEmpty(); }
 #endif
     };
 
@@ -157,12 +152,22 @@ class ANALYSIS_EXPORT QgsGeometryCheck
       LayerCheck        //!< The check controls a whole layer (topology checks)
     };
 
+    //! Result of the geometry checker operation \since QGIS 4.0
+    enum class Result : int
+    {
+      Success = 0,               //!< Operation completed successfully
+      Canceled = 1,              //!< User canceled calculation
+      DuplicatedUniqueId = 2,    //!< Found duplicated unique ID value
+      InvalidReferenceLayer = 3, //!< Missed or invalid reference layer
+      GeometryOverlayError = 4   //!< Error performing geometry overlay operation
+    };
+
     /**
      * Flags for geometry checks.
      */
     enum Flag SIP_ENUM_BASETYPE( IntFlag )
     {
-      AvailableInValidation = 1 << 1 //!< This geometry check should be available in layer validation on the vector layer peroperties
+      AvailableInValidation = 1 << 1 //!< This geometry check should be available in layer validation on the vector layer properties
     };
     Q_DECLARE_FLAGS( Flags, Flag )
     Q_FLAG( Flags )
@@ -201,15 +206,9 @@ class ANALYSIS_EXPORT QgsGeometryCheck
         QgsVertexId vidx;
 
         // TODO c++20 - replace with = default
-        bool operator==( const QgsGeometryCheck::Change &other ) const
-        {
-          return what == other.what && type == other.type && vidx == other.vidx;
-        }
+        bool operator==( const QgsGeometryCheck::Change &other ) const { return what == other.what && type == other.type && vidx == other.vidx; }
 
-        bool operator!=( const QgsGeometryCheck::Change &other ) const
-        {
-          return !( *this == other );
-        }
+        bool operator!=( const QgsGeometryCheck::Change &other ) const { return !( *this == other ); }
     };
 
     /**
@@ -237,8 +236,7 @@ class ANALYSIS_EXPORT QgsGeometryCheck
      * Returns the configuration value with the \a name, saved in the QGIS settings for
      * this geometry check. If no configuration could be found, \a defaultValue is returned.
      */
-    template<class T>
-    T configurationValue( const QString &name, const QVariant &defaultValue = QVariant() )
+    template<class T> T configurationValue( const QString &name, const QVariant &defaultValue = QVariant() )
     {
       return mConfiguration.value( name, QgsSettings().value( "/geometry_checker/" + id() + "/" + name, defaultValue ) ).value<T>();
     }
@@ -269,19 +267,28 @@ class ANALYSIS_EXPORT QgsGeometryCheck
      * Check all features available from \a featurePools and write errors found to \a errors.
      * Other status messages can be written to \a messages.
      * Progress should be reported to \a feedback. Only features and layers listed in \a ids should be checked.
+     * \returns QgsGeometryCheck::Result::Success in case of success or error value on failure.
      *
      * \since QGIS 3.4
      */
-    virtual void collectErrors( const QMap<QString, QgsFeaturePool *> &featurePools, QList<QgsGeometryCheckError *> &errors SIP_INOUT, QStringList &messages SIP_INOUT, QgsFeedback *feedback, const LayerFeatureIds &ids = QgsGeometryCheck::LayerFeatureIds() ) const = 0;
+    virtual Result collectErrors(
+      const QMap<QString, QgsFeaturePool *> &featurePools,
+      QList<QgsGeometryCheckError *> &errors SIP_INOUT,
+      QStringList &messages SIP_INOUT,
+      QgsFeedback *feedback,
+      const LayerFeatureIds &ids = QgsGeometryCheck::LayerFeatureIds()
+    ) const;
 
     /**
      * Fixes the error \a error with the specified \a method.
      * Is executed on the main thread.
      *
+     *
      * \see availableResolutionMethods()
      * \since QGIS 3.4
      */
-    virtual void fixError( const QMap<QString, QgsFeaturePool *> &featurePools, QgsGeometryCheckError *error, int method, const QMap<QString, int> &mergeAttributeIndices, Changes &changes SIP_INOUT ) const SIP_SKIP;
+    virtual void fixError( const QMap<QString, QgsFeaturePool *> &featurePools, QgsGeometryCheckError *error, int method, const QMap<QString, int> &mergeAttributeIndices, Changes &changes SIP_INOUT ) const
+      SIP_SKIP;
 
     /**
      * Returns a list of available resolution methods.
@@ -342,7 +349,8 @@ class ANALYSIS_EXPORT QgsGeometryCheck
      * \note Not available in Python bindings
      * \since QGIS 3.4
      */
-    void replaceFeatureGeometryPart( const QMap<QString, QgsFeaturePool *> &featurePools, const QString &layerId, QgsFeature &feature, int partIdx, QgsAbstractGeometry *newPartGeom, Changes &changes ) const SIP_SKIP;
+    void replaceFeatureGeometryPart( const QMap<QString, QgsFeaturePool *> &featurePools, const QString &layerId, QgsFeature &feature, int partIdx, QgsAbstractGeometry *newPartGeom, Changes &changes ) const
+      SIP_SKIP;
 
     /**
      * Deletes a part of a feature geometry.
@@ -370,6 +378,14 @@ class ANALYSIS_EXPORT QgsGeometryCheck
      * \since QGIS 3.4
      */
     double scaleFactor( const QPointer<QgsVectorLayer> &layer ) const SIP_SKIP;
+
+    /**
+     * Checks that there are no duplicated unique IDs
+     * \returns QgsGeometryCheck::Result::Success in case if there are no duplicates or error value on failure.
+     *
+     * \since QGIS 4.0
+     */
+    Result checkUniqueId( const QgsGeometryCheckerUtils::LayerFeature layerFeature, QMap< QString, QSet<QVariant> > &uniqueIds ) const SIP_SKIP;
 };
 
 #endif // QGS_GEOMETRY_CHECK_H

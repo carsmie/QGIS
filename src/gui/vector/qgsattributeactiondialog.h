@@ -24,14 +24,16 @@ back to QgsVectorLayer.
 #define QGSATTRIBUTEACTIONDIALOG_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
 
 #include "ui_qgsattributeactiondialogbase.h"
-#include "qgsattributetableconfig.h"
-#include "qgis_gui.h"
+
 #include "qgis.h"
+#include "qgis_gui.h"
+#include "qgsattributetableconfig.h"
 
 #include <QMap>
+
+#define SIP_NO_FILE
 
 class QgsActionManager;
 class QgsVectorLayer;
@@ -88,7 +90,18 @@ class GUI_EXPORT QgsAttributeActionDialog : public QWidget, private Ui::QgsAttri
 
   private:
     void insertRow( int row, const QgsAction &action );
-    void insertRow( int row, Qgis::AttributeActionType type, const QString &name, const QString &actionText, const QString &iconPath, bool capture, const QString &shortTitle, const QSet<QString> &actionScopes, const QString &notificationMessage, bool isEnabledOnlyWhenEditable = false );
+    void insertRow(
+      int row,
+      Qgis::AttributeActionType type,
+      const QString &name,
+      const QString &actionText,
+      const QString &iconPath,
+      bool capture,
+      const QString &shortTitle,
+      const QSet<QString> &actionScopes,
+      const QString &notificationMessage,
+      bool isEnabledOnlyWhenEditable = false
+    );
     void swapRows( int row1, int row2 );
     QgsAction rowToAction( int row ) const;
 

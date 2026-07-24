@@ -14,23 +14,25 @@
  ***************************************************************************/
 
 #include "qgsdemterraingenerator.h"
-#include "moc_qgsdemterraingenerator.cpp"
 
-#include "qgsdemterraintileloader_p.h"
+#include <limits>
 
 #include "qgs3dutils.h"
-#include "qgsrasterlayer.h"
 #include "qgscoordinatetransform.h"
+#include "qgsdemterraintileloader_p.h"
+#include "qgsrasterlayer.h"
+
+#include "moc_qgsdemterraingenerator.cpp"
 
 QgsTerrainGenerator *QgsDemTerrainGenerator::create()
 {
   return new QgsDemTerrainGenerator();
 }
 
+QgsDemTerrainGenerator::QgsDemTerrainGenerator() = default;
+
 QgsDemTerrainGenerator::~QgsDemTerrainGenerator()
-{
-  delete mHeightMapGenerator;
-}
+{}
 
 void QgsDemTerrainGenerator::setLayer( QgsRasterLayer *layer )
 {
@@ -79,7 +81,7 @@ float QgsDemTerrainGenerator::heightAt( double x, double y, const Qgs3DRenderCon
   if ( mHeightMapGenerator )
     return mHeightMapGenerator->heightAt( x, y );
   else
-    return 0;
+    return std::numeric_limits<float>::quiet_NaN();
 }
 
 QgsChunkLoader *QgsDemTerrainGenerator::createChunkLoader( QgsChunkNode *node ) const
@@ -104,15 +106,19 @@ void QgsDemTerrainGenerator::updateGenerator()
     const QgsRectangle intersectExtent = mExtent.intersect( layerExtent );
 
     mTerrainTilingScheme = QgsTilingScheme( intersectExtent, mCrs );
-    delete mHeightMapGenerator;
-    mHeightMapGenerator = new QgsDemHeightMapGenerator( dem, mTerrainTilingScheme, mResolution, mTransformContext );
+    mHeightMapGenerator = std::make_unique<QgsDemHeightMapGenerator>( dem, mTerrainTilingScheme, mResolution, mTransformContext );
+
     mIsValid = true;
   }
   else
   {
     mTerrainTilingScheme = QgsTilingScheme();
-    delete mHeightMapGenerator;
-    mHeightMapGenerator = nullptr;
+    mHeightMapGenerator.reset();
     mIsValid = false;
   }
+}
+
+QgsTerrainGenerator::Capabilities QgsDemTerrainGenerator::capabilities() const
+{
+  return QgsTerrainGenerator::Capability::SupportsTileResolution;
 }

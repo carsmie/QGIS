@@ -17,6 +17,7 @@
 #define QGSLAYERNOTESUTILS_H
 
 #include "qgis_core.h"
+
 #include <QString>
 
 class QgsMapLayer;
@@ -31,7 +32,6 @@ class QgsMapLayer;
 class CORE_EXPORT QgsLayerNotesUtils
 {
   public:
-
     /**
      * Returns the notes for the specified \a layer.
      *
@@ -53,7 +53,6 @@ class CORE_EXPORT QgsLayerNotesUtils
      * Removes any notes for the specified \a layer.
      */
     static void removeNotes( QgsMapLayer *layer );
-
 };
 
 

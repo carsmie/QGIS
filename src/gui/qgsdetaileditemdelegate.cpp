@@ -16,21 +16,25 @@
  ***************************************************************************/
 
 #include "qgsdetaileditemdelegate.h"
-#include "moc_qgsdetaileditemdelegate.cpp"
-#include "qgsdetaileditemwidget.h"
+
 #include "qgsdetaileditemdata.h"
+#include "qgsdetaileditemwidget.h"
 #include "qgsrendercontext.h"
-#include <QPainter>
+
+#include <QCheckBox>
 #include <QFont>
 #include <QFontMetrics>
-#include <QStyleOptionViewItem>
-#include <QModelIndex>
-#include <QCheckBox>
 #include <QLinearGradient>
+#include <QModelIndex>
+#include <QPainter>
+#include <QStyleOptionViewItem>
+
+#include "moc_qgsdetaileditemdelegate.cpp"
+
 QgsDetailedItemDelegate::QgsDetailedItemDelegate( QObject *parent )
   : QAbstractItemDelegate( parent )
-  , mpWidget( new QgsDetailedItemWidget() )
-  , mpCheckBox( new QCheckBox() )
+  , mpWidget( std::make_unique<QgsDetailedItemWidget>() )
+  , mpCheckBox( std::make_unique<QCheckBox>() )
 
 {
   //mpWidget->setFixedHeight(80);
@@ -40,10 +44,7 @@ QgsDetailedItemDelegate::QgsDetailedItemDelegate( QObject *parent )
 }
 
 QgsDetailedItemDelegate::~QgsDetailedItemDelegate()
-{
-  delete mpCheckBox;
-  delete mpWidget;
-}
+{}
 
 void QgsDetailedItemDelegate::paint( QPainter *thepPainter, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
@@ -64,10 +65,7 @@ void QgsDetailedItemDelegate::paint( QPainter *thepPainter, const QStyleOptionVi
 }
 
 
-QSize QgsDetailedItemDelegate::sizeHint(
-  const QStyleOptionViewItem &option,
-  const QModelIndex &index
-) const
+QSize QgsDetailedItemDelegate::sizeHint( const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
   if ( index.data( Qt::UserRole ).userType() == qMetaTypeId<QgsDetailedItemData>() )
   {

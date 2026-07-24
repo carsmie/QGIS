@@ -10,11 +10,13 @@ __author__ = "Chris Crook"
 __date__ = "3/10/2014"
 __copyright__ = "Copyright 2014, The QGIS Project"
 
-from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtGui import QColor
-from qgis.PyQt.QtXml import QDomDocument
+import unittest
+
 from qgis.core import (
+    QgsClassificationFixedInterval,
+    QgsClassificationPrettyBreaks,
     QgsFeature,
+    QgsFillSymbol,
     QgsGeometry,
     QgsGradientColorRamp,
     QgsGraduatedSymbolRenderer,
@@ -25,10 +27,11 @@ from qgis.core import (
     QgsRendererRange,
     QgsRendererRangeLabelFormat,
     QgsVectorLayer,
-    QgsFillSymbol,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.testing import QgisTestCase, start_app
 
 start_app()
 
@@ -161,7 +164,6 @@ def dumpGraduatedRenderer(r):
 
 
 class TestQgsGraduatedSymbolRenderer(QgisTestCase):
-
     def testQgsRendererRange_1(self):
         """Test QgsRendererRange getter/setter functions"""
         range = QgsRendererRange()
@@ -276,9 +278,7 @@ class TestQgsGraduatedSymbolRenderer(QgisTestCase):
             self.assertEqual(
                 result,
                 expected,
-                "Number format error {}:{}:{} => {}".format(
-                    precision, trim, value, result
-                ),
+                f"Number format error {precision}:{trim}:{value} => {result}",
             )
 
         # Label tests - label format, expected result.
@@ -769,6 +769,101 @@ class TestQgsGraduatedSymbolRenderer(QgisTestCase):
 """
 
         self.assertEqual(dom.toString(), expected)
+
+    def testFixedIntervalSingleClass(self):
+        """Test single class with fixed interval, issue GH #63277"""
+
+        # Create a renderer
+        renderer = QgsGraduatedSymbolRenderer()
+        renderer.setClassificationMethod(QgsClassificationFixedInterval())
+        symbol = createMarkerSymbol()
+        renderer.setSourceSymbol(symbol.clone())
+
+        # Test retrieving data values from a layer
+        ml = createMemoryLayer((0, 0))
+
+        renderer.setClassAttribute("value")
+        # Equal interval calculations
+        renderer.updateClasses(ml, 5)
+        self.assertEqual(
+            dumpRangeBreaks(renderer.ranges()),
+            "(0.0000-1.0000,)",
+            "Fixed interval classification not correct",
+        )
+
+        ml = createMemoryLayer((1, 1))
+        renderer.updateClasses(ml, 5)
+        self.assertEqual(
+            dumpRangeBreaks(renderer.ranges()),
+            "(1.0000-2.0000,)",
+            "Fixed interval classification not correct",
+        )
+
+    def testPrettyBreakSingleClass(self):
+        """Test single class with pretty break, issue GH #63277"""
+
+        # Create a renderer
+        renderer = QgsGraduatedSymbolRenderer()
+        renderer.setClassificationMethod(QgsClassificationPrettyBreaks())
+        symbol = createMarkerSymbol()
+        renderer.setSourceSymbol(symbol.clone())
+
+        # Test retrieving data values from a layer
+        ml = createMemoryLayer((0, 0))
+
+        renderer.setClassAttribute("value")
+        # Equal interval calculations
+        renderer.updateClasses(ml, 5)
+        self.assertEqual(
+            dumpRangeBreaks(renderer.ranges()),
+            "(0.0000-1.0000,)",
+            "Pretty breaks classification not correct",
+        )
+
+        ml = createMemoryLayer((1, 1))
+        renderer.updateClasses(ml, 5)
+        self.assertEqual(
+            dumpRangeBreaks(renderer.ranges()),
+            "(1.0000-2.0000,)",
+            "Pretty breaks classification not correct",
+        )
+
+    def testSetLegendSymbolItemLabel(self):
+        ms = QgsMarkerSymbol.createSimple({})
+
+        r1 = QgsRendererRange(0.0, 1.0, ms.clone(), "range 1")
+        r2 = QgsRendererRange(1.0, 2.0, ms.clone(), "range 2")
+        r3 = QgsRendererRange(2.0, 3.0, ms.clone(), "range 3")
+
+        renderer = QgsGraduatedSymbolRenderer()
+        renderer.addClassRange(r1)
+        renderer.addClassRange(r2)
+        renderer.addClassRange(r3)
+
+        # verify initial labels
+        self.assertEqual(renderer.ranges()[0].label(), "range 1")
+        self.assertEqual(renderer.ranges()[1].label(), "range 2")
+        self.assertEqual(renderer.ranges()[2].label(), "range 3")
+
+        # change label for second range using its key
+        key2 = renderer.ranges()[1].uuid()
+        renderer.setLegendSymbolItemLabel(key2, "updated range 2")
+
+        self.assertEqual(renderer.ranges()[0].label(), "range 1")
+        self.assertEqual(renderer.ranges()[1].label(), "updated range 2")
+        self.assertEqual(renderer.ranges()[2].label(), "range 3")
+
+        # change label via legendSymbolItems key
+        items = renderer.legendSymbolItems()
+        self.assertEqual(len(items), 3)
+        renderer.setLegendSymbolItemLabel(items[0].ruleKey(), "new range 1")
+        self.assertEqual(renderer.ranges()[0].label(), "new range 1")
+
+        # non-existent key should not change anything
+        renderer.setLegendSymbolItemLabel("nonexistent", "nonexistent_label")
+        self.assertEqual(renderer.ranges()[0].label(), "new range 1")
+        self.assertEqual(renderer.ranges()[1].label(), "updated range 2")
+        self.assertEqual(renderer.ranges()[2].label(), "range 3")
 
 
 if __name__ == "__main__":

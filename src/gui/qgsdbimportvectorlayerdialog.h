@@ -16,17 +16,19 @@
 #ifndef QGSDBIMPORTVECTORLAYERDIALOG_H
 #define QGSDBIMPORTVECTORLAYERDIALOG_H
 
-#include "qgis_gui.h"
-#include "qgis.h"
-#include "qgsmimedatautils.h"
-#include "qgsexpressioncontextgenerator.h"
 #include "ui_qgsdbimportvectorlayerdialog.h"
+
+#include "qgis.h"
+#include "qgis_gui.h"
+#include "qgsexpressioncontextgenerator.h"
+#include "qgsmimedatautils.h"
+
+#define SIP_NO_FILE
 
 class QgsAbstractDatabaseProviderConnection;
 class QgsVectorLayerExporterTask;
 class QgsDatabaseSchemaComboBox;
 
-#define SIP_NO_FILE
 
 /**
  * \class QgsDbImportVectorLayerDialog

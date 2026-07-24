@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "qgspdfrenderer.h"
+
 #ifdef HAVE_PDF4QT
 #include "pdfdocumentreader.h"
 #include "pdfrenderer.h"
@@ -33,35 +34,39 @@
 class PdfDocumentContainer
 {
   public:
-    PdfDocumentContainer( const QString &path )
-      : reader( nullptr, []( bool * )->QString {return QString(); }, true, false )
+    PdfDocumentContainer( const QString &path, Qgis::PdfRenderFlags flags )
+      : reader(
+          nullptr, []( bool * ) -> QString { return QString(); }, true, false
+        )
       , document( reader.readFromFile( path ) )
       , modifiedDocument( &document, nullptr )
       , fontCache( 1000, 1000 )
     {
       fontCache.setDocument( modifiedDocument );
-      renderer = std::make_unique< pdf::PDFRenderer >( &document,
-                 &fontCache,
-                 &pdfCms,
-                 nullptr,
-                 pdf::PDFRenderer::Features(),
-                 meshQualitySettings );
+
+      pdf::PDFRenderer::Features features;
+      if ( flags.testFlag( Qgis::PdfRenderFlag::RenderTextAsText ) )
+      {
+        features.setFlag( pdf::PDFRenderer::Feature::RealText, true );
+      }
+      renderer = std::make_unique< pdf::PDFRenderer >( &document, &fontCache, &pdfCms, nullptr, features, meshQualitySettings );
     }
     pdf::PDFDocumentReader reader;
     pdf::PDFDocument document;
     pdf::PDFModifiedDocument modifiedDocument;
     pdf::PDFFontCache fontCache;
     pdf::PDFCMSGeneric pdfCms;
-    pdf::PDFMeshQualitySettings  meshQualitySettings;
+    pdf::PDFMeshQualitySettings meshQualitySettings;
     std::unique_ptr< pdf::PDFRenderer > renderer;
 };
 #endif
 
-QgsPdfRenderer::QgsPdfRenderer( const QString &path )
+QgsPdfRenderer::QgsPdfRenderer( const QString &path, Qgis::PdfRenderFlags flags )
   : mPath( path )
+  , mFlags( flags )
 {
 #ifdef HAVE_PDF4QT
-  mDocumentContainer = std::make_unique< PdfDocumentContainer >( path );
+  mDocumentContainer = std::make_unique< PdfDocumentContainer >( path, flags );
 #endif
 }
 
@@ -71,7 +76,7 @@ QgsPdfRenderer::~QgsPdfRenderer() = default;
 int QgsPdfRenderer::pageCount() const
 {
   const pdf::PDFCatalog *catalog = mDocumentContainer->document.getCatalog();
-  return catalog->getPageCount();
+  return static_cast< int >( catalog->getPageCount() );
 }
 #else
 int QgsPdfRenderer::pageCount() const

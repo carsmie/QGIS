@@ -13,17 +13,17 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "qgiscustomwidgets.h"
 #include "qgsfeaturepickerwidgetplugin.h"
-#include "moc_qgsfeaturepickerwidgetplugin.cpp"
+
+#include "qgiscustomwidgets.h"
 #include "qgsfeaturepickerwidget.h"
 
+#include "moc_qgsfeaturepickerwidgetplugin.cpp"
 
 QgsFeaturePickerWidgetPlugin::QgsFeaturePickerWidgetPlugin( QObject *parent )
   : QObject( parent )
   , mInitialized( false )
-{
-}
+{}
 
 QString QgsFeaturePickerWidgetPlugin::name() const
 {
@@ -81,17 +81,19 @@ QString QgsFeaturePickerWidgetPlugin::whatsThis() const
 
 QString QgsFeaturePickerWidgetPlugin::domXml() const
 {
-  return QString( "<ui language=\"c++\">\n"
-                  " <widget class=\"%1\" name=\"mFeaturePickerWidget\">\n"
-                  "  <property name=\"geometry\">\n"
-                  "   <rect>\n"
-                  "    <x>0</x>\n"
-                  "    <y>0</y>\n"
-                  "    <width>90</width>\n"
-                  "    <height>27</height>\n"
-                  "   </rect>\n"
-                  "  </property>\n"
-                  " </widget>\n"
-                  "</ui>\n" )
+  return QString(
+           "<ui language=\"c++\">\n"
+           " <widget class=\"%1\" name=\"mFeaturePickerWidget\">\n"
+           "  <property name=\"geometry\">\n"
+           "   <rect>\n"
+           "    <x>0</x>\n"
+           "    <y>0</y>\n"
+           "    <width>90</width>\n"
+           "    <height>27</height>\n"
+           "   </rect>\n"
+           "  </property>\n"
+           " </widget>\n"
+           "</ui>\n"
+  )
     .arg( name() );
 }

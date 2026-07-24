@@ -23,17 +23,17 @@
 #ifndef QGSRASTERPROJECTOR_H
 #define QGSRASTERPROJECTOR_H
 
+#include <cmath>
+
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include <QVector>
-#include <QList>
-
-#include "qgsrectangle.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgscoordinatetransform.h"
 #include "qgsrasterinterface.h"
+#include "qgsrectangle.h"
 
-#include <cmath>
+#include <QList>
+#include <QVector>
 
 class QgsPointXY;
 
@@ -52,7 +52,6 @@ class CORE_EXPORT QgsRasterProjector : public QgsRasterInterface
     Q_GADGET
 
   public:
-
     /**
      * Precision defines if each pixel is reprojected or approximate reprojection based
      *  on an approximation matrix of reprojected points is used.
@@ -60,7 +59,7 @@ class CORE_EXPORT QgsRasterProjector : public QgsRasterInterface
     enum Precision
     {
       Approximate = 0, //!< Approximate (default), fast but possibly inaccurate
-      Exact = 1,   //!< Exact, precise but slow
+      Exact = 1,       //!< Exact, precise but slow
     };
     Q_ENUM( Precision )
 
@@ -76,15 +75,13 @@ class CORE_EXPORT QgsRasterProjector : public QgsRasterInterface
      * Sets the source and destination CRS
      * \deprecated QGIS 3.8. Use transformContext version instead.
      */
-    Q_DECL_DEPRECATED void setCrs( const QgsCoordinateReferenceSystem &srcCRS, const QgsCoordinateReferenceSystem &destCRS,
-                                   int srcDatumTransform = -1, int destDatumTransform = -1 ) SIP_DEPRECATED;
+    Q_DECL_DEPRECATED void setCrs( const QgsCoordinateReferenceSystem &srcCRS, const QgsCoordinateReferenceSystem &destCRS, int srcDatumTransform = -1, int destDatumTransform = -1 ) SIP_DEPRECATED;
 
     /**
      * Sets source CRS to \a srcCRS and destination CRS to \a destCRS and the transformation context to \a transformContext
      * \since QGIS 3.8
      */
-    void setCrs( const QgsCoordinateReferenceSystem &srcCRS, const QgsCoordinateReferenceSystem &destCRS,
-                 QgsCoordinateTransformContext transformContext );
+    void setCrs( const QgsCoordinateReferenceSystem &srcCRS, const QgsCoordinateReferenceSystem &destCRS, QgsCoordinateTransformContext transformContext );
 
     //! Returns the source CRS
     QgsCoordinateReferenceSystem sourceCrs() const { return mSrcCRS; }
@@ -100,16 +97,12 @@ class CORE_EXPORT QgsRasterProjector : public QgsRasterInterface
     QgsRasterBlock *block( int bandNo, const QgsRectangle &extent, int width, int height, QgsRasterBlockFeedback *feedback = nullptr ) override SIP_FACTORY;
 
     //! Calculate destination extent and size from source extent and size
-    bool destExtentSize( const QgsRectangle &srcExtent, int srcXSize, int srcYSize,
-                         QgsRectangle &destExtent SIP_OUT, int &destXSize SIP_OUT, int &destYSize SIP_OUT );
+    bool destExtentSize( const QgsRectangle &srcExtent, int srcXSize, int srcYSize, QgsRectangle &destExtent SIP_OUT, int &destXSize SIP_OUT, int &destYSize SIP_OUT );
 
     //! Calculate destination extent and size from source extent and size
-    static bool extentSize( const QgsCoordinateTransform &ct,
-                            const QgsRectangle &srcExtent, int srcXSize, int srcYSize,
-                            QgsRectangle &destExtent SIP_OUT, int &destXSize SIP_OUT, int &destYSize SIP_OUT );
+    static bool extentSize( const QgsCoordinateTransform &ct, const QgsRectangle &srcExtent, int srcXSize, int srcYSize, QgsRectangle &destExtent SIP_OUT, int &destXSize SIP_OUT, int &destYSize SIP_OUT );
 
   private:
-
     //! Source CRS
     QgsCoordinateReferenceSystem mSrcCRS;
 
@@ -126,7 +119,6 @@ class CORE_EXPORT QgsRasterProjector : public QgsRasterInterface
     Precision mPrecision = Approximate;
 
     QgsCoordinateTransformContext mTransformContext;
-
 };
 
 
@@ -142,7 +134,9 @@ class ProjectorData
 {
   public:
     //! Initialize reprojector and calculate matrix
-    ProjectorData( const QgsRectangle &extent, int width, int height, QgsRasterInterface *input, const QgsCoordinateTransform &inverseCt, QgsRasterProjector::Precision precision, QgsRasterBlockFeedback *feedback = nullptr );
+    ProjectorData(
+      const QgsRectangle &extent, int width, int height, QgsRasterInterface *input, const QgsCoordinateTransform &inverseCt, QgsRasterProjector::Precision precision, QgsRasterBlockFeedback *feedback = nullptr
+    );
     ~ProjectorData();
 
     ProjectorData( const ProjectorData &other ) = delete;
@@ -160,15 +154,14 @@ class ProjectorData
     int srcCols() const { return mSrcCols; }
 
   private:
-
     //! Returns the destination point for _current_ destination position.
-    void destPointOnCPMatrix( int row, int col, double *theX, double *theY );
+    void destPointOnCPMatrix( int row, int col, double *theX, double *theY ) const;
 
     //! Returns the matrix upper left row index for destination row.
-    int matrixRow( int destRow );
+    int matrixRow( int destRow ) const;
 
     //! Returns the matrix upper left col index for destination col.
-    int matrixCol( int destCol );
+    int matrixCol( int destCol ) const;
 
     //! Returns precise source row and column indexes for current source extent and resolution.
     inline bool preciseSrcRowCol( int destRow, int destCol, int *srcRow, int *srcCol );
@@ -201,16 +194,16 @@ class ProjectorData
      * \brief check error along columns
      * returns TRUE if within threshold
     */
-    bool checkCols( const QgsCoordinateTransform &ct );
+    bool checkCols( const QgsCoordinateTransform &ct ) const;
 
     /**
      * \brief check error along rows
      * returns TRUE if within threshold
     */
-    bool checkRows( const QgsCoordinateTransform &ct );
+    bool checkRows( const QgsCoordinateTransform &ct ) const;
 
     //! Calculate array of src helper points
-    void calcHelper( int matrixRow, QgsPointXY *points );
+    void calcHelper( int matrixRow, std::vector<QgsPointXY> &points );
 
     //! Calc / switch helper
     void nextHelper();
@@ -222,7 +215,7 @@ class ProjectorData
      * Use approximation (requested precision is Approximate and it is possible to calculate
      * an approximation matrix with a sufficient precision).
     */
-    bool mApproximate;
+    bool mApproximate = false;
 
     //! Transformation from destination CRS to source CRS
     QgsCoordinateTransform mInverseCt;
@@ -243,28 +236,28 @@ class ProjectorData
     int mDestCols;
 
     //! Destination x resolution
-    double mDestXRes;
+    double mDestXRes = 0.0;
 
     //! Destination y resolution
-    double mDestYRes;
+    double mDestYRes = 0.0;
 
     //! Number of source rows
-    int mSrcRows;
+    int mSrcRows = 0;
 
     //! Number of source columns
-    int mSrcCols;
+    int mSrcCols = 0;
 
     //! Source x resolution
-    double mSrcXRes;
+    double mSrcXRes = 0.0;
 
     //! Source y resolution
-    double mSrcYRes;
+    double mSrcYRes = 0.0;
 
     //! Number of destination rows per matrix row
-    double mDestRowsPerMatrixRow;
+    double mDestRowsPerMatrixRow = 0.0;
 
     //! Number of destination cols per matrix col
-    double mDestColsPerMatrixCol;
+    double mDestColsPerMatrixCol = 0.0;
 
     //! Grid of source control points
     QList< QList<QgsPointXY> > mCPMatrix;
@@ -275,31 +268,29 @@ class ProjectorData
 
     //! Array of source points for each destination column on top of current CPMatrix grid row
     /* Warning: using QList is slow on access */
-    QgsPointXY *pHelperTop = nullptr;
+    std::vector<QgsPointXY> pHelperTop;
 
     //! Array of source points for each destination column on bottom of current CPMatrix grid row
     /* Warning: using QList is slow on access */
-    QgsPointXY *pHelperBottom = nullptr;
+    std::vector<QgsPointXY> pHelperBottom;
 
     //! Current mHelperTop matrix row
-    int mHelperTopRow;
+    int mHelperTopRow = 0;
 
     //! Number of mCPMatrix columns
-    int mCPCols;
+    int mCPCols = 0;
     //! Number of mCPMatrix rows
-    int mCPRows;
+    int mCPRows = 0;
 
     //! Maximum tolerance in destination units
-    double mSqrTolerance;
+    double mSqrTolerance = 0.0;
 
     //! Maximum source resolution
-    double mMaxSrcXRes;
-    double mMaxSrcYRes;
-
+    double mMaxSrcXRes = 0;
+    double mMaxSrcYRes = 0;
 };
 
 /// @endcond
 #endif
 
 #endif
-

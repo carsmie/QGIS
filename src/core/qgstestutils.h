@@ -28,7 +28,6 @@ class QgsVectorDataProvider;
 class CORE_EXPORT QgsTestUtils
 {
   public:
-
     /**
      * Runs a thready safety test on iterators from a vector data \a provider, by concurrently
      * requesting features from the provider.
@@ -44,6 +43,10 @@ class CORE_EXPORT QgsTestUtils
      */
     static bool compareDomElements( const QDomElement &element1, const QDomElement &element2 );
 
+    /**
+     * Sanitizes fake_qgis_http_endpoint URLs
+     */
+    static QString sanitizeFakeHttpEndpoint( const QString &urlString );
 };
 
 ///@endcond

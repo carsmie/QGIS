@@ -18,11 +18,13 @@
 #ifndef QGSALGORITHMSUMLINELENGTH_H
 #define QGSALGORITHMSUMLINELENGTH_H
 
-#define SIP_NO_FILE
 
 #include "qgis.h"
-#include "qgsprocessingalgorithm.h"
 #include "qgsdistancearea.h"
+#include "qgsprocessingalgorithm.h"
+
+#define SIP_NO_FILE
+
 ///@cond PRIVATE
 
 /**

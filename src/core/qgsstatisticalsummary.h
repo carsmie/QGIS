@@ -16,12 +16,14 @@
 #ifndef QGSSTATISTICALSUMMARY_H
 #define QGSSTATISTICALSUMMARY_H
 
-#include <QMap>
-#include <QVariant>
 #include <cmath>
+
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
+
+#include <QMap>
+#include <QVariant>
 
 /***************************************************************************
  * This class is considered CRITICAL and any change MUST be accompanied with
@@ -44,7 +46,6 @@
 class CORE_EXPORT QgsStatisticalSummary
 {
   public:
-
     /**
      * Constructor for QgsStatisticalSummary
      * \param stats flags for statistics to calculate
@@ -271,7 +272,6 @@ class CORE_EXPORT QgsStatisticalSummary
     static QString shortName( Qgis::Statistic statistic );
 
   private:
-
     Qgis::Statistics mStatistics;
 
     int mCount;

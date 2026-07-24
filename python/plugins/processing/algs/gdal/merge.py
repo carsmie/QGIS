@@ -21,23 +21,22 @@ __copyright__ = "(C) 2012, Victor Olaya"
 
 import os
 
-from qgis.PyQt.QtGui import QIcon
-
 from qgis.core import (
-    QgsRasterFileWriter,
     QgsProcessing,
     QgsProcessingException,
-    QgsProcessingParameterDefinition,
-    QgsProcessingParameterMultipleLayers,
-    QgsProcessingParameterEnum,
-    QgsProcessingParameterString,
     QgsProcessingParameterBoolean,
+    QgsProcessingParameterDefinition,
+    QgsProcessingParameterEnum,
+    QgsProcessingParameterMultipleLayers,
     QgsProcessingParameterNumber,
     QgsProcessingParameterRasterDestination,
+    QgsProcessingParameterString,
+    QgsRasterFileWriter,
 )
+from qgis.PyQt.QtGui import QIcon
+
 from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
-
 from processing.tools.system import isWindows
 
 pluginPath = os.path.split(os.path.split(os.path.dirname(__file__))[0])[0]
@@ -120,7 +119,7 @@ class merge(GdalAlgorithm):
         self.addParameter(nodata_out_param)
 
         # backwards compatibility parameter
-        # TODO QGIS 4: remove parameter and related logic
+        # TODO QGIS 5: remove parameter and related logic
         options_param = QgsProcessingParameterString(
             self.OPTIONS,
             self.tr("Additional creation options"),
@@ -230,7 +229,7 @@ class merge(GdalAlgorithm):
 
         arguments.append("-ot " + self.TYPES[data_type])
 
-        output_format = QgsRasterFileWriter.driverForExtension(os.path.splitext(out)[1])
+        output_format = self.outputFormat(parameters, self.OUTPUT, context)
         if not output_format:
             raise QgsProcessingException(self.tr("Output format is invalid"))
 
@@ -266,6 +265,19 @@ class merge(GdalAlgorithm):
         arguments.append(list_file)
 
         return [
-            self.commandName() + (".bat" if isWindows() else ".py"),
+            self.commandName() + merge.command_ext(),
             GdalUtils.escapeAndJoin(arguments),
         ]
+
+    @staticmethod
+    def command_ext() -> str:
+        """
+        Returns the gdal_merge command extension
+        """
+        if isWindows():
+            return ".bat"
+
+        if GdalUtils.version() < 3090000:
+            return ".py"
+
+        return ""

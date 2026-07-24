@@ -16,15 +16,21 @@
  ***************************************************************************/
 
 #include "qgsmaptoolrotatelabel.h"
-#include "moc_qgsmaptoolrotatelabel.cpp"
+
+#include "qgisapp.h"
 #include "qgsmapcanvas.h"
+#include "qgsmapmouseevent.h"
+#include "qgsmessagebar.h"
 #include "qgspallabeling.h"
 #include "qgspointrotationitem.h"
 #include "qgsrubberband.h"
 #include "qgsvectorlayer.h"
-#include "qgsmapmouseevent.h"
-#include "qgisapp.h"
-#include "qgsmessagebar.h"
+
+#include <QString>
+
+#include "moc_qgsmaptoolrotatelabel.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsMapToolRotateLabel::QgsMapToolRotateLabel( QgsMapCanvas *canvas, QgsAdvancedDigitizingDockWidget *cadDock )
   : QgsMapToolLabel( canvas, cadDock )
@@ -138,7 +144,9 @@ void QgsMapToolRotateLabel::canvasPressEvent( QgsMapMouseEvent *e )
             }
             else
             {
-              QgisApp::instance()->messageBar()->pushWarning( tr( "Rotate Label" ), tr( "Cannot rotate “%1” — the layer “%2” could not be made editable" ).arg( mCurrentLabel.pos.labelText, mCurrentLabel.layer->name() ) );
+              QgisApp::instance()
+                ->messageBar()
+                ->pushWarning( tr( "Rotate Label" ), tr( "Cannot rotate “%1” — the layer “%2” could not be made editable" ).arg( mCurrentLabel.pos.labelText, mCurrentLabel.layer->name() ) );
               return;
             }
           }
@@ -147,7 +155,9 @@ void QgsMapToolRotateLabel::canvasPressEvent( QgsMapMouseEvent *e )
 
         case PropertyStatus::CurrentExpressionInvalid:
         {
-          QgisApp::instance()->messageBar()->pushWarning( tr( "Rotate Label" ), tr( "Cannot rotate “%1” — the layer “%2” has an invalid expression set for label rotation" ).arg( mCurrentLabel.pos.labelText, mCurrentLabel.layer->name() ) );
+          QgisApp::instance()
+            ->messageBar()
+            ->pushWarning( tr( "Rotate Label" ), tr( "Cannot rotate “%1” — the layer “%2” has an invalid expression set for label rotation" ).arg( mCurrentLabel.pos.labelText, mCurrentLabel.layer->name() ) );
           return;
         }
       }
@@ -160,8 +170,7 @@ void QgsMapToolRotateLabel::canvasPressEvent( QgsMapMouseEvent *e )
         }
 
         // Convert to degree
-        mCurrentRotation = mCurrentRotation
-                           * QgsUnitTypes::fromUnitToUnitFactor( mCurrentLabel.settings.rotationUnit(), Qgis::AngleUnit::Degrees );
+        mCurrentRotation = mCurrentRotation * QgsUnitTypes::fromUnitToUnitFactor( mCurrentLabel.settings.rotationUnit(), Qgis::AngleUnit::Degrees );
 
         mStartRotation = mCurrentRotation;
         createRubberBands();
@@ -219,7 +228,7 @@ void QgsMapToolRotateLabel::canvasPressEvent( QgsMapMouseEvent *e )
         // Convert back to settings unit
         const double rotation = rotationDegree * QgsUnitTypes::fromUnitToUnitFactor( Qgis::AngleUnit::Degrees, mCurrentLabel.settings.rotationUnit() );
 
-        vlayer->beginEditCommand( tr( "Rotated label" ) + QStringLiteral( " '%1'" ).arg( currentLabelText( 24 ) ) );
+        vlayer->beginEditCommand( tr( "Rotated label" ) + u" '%1'"_s.arg( currentLabelText( 24 ) ) );
         if ( !vlayer->changeAttributeValue( mCurrentLabel.pos.featureId, rotationCol, rotation ) )
         {
           if ( !vlayer->isEditable() )
@@ -274,7 +283,7 @@ void QgsMapToolRotateLabel::keyReleaseEvent( QKeyEvent *e )
           int rotationCol;
           if ( labelRotatableStatus( vlayer, mCurrentLabel.settings, rotationCol ) == PropertyStatus::Valid )
           {
-            vlayer->beginEditCommand( tr( "Delete Label Rotation" ) + QStringLiteral( " '%1'" ).arg( currentLabelText( 24 ) ) );
+            vlayer->beginEditCommand( tr( "Delete Label Rotation" ) + u" '%1'"_s.arg( currentLabelText( 24 ) ) );
             if ( !vlayer->changeAttributeValue( mCurrentLabel.pos.featureId, rotationCol, QVariant() ) )
             {
               // if the edit command fails, it's likely because the label x/y is being stored in a physical field (not a auxiliary one!)
@@ -331,7 +340,7 @@ void QgsMapToolRotateLabel::createRotationPreviewBox()
   if ( boxPoints.empty() )
     return;
 
-  mRotationPreviewBox.reset( new QgsRubberBand( mCanvas, Qgis::GeometryType::Line ) );
+  mRotationPreviewBox = make_qobject_unique<QgsRubberBand>( mCanvas, Qgis::GeometryType::Line );
   mRotationPreviewBox->setColor( QColor( 0, 0, 255, 65 ) );
   mRotationPreviewBox->setWidth( 3 );
   setRotationPreviewBox( mCurrentRotation - mStartRotation );

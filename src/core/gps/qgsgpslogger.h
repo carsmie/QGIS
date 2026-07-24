@@ -16,18 +16,18 @@
 #ifndef QGSGPSLOGGER_H
 #define QGSGPSLOGGER_H
 
-#include "qgis_core.h"
+#include "info.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgis_sip.h"
 #include "qgscoordinatereferencesystem.h"
-#include "qgsdistancearea.h"
 #include "qgscoordinatetransformcontext.h"
+#include "qgsdistancearea.h"
 #include "qgswkbtypes.h"
 
+#include <QDateTime>
 #include <QObject>
 #include <QPointer>
-#include <QDateTime>
-#include "info.h"
 
 class QgsSettingsEntryBool;
 class QgsSettingsEntryDouble;
@@ -57,7 +57,6 @@ class CORE_EXPORT QgsGpsLogger : public QObject
     Q_OBJECT
 
   public:
-
     static const QgsSettingsEntryBool *settingsApplyLeapSeconds SIP_SKIP;
 
     static const QgsSettingsEntryString *settingsTimestampTimeZone SIP_SKIP;
@@ -255,7 +254,6 @@ class CORE_EXPORT QgsGpsLogger : public QObject
     void distanceAreaChanged();
 
   protected:
-
     //! WGS84 coordinate reference system
     QgsCoordinateReferenceSystem mWgs84CRS;
 
@@ -273,7 +271,6 @@ class CORE_EXPORT QgsGpsLogger : public QObject
     void gpsStateChanged( const QgsGpsInformation &info );
 
   private:
-
     QPointer< QgsGpsConnection > mConnection;
 
     QgsDistanceArea mDistanceCalculator;
@@ -310,7 +307,6 @@ class CORE_EXPORT QgsGpsLogger : public QObject
     double mLastMValue = std::numeric_limits<double>::quiet_NaN();
 
     friend class TestQgsGpsIntegration;
-
 };
 
 

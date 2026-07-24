@@ -16,18 +16,23 @@
  ***************************************************************************/
 
 #include "qgsalgorithmcheckgeometryhole.h"
+
 #include "qgsgeometrycheckcontext.h"
 #include "qgsgeometrycheckerror.h"
 #include "qgsgeometryholecheck.h"
 #include "qgspoint.h"
-#include "qgsvectorlayer.h"
 #include "qgsvectordataproviderfeaturepool.h"
+#include "qgsvectorlayer.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
 QString QgsGeometryCheckHoleAlgorithm::name() const
 {
-  return QStringLiteral( "checkgeometryhole" );
+  return u"checkgeometryhole"_s;
 }
 
 QString QgsGeometryCheckHoleAlgorithm::displayName() const
@@ -52,18 +57,21 @@ QString QgsGeometryCheckHoleAlgorithm::group() const
 
 QString QgsGeometryCheckHoleAlgorithm::groupId() const
 {
-  return QStringLiteral( "checkgeometry" );
+  return u"checkgeometry"_s;
 }
 
 QString QgsGeometryCheckHoleAlgorithm::shortHelpString() const
 {
-  return QObject::tr( "This algorithm checks the holes of polygon geometries.\n"
-                      "Holes are errors." );
+  return QObject::tr(
+    "This algorithm checks the holes of polygon geometries.\n"
+    "If the area threshold is provided, only holes smaller than the threshold are errors, "
+    "otherwise all holes are errors.\n"
+  );
 }
 
 Qgis::ProcessingAlgorithmFlags QgsGeometryCheckHoleAlgorithm::flags() const
 {
-  return QgsProcessingAlgorithm::flags() | Qgis::ProcessingAlgorithmFlag::NoThreading;
+  return QgsProcessingAlgorithm::flags() | Qgis::ProcessingAlgorithmFlag::NoThreading | Qgis::ProcessingAlgorithmFlag::RequiresProject;
 }
 
 QgsGeometryCheckHoleAlgorithm *QgsGeometryCheckHoleAlgorithm::createInstance() const
@@ -75,37 +83,27 @@ void QgsGeometryCheckHoleAlgorithm::initAlgorithm( const QVariantMap &configurat
 {
   Q_UNUSED( configuration )
 
-  // inputs
-  addParameter(
-    new QgsProcessingParameterFeatureSource(
-      QStringLiteral( "INPUT" ), QObject::tr( "Input layer" ),
-      QList<int>() << static_cast<int>( Qgis::ProcessingSourceType::VectorPolygon )
+  addParameter( new QgsProcessingParameterFeatureSource( u"INPUT"_s, QObject::tr( "Input layer" ), QList<int>() << static_cast<int>( Qgis::ProcessingSourceType::VectorPolygon ) ) );
+  addParameter( new QgsProcessingParameterField( u"UNIQUE_ID"_s, QObject::tr( "Unique feature identifier" ), QString(), u"INPUT"_s ) );
+  addParameter( new QgsProcessingParameterArea( u"AREA_THRESHOLD"_s, QObject::tr( "Area threshold" ), QVariant(), u"INPUT"_s, true ) );
+
+  addParameter( new QgsProcessingParameterFeatureSink( u"ERRORS"_s, QObject::tr( "Holes errors" ), Qgis::ProcessingSourceType::VectorPoint ) );
+  addParameter( new QgsProcessingParameterFeatureSink( u"OUTPUT"_s, QObject::tr( "Polygons with holes" ), Qgis::ProcessingSourceType::VectorPolygon, QVariant(), true, false ) );
+
+  auto tolerance = std::make_unique<QgsProcessingParameterNumber>( u"TOLERANCE"_s, QObject::tr( "Tolerance" ), Qgis::ProcessingNumberParameterType::Integer, 8, false, 1, 13 );
+  tolerance->setFlags( tolerance->flags() | Qgis::ProcessingParameterFlag::Advanced );
+  tolerance->setHelp(
+    QObject::tr(
+      "The \"Tolerance\" advanced parameter defines the numerical precision of geometric operations, "
+      "given as an integer n, meaning that any difference smaller than 10⁻ⁿ (in map units) is considered zero."
     )
   );
-  addParameter( new QgsProcessingParameterField(
-    QStringLiteral( "UNIQUE_ID" ), QObject::tr( "Unique feature identifier" ), QString(), QStringLiteral( "INPUT" )
-  ) );
-
-  // outputs
-  addParameter( new QgsProcessingParameterFeatureSink(
-    QStringLiteral( "ERRORS" ), QObject::tr( "Holes errors" ), Qgis::ProcessingSourceType::VectorPoint
-  ) );
-  addParameter( new QgsProcessingParameterFeatureSink(
-    QStringLiteral( "OUTPUT" ), QObject::tr( "Polygons with holes" ), Qgis::ProcessingSourceType::VectorPolygon, QVariant(), true, false
-  ) );
-
-  std::unique_ptr<QgsProcessingParameterNumber> tolerance = std::make_unique<QgsProcessingParameterNumber>(
-    QStringLiteral( "TOLERANCE" ), QObject::tr( "Tolerance" ), Qgis::ProcessingNumberParameterType::Integer, 8, false, 1, 13
-  );
-  tolerance->setFlags( tolerance->flags() | Qgis::ProcessingParameterFlag::Advanced );
-  tolerance->setHelp( QObject::tr( "The \"Tolerance\" advanced parameter defines the numerical precision of geometric operations, "
-                                   "given as an integer n, meaning that any difference smaller than 10⁻ⁿ (in map units) is considered zero." ) );
   addParameter( tolerance.release() );
 }
 
 bool QgsGeometryCheckHoleAlgorithm::prepareAlgorithm( const QVariantMap &parameters, QgsProcessingContext &context, QgsProcessingFeedback * )
 {
-  mTolerance = parameterAsInt( parameters, QStringLiteral( "TOLERANCE" ), context );
+  mTolerance = parameterAsInt( parameters, u"TOLERANCE"_s, context );
 
   return true;
 }
@@ -113,14 +111,14 @@ bool QgsGeometryCheckHoleAlgorithm::prepareAlgorithm( const QVariantMap &paramet
 QgsFields QgsGeometryCheckHoleAlgorithm::outputFields()
 {
   QgsFields fields;
-  fields.append( QgsField( QStringLiteral( "gc_layerid" ), QMetaType::QString ) );
-  fields.append( QgsField( QStringLiteral( "gc_layername" ), QMetaType::QString ) );
-  fields.append( QgsField( QStringLiteral( "gc_partidx" ), QMetaType::Int ) );
-  fields.append( QgsField( QStringLiteral( "gc_ringidx" ), QMetaType::Int ) );
-  fields.append( QgsField( QStringLiteral( "gc_vertidx" ), QMetaType::Int ) );
-  fields.append( QgsField( QStringLiteral( "gc_errorx" ), QMetaType::Double ) );
-  fields.append( QgsField( QStringLiteral( "gc_errory" ), QMetaType::Double ) );
-  fields.append( QgsField( QStringLiteral( "gc_error" ), QMetaType::QString ) );
+  fields.append( QgsField( u"gc_layerid"_s, QMetaType::QString ) );
+  fields.append( QgsField( u"gc_layername"_s, QMetaType::QString ) );
+  fields.append( QgsField( u"gc_partidx"_s, QMetaType::Int ) );
+  fields.append( QgsField( u"gc_ringidx"_s, QMetaType::Int ) );
+  fields.append( QgsField( u"gc_vertidx"_s, QMetaType::Int ) );
+  fields.append( QgsField( u"gc_errorx"_s, QMetaType::Double ) );
+  fields.append( QgsField( u"gc_errory"_s, QMetaType::Double ) );
+  fields.append( QgsField( u"gc_error"_s, QMetaType::QString ) );
   return fields;
 }
 
@@ -128,12 +126,12 @@ QVariantMap QgsGeometryCheckHoleAlgorithm::processAlgorithm( const QVariantMap &
 {
   QString dest_output;
   QString dest_errors;
-  const std::unique_ptr<QgsProcessingFeatureSource> input( parameterAsSource( parameters, QStringLiteral( "INPUT" ), context ) );
+  const std::unique_ptr<QgsProcessingFeatureSource> input( parameterAsSource( parameters, u"INPUT"_s, context ) );
   if ( !input )
-    throw QgsProcessingException( invalidSourceError( parameters, QStringLiteral( "INPUT" ) ) );
+    throw QgsProcessingException( invalidSourceError( parameters, u"INPUT"_s ) );
 
-  QString uniqueIdFieldName( parameterAsString( parameters, QStringLiteral( "UNIQUE_ID" ), context ) );
-  int uniqueIdFieldIdx = input->fields().indexFromName( uniqueIdFieldName );
+  const QString uniqueIdFieldName( parameterAsString( parameters, u"UNIQUE_ID"_s, context ) );
+  const int uniqueIdFieldIdx = input->fields().indexFromName( uniqueIdFieldName );
   if ( uniqueIdFieldIdx == -1 )
     throw QgsProcessingException( QObject::tr( "Missing field %1 in input layer" ).arg( uniqueIdFieldName ) );
 
@@ -142,27 +140,25 @@ QVariantMap QgsGeometryCheckHoleAlgorithm::processAlgorithm( const QVariantMap &
   QgsFields fields = outputFields();
   fields.append( uniqueIdField );
 
-  const std::unique_ptr<QgsFeatureSink> sink_output(
-    parameterAsSink( parameters, QStringLiteral( "OUTPUT" ), context, dest_output, fields, input->wkbType(), input->sourceCrs() )
-  );
+  const std::unique_ptr<QgsFeatureSink> sink_output( parameterAsSink( parameters, u"OUTPUT"_s, context, dest_output, fields, input->wkbType(), input->sourceCrs() ) );
 
-  const std::unique_ptr<QgsFeatureSink> sink_errors(
-    parameterAsSink( parameters, QStringLiteral( "ERRORS" ), context, dest_errors, fields, Qgis::WkbType::Point, input->sourceCrs() )
-  );
+  const std::unique_ptr<QgsFeatureSink> sink_errors( parameterAsSink( parameters, u"ERRORS"_s, context, dest_errors, fields, Qgis::WkbType::Point, input->sourceCrs() ) );
   if ( !sink_errors )
-    throw QgsProcessingException( invalidSinkError( parameters, QStringLiteral( "ERRORS" ) ) );
+    throw QgsProcessingException( invalidSinkError( parameters, u"ERRORS"_s ) );
 
   QgsProcessingMultiStepFeedback multiStepFeedback( 3, feedback );
 
-  QgsProject *project = QgsProject::instance();
-
-  QgsGeometryCheckContext checkContext = QgsGeometryCheckContext( mTolerance, input->sourceCrs(), project->transformContext(), project );
+  QgsGeometryCheckContext checkContext = QgsGeometryCheckContext( mTolerance, input->sourceCrs(), context.transformContext(), context.project(), uniqueIdFieldIdx );
 
   // Test detection
   QList<QgsGeometryCheckError *> checkErrors;
   QStringList messages;
 
-  const QgsGeometryHoleCheck check( &checkContext, QVariantMap() );
+  const double areaThreshold = parameterAsDouble( parameters, u"AREA_THRESHOLD"_s, context );
+
+  QVariantMap configurationCheck;
+  configurationCheck.insert( "areaThreshold", areaThreshold );
+  const QgsGeometryHoleCheck check( &checkContext, configurationCheck );
 
   multiStepFeedback.setCurrentStep( 1 );
   feedback->setProgressText( QObject::tr( "Preparing features…" ) );
@@ -174,7 +170,19 @@ QVariantMap QgsGeometryCheckHoleAlgorithm::processAlgorithm( const QVariantMap &
 
   multiStepFeedback.setCurrentStep( 2 );
   feedback->setProgressText( QObject::tr( "Collecting errors…" ) );
-  check.collectErrors( featurePools, checkErrors, messages, feedback );
+  QgsGeometryCheck::Result res = check.collectErrors( featurePools, checkErrors, messages, feedback );
+  if ( res == QgsGeometryCheck::Result::Success )
+  {
+    feedback->pushInfo( QObject::tr( "Errors collected successfully." ) );
+  }
+  else if ( res == QgsGeometryCheck::Result::Canceled )
+  {
+    throw QgsProcessingException( QObject::tr( "Operation was canceled." ) );
+  }
+  else if ( res == QgsGeometryCheck::Result::DuplicatedUniqueId )
+  {
+    throw QgsProcessingException( QObject::tr( "Field '%1' contains non-unique values and can not be used as unique ID." ).arg( uniqueIdFieldName ) );
+  }
 
   multiStepFeedback.setCurrentStep( 3 );
   feedback->setProgressText( QObject::tr( "Exporting errors…" ) );
@@ -191,24 +199,29 @@ QVariantMap QgsGeometryCheckHoleAlgorithm::processAlgorithm( const QVariantMap &
     QgsFeature f;
     QgsAttributes attrs = f.attributes();
 
-    attrs << error->layerId()
-          << error->featureId()
-          << error->vidx().part
-          << error->vidx().ring
-          << error->vidx().vertex
-          << error->location().x()
-          << error->location().y()
-          << error->value().toString()
-          << inputLayer->getFeature( error->featureId() ).attribute( uniqueIdField.name() );
+    attrs
+      << error->layerId()
+      << inputLayer->name()
+      << error->vidx().part
+      << error->vidx().ring
+      << error->vidx().vertex
+      << error->location().x()
+      << error->location().y()
+      << error->value().toString()
+      << inputLayer->getFeature( error->featureId() ).attribute( uniqueIdField.name() );
     f.setAttributes( attrs );
 
     f.setGeometry( error->geometry() );
     if ( sink_output && !sink_output->addFeature( f, QgsFeatureSink::FastInsert ) )
-      throw QgsProcessingException( writeFeatureError( sink_output.get(), parameters, QStringLiteral( "OUTPUT" ) ) );
+      throw QgsProcessingException( writeFeatureError( sink_output.get(), parameters, u"OUTPUT"_s ) );
+    else if ( sink_output )
+      feedback->featureAddedToSink( u"OUTPUT"_s );
 
     f.setGeometry( QgsGeometry::fromPoint( QgsPoint( error->location().x(), error->location().y() ) ) );
     if ( !sink_errors->addFeature( f, QgsFeatureSink::FastInsert ) )
-      throw QgsProcessingException( writeFeatureError( sink_errors.get(), parameters, QStringLiteral( "ERRORS" ) ) );
+      throw QgsProcessingException( writeFeatureError( sink_errors.get(), parameters, u"ERRORS"_s ) );
+    else
+      feedback->featureAddedToSink( u"ERRORS"_s );
 
     i++;
     feedback->setProgress( 100.0 * step * static_cast<double>( i ) );
@@ -222,8 +235,15 @@ QVariantMap QgsGeometryCheckHoleAlgorithm::processAlgorithm( const QVariantMap &
 
   QVariantMap outputs;
   if ( sink_output )
-    outputs.insert( QStringLiteral( "OUTPUT" ), dest_output );
-  outputs.insert( QStringLiteral( "ERRORS" ), dest_errors );
+  {
+    sink_output->finalize();
+    feedback->featureSinkFinalized( u"OUTPUT"_s );
+    outputs.insert( u"OUTPUT"_s, dest_output );
+  }
+  sink_errors->finalize();
+  feedback->featureSinkFinalized( u"ERRORS"_s );
+
+  outputs.insert( u"ERRORS"_s, dest_errors );
 
   return outputs;
 }

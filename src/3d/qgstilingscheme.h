@@ -17,14 +17,14 @@
 #define QGSTILINGSCHEME_H
 
 #include "qgis_3d.h"
-
 #include "qgscoordinatereferencesystem.h"
 #include "qgspointxy.h"
+
+#define SIP_NO_FILE
 
 class QgsRectangle;
 struct QgsChunkNodeId;
 
-#define SIP_NO_FILE
 
 /**
  * \ingroup qgis_3d

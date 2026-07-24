@@ -16,16 +16,20 @@
 #ifndef QGSLAYOUTITEMGUIREGISTRY_H
 #define QGSLAYOUTITEMGUIREGISTRY_H
 
+#include <functional>
+
 #include "qgis_gui.h"
 #include "qgis_sip.h"
 #include "qgsapplication.h"
-#include "qgspathresolver.h"
+#include "qgslayoutitem.h"
 #include "qgslayoutitemregistry.h"
-#include <QGraphicsItem> //for QGraphicsItem::UserType
-#include <QIcon>
-#include <functional>
+#include "qgspathresolver.h"
 
-#include "qgslayoutitem.h" // temporary
+#include <QGraphicsItem>
+#include <QIcon>
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 class QgsLayout;
 class QgsLayoutView;
@@ -99,7 +103,7 @@ class GUI_EXPORT QgsLayoutItemAbstractGuiMetadata
     /**
      * Returns an icon representing creation of the layout item type.
      */
-    virtual QIcon creationIcon() const { return QgsApplication::getThemeIcon( QStringLiteral( "/mActionAddBasicRectangle.svg" ) ); }
+    virtual QIcon creationIcon() const { return QgsApplication::getThemeIcon( u"/mActionAddBasicRectangle.svg"_s ); }
 
     /*
      * IMPORTANT: While it seems like /Factory/ would be the correct annotations here, that's not
@@ -205,7 +209,17 @@ class GUI_EXPORT QgsLayoutItemGuiMetadata : public QgsLayoutItemAbstractGuiMetad
      *
      * If \a isNodeBased is TRUE, then the corresponding item is a node based item.
      */
-    QgsLayoutItemGuiMetadata( int type, const QString &visibleName, const QIcon &creationIcon, const QgsLayoutItemWidgetFunc &pfWidget = nullptr, const QgsLayoutItemRubberBandFunc &pfRubberBand = nullptr, const QString &groupId = QString(), bool isNodeBased = false, QgsLayoutItemAbstractGuiMetadata::Flags flags = QgsLayoutItemAbstractGuiMetadata::Flags(), const QgsLayoutItemCreateFunc &pfCreateFunc = nullptr )
+    QgsLayoutItemGuiMetadata(
+      int type,
+      const QString &visibleName,
+      const QIcon &creationIcon,
+      const QgsLayoutItemWidgetFunc &pfWidget = nullptr,
+      const QgsLayoutItemRubberBandFunc &pfRubberBand = nullptr,
+      const QString &groupId = QString(),
+      bool isNodeBased = false,
+      QgsLayoutItemAbstractGuiMetadata::Flags flags = QgsLayoutItemAbstractGuiMetadata::Flags(),
+      const QgsLayoutItemCreateFunc &pfCreateFunc = nullptr
+    )
       : QgsLayoutItemAbstractGuiMetadata( type, visibleName, groupId, isNodeBased, flags )
       , mIcon( creationIcon )
       , mWidgetFunc( pfWidget )
@@ -538,7 +552,7 @@ class GUI_EXPORT QgsLayoutItemGuiRegistry : public QObject
     /**
      * Emitted whenever an item type is removed from the registry, with the specified
      * \a metadataId.
-     * 
+     *
      * \since QGIS 4.0
      */
     void typeRemoved( int metadataId );

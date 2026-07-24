@@ -19,18 +19,21 @@
 #define QGSLAYOUTATTRIBUTESELECTIONDIALOG_H
 
 // We don't want to expose this in the public API
-#define SIP_NO_FILE
 
-#include <QDialog>
-#include <QMap>
-#include <QSet>
-#include <QItemDelegate>
-#include <QAbstractTableModel>
-#include <QSortFilterProxyModel>
+#include "ui_qgslayoutattributeselectiondialogbase.h"
+
 #include "qgis_gui.h"
 #include "qgis_sip.h"
-#include "ui_qgslayoutattributeselectiondialogbase.h"
 #include "qgsexpressioncontextgenerator.h"
+
+#include <QAbstractTableModel>
+#include <QDialog>
+#include <QItemDelegate>
+#include <QMap>
+#include <QSet>
+#include <QSortFilterProxyModel>
+
+#define SIP_NO_FILE
 
 class QGridLayout;
 class QgsVectorLayer;
@@ -136,10 +139,7 @@ class GUI_EXPORT QgsLayoutAttributeTableColumnModel : public QgsLayoutAttributeT
 
     QVector<QgsLayoutTableColumn> &columns() const override;
 
-    QList<Column> displayedColumns() const override
-    {
-      return { Attribute, Heading, Alignment, Width };
-    }
+    QList<Column> displayedColumns() const override { return { Attribute, Heading, Alignment, Width }; }
 
     /**
      * Resets the attribute table's columns to match the source layer's fields. Remove all existing
@@ -171,10 +171,7 @@ class GUI_EXPORT QgsLayoutTableSortModel : public QgsLayoutAttributeTableColumnM
 
     QVector<QgsLayoutTableColumn> &columns() const override;
 
-    QList<Column> displayedColumns() const override
-    {
-      return { Attribute, SortOrder };
-    }
+    QList<Column> displayedColumns() const override { return { Attribute, SortOrder }; }
 };
 
 /**

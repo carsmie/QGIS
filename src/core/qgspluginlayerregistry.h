@@ -19,11 +19,11 @@
 #ifndef QGSPLUGINLAYERREGSITRY_H
 #define QGSPLUGINLAYERREGSITRY_H
 
-#include <QMap>
-#include "qgis_sip.h"
-#include <QDomNode>
-
 #include "qgis_core.h"
+#include "qgis_sip.h"
+
+#include <QDomNode>
+#include <QMap>
 
 class QgsPluginLayer;
 
@@ -34,7 +34,6 @@ class QgsPluginLayer;
 class CORE_EXPORT QgsPluginLayerType
 {
   public:
-
     QgsPluginLayerType( const QString &name );
     virtual ~QgsPluginLayerType() = default;
 
@@ -67,7 +66,6 @@ class CORE_EXPORT QgsPluginLayerType
 class CORE_EXPORT QgsPluginLayerRegistry
 {
   public:
-
     QgsPluginLayerRegistry() = default;
     ~QgsPluginLayerRegistry();
 

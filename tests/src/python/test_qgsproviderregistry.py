@@ -10,6 +10,8 @@ __author__ = "Nyall Dawson"
 __date__ = "16/03/2020"
 __copyright__ = "Copyright 2020, The QGIS Project"
 
+import unittest
+
 from qgis.core import (
     Qgis,
     QgsMapLayerType,
@@ -18,9 +20,7 @@ from qgis.core import (
     QgsProviderSublayerDetails,
     QgsProviderUtils,
 )
-import unittest
-from qgis.testing import start_app, QgisTestCase
-
+from qgis.testing import QgisTestCase, start_app
 from utilities import unitTestDataPath
 
 # Convenience instances in case you may need them
@@ -45,17 +45,15 @@ class TestProviderMetadata(QgsProviderMetadata):
 
 
 class TestProviderTiledSceneMetadata(QgsProviderMetadata):
-
     def __init__(self, key):
         super().__init__(key, key)
 
     def filters(self, _type: Qgis.FileFilterType):
         if _type == Qgis.FileFilterType.TiledScene:
-            return "Scene Layer Packages (*.slpk *.SLPK)"
+            return "Test Tiled Scene Filter (*.ttsf)"
 
 
 class TestQgsProviderRegistry(QgisTestCase):
-
     def testProviderList(self):
         """
         Test provider list
@@ -299,18 +297,20 @@ class TestQgsProviderRegistry(QgisTestCase):
         registry = QgsProviderRegistry.instance()
         self.assertEqual(
             registry.fileTiledSceneFilters(),
-            "All Supported Files (tileset.json TILESET.JSON);;"
+            "All Supported Files (tileset.json TILESET.JSON *.slpk *.SLPK);;"
             "All Files (*.*);;"
-            "Cesium 3D Tiles (tileset.json TILESET.JSON)",
+            "Cesium 3D Tiles (tileset.json TILESET.JSON);;"
+            "ESRI Scene layer package (*.slpk *.SLPK)",
         )
 
         registry.registerProvider(TestProviderTiledSceneMetadata("slpk"))
         self.assertEqual(
             registry.fileTiledSceneFilters(),
-            "All Supported Files (tileset.json TILESET.JSON *.slpk *.SLPK);;"
+            "All Supported Files (tileset.json TILESET.JSON *.slpk *.SLPK *.ttsf);;"
             "All Files (*.*);;"
             "Cesium 3D Tiles (tileset.json TILESET.JSON);;"
-            "Scene Layer Packages (*.slpk *.SLPK)",
+            "ESRI Scene layer package (*.slpk *.SLPK);;"
+            "Test Tiled Scene Filter (*.ttsf)",
         )
 
 

@@ -20,19 +20,22 @@
 #define QGSPROVIDERMETADATA_H
 
 
+#include <functional>
+#include <memory>
+
+#include "qgis_core.h"
+#include "qgis_sip.h"
+#include "qgsabstractproviderconnection.h"
+#include "qgsdataprovider.h"
+#include "qgsfields.h"
+
+#include <QList>
+#include <QMap>
+#include <QPair>
 #include <QString>
 #include <QVariantMap>
-#include <QMap>
-#include <QList>
-#include <memory>
-#include <QPair>
 
-#include "qgis_sip.h"
-#include "qgsdataprovider.h"
-#include "qgis_core.h"
-#include <functional>
-#include "qgsabstractproviderconnection.h"
-#include "qgsfields.h"
+using namespace Qt::StringLiterals;
 
 class QgsDataItem;
 class QgsDataItemProvider;
@@ -58,16 +61,15 @@ class CORE_EXPORT QgsMeshDriverMetadata
     Q_GADGET
 
   public:
-
     /**
      * Flags for the capabilities of the driver
      */
     enum MeshDriverCapability SIP_ENUM_BASETYPE( IntFlag )
     {
-      CanWriteFaceDatasets = 1 << 0, //!< If the driver can persist datasets defined on faces
+      CanWriteFaceDatasets = 1 << 0,   //!< If the driver can persist datasets defined on faces
       CanWriteVertexDatasets = 1 << 1, //!< If the driver can persist datasets defined on vertices
-      CanWriteEdgeDatasets = 1 << 2, //!< If the driver can persist datasets defined on edges \since QGIS 3.14
-      CanWriteMeshData = 1 << 3, //!< If the driver can write mesh data on file \since QGIS 3.16
+      CanWriteEdgeDatasets = 1 << 2,   //!< If the driver can persist datasets defined on edges \since QGIS 3.14
+      CanWriteMeshData = 1 << 3,       //!< If the driver can write mesh data on file \since QGIS 3.16
     };
 
     Q_ENUM( MeshDriverCapability )
@@ -87,10 +89,7 @@ class CORE_EXPORT QgsMeshDriverMetadata
      *
      * \deprecated QGIS 3.22
      */
-    Q_DECL_DEPRECATED QgsMeshDriverMetadata( const QString &name,
-        const QString &description,
-        const MeshDriverCapabilities &capabilities,
-        const QString &writeDatasetOnFileSuffix ) SIP_DEPRECATED;
+    Q_DECL_DEPRECATED QgsMeshDriverMetadata( const QString &name, const QString &description, const MeshDriverCapabilities &capabilities, const QString &writeDatasetOnFileSuffix ) SIP_DEPRECATED;
 
     /**
      * Constructs driver metadata with selected capabilities
@@ -104,12 +103,9 @@ class CORE_EXPORT QgsMeshDriverMetadata
      *
      * \since QGIS 3.22
      */
-    QgsMeshDriverMetadata( const QString &name,
-                           const QString &description,
-                           const MeshDriverCapabilities &capabilities,
-                           const QString &writeDatasetOnFileSuffix,
-                           const QString &writeMeshFrameOnFileSuffix,
-                           int maxVerticesPerface );
+    QgsMeshDriverMetadata(
+      const QString &name, const QString &description, const MeshDriverCapabilities &capabilities, const QString &writeDatasetOnFileSuffix, const QString &writeMeshFrameOnFileSuffix, int maxVerticesPerface
+    );
 
     /**
      * Returns the capabilities for this driver.
@@ -156,6 +152,67 @@ class CORE_EXPORT QgsMeshDriverMetadata
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QgsMeshDriverMetadata::MeshDriverCapabilities )
 
+
+/**
+ * \ingroup core
+ * \brief Encapsulates the details of a newly created empty layer.
+ *
+ * \since QGIS 4.2
+ */
+class CORE_EXPORT QgsEmptyLayerCreationResult
+{
+  public:
+    QgsEmptyLayerCreationResult() = default;
+
+#ifndef SIP_RUN
+    /**
+     * Constructor for QgsEmptyLayerCreationResult.
+     */
+    QgsEmptyLayerCreationResult( Qgis::VectorExportResult result, const QString &createdLayerUri, const QString &errorMessage, const QMap<int, int> &createdAttributeIndexMap )
+      : mResult( result )
+      , mCreatedLayerUri( createdLayerUri )
+      , mErrorMessage( errorMessage )
+      , mCreatedAttributeIndexMap( createdAttributeIndexMap )
+    {}
+#endif
+
+    /**
+     * Returns the result code of the layer creation.
+     */
+    Qgis::VectorExportResult result() const { return mResult; }
+
+    /**
+     * Returns the created layer URI.
+     *
+     * This will be set to the actual URI of the layer created.
+     *
+     * In some circumstances this may differ from the original requested uri, eg when the provider has had to
+     * automatically launder a layer name.
+     */
+    QString createdLayerUri() const { return mCreatedLayerUri; }
+
+    /**
+     * Returns any user-friendly error messages obtained if the creation fails.
+     */
+    QString errorMessage() const { return mErrorMessage; }
+
+    /**
+     * Returns a map of the original requested field index to the actual created field index.
+     *
+     * In some cases the provider may re-arrange fields from their original requested order.
+     * It's not always possible to directly determine this mapping from the output layer alone,
+     * as the provider may have changed requested fields as part of the layer creation process (eg
+     * when the provider has had to automatically launder them).
+     */
+    QMap<int, int> createdAttributeIndexMap() const { return mCreatedAttributeIndexMap; }
+
+  private:
+    Qgis::VectorExportResult mResult = Qgis::VectorExportResult::UserCanceled;
+    QString mCreatedLayerUri;
+    QString mErrorMessage;
+    QMap<int, int> mCreatedAttributeIndexMap;
+};
+
 /**
  * \ingroup core
  * \brief Holds data provider key, description, and associated shared library file or function pointer information.
@@ -178,7 +235,6 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Indicates capabilities of the provider metadata implementation.
      *
@@ -186,10 +242,11 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      */
     enum ProviderMetadataCapability SIP_ENUM_BASETYPE( IntFlag )
     {
-      PriorityForUri = 1 << 0, //!< Indicates that the metadata can calculate a priority for a URI
+      PriorityForUri = 1 << 0,   //!< Indicates that the metadata can calculate a priority for a URI
       LayerTypesForUri = 1 << 1, //!< Indicates that the metadata can determine valid layer types for a URI
-      QuerySublayers = 1 << 2, //!< Indicates that the metadata can query sublayers for a URI \since QGIS 3.22
-      CreateDatabase = 1 << 3, //!< Indicates that the metadata can create new empty databases \since QGIS 3.28
+      QuerySublayers = 1 << 2,   //!< Indicates that the metadata can query sublayers for a URI \since QGIS 3.22
+      CreateDatabase = 1 << 3,   //!< Indicates that the metadata can create new empty databases \since QGIS 3.28
+      UrisReferToSame = 1 << 4,  //!< Indicates that the metadata can check whether layer URIs refer to the same object \since QGIS 4.0
     };
     Q_DECLARE_FLAGS( ProviderMetadataCapabilities, ProviderMetadataCapability )
 
@@ -200,8 +257,8 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      */
     enum ProviderCapability SIP_ENUM_BASETYPE( IntFlag )
     {
-      FileBasedUris = 1 << 0, //!< Indicates that the provider can utilize URIs which are based on paths to files (as opposed to database or internet paths)
-      SaveLayerMetadata = 1 << 1, //!< Indicates that the provider supports saving native layer metadata \since QGIS 3.20
+      FileBasedUris = 1 << 0,          //!< Indicates that the provider can utilize URIs which are based on paths to files (as opposed to database or internet paths)
+      SaveLayerMetadata = 1 << 1,      //!< Indicates that the provider supports saving native layer metadata \since QGIS 3.20
       ParallelCreateProvider = 1 << 2, //!< Indicates that the provider supports parallel creation, that is, can be created on another thread than the main thread \since QGIS 3.32
     };
     Q_DECLARE_FLAGS( ProviderCapabilities, ProviderCapability )
@@ -209,7 +266,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
     /**
      * Typedef for data provider creation function.
      */
-    SIP_SKIP typedef std::function < QgsDataProvider*( const QString &, const QgsDataProvider::ProviderOptions &, Qgis::DataProviderReadFlags & ) > CreateDataProviderFunction;
+    SIP_SKIP typedef std::function< QgsDataProvider *( const QString &, const QgsDataProvider::ProviderOptions &, Qgis::DataProviderReadFlags & ) > CreateDataProviderFunction;
 
     /**
      * Constructor for provider metadata
@@ -226,7 +283,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      */
     SIP_SKIP Q_DECL_DEPRECATED QgsProviderMetadata( const QString &key, const QString &description, const QgsProviderMetadata::CreateDataProviderFunction &createFunc );
 
-    virtual ~QgsProviderMetadata();
+    ~QgsProviderMetadata() override;
 
     /**
      * This returns the unique key associated with the provider
@@ -271,6 +328,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
 #ifndef SIP_RUN
     virtual QList< Qgis::LayerType > supportedLayerTypes() const;
 #else
+    // clang-format off
     SIP_PYOBJECT supportedLayerTypes() const SIP_TYPEHINT( List[Qgis.LayerType] );
     % MethodCode
     // adapted from the qpymultimedia_qlist.sip file from the PyQt6 sources
@@ -306,6 +364,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
       }
     }
     % End
+// clang-format on
 #endif
 
     /**
@@ -458,9 +517,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      *
      * \since QGIS 3.10
      */
-    virtual QgsDataProvider *createProvider( const QString &uri,
-        const QgsDataProvider::ProviderOptions &options,
-        Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() ) SIP_FACTORY;
+    virtual QgsDataProvider *createProvider( const QString &uri, const QgsDataProvider::ProviderOptions &options, Qgis::DataProviderReadFlags flags = Qgis::DataProviderReadFlags() ) SIP_FACTORY;
 
     /**
      * Sets the \a value into the \a uri \a parameter as a bool.
@@ -478,6 +535,26 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      */
     static bool boolParameter( const QVariantMap &uri, const QString &parameter, bool defaultValue = false );
 
+    /**
+     * Creates new empty vector layer.
+     *
+     * \param uri Destination for new layer
+     * \param fields New layer fields
+     * \param wkbType New layer geometry WKB type
+     * \param crs New layer coordinate reference system
+     * \param actionOnExisting Action to take when attempting to overwrite any existing layer in the same location
+     *
+     * \returns An object encapsulating the properties of the newly created layer.
+     *
+     * \since QGIS 4.2
+     */
+    virtual QgsEmptyLayerCreationResult createEmptyLayer(
+      const QString &uri,
+      const QgsFields &fields,
+      Qgis::WkbType wkbType = Qgis::WkbType::NoGeometry,
+      const QgsCoordinateReferenceSystem &crs = QgsCoordinateReferenceSystem(),
+      Qgis::CreateLayerActionOnExisting actionOnExisting = Qgis::CreateLayerActionOnExisting::Abort
+    );
 
 #ifndef SIP_RUN
 
@@ -491,15 +568,17 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      * \note not available in Python bindings
      * \since QGIS 3.10
      */
-    virtual Qgis::VectorExportResult createEmptyLayer( const QString &uri,
-        const QgsFields &fields,
-        Qgis::WkbType wkbType,
-        const QgsCoordinateReferenceSystem &srs,
-        bool overwrite,
-        QMap<int, int> &oldToNewAttrIdxMap,
-        QString &errorMessage,
-        const QMap<QString, QVariant> *options,
-        QString &createdLayerUri );
+    virtual Qgis::VectorExportResult createEmptyLayer(
+      const QString &uri,
+      const QgsFields &fields,
+      Qgis::WkbType wkbType,
+      const QgsCoordinateReferenceSystem &srs,
+      bool overwrite,
+      QMap<int, int> &oldToNewAttrIdxMap,
+      QString &errorMessage,
+      const QMap<QString, QVariant> *options,
+      QString &createdLayerUri
+    );
 #endif
 
     /**
@@ -519,7 +598,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      */
     virtual bool createDatabase( const QString &uri, QString &errorMessage SIP_OUT );
 
-    // TODO QGIS 4.0: rename createOptions to creationOptions for consistency with GDAL
+    // TODO QGIS 5.0: rename createOptions to creationOptions for consistency with GDAL
 
     /**
      * Creates a new instance of the raster data provider.
@@ -534,7 +613,8 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
       int height,
       double *geoTransform,
       const QgsCoordinateReferenceSystem &crs,
-      const QStringList &createOptions = QStringList() ) SIP_FACTORY;
+      const QStringList &createOptions = QStringList()
+    ) SIP_FACTORY;
 
     /**
      * Creates mesh data source from a file name \a fileName and a driver \a driverName, that is the mesh frame stored in file, memory or with other way (depending of the provider)
@@ -542,22 +622,15 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      * \since QGIS 3.16
      */
     virtual bool createMeshData(
-      const QgsMesh &mesh,
-      const QString &fileName,
-      const QString &driverName,
-      const QgsCoordinateReferenceSystem &crs,
-      const QMap<QString, QString> &metadata = QMap<QString, QString>() ) const;
+      const QgsMesh &mesh, const QString &fileName, const QString &driverName, const QgsCoordinateReferenceSystem &crs, const QMap<QString, QString> &metadata = QMap<QString, QString>()
+    ) const;
 
     /**
      * Creates mesh data source from an \a uri, that is the mesh frame stored in file, memory or with other way (depending of the provider)
      * Since QGIS 3.38 the optional \a metadata argument can be used to pass metadata to the provider.
      * \since QGIS 3.22
      */
-    virtual bool createMeshData(
-      const QgsMesh &mesh,
-      const QString &uri,
-      const QgsCoordinateReferenceSystem &crs,
-      const QMap<QString, QString> &metadata = QMap<QString, QString>() ) const;
+    virtual bool createMeshData( const QgsMesh &mesh, const QString &uri, const QgsCoordinateReferenceSystem &crs, const QMap<QString, QString> &metadata = QMap<QString, QString>() ) const;
 
     /**
      * Returns pyramid resampling methods available for provider
@@ -628,6 +701,22 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
     virtual QString cleanUri( const QString &uri, Qgis::UriCleaningFlags flags = Qgis::UriCleaningFlag::RemoveCredentials ) const;
 
     /**
+     * Returns TRUE if the URI \a uri1 and \a uri2 point to the same resource at the specified hierarchy \a level.
+     *
+     * This method parses the underlying connection parameters of \a uri1 and \a uri2
+     * to check if they share the same scope defined by \a level.
+     *
+     * \note This method is only valid for URIs from the same data provider.
+     *
+     * \warning Not all providers implement this functionality. Check whether capabilities() returns the
+     * ProviderMetadataCapability::UrisReferToSame to determine whether a specific provider metadata object
+     * supports this method.
+     *
+     * \since QGIS 4.0
+     */
+    virtual bool urisReferToSame( const QString &uri1, const QString &uri2, Qgis::SourceHierarchyLevel level = Qgis::SourceHierarchyLevel::Object ) const;
+
+    /**
      * Returns data item providers. Caller is responsible for ownership of the item providers
      * \see QgsProviderGuiMetadata::dataItemGuiProviders()
      * \note Ownership of created data item providers is passed to the caller.
@@ -640,8 +729,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      * \returns -1 if not implemented by provider, otherwise number of styles stored
      * \since QGIS 3.10
      */
-    virtual int listStyles( const QString &uri, QStringList &ids, QStringList &names,
-                            QStringList &descriptions, QString &errCause );
+    virtual int listStyles( const QString &uri, QStringList &ids, QStringList &names, QStringList &descriptions, QString &errCause );
 
     /**
      * Returns TRUE if a layer style with the specified \a styleId exists in the provider defined by \a uri.
@@ -682,9 +770,9 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      *
      * \since QGIS 3.10
      */
-    virtual bool saveStyle( const QString &uri, const QString &qmlStyle, const QString &sldStyle,
-                            const QString &styleName, const QString &styleDescription,
-                            const QString &uiFileContent, bool useAsDefault, QString &errCause );
+    virtual bool saveStyle(
+      const QString &uri, const QString &qmlStyle, const QString &sldStyle, const QString &styleName, const QString &styleDescription, const QString &uiFileContent, bool useAsDefault, QString &errCause
+    );
 
     /**
      * Loads a layer style defined by \a uri
@@ -772,7 +860,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
      * \note not available in Python bindings
      * \since QGIS 3.10
      */
-    template <typename T> QMap<QString, T *>connections( bool cached = true );
+    template<typename T> QMap<QString, T *> connections( bool cached = true );
 
 
 #endif
@@ -814,22 +902,24 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
     virtual void saveConnection( const QgsAbstractProviderConnection *connection, const QString &name ) SIP_THROW( QgsProviderConnectionException );
 
 #ifdef SIP_RUN
+    // clang-format off
     SIP_PYOBJECT __repr__();
     % MethodCode
-    QString str = QStringLiteral( "<QgsProviderMetadata: %1>" ).arg( sipCpp->key() );
+    QString str = u"<QgsProviderMetadata: %1>"_s.arg( sipCpp->key() );
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
     % End
+// clang-format on
 #endif
 
-  signals:
+        signals :
 
-    /**
+      /**
      * Emitted when a connection with the specified \a name is created.
      *
      * \note Only providers which implement the connection handling API will emit this signal.
      * \since QGIS 3.14
      */
-    void connectionCreated( const QString &name );
+      void connectionCreated( const QString &name );
 
     /**
      * Emitted when the connection with the specified \a name was deleted.
@@ -849,18 +939,17 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
     void connectionChanged( const QString &name );
 
   protected:
-
 #ifndef SIP_RUN
-///@cond PRIVATE
+    ///@cond PRIVATE
 
     // Common functionality for connections management, to be moved into the class
     // when all the providers are ready
     // T_provider_conn: subclass of QgsAbstractProviderConnection,
     // T_conn: provider connection class (such as QgsOgrDbConnection or QgsPostgresConn)
-    // TODO QGIS4: remove all old provider conn classes and move functionality into QgsAbstractProviderConnection subclasses
-    template <class T_provider_conn, class T_conn> QMap<QString, QgsAbstractProviderConnection *> connectionsProtected( bool cached = true )
+    // TODO QGIS 5: remove all old provider conn classes and move functionality into QgsAbstractProviderConnection subclasses
+    template<class T_provider_conn, class T_conn> QMap<QString, QgsAbstractProviderConnection *> connectionsProtected( bool cached = true )
     {
-      if ( ! cached || mProviderConnections.isEmpty() )
+      if ( !cached || mProviderConnections.isEmpty() )
       {
         qDeleteAll( mProviderConnections );
         mProviderConnections.clear();
@@ -873,7 +962,7 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
       return mProviderConnections;
     }
 
-    template <class T_provider_conn> void deleteConnectionProtected( const QString &name )
+    template<class T_provider_conn> void deleteConnectionProtected( const QString &name )
     {
       T_provider_conn conn( name );
       conn.remove( name );
@@ -884,12 +973,11 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
     //! Provider connections cache
     QMap<QString, QgsAbstractProviderConnection *> mProviderConnections;
 
-/// @endcond
+    /// @endcond
 
 #endif
 
   private:
-
     /// unique key for data provider
     QString mKey;
 
@@ -901,7 +989,6 @@ class CORE_EXPORT QgsProviderMetadata : public QObject
     QString mLibrary;
 
     CreateDataProviderFunction mCreateFunction = nullptr;
-
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QgsProviderMetadata::ProviderMetadataCapabilities )

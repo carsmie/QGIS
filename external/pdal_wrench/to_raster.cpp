@@ -83,7 +83,7 @@ static std::unique_ptr<PipelineManager> pipeline(ParallelJobInfo *tile, double r
     std::vector<Stage*> readers;
     for (const std::string &f : tile->inputFilenames)
     {
-        readers.push_back(&manager->makeReader(f, ""));
+        readers.push_back(&makeReader(manager.get(), f));
     }
 
     std::vector<Stage*> last = readers;
@@ -180,7 +180,7 @@ static std::unique_ptr<PipelineManager> pipeline(ParallelJobInfo *tile, double r
 
 void ToRaster::preparePipelines(std::vector<std::unique_ptr<PipelineManager>>& pipelines)
 {
-    if (ends_with(inputFile, ".vpc"))
+    if (isVpcFilename(inputFile))
     {
         // using spatial processing
 

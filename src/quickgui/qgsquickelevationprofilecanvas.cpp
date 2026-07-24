@@ -16,18 +16,18 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsquickelevationprofilecanvas.h"
+
 #include "qgsabstractprofilegenerator.h"
 #include "qgsabstractprofilesource.h"
 #include "qgsexpressioncontextutils.h"
 #include "qgsmaplayerelevationproperties.h"
-#include "qgsmaplayerutils.h"
 #include "qgsmaplayerlistutils_p.h"
+#include "qgsmaplayerutils.h"
 #include "qgsplot.h"
 #include "qgsprofilerenderer.h"
 #include "qgsprofilerequest.h"
 #include "qgsprojectelevationproperties.h"
-#include "qgsquickelevationprofilecanvas.h"
-#include "moc_qgsquickelevationprofilecanvas.cpp"
 #include "qgsterrainprovider.h"
 
 #include <QQuickWindow>
@@ -36,6 +36,7 @@
 #include <QScreen>
 #include <QTimer>
 
+#include "moc_qgsquickelevationprofilecanvas.cpp"
 
 ///@cond PRIVATE
 class QgsElevationProfilePlotItem : public Qgs2DXyPlot
@@ -49,10 +50,7 @@ class QgsElevationProfilePlotItem : public Qgs2DXyPlot
       setSize( mCanvas->boundingRect().size() );
     }
 
-    void setRenderer( QgsProfilePlotRenderer *renderer )
-    {
-      mRenderer = renderer;
-    }
+    void setRenderer( QgsProfilePlotRenderer *renderer ) { mRenderer = renderer; }
 
     void updateRect()
     {
@@ -483,7 +481,7 @@ void QgsQuickElevationProfileCanvas::setCrs( const QgsCoordinateReferenceSystem 
 
 void QgsQuickElevationProfileCanvas::setProfileCurve( QgsGeometry curve )
 {
-  if ( mProfileCurve.equals( curve ) )
+  if ( mProfileCurve.isExactlyEqual( curve ) )
     return;
 
   mProfileCurve = curve.type() == Qgis::GeometryType::Line ? curve : QgsGeometry();
@@ -522,10 +520,14 @@ void QgsQuickElevationProfileCanvas::populateLayersFromProject()
 
   // filter list, removing null layers and invalid layers
   auto filteredList = sortedLayers;
-  filteredList.erase( std::remove_if( filteredList.begin(), filteredList.end(), []( QgsMapLayer *layer ) {
-                        return !layer || !layer->isValid() || !layer->elevationProperties() || !layer->elevationProperties()->showByDefaultInElevationProfilePlots();
-                      } ),
-                      filteredList.end() );
+  filteredList.erase(
+    std::remove_if(
+      filteredList.begin(),
+      filteredList.end(),
+      []( QgsMapLayer *layer ) { return !layer || !layer->isValid() || !layer->elevationProperties() || !layer->elevationProperties()->showByDefaultInElevationProfilePlots(); }
+    ),
+    filteredList.end()
+  );
 
   mLayers = _qgis_listRawToQPointer( filteredList );
   for ( QgsMapLayer *layer : std::as_const( mLayers ) )
@@ -539,15 +541,9 @@ QList<QgsMapLayer *> QgsQuickElevationProfileCanvas::layers() const
   return _qgis_listQPointerToRaw( mLayers );
 }
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-void QgsQuickElevationProfileCanvas::geometryChanged( const QRectF &newGeometry, const QRectF &oldGeometry )
-{
-  QQuickItem::geometryChanged( newGeometry, oldGeometry );
-#else
 void QgsQuickElevationProfileCanvas::geometryChange( const QRectF &newGeometry, const QRectF &oldGeometry )
 {
   QQuickItem::geometryChange( newGeometry, oldGeometry );
-#endif
   mPlotItem->updateRect();
   mDirty = true;
   refresh();

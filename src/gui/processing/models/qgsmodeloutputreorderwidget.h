@@ -16,13 +16,16 @@
 #ifndef QGSMODELOUTPUTREORDERWIDGET_H
 #define QGSMODELOUTPUTREORDERWIDGET_H
 
-#define SIP_NO_FILE
+
+#include "ui_qgsmodeloutputreorderwidgetbase.h"
 
 #include "qgis.h"
 #include "qgis_gui.h"
-#include "ui_qgsmodeloutputreorderwidgetbase.h"
 #include "qgsprocessingmodeloutput.h"
+
 #include <QDialog>
+
+#define SIP_NO_FILE
 
 class QStandardItemModel;
 class QgsProcessingModelAlgorithm;

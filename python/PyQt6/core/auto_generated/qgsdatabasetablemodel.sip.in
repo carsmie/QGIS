@@ -9,6 +9,7 @@
 
 
 
+
 class QgsDatabaseTableModel : QAbstractItemModel
 {
 %Docstring(signature="appended")
@@ -26,7 +27,6 @@ order to update the listed tbales,
 #include "qgsdatabasetablemodel.h"
 %End
   public:
-
 
     enum class CustomRole /BaseType=IntEnum/
     {

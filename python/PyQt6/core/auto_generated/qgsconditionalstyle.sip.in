@@ -9,6 +9,8 @@
 
 
 
+
+
 typedef QList<QgsConditionalStyle> QgsConditionalStyles;
 
 class QgsConditionalLayerStyles : QObject
@@ -23,7 +25,6 @@ This includes field styles and full row styles.
 #include "qgsconditionalstyle.h"
 %End
   public:
-
     QgsConditionalLayerStyles( QObject *parent = 0 );
 %Docstring
 Constructor for QgsConditionalLayerStyles, with the specified ``parent``

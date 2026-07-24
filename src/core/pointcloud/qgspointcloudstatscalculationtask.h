@@ -29,12 +29,11 @@
 // version without notice, or even be removed.
 //
 
-#include <QObject>
-
-#include "qgstaskmanager.h"
 #include "qgspointcloudindex.h"
-#include "qgspointcloudrequest.h"
 #include "qgspointcloudstatscalculator.h"
+#include "qgstaskmanager.h"
+
+#include <QObject>
 
 #define SIP_NO_FILE
 
@@ -50,6 +49,7 @@ class QgsPointCloudStatsCalculationTask : public QgsTask
     void cancel() override;
 
     QgsPointCloudStatistics calculationResults() const;
+
   private:
     QgsPointCloudStatsCalculator mCalculator;
     QVector<QgsPointCloudAttribute> mAttributes;

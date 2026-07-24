@@ -20,15 +20,23 @@
 
 #include "qgis_core.h"
 
-#include <QVector>
 #include <QSet>
 #include <QVariant>
+#include <QVector>
 #include <QtMath>
 
 class QgsPointCloudAttribute;
 class QgsPointCloudNodeId;
 
-/**
+#ifdef SIP_RUN
+// clang-format off
+% ModuleHeaderCode
+#include "qgspointcloudstatistics.h"
+% End
+// clang-format on
+#endif
+
+  /**
  * \ingroup core
  * \class QgsPointCloudAttributeStatistics
  *
@@ -36,24 +44,24 @@ class QgsPointCloudNodeId;
  *
  * \since QGIS 3.26
  */
-struct CORE_EXPORT QgsPointCloudAttributeStatistics
+  struct CORE_EXPORT QgsPointCloudAttributeStatistics
 {
-  double minimum = std::numeric_limits<double>::max();
-  double maximum = std::numeric_limits<double>::lowest();
-  double mean = 0;
-  double stDev = 0;
-  int count = 0;
+    double minimum = std::numeric_limits<double>::max();
+    double maximum = std::numeric_limits<double>::lowest();
+    double mean = 0;
+    double stDev = 0;
+    int count = 0;
 #ifndef SIP_RUN
-  QMap<int, int> classCount;
-  //! Updates the current point cloud statistics to hold the cumulation of the current statistics and \a stats
-  void cumulateStatistics( const QgsPointCloudAttributeStatistics &stats );
+    QMap<int, int> classCount;
+    //! Updates the current point cloud statistics to hold the cumulation of the current statistics and \a stats
+    void cumulateStatistics( const QgsPointCloudAttributeStatistics &stats );
 #endif
 
-  /**
+    /**
    * Returns the count of points in given class or -1 on error
    * \since QGIS 3.42
    */
-  int singleClassCount( int cls ) const;
+    int singleClassCount( int cls ) const;
 };
 
 /**

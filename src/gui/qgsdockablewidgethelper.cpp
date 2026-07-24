@@ -14,27 +14,42 @@
  ***************************************************************************/
 
 #include "qgsdockablewidgethelper.h"
+
+#include "qgsapplication.h"
+#include "qgsdockwidget.h"
+#include "qgsguiutils.h"
+
+#include <QAction>
+#include <QLayout>
+#include <QString>
+#include <QUuid>
+
 #include "moc_qgsdockablewidgethelper.cpp"
 
-#include "qgsdockwidget.h"
-#include "qgsapplication.h"
-
-#include <QLayout>
-#include <QAction>
-#include <QUuid>
+using namespace Qt::StringLiterals;
 
 ///@cond PRIVATE
 
-const QgsSettingsEntryBool *QgsDockableWidgetHelper::sSettingsIsDocked = new QgsSettingsEntryBool( QStringLiteral( "is-docked" ), QgsDockableWidgetHelper::sTtreeDockConfigs, false );
-const QgsSettingsEntryVariant *QgsDockableWidgetHelper::sSettingsDockGeometry = new QgsSettingsEntryVariant( QStringLiteral( "dock-geometry" ), QgsDockableWidgetHelper::sTtreeDockConfigs );
-const QgsSettingsEntryVariant *QgsDockableWidgetHelper::sSettingsDialogGeometry = new QgsSettingsEntryVariant( QStringLiteral( "dialog-geometry" ), QgsDockableWidgetHelper::sTtreeDockConfigs );
-const QgsSettingsEntryEnumFlag<Qt::DockWidgetArea> *QgsDockableWidgetHelper::sSettingsDockArea = new QgsSettingsEntryEnumFlag<Qt::DockWidgetArea>( QStringLiteral( "dock-area" ), QgsDockableWidgetHelper::sTtreeDockConfigs, Qt::RightDockWidgetArea );
+const QgsSettingsEntryBool *QgsDockableWidgetHelper::sSettingsIsDocked = new QgsSettingsEntryBool( u"is-docked"_s, QgsDockableWidgetHelper::sTtreeDockConfigs, false );
+const QgsSettingsEntryVariant *QgsDockableWidgetHelper::sSettingsDockGeometry = new QgsSettingsEntryVariant( u"dock-geometry"_s, QgsDockableWidgetHelper::sTtreeDockConfigs );
+const QgsSettingsEntryVariant *QgsDockableWidgetHelper::sSettingsDialogGeometry = new QgsSettingsEntryVariant( u"dialog-geometry"_s, QgsDockableWidgetHelper::sTtreeDockConfigs );
+const QgsSettingsEntryEnumFlag<Qt::DockWidgetArea> *QgsDockableWidgetHelper::sSettingsDockArea
+  = new QgsSettingsEntryEnumFlag<Qt::DockWidgetArea>( u"dock-area"_s, QgsDockableWidgetHelper::sTtreeDockConfigs, Qt::RightDockWidgetArea );
 
-std::function<void( Qt::DockWidgetArea, QDockWidget *, const QStringList &, bool )> QgsDockableWidgetHelper::sAddTabifiedDockWidgetFunction = []( Qt::DockWidgetArea, QDockWidget *, const QStringList &, bool ) {};
 std::function<QString()> QgsDockableWidgetHelper::sAppStylesheetFunction = [] { return QString(); };
 QMainWindow *QgsDockableWidgetHelper::sOwnerWindow = nullptr;
 
-QgsDockableWidgetHelper::QgsDockableWidgetHelper( const QString &windowTitle, QWidget *widget, QMainWindow *ownerWindow, const QString &dockId, const QStringList &tabifyWith, OpeningMode openingMode, bool defaultIsDocked, Qt::DockWidgetArea defaultDockArea, Options options )
+QgsDockableWidgetHelper::QgsDockableWidgetHelper(
+  const QString &windowTitle,
+  QWidget *widget,
+  QMainWindow *ownerWindow,
+  const QString &dockId,
+  const QStringList &tabifyWith,
+  Qgis::DockableWidgetInitialState openingMode,
+  bool defaultIsDocked,
+  Qt::DockWidgetArea defaultDockArea,
+  Options options
+)
   : QObject( nullptr )
   , mWidget( widget )
   , mDialogGeometry( 0, 0, 0, 0 )
@@ -45,11 +60,19 @@ QgsDockableWidgetHelper::QgsDockableWidgetHelper( const QString &windowTitle, QW
   , mUuid( QUuid::createUuid().toString() )
   , mSettingKeyDockId( dockId )
 {
-  bool isDocked = sSettingsIsDocked->valueWithDefaultOverride( defaultIsDocked, mSettingKeyDockId );
-  if ( openingMode == OpeningMode::ForceDocked )
-    isDocked = true;
-  else if ( openingMode == OpeningMode::ForceDialog )
-    isDocked = false;
+  bool isDocked = true;
+  switch ( openingMode )
+  {
+    case Qgis::DockableWidgetInitialState::RestorePreviousState:
+      isDocked = sSettingsIsDocked->valueWithDefaultOverride( defaultIsDocked, mSettingKeyDockId );
+      break;
+    case Qgis::DockableWidgetInitialState::ForceDocked:
+      isDocked = true;
+      break;
+    case Qgis::DockableWidgetInitialState::ForceDialog:
+      isDocked = false;
+      break;
+  }
 
   mDockArea = sSettingsDockArea->valueWithDefaultOverride( defaultDockArea, mSettingKeyDockId );
   mIsDockFloating = mDockArea == Qt::DockWidgetArea::NoDockWidgetArea;
@@ -68,6 +91,8 @@ QgsDockableWidgetHelper::~QgsDockableWidgetHelper()
 
     mDock->setWidget( nullptr );
     mWidget->setParent( nullptr );
+    // TODO -- potentially "deleteLater" would be safer here, see eg note
+    // in QgsElevationProfileWidget destructor
     delete mDock.data();
     mDock = nullptr;
   }
@@ -87,7 +112,7 @@ QgsDockableWidgetHelper::~QgsDockableWidgetHelper()
 
 void QgsDockableWidgetHelper::writeXml( QDomElement &viewDom )
 {
-  viewDom.setAttribute( QStringLiteral( "isDocked" ), mIsDocked );
+  viewDom.setAttribute( u"isDocked"_s, mIsDocked );
 
   if ( mDock )
   {
@@ -97,23 +122,23 @@ void QgsDockableWidgetHelper::writeXml( QDomElement &viewDom )
       mDockArea = mOwnerWindow->dockWidgetArea( mDock );
   }
 
-  viewDom.setAttribute( QStringLiteral( "x" ), mDockGeometry.x() );
-  viewDom.setAttribute( QStringLiteral( "y" ), mDockGeometry.y() );
-  viewDom.setAttribute( QStringLiteral( "width" ), mDockGeometry.width() );
-  viewDom.setAttribute( QStringLiteral( "height" ), mDockGeometry.height() );
-  viewDom.setAttribute( QStringLiteral( "floating" ), mIsDockFloating );
-  viewDom.setAttribute( QStringLiteral( "area" ), mDockArea );
-  viewDom.setAttribute( QStringLiteral( "uuid" ), mUuid );
+  viewDom.setAttribute( u"x"_s, mDockGeometry.x() );
+  viewDom.setAttribute( u"y"_s, mDockGeometry.y() );
+  viewDom.setAttribute( u"width"_s, mDockGeometry.width() );
+  viewDom.setAttribute( u"height"_s, mDockGeometry.height() );
+  viewDom.setAttribute( u"floating"_s, mIsDockFloating );
+  viewDom.setAttribute( u"area"_s, mDockArea );
+  viewDom.setAttribute( u"uuid"_s, mUuid );
 
   if ( mDock )
   {
     const QList<QDockWidget *> tabSiblings = mOwnerWindow ? mOwnerWindow->tabifiedDockWidgets( mDock ) : QList<QDockWidget *>();
-    QDomElement tabSiblingsElement = viewDom.ownerDocument().createElement( QStringLiteral( "tab_siblings" ) );
+    QDomElement tabSiblingsElement = viewDom.ownerDocument().createElement( u"tab_siblings"_s );
     for ( QDockWidget *dock : tabSiblings )
     {
-      QDomElement siblingElement = viewDom.ownerDocument().createElement( QStringLiteral( "sibling" ) );
-      siblingElement.setAttribute( QStringLiteral( "uuid" ), dock->property( "dock_uuid" ).toString() );
-      siblingElement.setAttribute( QStringLiteral( "object_name" ), dock->objectName() );
+      QDomElement siblingElement = viewDom.ownerDocument().createElement( u"sibling"_s );
+      siblingElement.setAttribute( u"uuid"_s, dock->property( "dock_uuid" ).toString() );
+      siblingElement.setAttribute( u"object_name"_s, dock->objectName() );
       tabSiblingsElement.appendChild( siblingElement );
     }
     viewDom.appendChild( tabSiblingsElement );
@@ -122,34 +147,34 @@ void QgsDockableWidgetHelper::writeXml( QDomElement &viewDom )
   if ( mDialog )
     mDialogGeometry = mDialog->geometry();
 
-  viewDom.setAttribute( QStringLiteral( "d_x" ), mDialogGeometry.x() );
-  viewDom.setAttribute( QStringLiteral( "d_y" ), mDialogGeometry.y() );
-  viewDom.setAttribute( QStringLiteral( "d_width" ), mDialogGeometry.width() );
-  viewDom.setAttribute( QStringLiteral( "d_height" ), mDialogGeometry.height() );
+  viewDom.setAttribute( u"d_x"_s, mDialogGeometry.x() );
+  viewDom.setAttribute( u"d_y"_s, mDialogGeometry.y() );
+  viewDom.setAttribute( u"d_width"_s, mDialogGeometry.width() );
+  viewDom.setAttribute( u"d_height"_s, mDialogGeometry.height() );
 }
 
 void QgsDockableWidgetHelper::readXml( const QDomElement &viewDom )
 {
-  mUuid = viewDom.attribute( QStringLiteral( "uuid" ), mUuid );
+  mUuid = viewDom.attribute( u"uuid"_s, mUuid );
 
   {
-    int x = viewDom.attribute( QStringLiteral( "d_x" ), QStringLiteral( "0" ) ).toInt();
-    int y = viewDom.attribute( QStringLiteral( "d_x" ), QStringLiteral( "0" ) ).toInt();
-    int w = viewDom.attribute( QStringLiteral( "d_width" ), QStringLiteral( "200" ) ).toInt();
-    int h = viewDom.attribute( QStringLiteral( "d_height" ), QStringLiteral( "200" ) ).toInt();
+    int x = viewDom.attribute( u"d_x"_s, u"0"_s ).toInt();
+    int y = viewDom.attribute( u"d_x"_s, u"0"_s ).toInt();
+    int w = viewDom.attribute( u"d_width"_s, u"200"_s ).toInt();
+    int h = viewDom.attribute( u"d_height"_s, u"200"_s ).toInt();
     mDialogGeometry = QRect( x, y, w, h );
     if ( mDialog )
       mDialog->setGeometry( mDialogGeometry );
   }
 
   {
-    int x = viewDom.attribute( QStringLiteral( "x" ), QStringLiteral( "0" ) ).toInt();
-    int y = viewDom.attribute( QStringLiteral( "y" ), QStringLiteral( "0" ) ).toInt();
-    int w = viewDom.attribute( QStringLiteral( "width" ), QStringLiteral( "200" ) ).toInt();
-    int h = viewDom.attribute( QStringLiteral( "height" ), QStringLiteral( "200" ) ).toInt();
+    int x = viewDom.attribute( u"x"_s, u"0"_s ).toInt();
+    int y = viewDom.attribute( u"y"_s, u"0"_s ).toInt();
+    int w = viewDom.attribute( u"width"_s, u"200"_s ).toInt();
+    int h = viewDom.attribute( u"height"_s, u"200"_s ).toInt();
     mDockGeometry = QRect( x, y, w, h );
-    mIsDockFloating = viewDom.attribute( QStringLiteral( "floating" ), QStringLiteral( "0" ) ).toInt();
-    mDockArea = static_cast<Qt::DockWidgetArea>( viewDom.attribute( QStringLiteral( "area" ), QString::number( Qt::RightDockWidgetArea ) ).toInt() );
+    mIsDockFloating = viewDom.attribute( u"floating"_s, u"0"_s ).toInt();
+    mDockArea = static_cast<Qt::DockWidgetArea>( viewDom.attribute( u"area"_s, QString::number( Qt::RightDockWidgetArea ) ).toInt() );
 
     if ( mDockArea == Qt::DockWidgetArea::NoDockWidgetArea && !mIsDockFloating )
     {
@@ -157,15 +182,15 @@ void QgsDockableWidgetHelper::readXml( const QDomElement &viewDom )
     }
 
     QStringList tabSiblings;
-    const QDomElement tabSiblingsElement = viewDom.firstChildElement( QStringLiteral( "tab_siblings" ) );
+    const QDomElement tabSiblingsElement = viewDom.firstChildElement( u"tab_siblings"_s );
     const QDomNodeList tabSiblingNodes = tabSiblingsElement.childNodes();
     for ( int i = 0; i < tabSiblingNodes.size(); ++i )
     {
       const QDomElement tabSiblingElement = tabSiblingNodes.at( i ).toElement();
       // prefer uuid if set, as it's always unique
-      QString tabId = tabSiblingElement.attribute( QStringLiteral( "uuid" ) );
+      QString tabId = tabSiblingElement.attribute( u"uuid"_s );
       if ( tabId.isEmpty() )
-        tabId = tabSiblingElement.attribute( QStringLiteral( "object_name" ) );
+        tabId = tabSiblingElement.attribute( u"object_name"_s );
       if ( !tabId.isEmpty() )
         tabSiblings.append( tabId );
     }
@@ -267,9 +292,7 @@ void QgsDockableWidgetHelper::toggleDockMode( bool docked )
 
     if ( !mSettingKeyDockId.isEmpty() )
     {
-      connect( mDock, &QgsDockWidget::dockLocationChanged, this, [this]( Qt::DockWidgetArea area ) {
-        sSettingsDockArea->setValue( area, mSettingKeyDockId );
-      } );
+      connect( mDock, &QgsDockWidget::dockLocationChanged, this, [this]( Qt::DockWidgetArea area ) { sSettingsDockArea->setValue( area, mSettingKeyDockId ); } );
     }
 
     connect( mDock, &QgsDockWidget::closed, this, [this]() {
@@ -344,15 +367,29 @@ void QgsDockableWidgetHelper::setUserVisible( bool visible )
       mDialog->raise();
       mDialog->setWindowState( mDialog->windowState() & ~Qt::WindowMinimized );
       mDialog->activateWindow();
+      emit visibilityChanged( true );
     }
     else
     {
       mDialog->hide();
+      emit visibilityChanged( false );
     }
   }
   if ( mDock )
   {
     mDock->setUserVisible( visible );
+  }
+}
+
+void QgsDockableWidgetHelper::reject()
+{
+  if ( mDialog )
+  {
+    mDialog->reject();
+  }
+  else if ( mDock )
+  {
+    mDock->close();
   }
 }
 
@@ -382,7 +419,15 @@ void QgsDockableWidgetHelper::setDockObjectName( const QString &name )
   }
 }
 
-QString QgsDockableWidgetHelper::dockObjectName() const { return mObjectName; }
+QString QgsDockableWidgetHelper::dockObjectName() const
+{
+  return mObjectName;
+}
+
+void QgsDockableWidgetHelper::setSettingKeyDockId( const QString &id )
+{
+  mSettingKeyDockId = id;
+}
 
 bool QgsDockableWidgetHelper::isUserVisible() const
 {
@@ -410,13 +455,13 @@ void QgsDockableWidgetHelper::setupDockWidget( const QStringList &tabSiblings )
     const int initialDockSize = fm.horizontalAdvance( '0' ) * 75;
     mDockGeometry = QRect( static_cast<int>( mOwnerWindow->rect().width() * 0.75 ), static_cast<int>( mOwnerWindow->rect().height() * 0.5 ), initialDockSize, initialDockSize );
   }
-  if ( !tabSiblings.isEmpty() )
+  if ( mOwnerWindow && !tabSiblings.isEmpty() )
   {
-    sAddTabifiedDockWidgetFunction( mDockArea, mDock, tabSiblings, false );
+    QgsGuiUtils::addTabifiedDockWidget( mOwnerWindow, mDockArea, mDock, tabSiblings, false );
   }
-  else if ( mOptions.testFlag( Option::RaiseTab ) )
+  else if ( mOwnerWindow && mOptions.testFlag( Option::RaiseTab ) )
   {
-    sAddTabifiedDockWidgetFunction( mDockArea, mDock, mTabifyWith, true );
+    QgsGuiUtils::addTabifiedDockWidget( mOwnerWindow, mDockArea, mDock, mTabifyWith, true );
   }
   else if ( mOwnerWindow )
   {
@@ -425,17 +470,22 @@ void QgsDockableWidgetHelper::setupDockWidget( const QStringList &tabSiblings )
 
   // can only resize properly and set the dock geometry after pending events have been processed,
   // so queue the geometry setting on the end of the event loop
-  QMetaObject::invokeMethod( mDock, [this] {
-    if (mIsDockFloating && sSettingsDockGeometry->exists( mSettingKeyDockId ) )
+  QMetaObject::invokeMethod(
+    mDock,
+    [this] {
+      if ( mIsDockFloating && sSettingsDockGeometry->exists( mSettingKeyDockId ) )
         mDock->restoreGeometry( sSettingsDockGeometry->value( mSettingKeyDockId ).toByteArray() );
-    else if ( mIsDockFloating )
-      mDock->setGeometry( mDockGeometry ); }, Qt::QueuedConnection );
+      else if ( mIsDockFloating )
+        mDock->setGeometry( mDockGeometry );
+    },
+    Qt::QueuedConnection
+  );
 }
 
 QToolButton *QgsDockableWidgetHelper::createDockUndockToolButton()
 {
   QToolButton *toggleButton = new QToolButton;
-  toggleButton->setIcon( QgsApplication::getThemeIcon( QStringLiteral( "mDockify.svg" ) ) );
+  toggleButton->setIcon( QgsApplication::getThemeIcon( u"mDockify.svg"_s ) );
   toggleButton->setCheckable( true );
   toggleButton->setChecked( mIsDocked );
   toggleButton->setEnabled( true );
@@ -447,7 +497,7 @@ QToolButton *QgsDockableWidgetHelper::createDockUndockToolButton()
 QAction *QgsDockableWidgetHelper::createDockUndockAction( const QString &title, QWidget *parent )
 {
   QAction *toggleAction = new QAction( title, parent );
-  toggleAction->setIcon( QgsApplication::getThemeIcon( QStringLiteral( "mDockify.svg" ) ) );
+  toggleAction->setIcon( QgsApplication::getThemeIcon( u"mDockify.svg"_s ) );
   toggleAction->setCheckable( true );
   toggleAction->setChecked( mIsDocked );
   toggleAction->setEnabled( true );
@@ -487,8 +537,7 @@ bool QgsDockableWidgetHelper::eventFilter( QObject *watched, QEvent *event )
 
 QgsNonRejectableDialog::QgsNonRejectableDialog( QWidget *parent, Qt::WindowFlags f )
   : QDialog( parent, f )
-{
-}
+{}
 
 void QgsNonRejectableDialog::reject()
 {

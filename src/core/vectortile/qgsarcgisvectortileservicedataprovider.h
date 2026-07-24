@@ -18,8 +18,8 @@
 
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgsxyzvectortiledataprovider.h"
 #include "qgsprovidermetadata.h"
+#include "qgsxyzvectortiledataprovider.h"
 
 #define SIP_NO_FILE
 
@@ -30,9 +30,7 @@ class CORE_EXPORT QgsArcGisVectorTileServiceDataProvider : public QgsXyzVectorTi
     Q_OBJECT
 
   public:
-    QgsArcGisVectorTileServiceDataProvider( const QString &uri,
-                                            const QgsDataProvider::ProviderOptions &providerOptions,
-                                            Qgis::DataProviderReadFlags flags );
+    QgsArcGisVectorTileServiceDataProvider( const QString &uri, const QgsDataProvider::ProviderOptions &providerOptions, Qgis::DataProviderReadFlags flags );
 
     QgsArcGisVectorTileServiceDataProvider( const QgsArcGisVectorTileServiceDataProvider &other );
 
@@ -58,7 +56,6 @@ class CORE_EXPORT QgsArcGisVectorTileServiceDataProvider : public QgsXyzVectorTi
     static QString ARCGIS_VT_SERVICE_DATA_PROVIDER_DESCRIPTION;
 
   private:
-
     bool setupArcgisVectorTileServiceConnection();
 
     bool mIsValid = false;

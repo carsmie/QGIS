@@ -13,17 +13,24 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgsdevtoolspanelwidget.h"
-#include "moc_qgsdevtoolspanelwidget.cpp"
+
+#include "devtools/documentation/qgsdocumentationpanelwidget.h"
 #include "qgisapp.h"
-#include "qgsdevtoolwidgetfactory.h"
+#include "qgsapplication.h"
 #include "qgsdevtoolwidget.h"
+#include "qgsdevtoolwidgetfactory.h"
+#include "qgsdockwidget.h"
 #include "qgspanelwidgetstack.h"
 #include "qgssettingsentryimpl.h"
-#include "qgsapplication.h"
-#include "qgsdockwidget.h"
-#include "devtools/documentation/qgsdocumentationpanelwidget.h"
 
-const QgsSettingsEntryString *QgsDevToolsPanelWidget::settingLastActiveTab = new QgsSettingsEntryString( QStringLiteral( "last-active-tab" ), QgsDevToolsPanelWidget::sTreeDevTools, QString(), QStringLiteral( "Last visible tab in developer tools panel" ) );
+#include <QString>
+
+#include "moc_qgsdevtoolspanelwidget.cpp"
+
+using namespace Qt::StringLiterals;
+
+const QgsSettingsEntryString *QgsDevToolsPanelWidget::settingLastActiveTab
+  = new QgsSettingsEntryString( u"last-active-tab"_s, QgsDevToolsPanelWidget::sTreeDevTools, QString(), u"Last visible tab in developer tools panel"_s );
 
 
 QgsDevToolsPanelWidget::QgsDevToolsPanelWidget( const QList<QgsDevToolWidgetFactory *> &factories, QWidget *parent )
@@ -90,18 +97,38 @@ void QgsDevToolsPanelWidget::addToolFactory( QgsDevToolWidgetFactory *factory )
 
 void QgsDevToolsPanelWidget::removeToolFactory( QgsDevToolWidgetFactory *factory )
 {
-  if ( mFactoryPages.contains( factory ) )
+  if ( !mFactoryPages.contains( factory ) )
   {
-    const int currentRow = mStackedWidget->currentIndex();
-    const int row = mFactoryPages.value( factory );
-    if ( QWidget *widget = mStackedWidget->widget( row ) )
+    return;
+  }
+
+  const int row = mFactoryPages.value( factory );
+  const int currentRow = mStackedWidget->currentIndex();
+
+  if ( QWidget *w = mStackedWidget->widget( row ) )
+  {
+    mStackedWidget->removeWidget( w );
+    w->deleteLater();
+  }
+
+  if ( row >= 0 && row < mOptionsListWidget->count() )
+  {
+    QListWidgetItem *item = mOptionsListWidget->takeItem( row );
+    delete item;
+  }
+
+  mFactoryPages.remove( factory );
+  for ( auto it = mFactoryPages.begin(); it != mFactoryPages.end(); ++it )
+  {
+    if ( it.value() > row )
     {
-      mStackedWidget->removeWidget( widget );
+      it.value() -= 1;
     }
-    mOptionsListWidget->removeItemWidget( mOptionsListWidget->item( row ) );
-    mFactoryPages.remove( factory );
-    if ( currentRow == row )
-      setCurrentTool( 0 );
+  }
+
+  if ( currentRow == row )
+  {
+    setCurrentTool( 0 );
   }
 }
 
@@ -126,9 +153,7 @@ void QgsDevToolsPanelWidget::setCurrentTool( int row )
   mStackedWidget->setCurrentIndex( row );
 }
 
-void QgsDevToolsPanelWidget::showApiDocumentation(
-  Qgis::DocumentationApi api, Qgis::DocumentationBrowser browser, const QString &object, const QString &module
-)
+void QgsDevToolsPanelWidget::showApiDocumentation( Qgis::DocumentationApi api, Qgis::DocumentationBrowser browser, const QString &object, const QString &module )
 {
   bool useQgisDocDirectory = false;
   QString baseUrl;
@@ -141,9 +166,9 @@ void QgsDevToolsPanelWidget::showApiDocumentation(
   }
   else
   {
-    if ( Qgis::version().toLower().contains( QStringLiteral( "master" ) ) )
+    if ( Qgis::version().toLower().contains( u"master"_s ) )
     {
-      version = QStringLiteral( "master" );
+      version = u"master"_s;
     }
     else
     {
@@ -153,7 +178,7 @@ void QgsDevToolsPanelWidget::showApiDocumentation(
     if ( api == Qgis::DocumentationApi::PyQgis || api == Qgis::DocumentationApi::PyQgisSearch )
     {
       QgsSettings settings;
-      baseUrl = settings.value( QStringLiteral( "qgis/PyQgisApiUrl" ), QString( "https://qgis.org/pyqgis/%1/" ).arg( version ) ).toString();
+      baseUrl = settings.value( u"qgis/PyQgisApiUrl"_s, QString( "https://qgis.org/pyqgis/%1/" ).arg( version ) ).toString();
     }
     else
     {
@@ -165,7 +190,7 @@ void QgsDevToolsPanelWidget::showApiDocumentation(
       else
       {
         QgsSettings settings;
-        baseUrl = settings.value( QStringLiteral( "qgis/QgisApiUrl" ), QString( "https://qgis.org/api/%1/" ).arg( version ) ).toString();
+        baseUrl = settings.value( u"qgis/QgisApiUrl"_s, QString( "https://qgis.org/api/%1/" ).arg( version ) ).toString();
       }
     }
   }

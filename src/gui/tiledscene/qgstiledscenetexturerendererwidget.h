@@ -18,15 +18,17 @@
 #ifndef QGSTILEDSCENETEXTURERENDERERWIDGET_H
 #define QGSTILEDSCENETEXTURERENDERERWIDGET_H
 
-#include "qgstiledscenerendererwidget.h"
 #include "ui_qgstiledscenetexturerendererwidgetbase.h"
+
 #include "qgis_gui.h"
+#include "qgstiledscenerendererwidget.h"
+
+#define SIP_NO_FILE
 
 class QgsTiledSceneLayer;
 class QgsStyle;
 class QgsTiledSceneRenderer;
 
-#define SIP_NO_FILE
 
 ///@cond PRIVATE
 

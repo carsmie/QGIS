@@ -13,14 +13,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgslogger.h"
 #include "qgsoapifdeletefeaturerequest.h"
+
+#include "qgslogger.h"
+
 #include "moc_qgsoapifdeletefeaturerequest.cpp"
 
 QgsOapifDeleteFeatureRequest::QgsOapifDeleteFeatureRequest( const QgsDataSourceUri &uri )
   : QgsBaseNetworkRequest( QgsAuthorizationSettings( uri.username(), uri.password(), QgsHttpHeaders(), uri.authConfigId() ), "OAPIF" )
-{
-}
+{}
 
 QString QgsOapifDeleteFeatureRequest::errorMessageWithReason( const QString &reason )
 {

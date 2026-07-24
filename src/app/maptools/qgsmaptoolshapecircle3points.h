@@ -4,7 +4,7 @@
     ---------------------
     begin                : July 2017
     copyright            : (C) 2017 by Loïc Bartoletti
-    email                : lbartoletti at tuxfamily dot org
+    email                : lituus at free dot fr
  ***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,8 +17,8 @@
 #ifndef QGSMAPTOOLSHAPECIRCLE3POINTS_H
 #define QGSMAPTOOLSHAPECIRCLE3POINTS_H
 
-#include "qgsmaptoolshapecircleabstract.h"
 #include "qgis_app.h"
+#include "qgsmaptoolshapecircleabstract.h"
 #include "qgsmaptoolshaperegistry.h"
 
 class APP_EXPORT QgsMapToolShapeCircle3PointsMetadata : public QgsMapToolShapeMetadata
@@ -43,7 +43,8 @@ class APP_EXPORT QgsMapToolShapeCircle3Points : public QgsMapToolShapeCircleAbst
 
   public:
     QgsMapToolShapeCircle3Points( QgsMapToolCapture *parentTool )
-      : QgsMapToolShapeCircleAbstract( QgsMapToolShapeCircle3PointsMetadata::TOOL_ID, parentTool ) {}
+      : QgsMapToolShapeCircleAbstract( QgsMapToolShapeCircle3PointsMetadata::TOOL_ID, parentTool )
+    {}
 
     bool cadCanvasReleaseEvent( QgsMapMouseEvent *e, QgsMapToolCapture::CaptureMode mode ) override;
     void cadCanvasMoveEvent( QgsMapMouseEvent *e, QgsMapToolCapture::CaptureMode mode ) override;

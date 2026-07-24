@@ -22,7 +22,6 @@ shadows, buffers and background shapes.
 #include "qgstextrenderer.h"
 %End
   public:
-
     static Qgis::TextHorizontalAlignment convertQtHAlignment( Qt::Alignment alignment );
 %Docstring
 Converts a Qt horizontal ``alignment`` flag to a
@@ -57,11 +56,18 @@ units, scale factors and optionally oversampling)
 %End
 
 
-    static void drawText( const QRectF &rect, double rotation, Qgis::TextHorizontalAlignment alignment, const QStringList &textLines,
-                          QgsRenderContext &context, const QgsTextFormat &format,
-                          bool drawAsOutlines = true, Qgis::TextVerticalAlignment vAlignment = Qgis::TextVerticalAlignment::Top,
-                          Qgis::TextRendererFlags flags = Qgis::TextRendererFlags(),
-                          Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Rectangle );
+    static void drawText(
+      const QRectF &rect,
+      double rotation,
+      Qgis::TextHorizontalAlignment alignment,
+      const QStringList &textLines,
+      QgsRenderContext &context,
+      const QgsTextFormat &format,
+      bool drawAsOutlines = true,
+      Qgis::TextVerticalAlignment vAlignment = Qgis::TextVerticalAlignment::Top,
+      Qgis::TextRendererFlags flags = Qgis::TextRendererFlags(),
+      Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Rectangle
+    );
 %Docstring
 Draws text within a rectangle using the specified settings.
 
@@ -91,16 +97,18 @@ Draws text within a rectangle using the specified settings.
 .. seealso:: :py:func:`drawDocument` which is more efficient if the text document and metrics have already been calculated.
 %End
 
-    static void drawDocument( const QRectF &rect,
-                              const QgsTextFormat &format,
-                              const QgsTextDocument &document,
-                              const QgsTextDocumentMetrics &metrics,
-                              QgsRenderContext &context,
-                              Qgis::TextHorizontalAlignment horizontalAlignment = Qgis::TextHorizontalAlignment::Left,
-                              Qgis::TextVerticalAlignment verticalAlignment = Qgis::TextVerticalAlignment::Top,
-                              double rotation = 0,
-                              Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Rectangle,
-                              Qgis::TextRendererFlags flags = Qgis::TextRendererFlags() );
+    static void drawDocument(
+      const QRectF &rect,
+      const QgsTextFormat &format,
+      const QgsTextDocument &document,
+      const QgsTextDocumentMetrics &metrics,
+      QgsRenderContext &context,
+      Qgis::TextHorizontalAlignment horizontalAlignment = Qgis::TextHorizontalAlignment::Left,
+      Qgis::TextVerticalAlignment verticalAlignment = Qgis::TextVerticalAlignment::Top,
+      double rotation = 0,
+      Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Rectangle,
+      Qgis::TextRendererFlags flags = Qgis::TextRendererFlags()
+    );
 %Docstring
 Draws a text document within a rectangle using the specified settings.
 
@@ -131,9 +139,9 @@ have already been calculated.
 .. versionadded:: 3.30
 %End
 
-    static void drawText( QPointF point, double rotation, Qgis::TextHorizontalAlignment alignment, const QStringList &textLines,
-                          QgsRenderContext &context, const QgsTextFormat &format,
-                          bool drawAsOutlines = true );
+    static void drawText(
+      QPointF point, double rotation, Qgis::TextHorizontalAlignment alignment, const QStringList &textLines, QgsRenderContext &context, const QgsTextFormat &format, bool drawAsOutlines = true
+    );
 %Docstring
 Draws text at a point origin using the specified settings.
 
@@ -154,14 +162,16 @@ Draws text at a point origin using the specified settings.
                        instead.
 %End
 
-    static void drawDocument( QPointF point,
-                              const QgsTextFormat &format,
-                              const QgsTextDocument &document,
-                              const QgsTextDocumentMetrics &metrics,
-                              QgsRenderContext &context,
-                              Qgis::TextHorizontalAlignment alignment,
-                              double rotation,
-                              Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Point );
+    static void drawDocument(
+      QPointF point,
+      const QgsTextFormat &format,
+      const QgsTextDocument &document,
+      const QgsTextDocumentMetrics &metrics,
+      QgsRenderContext &context,
+      Qgis::TextHorizontalAlignment alignment,
+      double rotation,
+      Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Point
+    );
 %Docstring
 Draws a text document at a point origin using the specified settings.
 
@@ -186,9 +196,16 @@ have already been calculated.
 .. versionadded:: 3.40
 %End
 
-    static void drawTextOnLine( const QPolygonF &line, const QString &text,
-                                QgsRenderContext &context, const QgsTextFormat &format,
-                                double offsetAlongLine = 0, double offsetFromLine = 0 );
+    static void drawTextOnLine(
+      const QPolygonF &line,
+      const QString &text,
+      QgsRenderContext &context,
+      const QgsTextFormat &format,
+      double offsetAlongLine = 0,
+      double offsetFromLine = 0,
+      Qgis::CurvedTextFlags flags = Qgis::CurvedTextFlag::UseBaselinePlacement | Qgis::CurvedTextFlag::TruncateStringWhenLineIsTooShort,
+      Qgis::TextAnchorPoint textAnchor = Qgis::TextAnchorPoint::StartOfText
+    );
 %Docstring
 Draws text along a line using the specified settings.
 
@@ -197,21 +214,35 @@ Draws text along a line using the specified settings.
 :param context: render context
 :param format: text format
 :param offsetAlongLine: offset along the line (in painter units) to
-                        start text at
+                        start text at. Only applies when ``textAnchor``
+                        is :py:class:`Qgis`.TextAnchorPoint.StartOfText.
 :param offsetFromLine: offset from the line (in painter units). Negative
                        values will shift the text to the left of the
                        line, positive values will shift the text to the
                        right.
+:param flags: curved text behavior flags (since QGIS 4.0)
+:param textAnchor: dictates where on the line the text should be
+                   anchored to. If the anchor point is the start of the
+                   text, the text will always start at the start of the
+                   line (and potential extend past the end of the line).
+                   If the anchor point is the end of the text, then the
+                   text will always end at the end of the line and
+                   potential extend past the start of the line. (since
+                   QGIS 4.4)
 
 .. versionadded:: 3.32
 %End
 
-    static void drawDocumentOnLine( const QPolygonF &line,
-                                    const QgsTextFormat &format,
-                                    const QgsTextDocument &document,
-                                    QgsRenderContext &context,
-                                    double offsetAlongLine = 0,
-                                    double offsetFromLine = 0 );
+    static void drawDocumentOnLine(
+      const QPolygonF &line,
+      const QgsTextFormat &format,
+      const QgsTextDocument &document,
+      QgsRenderContext &context,
+      double offsetAlongLine = 0,
+      double offsetFromLine = 0,
+      Qgis::CurvedTextFlags flags = Qgis::CurvedTextFlag::UseBaselinePlacement | Qgis::CurvedTextFlag::TruncateStringWhenLineIsTooShort,
+      Qgis::TextAnchorPoint textAnchor = Qgis::TextAnchorPoint::StartOfText
+    );
 %Docstring
 Draws a text document along a line using the specified settings.
 
@@ -220,18 +251,35 @@ Draws a text document along a line using the specified settings.
 :param document: text document to draw
 :param context: render context
 :param offsetAlongLine: offset along the line (in painter units) to
-                        start text at
+                        start text at. Only applies when ``textAnchor``
+                        is :py:class:`Qgis`.TextAnchorPoint.StartOfText.
 :param offsetFromLine: offset from the line (in painter units). Negative
                        values will shift the text to the left of the
                        line, positive values will shift the text to the
                        right.
+:param flags: curved text behavior flags (since QGIS 4.0)
+:param textAnchor: dictates where on the line the text should be
+                   anchored to. If the anchor point is the start of the
+                   text, the text will always start at the start of the
+                   line (and potential extend past the end of the line).
+                   If the anchor point is the end of the text, then the
+                   text will always end at the end of the line and
+                   potential extend past the start of the line. (since
+                   QGIS 4.4)
 
 .. versionadded:: 3.32
 %End
 
- static void drawPart( const QRectF &rect, double rotation, Qgis::TextHorizontalAlignment alignment, const QStringList &textLines,
-                                            QgsRenderContext &context, const QgsTextFormat &format,
-                                            Qgis::TextComponent part, bool drawAsOutlines = true ) /Deprecated="Since 3.40. Private API only, will be removed in 4.0."/;
+ static void drawPart(
+      const QRectF &rect,
+      double rotation,
+      Qgis::TextHorizontalAlignment alignment,
+      const QStringList &textLines,
+      QgsRenderContext &context,
+      const QgsTextFormat &format,
+      Qgis::TextComponent part,
+      bool drawAsOutlines = true
+    ) /Deprecated="Since 3.40. Private API only, will be removed in 4.0."/;
 %Docstring
 Draws a single component of rendered text using the specified settings.
 
@@ -260,9 +308,16 @@ Draws a single component of rendered text using the specified settings.
    Private API only, will be removed in 4.0.
 %End
 
- static void drawPart( QPointF origin, double rotation, Qgis::TextHorizontalAlignment alignment, const QStringList &textLines,
-                                            QgsRenderContext &context, const QgsTextFormat &format,
-                                            Qgis::TextComponent part, bool drawAsOutlines = true ) /Deprecated="Since 3.40. Private API only, will be removed in 4.0."/;
+ static void drawPart(
+      QPointF origin,
+      double rotation,
+      Qgis::TextHorizontalAlignment alignment,
+      const QStringList &textLines,
+      QgsRenderContext &context,
+      const QgsTextFormat &format,
+      Qgis::TextComponent part,
+      bool drawAsOutlines = true
+    ) /Deprecated="Since 3.40. Private API only, will be removed in 4.0."/;
 %Docstring
 Draws a single component of rendered text using the specified settings.
 
@@ -308,8 +363,7 @@ rendering at small font sizes.
 .. versionadded:: 3.2
 %End
 
-    static double textWidth( const QgsRenderContext &context, const QgsTextFormat &format, const QStringList &textLines,
-                             QFontMetricsF *fontMetrics = 0 );
+    static double textWidth( const QgsRenderContext &context, const QgsTextFormat &format, const QStringList &textLines, QFontMetricsF *fontMetrics = 0 );
 %Docstring
 Returns the width of a text based on a given format.
 
@@ -319,8 +373,15 @@ Returns the width of a text based on a given format.
 :param fontMetrics: font metrics
 %End
 
-    static double textHeight( const QgsRenderContext &context, const QgsTextFormat &format, const QStringList &textLines, Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Point,
-                              QFontMetricsF *fontMetrics = 0, Qgis::TextRendererFlags flags = Qgis::TextRendererFlags(), double maxLineWidth = 0 );
+    static double textHeight(
+      const QgsRenderContext &context,
+      const QgsTextFormat &format,
+      const QStringList &textLines,
+      Qgis::TextLayoutMode mode = Qgis::TextLayoutMode::Point,
+      QFontMetricsF *fontMetrics = 0,
+      Qgis::TextRendererFlags flags = Qgis::TextRendererFlags(),
+      double maxLineWidth = 0
+    );
 %Docstring
 Returns the height of a text based on a given format.
 

@@ -16,11 +16,14 @@
 #ifndef QGSPATHRESOLVER_H
 #define QGSPATHRESOLVER_H
 
+#include <functional>
+#include <vector>
+
 #include "qgis_core.h"
 
 #include <QString>
-#include <functional>
-#include <vector>
+
+using namespace Qt::StringLiterals;
 
 /**
  * \ingroup core
@@ -66,6 +69,7 @@ class CORE_EXPORT QgsPathResolver
      */
     static QString setPathPreprocessor( const std::function< QString( const QString &filename )> &processor );
 #else
+    // clang-format off
 
     /**
      * Sets a path pre-processor function, which allows for manipulation of paths and data sources prior
@@ -137,6 +141,7 @@ class CORE_EXPORT QgsPathResolver
     s = sipConvertFromNewType( new QString( id ), sipType_QString, 0 );
     return s;
     % End
+// clang-format on
 #endif
 
 #ifndef SIP_RUN
@@ -153,6 +158,7 @@ class CORE_EXPORT QgsPathResolver
      */
     static bool removePathPreprocessor( const QString &id );
 #else
+      // clang-format off
 
     /**
      * Removes the custom pre-processor function with matching \a id.
@@ -168,12 +174,12 @@ class CORE_EXPORT QgsPathResolver
     % MethodCode
     if ( !QgsPathResolver::removePathPreprocessor( *a0 ) )
     {
-      PyErr_SetString( PyExc_KeyError, QStringLiteral( "No processor with id %1 exists." ).arg( *a0 ).toUtf8().constData() );
+      PyErr_SetString( PyExc_KeyError, u"No processor with id %1 exists."_s.arg( *a0 ).toUtf8().constData() );
       sipIsErr = 1;
     }
     % End
+// clang-format on
 #endif
-
 
 
     /**
@@ -197,6 +203,7 @@ class CORE_EXPORT QgsPathResolver
 #ifndef SIP_RUN
     static QString setPathWriter( const std::function< QString( const QString &filename )> &writer );
 #else
+      // clang-format off
 
     /**
      * Sets a path writer function, which allows for manipulation of paths and data sources prior
@@ -248,6 +255,7 @@ class CORE_EXPORT QgsPathResolver
     s = sipConvertFromNewType( new QString( id ), sipType_QString, 0 );
     return s;
     % End
+// clang-format on
 #endif
 
     /**
@@ -263,6 +271,7 @@ class CORE_EXPORT QgsPathResolver
 #ifndef SIP_RUN
     static bool removePathWriter( const QString &id );
 #else
+      // clang-format off
 
     /**
      * Removes the custom writer function with matching \a id.
@@ -277,10 +286,11 @@ class CORE_EXPORT QgsPathResolver
     % MethodCode
     if ( !QgsPathResolver::removePathWriter( *a0 ) )
     {
-      PyErr_SetString( PyExc_KeyError, QStringLiteral( "No writer with id %1 exists." ).arg( *a0 ).toUtf8().constData() );
+      PyErr_SetString( PyExc_KeyError, u"No writer with id %1 exists."_s.arg( *a0 ).toUtf8().constData() );
       sipIsErr = 1;
     }
     % End
+// clang-format on
 #endif
 
   private:

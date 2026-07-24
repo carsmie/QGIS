@@ -14,11 +14,10 @@ email                : marco.hugentobler at sourcepole dot com
  ***************************************************************************/
 
 #include "qgsvertexid.h"
+
 #include "qgsabstractgeometry.h"
 
 bool QgsVertexId::isValid( const QgsAbstractGeometry *geom ) const
 {
-  return ( part >= 0 && part < geom->partCount() ) &&
-         ( ring < geom->ringCount( part ) ) &&
-         ( vertex < 0 || vertex < geom->vertexCount( part, ring ) );
+  return ( part >= 0 && part < geom->partCount() ) && ( ring < geom->ringCount( part ) ) && ( vertex < 0 || vertex < geom->vertexCount( part, ring ) );
 }

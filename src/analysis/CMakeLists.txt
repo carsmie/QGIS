@@ -44,6 +44,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmangletonearest.cpp
   processing/qgsalgorithmannotations.cpp
   processing/qgsalgorithmapplylayerstyle.cpp
+  processing/qgsalgorithmapproximatemedialaxis.cpp
   processing/qgsalgorithmarraytranslatedfeatures.cpp
   processing/qgsalgorithmaspect.cpp
   processing/qgsalgorithmassignprojection.cpp
@@ -63,6 +64,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmcheckgeometrysegmentlength.cpp
   processing/qgsalgorithmcheckgeometryangle.cpp
   processing/qgsalgorithmcheckvalidity.cpp
+  processing/qgsalgorithmextrude.cpp
   processing/qgsalgorithmfixgeometryduplicatenodes.cpp
   processing/qgsalgorithmfixgeometrymultipart.cpp
   processing/qgsalgorithmfixgeometryoverlap.cpp
@@ -96,6 +98,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmclip.cpp
   processing/qgsalgorithmconcavehull.cpp
   processing/qgsalgorithmconcavehullbyfeature.cpp
+  processing/qgsalgorithmconcavehullofpolygons.cpp
   processing/qgsalgorithmconditionalbranch.cpp
   processing/qgsalgorithmconstantraster.cpp
   processing/qgsalgorithmconverttocurves.cpp
@@ -104,6 +107,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmcoveragesimplify.cpp
   processing/qgsalgorithmcoverageunion.cpp
   processing/qgsalgorithmcoveragevalidate.cpp
+  processing/qgsalgorithmcoverageclean.cpp
   processing/qgsalgorithmcreatedirectory.cpp
   processing/qgsalgorithmdbscanclustering.cpp
   processing/qgsalgorithmdefineprojection.cpp
@@ -114,6 +118,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmdetectdatasetchanges.cpp
   processing/qgsalgorithmdifference.cpp
   processing/qgsalgorithmdissolve.cpp
+  processing/qgsalgorithmdistancematrix.cpp
   processing/qgsalgorithmdistancewithin.cpp
   processing/qgsalgorithmdownloadvectortiles.cpp
   processing/qgsalgorithmdrape.cpp
@@ -121,6 +126,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmdropgeometry.cpp
   processing/qgsalgorithmdropmzvalues.cpp
   processing/qgsalgorithmdxfexport.cpp
+  processing/qgsalgorithmexecuteandloadpostgisquery.cpp
   processing/qgsalgorithmexecutepostgisquery.cpp
   processing/qgsalgorithmexecutespatialitequery.cpp
   processing/qgsalgorithmexecutespatialitequeryregistered.cpp
@@ -147,6 +153,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmextractvertices.cpp
   processing/qgsalgorithmextractspecificvertices.cpp
   processing/qgsalgorithmfieldcalculator.cpp
+  processing/qgsalgorithmfileuploader.cpp
   processing/qgsalgorithmfiledownloader.cpp
   processing/qgsalgorithmfillnodata.cpp
   processing/qgsalgorithmfillsinkswangliu.cpp
@@ -156,6 +163,8 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmfindprojection.cpp
   processing/qgsalgorithmfixgeometries.cpp
   processing/qgsalgorithmflattenrelationships.cpp
+  processing/qgsalgorithmforceccw.cpp
+  processing/qgsalgorithmforcecw.cpp
   processing/qgsalgorithmforcerhr.cpp
   processing/qgsalgorithmfuzzifyraster.cpp
   processing/qgsalgorithmgenerateelevationprofile.cpp
@@ -163,8 +172,10 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmgltftovector.cpp
   processing/qgsalgorithmgpsbabeltools.cpp
   processing/qgsalgorithmgrid.cpp
+  processing/qgsalgorithmheatmap.cpp
   processing/qgsalgorithmhillshade.cpp
   processing/qgsalgorithmhubdistance.cpp
+  processing/qgsalgorithmhypsometriccurves.cpp
   processing/qgsalgorithmimportphotos.cpp
   processing/qgsalgorithminterpolatepoint.cpp
   processing/qgsalgorithmintersection.cpp
@@ -195,6 +206,8 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmmultiringconstantbuffer.cpp
   processing/qgsalgorithmmultiunion.cpp
   processing/qgsalgorithmnearestneighbouranalysis.cpp
+  processing/qgsalgorithmnetworkanalysisbase.cpp
+  processing/qgsalgorithmnetworkextractendpoints.cpp
   processing/qgsalgorithmoffsetlines.cpp
   processing/qgsalgorithmorderbyexpression.cpp
   processing/qgsalgorithmorientedminimumboundingbox.cpp
@@ -215,13 +228,16 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmpromotetomultipart.cpp
   processing/qgsalgorithmraiseexception.cpp
   processing/qgsalgorithmrandomextract.cpp
+  processing/qgsalgorithmrandomextractwithinsubsets.cpp
   processing/qgsalgorithmrandompointsextent.cpp
   processing/qgsalgorithmrandompointsinpolygons.cpp
   processing/qgsalgorithmrandompointsonlines.cpp
   processing/qgsalgorithmrandomraster.cpp
   processing/qgsalgorithmrastercalculator.cpp
   processing/qgsalgorithmrasterdtmslopebasedfilter.cpp
+  processing/qgsalgorithmrasterfeaturepreservingsmoothing.cpp
   processing/qgsalgorithmrasterfrequencybycomparisonoperator.cpp
+  processing/qgsalgorithmrastergaussianblur.cpp
   processing/qgsalgorithmrasterlayerproperties.cpp
   processing/qgsalgorithmrasterlayeruniquevalues.cpp
   processing/qgsalgorithmrasterlogicalop.cpp
@@ -236,6 +252,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmreclassifybylayer.cpp
   processing/qgsalgorithmrectanglesovalsdiamonds.cpp
   processing/qgsalgorithmrefactorfields.cpp
+  processing/qgsalgorithmrelief.cpp
   processing/qgsalgorithmremoveduplicatesbyattribute.cpp
   processing/qgsalgorithmremoveduplicatevertices.cpp
   processing/qgsalgorithmremoveholes.cpp
@@ -255,6 +272,8 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmsavelog.cpp
   processing/qgsalgorithmsaveselectedfeatures.cpp
   processing/qgsalgorithmsegmentize.cpp
+  processing/qgsalgorithmselectbyattribute.cpp
+  processing/qgsalgorithmselectbyexpression.cpp
   processing/qgsalgorithmserviceareafromlayer.cpp
   processing/qgsalgorithmserviceareafrompoint.cpp
   processing/qgsalgorithmsetlayerencoding.cpp
@@ -286,7 +305,10 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmsymmetricaldifference.cpp
   processing/qgsalgorithmtaperedbuffer.cpp
   processing/qgsalgorithmtinmeshcreation.cpp
+  processing/qgsalgorithmtotalcurvature.cpp
   processing/qgsalgorithmtransect.cpp
+  processing/qgsalgorithmtransectbase.cpp
+  processing/qgsalgorithmtransectfixeddistance.cpp
   processing/qgsalgorithmtransform.cpp
   processing/qgsalgorithmtranslate.cpp
   processing/qgsalgorithmtruncatetable.cpp
@@ -295,6 +317,7 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsalgorithmuniquevalueindex.cpp
   processing/qgsalgorithmurlopener.cpp
   processing/qgsalgorithmhttprequest.cpp
+  processing/qgsalgorithmvalidatenetwork.cpp
   processing/qgsalgorithmvectorize.cpp
   processing/qgsalgorithmvirtualrastercalculator.cpp
   processing/qgsalgorithmvoronoipolygons.cpp
@@ -310,12 +333,38 @@ set(QGIS_ANALYSIS_SRCS
   processing/qgsprojectstylealgorithms.cpp
   processing/qgsstylealgorithms.cpp
 
-  processing/qgsalgorithmnetworkanalysisbase.cpp
-
   processing/qgsnativealgorithms.cpp
+  processing/qgsdistanceutils.cpp
   processing/qgsoverlayutils.cpp
   processing/qgsrasteranalysisutils.cpp
   processing/qgsreclassifyutils.cpp
+
+  processing/pdal/qgspdalalgorithms.cpp
+  processing/pdal/qgspdalalgorithmbase.cpp
+  processing/pdal/qgsalgorithmpdalassignprojection.cpp
+  processing/pdal/qgsalgorithmpdalboundary.cpp
+  processing/pdal/qgsalgorithmpdalbuildvpc.cpp
+  processing/pdal/qgsalgorithmpdalclip.cpp
+  processing/pdal/qgsalgorithmpdalconvertformat.cpp
+  processing/pdal/qgsalgorithmpdalcreatecopc.cpp
+  processing/pdal/qgsalgorithmpdaldensity.cpp
+  processing/pdal/qgsalgorithmpdalexportraster.cpp
+  processing/pdal/qgsalgorithmpdalexportrastertin.cpp
+  processing/pdal/qgsalgorithmpdalexportvector.cpp
+  processing/pdal/qgsalgorithmpdalfilter.cpp
+  processing/pdal/qgsalgorithmpdalinformation.cpp
+  processing/pdal/qgsalgorithmpdalmerge.cpp
+  processing/pdal/qgsalgorithmpdalreproject.cpp
+  processing/pdal/qgsalgorithmpdalthinbydecimate.cpp
+  processing/pdal/qgsalgorithmpdalthinbyradius.cpp
+  processing/pdal/qgsalgorithmpdaltile.cpp
+  processing/pdal/qgsalgorithmpdalheightabovegroundnearestneighbour.cpp
+  processing/pdal/qgsalgorithmpdalheightabovegroundtriangulation.cpp
+  processing/pdal/qgsalgorithmpdalfilternoisestatistical.cpp
+  processing/pdal/qgsalgorithmpdalfilternoiseradius.cpp
+  processing/pdal/qgsalgorithmpdalclassifyground.cpp
+  processing/pdal/qgsalgorithmpdaltransform.cpp
+  processing/pdal/qgsalgorithmpdalcompare.cpp
 
   raster/qgsalignraster.cpp
   raster/qgsninecellfilter.cpp
@@ -423,12 +472,15 @@ set(QGIS_ANALYSIS_HDRS
   processing/qgsalgorithmbatchgeocode.h
   processing/qgsalgorithmbatchnominatimgeocode.h
   processing/qgsalgorithmfiledownloader.h
+  processing/qgsalgorithmfileuploader.h
   processing/qgsalgorithmimportphotos.h
   processing/qgsnativealgorithms.h
   processing/qgsprojectstylealgorithms.h
   processing/qgsreclassifyutils.h
   processing/qgsalgorithmurlopener.h
   processing/qgsalgorithmhttprequest.h
+
+  processing/pdal/qgspdalalgorithms.h
 
   raster/qgsalignraster.h
   raster/qgsaspectfilter.h
@@ -485,37 +537,13 @@ set(QGIS_ANALYSIS_HDRS
   vector/qgszonalstatistics.h
 )
 
-if (WITH_PDAL AND PDAL_2_5_OR_HIGHER)
+if (WITH_PDAL)
   set(QGIS_ANALYSIS_SRCS ${QGIS_ANALYSIS_SRCS}
     ${CMAKE_SOURCE_DIR}/external/untwine/api/QgisUntwine.cpp
-
-    processing/pdal/qgspdalalgorithms.cpp
-
-    processing/pdal/qgspdalalgorithmbase.cpp
-
-    processing/pdal/qgsalgorithmpdalassignprojection.cpp
-    processing/pdal/qgsalgorithmpdalboundary.cpp
-    processing/pdal/qgsalgorithmpdalbuildvpc.cpp
-    processing/pdal/qgsalgorithmpdalclip.cpp
-    processing/pdal/qgsalgorithmpdalconvertformat.cpp
-    processing/pdal/qgsalgorithmpdalcreatecopc.cpp
-    processing/pdal/qgsalgorithmpdaldensity.cpp
-    processing/pdal/qgsalgorithmpdalexportraster.cpp
-    processing/pdal/qgsalgorithmpdalexportrastertin.cpp
-    processing/pdal/qgsalgorithmpdalexportvector.cpp
-    processing/pdal/qgsalgorithmpdalfilter.cpp
-    processing/pdal/qgsalgorithmpdalinformation.cpp
-    processing/pdal/qgsalgorithmpdalmerge.cpp
-    processing/pdal/qgsalgorithmpdalreproject.cpp
-    processing/pdal/qgsalgorithmpdalthinbydecimate.cpp
-    processing/pdal/qgsalgorithmpdalthinbyradius.cpp
-    processing/pdal/qgsalgorithmpdaltile.cpp
   )
 
   set(QGIS_ANALYSIS_HDRS ${QGIS_ANALYSIS_HDRS}
     ${CMAKE_SOURCE_DIR}/external/untwine/api/QgisUntwine.hpp
-
-    processing/pdal/qgspdalalgorithms.h
   )
 
   include_directories(
@@ -579,9 +607,6 @@ endif()
 
 set_target_properties(qgis_analysis PROPERTIES UNITY_BUILD ${ENABLE_UNITY_BUILDS})
 
-# require c++17
-target_compile_features(qgis_analysis PRIVATE cxx_std_17)
-
 target_include_directories(qgis_analysis PUBLIC
   ${CMAKE_SOURCE_DIR}/src/analysis
   ${CMAKE_SOURCE_DIR}/src/analysis/georeferencing
@@ -628,11 +653,15 @@ if(HAVE_GSL)
 endif()
 
 if(HAVE_OPENCL)
-    target_link_libraries(qgis_analysis ${OpenCL_LIBRARIES})
+    target_link_libraries(qgis_analysis OpenCL::OpenCL)
 endif()
 
 if (WITH_DRACO)
   target_link_libraries(qgis_analysis ${DRACO_LIBRARY})
+endif()
+
+if (WITH_SFCGAL)
+  target_link_libraries(qgis_analysis SFCGAL::SFCGAL)
 endif()
 
 target_compile_definitions(qgis_analysis PRIVATE "-DQT_NO_FOREACH")

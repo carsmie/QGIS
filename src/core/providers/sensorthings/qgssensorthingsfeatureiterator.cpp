@@ -13,6 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 #include "qgssensorthingsfeatureiterator.h"
+
 #include "geometry/qgsgeometry.h"
 #include "qgsexception.h"
 #include "qgsfeedback.h"
@@ -26,8 +27,7 @@
 
 QgsSensorThingsFeatureSource::QgsSensorThingsFeatureSource( const std::shared_ptr<QgsSensorThingsSharedData> &sharedData )
   : mSharedData( sharedData )
-{
-}
+{}
 
 QgsFeatureIterator QgsSensorThingsFeatureSource::getFeatures( const QgsFeatureRequest &request )
 {

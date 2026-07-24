@@ -16,17 +16,17 @@
  ***************************************************************************/
 
 #include "qgsrastermatrix.h"
-#include <cstring>
-#include <cmath>
+
 #include <algorithm>
+#include <cmath>
+#include <cstring>
 
 QgsRasterMatrix::QgsRasterMatrix( int nCols, int nRows, double *data, double nodataValue )
   : mColumns( nCols )
   , mRows( nRows )
   , mData( data )
   , mNodataValue( nodataValue )
-{
-}
+{}
 
 QgsRasterMatrix::QgsRasterMatrix( const QgsRasterMatrix &m )
 {

@@ -8,6 +8,7 @@
 
 
 
+
 class QgsStacProvider
 {
 %Docstring(signature="appended")
@@ -26,7 +27,6 @@ the data.
 #include "qgsstacprovider.h"
 %End
   public:
-
     QgsStacProvider( const QString &name, const QString &description, const QStringList &roles, const QString &url );
 %Docstring
 QgsStacProvider constructor

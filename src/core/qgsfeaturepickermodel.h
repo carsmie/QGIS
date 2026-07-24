@@ -15,24 +15,27 @@
 #ifndef QGSFEATUREPICKERMODEL_H
 #define QGSFEATUREPICKERMODEL_H
 
-#include <QAbstractItemModel>
-
 #include "qgsconditionalstyle.h"
 #include "qgsfeatureexpressionvaluesgatherer.h"
 #include "qgsfeaturepickermodelbase.h"
+
+#include <QAbstractItemModel>
 
 /**
  * \ingroup core
  * \brief Provides a list of features based on filter conditions.
  *
  * Features are fetched asynchronously.
+ *
+ * Entries are identified by their feature id.
+ * To identify features by attribute values (e.g. a foreign key) instead,
+ * use QgsFeatureFilterModel.
  */
 class CORE_EXPORT QgsFeaturePickerModel : public QgsFeaturePickerModelBase
 {
     Q_OBJECT
 
   public:
-
     /**
      * Create a new QgsFeaturePickerModel, optionally specifying a \a parent.
      */

@@ -21,23 +21,22 @@ __copyright__ = "(C) 2012, Victor Olaya"
 
 import os
 
-from qgis.PyQt.QtGui import QIcon
-
 from qgis.core import (
     QgsApplication,
     QgsFeature,
+    QgsFeatureSink,
     QgsGeometry,
     QgsGeometryCollection,
-    QgsPolygon,
     QgsMultiPolygon,
     QgsMultiSurface,
-    QgsWkbTypes,
-    QgsFeatureSink,
+    QgsPolygon,
     QgsProcessing,
-    QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
     QgsProcessingUtils,
+    QgsWkbTypes,
 )
+from qgis.PyQt.QtGui import QIcon
 
 from processing.algs.qgis.QgisAlgorithm import QgisFeatureBasedAlgorithm
 from processing.tools import dataobjects, vector
@@ -46,7 +45,6 @@ pluginPath = os.path.split(os.path.split(os.path.dirname(__file__))[0])[0]
 
 
 class LinesToPolygons(QgisFeatureBasedAlgorithm):
-
     def icon(self):
         return QgsApplication.getThemeIcon("/algorithms/mAlgorithmLineToPolygon.svg")
 
@@ -70,6 +68,15 @@ class LinesToPolygons(QgisFeatureBasedAlgorithm):
 
     def displayName(self):
         return self.tr("Lines to polygons")
+
+    def shortDescription(self):
+        return self.tr("Generates polygons using the lines from an input line layer.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm generates a polygon layer using as polygon rings the lines from an input line layer.\n"
+            "All attributes from the input line layer will be copied to the output layer."
+        )
 
     def outputName(self):
         return self.tr("Polygons")

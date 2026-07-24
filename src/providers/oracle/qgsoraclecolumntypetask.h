@@ -17,8 +17,8 @@
 #ifndef QGSORACLECOLUMNTYPETASK_H
 #define QGSORACLECOLUMNTYPETASK_H
 
-#include "qgstaskmanager.h"
 #include "qgsoracleconn.h"
+#include "qgstaskmanager.h"
 
 // A class that determines the geometry type of a given database
 // schema.table.column, with the option of doing so in a separate
@@ -46,6 +46,11 @@ class QgsOracleColumnTypeTask : public QgsTask
     bool useEstimatedMetadata() const { return mUseEstimatedMetadata; }
     bool allowGeometrylessTables() const { return mAllowGeometrylessTables; }
 
+    /**
+     * If the task fails, returns the error which occurred.
+     */
+    QString error() const { return mError; }
+
   signals:
     void setLayerType( const QgsOracleLayerProperty &layerProperty );
     void progressMessage( const QString &message );
@@ -55,6 +60,7 @@ class QgsOracleColumnTypeTask : public QgsTask
 
     QString mName;
     QString mSchema;
+    QString mError;
     bool mUseEstimatedMetadata = false;
     bool mAllowGeometrylessTables = false;
     QVector<QgsOracleLayerProperty> mLayerProperties;

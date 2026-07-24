@@ -14,18 +14,22 @@
  ***************************************************************************/
 
 #include <nlohmann/json.hpp>
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
+
 using namespace nlohmann;
 
 #include "qgslogger.h"
 #include "qgsjsonutils.h"
 #include "qgsoapifcreatefeaturerequest.h"
 #include "moc_qgsoapifcreatefeaturerequest.cpp"
-#include "qgsoapifprovider.h"
+#include "qgsoapifshareddata.h"
 
 QgsOapifCreateFeatureRequest::QgsOapifCreateFeatureRequest( const QgsDataSourceUri &uri )
   : QgsBaseNetworkRequest( QgsAuthorizationSettings( uri.username(), uri.password(), QgsHttpHeaders(), uri.authConfigId() ), "OAPIF" )
-{
-}
+{}
 
 QString QgsOapifCreateFeatureRequest::createFeature( const QgsOapifSharedData *sharedData, const QgsFeature &f, const QString &contentCrs, bool hasAxisInverted )
 {
@@ -68,7 +72,7 @@ QString QgsOapifCreateFeatureRequest::createFeature( const QgsOapifSharedData *s
     }
   }
 
-  const int posItems = location.lastIndexOf( QLatin1String( "/items/" ) );
+  const int posItems = location.lastIndexOf( "/items/"_L1 );
   if ( posItems < 0 )
     return QString();
 

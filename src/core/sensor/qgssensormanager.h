@@ -16,13 +16,13 @@
 #ifndef QGSSENSORMANAGER_H
 #define QGSSENSORMANAGER_H
 
+#include "qgis.h"
 #include "qgis_core.h"
 #include "qgis_sip.h"
-#include "qgis.h"
 #include "qgsabstractsensor.h"
 
-#include <QObject>
 #include <QDomElement>
+#include <QObject>
 
 class QgsProject;
 
@@ -43,7 +43,6 @@ class CORE_EXPORT QgsSensorManager : public QObject
     Q_OBJECT
 
   public:
-
     /**
      * Constructor for QgsSensorManager, with the specified \a parent object.
      */
@@ -142,10 +141,8 @@ class CORE_EXPORT QgsSensorManager : public QObject
     void handleSensorErrorOccurred( const QString &errorMessage );
 
   private:
-
     QList<QgsAbstractSensor *> mSensors;
     QMap<QString, QgsAbstractSensor::SensorData> mSensorsData;
-
 };
 
 #endif // QGSSENSORMANAGER_H

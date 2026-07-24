@@ -16,12 +16,18 @@ email                : jef at norbit dot de
  ***************************************************************************/
 
 #include "qgscolumntypethread.h"
-#include "moc_qgscolumntypethread.cpp"
-#include "qgspostgresconnpool.h"
+
+#include <climits>
+
 #include "qgslogger.h"
+#include "qgspostgresconnpool.h"
 
 #include <QMetaType>
-#include <climits>
+#include <QString>
+
+#include "moc_qgscolumntypethread.cpp"
+
+using namespace Qt::StringLiterals;
 
 QgsGeomColumnTypeThread::QgsGeomColumnTypeThread( const QString &name, bool useEstimatedMetaData, bool allowGeometrylessTables )
   : mName( name )
@@ -53,7 +59,7 @@ void QgsGeomColumnTypeThread::run()
   mStopped = false;
 
   const bool dontResolveType = QgsPostgresConn::dontResolveType( mName );
-  const QString schemaToRestrict = QgsPostgresConn::publicSchemaOnly( mName ) ? QStringLiteral( "public" ) : QgsPostgresConn::schemaToRestrict( mName );
+  const QString schemaToRestrict = QgsPostgresConn::publicSchemaOnly( mName ) ? u"public"_s : QgsPostgresConn::schemaToRestrict( mName );
 
   emit progressMessage( tr( "Retrieving tables of %1…" ).arg( mName ) );
   QVector<QgsPostgresLayerProperty> layerProperties;
@@ -73,7 +79,8 @@ void QgsGeomColumnTypeThread::run()
 
   for ( auto &layerProperty : layerProperties )
   {
-    if ( !layerProperty.geometryColName.isNull() && ( layerProperty.types.value( 0, Qgis::WkbType::Unknown ) == Qgis::WkbType::Unknown || layerProperty.srids.value( 0, std::numeric_limits<int>::min() ) == std::numeric_limits<int>::min() ) )
+    if ( !layerProperty.geometryColName.isNull()
+         && ( layerProperty.types.value( 0, Qgis::WkbType::Unknown ) == Qgis::WkbType::Unknown || layerProperty.srids.value( 0, std::numeric_limits<int>::min() ) == std::numeric_limits<int>::min() ) )
     {
       unrestrictedLayers << &layerProperty;
     }

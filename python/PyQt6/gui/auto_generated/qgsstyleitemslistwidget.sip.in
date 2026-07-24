@@ -12,6 +12,7 @@
 
 
 
+
 class QgsStyleItemsListWidget : QWidget
 {
 %Docstring(signature="appended")
@@ -81,6 +82,13 @@ Returns the name of the item currently selected in the widget.
 Returns the type of the item currently selected in the widget.
 
 .. seealso:: :py:func:`currentItemName`
+%End
+
+    QgsStyleProxyModel *proxyModel();
+%Docstring
+Returns the associated proxy model.
+
+.. versionadded:: 4.2
 %End
 
   protected:

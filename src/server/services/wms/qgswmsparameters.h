@@ -18,15 +18,15 @@
 #ifndef QGSWMSPARAMETERS_H
 #define QGSWMSPARAMETERS_H
 
+#include "qgslegendsettings.h"
+#include "qgsogcutils.h"
+#include "qgsprojectversion.h"
+#include "qgsrectangle.h"
+#include "qgsserverparameters.h"
+
+#include <QColor>
 #include <QMap>
 #include <QMetaEnum>
-#include <QColor>
-
-#include "qgsrectangle.h"
-#include "qgslegendsettings.h"
-#include "qgsprojectversion.h"
-#include "qgsogcutils.h"
-#include "qgsserverparameters.h"
 
 namespace QgsWms
 {
@@ -73,6 +73,10 @@ namespace QgsWms
       QString mFont;
       float mBufferSize = 0;
       QColor mBufferColor;
+      QColor mFrameBackgroundColor = Qt::white;
+      QColor mFrameOutlineColor = Qt::black;
+      double mFrameOutlineWidth = 0;
+      float mFrameSize = 0;
       double mLabelRotation = 0;
       double mLabelDistance = 2; //label distance from feature in mm
       QString mHali;             //horizontal alignment
@@ -166,6 +170,10 @@ namespace QgsWms
         HIGHLIGHT_LABELCOLOR,
         HIGHLIGHT_LABELBUFFERCOLOR,
         HIGHLIGHT_LABELBUFFERSIZE,
+        HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR,
+        HIGHLIGHT_LABELFRAMEOUTLINECOLOR,
+        HIGHLIGHT_LABELFRAMEOUTLINEWIDTH,
+        HIGHLIGHT_LABELFRAMESIZE,
         HIGHLIGHT_LABEL_ROTATION,
         HIGHLIGHT_LABEL_DISTANCE,
         HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT,
@@ -203,7 +211,7 @@ namespace QgsWms
       /**
        * Default destructor for QgsWmsParameter.
        */
-      virtual ~QgsWmsParameter() override = default;
+      ~QgsWmsParameter() override = default;
 
       /**
        * Returns TRUE if the parameter is valid, FALSE otherwise.
@@ -399,7 +407,7 @@ namespace QgsWms
         */
       QgsWmsParameters();
 
-      virtual ~QgsWmsParameters() override = default;
+      ~QgsWmsParameters() override = default;
 
       /**
        * Returns the parameter corresponding to \a name.
@@ -1181,6 +1189,62 @@ namespace QgsWms
        * \throws QgsBadRequestException
        */
       QList<double> highlightLabelBufferSizeAsFloat() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR
+       * \returns highlight label frame background colors
+       */
+      QStringList highlightLabelFrameBackgroundColor() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMEBACKGROUNDCOLOR as a list of colors. An exception is
+       * raised if an invalid color is found.
+       * \returns highlight label frame background colors
+       * \throws QgsBadRequestException
+       */
+      QList<QColor> highlightLabelFrameBackgroundColorAsColor() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMEOUTLINECOLOR
+       * \returns highlight label frame outline colors
+       */
+      QStringList highlightLabelFrameOutlineColor() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMEOUTLINECOLOR as a list of colors. An exception is
+       * raised if an invalid color is found.
+       * \returns highlight label frame outline colors
+       * \throws QgsBadRequestException
+       */
+      QList<QColor> highlightLabelFrameOutlineColorAsColor() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMEOUTLINEWIDTH
+       * \returns highlight label frame outline width
+       */
+      QStringList highlightLabelFrameOutlineWidth() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMEOUTLINEWIDTH as a list of widths. An exception is
+       * raised if an invalid width is found.
+       * \returns highlight label frame outline widths
+       * \throws QgsBadRequestException
+       */
+      QList<double> highlightLabelFrameOutlineWidthAsFloat() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMESIZE
+       * \returns highlight label frame size
+       */
+      QStringList highlightLabelFrameSize() const;
+
+      /**
+       * Returns HIGHLIGHT_LABELFRAMESIZE as a list of float. An exception is
+       * raised if an invalid size is found.
+       * \returns highlight label frame size
+       * \throws QgsBadRequestException
+       */
+      QList<double> highlightLabelFrameSizeAsFloat() const;
 
       /**
        * Returns HIGHLIGHT_LABELBUFFERCOLOR as a list of string.

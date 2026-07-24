@@ -13,12 +13,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgstest.h"
-
 #include "qgsgltfutils.h"
-#include "tiny_gltf.h"
-
 #include "qgsmatrix4x4.h"
+#include "qgstest.h"
+#include "tiny_gltf.h"
 
 class TestQgsGltfUtils : public QObject
 {
@@ -42,13 +40,11 @@ class TestQgsGltfUtils : public QObject
 
 //runs before all tests
 void TestQgsGltfUtils::initTestCase()
-{
-}
+{}
 
 //runs after all tests
 void TestQgsGltfUtils::cleanupTestCase()
-{
-}
+{}
 
 void TestQgsGltfUtils::testImageResourceType()
 {

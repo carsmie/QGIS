@@ -13,17 +13,17 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "qgiscustomwidgets.h"
 #include "qgsdoublespinboxplugin.h"
-#include "moc_qgsdoublespinboxplugin.cpp"
+
+#include "qgiscustomwidgets.h"
 #include "qgsdoublespinbox.h"
 
+#include "moc_qgsdoublespinboxplugin.cpp"
 
 QgsDoubleSpinBoxPlugin::QgsDoubleSpinBoxPlugin( QObject *parent )
   : QObject( parent )
   , mInitialized( false )
-{
-}
+{}
 
 
 QString QgsDoubleSpinBoxPlugin::name() const
@@ -82,17 +82,19 @@ QString QgsDoubleSpinBoxPlugin::whatsThis() const
 
 QString QgsDoubleSpinBoxPlugin::domXml() const
 {
-  return QString( "<ui language=\"c++\">\n"
-                  " <widget class=\"%1\" name=\"mQgsDoubleSpinBox\">\n"
-                  "  <property name=\"geometry\">\n"
-                  "   <rect>\n"
-                  "    <x>0</x>\n"
-                  "    <y>0</y>\n"
-                  "    <width>90</width>\n"
-                  "    <height>27</height>\n"
-                  "   </rect>\n"
-                  "  </property>\n"
-                  " </widget>\n"
-                  "</ui>\n" )
+  return QString(
+           "<ui language=\"c++\">\n"
+           " <widget class=\"%1\" name=\"mQgsDoubleSpinBox\">\n"
+           "  <property name=\"geometry\">\n"
+           "   <rect>\n"
+           "    <x>0</x>\n"
+           "    <y>0</y>\n"
+           "    <width>90</width>\n"
+           "    <height>27</height>\n"
+           "   </rect>\n"
+           "  </property>\n"
+           " </widget>\n"
+           "</ui>\n"
+  )
     .arg( name() );
 }

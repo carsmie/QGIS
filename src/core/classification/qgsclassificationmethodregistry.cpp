@@ -13,9 +13,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QIcon>
-
 #include "qgsclassificationmethodregistry.h"
+
+#include <QIcon>
 
 // classification methods
 #include "qgsclassificationcustom.h"
@@ -76,4 +76,3 @@ QIcon QgsClassificationMethodRegistry::icon( const QString &id ) const
   else
     return QIcon();
 }
-

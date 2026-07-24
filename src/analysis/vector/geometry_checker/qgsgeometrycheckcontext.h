@@ -33,8 +33,17 @@ class ANALYSIS_EXPORT QgsGeometryCheckContext
   public:
     /**
      * Creates a new QgsGeometryCheckContext.
+     * \param precision The precision used to define geometry check tolerance. Tolerance is calculated as pow(10, -precision)
+     * \param mapCrs The coordinate system in which calculations should be done
+     * \param transformContext The coordinate transform context
+     * \param mProject The project used to resolve additional layers
+     * \param uniqueIdFieldIndex The index of the unique ID field used to identify features. If set to valid field index, geometry checker will fail if
+     * this field is not unique (since QGIS 4.0)
+     *
      */
-    QgsGeometryCheckContext( int precision, const QgsCoordinateReferenceSystem &mapCrs, const QgsCoordinateTransformContext &transformContext, const QgsProject *mProject );
+    QgsGeometryCheckContext(
+      int precision, const QgsCoordinateReferenceSystem &mapCrs, const QgsCoordinateTransformContext &transformContext, const QgsProject *mProject = nullptr, const int uniqueIdFieldIndex = -1
+    );
 
     /**
      * The tolerance to allow for in geometry checks.
@@ -62,6 +71,13 @@ class ANALYSIS_EXPORT QgsGeometryCheckContext
     const QgsCoordinateTransformContext transformContext;
 
     /**
+     * The index of the unique ID field used to identify features.
+     *
+     * \since QGIS 4.0
+     */
+    const int uniqueIdFieldIndex;
+
+    /**
      * The project can be used to resolve additional layers.
      *
      * This must only be accessed from the main thread (i.e. do not access from the collectError method)
@@ -75,8 +91,7 @@ class ANALYSIS_EXPORT QgsGeometryCheckContext
 
   private:
 #ifdef SIP_RUN
-    QgsGeometryCheckContext( const QgsGeometryCheckContext &rh )
-    {}
+    QgsGeometryCheckContext( const QgsGeometryCheckContext &rh ) {}
 #endif
 };
 

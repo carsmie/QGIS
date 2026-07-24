@@ -17,9 +17,9 @@
 #define QGSPREVIEWQUAD_H
 
 #include <Qt3DCore/QEntity>
+#include <Qt3DRender/QEffect>
 #include <Qt3DRender/QMaterial>
 #include <Qt3DRender/QParameter>
-#include <Qt3DRender/QEffect>
 
 #define SIP_NO_FILE
 
@@ -69,7 +69,13 @@ class QgsPreviewQuad : public Qt3DCore::QEntity
      * \param additionalShaderParameters More parameters to pass to the shader
      * \param parent The parent of the quad
      */
-    QgsPreviewQuad( Qt3DRender::QAbstractTexture *texture, const QPointF &centerNDC, const QSizeF &size, QVector<Qt3DRender::QParameter *> additionalShaderParameters = QVector<Qt3DRender::QParameter *>(), Qt3DCore::QEntity *parent = nullptr );
+    QgsPreviewQuad(
+      Qt3DRender::QAbstractTexture *texture,
+      const QPointF &centerNDC,
+      const QSizeF &size,
+      QVector<Qt3DRender::QParameter *> additionalShaderParameters = QVector<Qt3DRender::QParameter *>(),
+      Qt3DCore::QEntity *parent = nullptr
+    );
 
     //! Sets where the quad will be located on the scene
     void setViewPort( const QPointF &centerNDC, const QSizeF &size );

@@ -18,10 +18,9 @@
 #ifndef QGSPROXYFEATURESINK_H
 #define QGSPROXYFEATURESINK_H
 
-#include "qgis_core.h"
 #include "qgis.h"
+#include "qgis_core.h"
 #include "qgsfeaturesink.h"
-
 
 /**
  * \class QgsProxyFeatureSink
@@ -38,7 +37,6 @@
 class CORE_EXPORT QgsProxyFeatureSink : public QgsFeatureSink
 {
   public:
-
     /**
      * Constructs a new QgsProxyFeatureSink which forwards features onto a destination \a sink.
      */
@@ -56,14 +54,9 @@ class CORE_EXPORT QgsProxyFeatureSink : public QgsFeatureSink
     QgsFeatureSink *destinationSink() { return mSink; }
 
   protected:
-
     //! Underlying destination sink
     QgsFeatureSink *mSink = nullptr;
 };
 
 
 #endif // QGSPROXYFEATURESINK_H
-
-
-
-

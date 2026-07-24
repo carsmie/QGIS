@@ -16,14 +16,15 @@
 #ifndef QGSPROCESSINGDXFLAYERSWIDGETWRAPPER_H
 #define QGSPROCESSINGDXFLAYERSWIDGETWRAPPER_H
 
-#define SIP_NO_FILE
-
-#include "qgsprocessingcontext.h"
-#include "qgsprocessingwidgetwrapper.h"
-#include "qgsprocessingmultipleselectiondialog.h"
-#include "qgsdxfexport.h"
 
 #include "ui_qgsprocessingdxflayerdetailswidgetbase.h"
+
+#include "qgsdxfexport.h"
+#include "qgsprocessingcontext.h"
+#include "qgsprocessingmultipleselectiondialog.h"
+#include "qgsprocessingwidgetwrapper.h"
+
+#define SIP_NO_FILE
 
 class QLineEdit;
 class QToolButton;
@@ -54,11 +55,7 @@ class GUI_EXPORT QgsProcessingDxfLayersPanelWidget : public QgsProcessingMultipl
     /**
      * Constructor for QgsProcessingDxfLayersPanelWidget.
      */
-    QgsProcessingDxfLayersPanelWidget(
-      const QVariant &value,
-      QgsProject *project,
-      QWidget *parent SIP_TRANSFERTHIS = nullptr
-    );
+    QgsProcessingDxfLayersPanelWidget( const QVariant &value, QgsProject *project, QWidget *parent SIP_TRANSFERTHIS = nullptr );
 
   private slots:
 

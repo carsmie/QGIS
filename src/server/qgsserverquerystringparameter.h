@@ -16,12 +16,13 @@
 #ifndef QGSSERVERQUERYSTRINGPARAMETER_H
 #define QGSSERVERQUERYSTRINGPARAMETER_H
 
-#include "qgsserverapicontext.h"
 #include "qgis_server.h"
 #include "qgis_sip.h"
+#include "qgsserverapicontext.h"
+
+#include <QObject>
 #include <QString>
 #include <QVariant>
-#include <QObject>
 
 #ifndef SIP_RUN
 #include <nlohmann/json.hpp>
@@ -73,7 +74,9 @@ class SERVER_EXPORT QgsServerQueryStringParameter
      * \param description parameter description
      * \param defaultValue default value, it is ignored if the parameter is required
      */
-    QgsServerQueryStringParameter( const QString name, bool required = false, Type type = QgsServerQueryStringParameter::Type::String, const QString &description = QString(), const QVariant &defaultValue = QVariant() );
+    QgsServerQueryStringParameter(
+      const QString name, bool required = false, Type type = QgsServerQueryStringParameter::Type::String, const QString &description = QString(), const QVariant &defaultValue = QVariant()
+    );
 
     virtual ~QgsServerQueryStringParameter();
 

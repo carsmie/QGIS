@@ -17,12 +17,12 @@
 #define QGSSETTINGSTREEMODEL_H
 
 
-#include "qgis_sip.h"
 #include "qgis_gui.h"
+#include "qgis_sip.h"
 
 #include <QAbstractItemModel>
-#include <QSortFilterProxyModel>
 #include <QItemDelegate>
+#include <QSortFilterProxyModel>
 
 class QgsSettingsEntryBase;
 class QgsSettingsTreeNode;
@@ -104,7 +104,8 @@ class GUI_EXPORT QgsSettingsTreeModelNodeData : public QObject
   private:
     //! Private constructor, use createRootNodeData() instead
     QgsSettingsTreeModelNodeData( QObject *parent )
-      : QObject( parent ) {}
+      : QObject( parent )
+    {}
     void addChildForTreeNode( const QgsSettingsTreeNode *node );
     void addChildForNamedListItemNode( const QString &item, const QgsSettingsTreeNamedListNode *namedListNode );
     void addChildForSetting( const QgsSettingsEntryBase *setting );
@@ -178,7 +179,7 @@ class GUI_EXPORT QgsSettingsTreeModel : public QAbstractItemModel
     //! Constructor
     QgsSettingsTreeModel( QgsSettingsTreeNode *rootNode = nullptr, QObject *parent = nullptr );
 
-    ~QgsSettingsTreeModel();
+    ~QgsSettingsTreeModel() override;
 
     //! Apply pending changes in the model to the corresponding settings
     void applyChanges();

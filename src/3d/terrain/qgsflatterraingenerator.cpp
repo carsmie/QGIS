@@ -14,15 +14,17 @@
  ***************************************************************************/
 
 #include "qgsflatterraingenerator.h"
-#include "moc_qgsflatterraingenerator.cpp"
-
-#include <Qt3DRender/QGeometryRenderer>
 
 #include "qgs3dmapsettings.h"
+#include "qgs3drendercontext.h"
 #include "qgschunknode.h"
 #include "qgsgeotransform.h"
 #include "qgsterrainentity.h"
 #include "qgsterraintileentity_p.h"
+
+#include <Qt3DRender/QGeometryRenderer>
+
+#include "moc_qgsflatterraingenerator.cpp"
 
 /// @cond PRIVATE
 
@@ -69,7 +71,14 @@ Qt3DCore::QEntity *FlatTerrainChunkLoader::createEntity( Qt3DCore::QEntity *pare
   const QgsBox3D box3D = mNode->box3D();
   const QgsBox3D mapFullBox3D( map->extent(), box3D.zMinimum(), box3D.zMaximum() );
 
-  const QgsBox3D commonExtent( std::max( box3D.xMinimum(), mapFullBox3D.xMinimum() ), std::max( box3D.yMinimum(), mapFullBox3D.yMinimum() ), box3D.zMinimum(), std::min( box3D.xMaximum(), mapFullBox3D.xMaximum() ), std::min( box3D.yMaximum(), mapFullBox3D.yMaximum() ), box3D.zMaximum() );
+  const QgsBox3D commonExtent(
+    std::max( box3D.xMinimum(), mapFullBox3D.xMinimum() ),
+    std::max( box3D.yMinimum(), mapFullBox3D.yMinimum() ),
+    box3D.zMinimum(),
+    std::min( box3D.xMaximum(), mapFullBox3D.xMaximum() ),
+    std::min( box3D.yMaximum(), mapFullBox3D.yMaximum() ),
+    box3D.zMaximum()
+  );
   const double xSide = commonExtent.width();
   const double ySide = commonExtent.height();
   const double xMin = commonExtent.xMinimum();
@@ -79,7 +88,7 @@ Qt3DCore::QEntity *FlatTerrainChunkLoader::createEntity( Qt3DCore::QEntity *pare
   transform->setScale3D( QVector3D( static_cast<float>( xSide ), 1, static_cast<float>( ySide ) ) );
   transform->setGeoTranslation( QgsVector3D( xMin + xSide / 2, yMin + ySide / 2, 0 ) );
 
-  createTextureComponent( entity, map->isTerrainShadingEnabled(), map->terrainShadingMaterial(), !map->layers().empty() );
+  createTextureComponent( entity, map->isTerrainShadingEnabled(), map->terrainShadingMaterial(), !map->layers().empty(), Qgs3DRenderContext::fromMapSettings( map ) );
 
   entity->setParent( parent );
   return entity;
@@ -137,6 +146,14 @@ void QgsFlatTerrainGenerator::setExtent( const QgsRectangle &extent )
 
   mExtent = extent;
   updateTilingScheme();
+}
+
+float QgsFlatTerrainGenerator::heightAt( double x, double y, const Qgs3DRenderContext &context ) const
+{
+  Q_UNUSED( x )
+  Q_UNUSED( y )
+  Q_UNUSED( context )
+  return 0;
 }
 
 void QgsFlatTerrainGenerator::updateTilingScheme()

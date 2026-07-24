@@ -18,7 +18,6 @@
 
 #include "qgs3dmaptool.h"
 
-#include <memory>
 #include <QDebug>
 #include <QPoint>
 

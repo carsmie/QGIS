@@ -15,6 +15,7 @@
 
 
 
+
 typedef QList<int> QgsAttributeList;
 typedef QSet<int> QgsAttributeIds;
 
@@ -148,6 +149,8 @@ following parameters (note that parameter keys are case sensitive):
 - InvertAxisOrientation=1: to invert axis order
 - hideDownloadProgressDialog=1: to hide the download progress dialog
 - featureMode=default/simpleFeatures/complexFeatures (QGIS >= 3.44)
+- outputformat=string: output format. Can be set for example to GML3 for
+  some WFS 1.0 servers that can support GML3.
 
 The ‘filter’ key value can either be a QGIS expression or an OGC XML
 filter. If the value is set to a QGIS expression the driver will turn it
@@ -188,6 +191,10 @@ class with the following parameters:
 - maxNumFeatures=number: maximum number of features to retrieve
   (possibly across several multiple paging requests)
 - hideDownloadProgressDialog=1: to hide the download progress dialog.
+- outputformat=string: output format as a MIME type to ask the server to
+  return features. e.g "application/geo+json", "application/flatgeobuf",
+  "application/fg+json", etc. Assumes there is a GDAL driver for the
+  requested format. (QGIS >= 4)
 
 Delimited text file data provider (delimitedtext)
 -------------------------------------------------
@@ -353,7 +360,7 @@ An example url is "/home/user/data/holiday.gpx?type=route"
 Grass data provider (grass)
 ---------------------------
 
-Provider to display vector data in a GRASS GIS layer.
+Provider to display vector data in a GRASS layer.
 
 .. seealso:: :py:class:`QgsVectorLayerUtils`
 %End
@@ -364,52 +371,45 @@ Provider to display vector data in a GRASS GIS layer.
   public:
 
 
-
     struct LayerOptions
     {
-
-      explicit LayerOptions( bool loadDefaultStyle = true,
-                             bool readExtentFromXml = false );
+        explicit LayerOptions( bool loadDefaultStyle = true, bool readExtentFromXml = false );
 %Docstring
 Constructor for LayerOptions.
 %End
 
-      explicit LayerOptions( const QgsCoordinateTransformContext &transformContext,
-                             bool loadDefaultStyle = true,
-                             bool readExtentFromXml = false
-                           );
+        explicit LayerOptions( const QgsCoordinateTransformContext &transformContext, bool loadDefaultStyle = true, bool readExtentFromXml = false );
 %Docstring
 Constructor for LayerOptions.
 
 .. versionadded:: 3.8
 %End
 
-      bool loadDefaultStyle;
+        bool loadDefaultStyle;
 
-      bool readExtentFromXml;
+        bool readExtentFromXml;
 
-      QgsCoordinateTransformContext transformContext;
+        QgsCoordinateTransformContext transformContext;
 
-      Qgis::WkbType fallbackWkbType;
+        Qgis::WkbType fallbackWkbType;
 
-      QgsCoordinateReferenceSystem fallbackCrs;
+        QgsCoordinateReferenceSystem fallbackCrs;
 
-      bool skipCrsValidation;
+        bool skipCrsValidation;
 
-      bool forceReadOnly;
+        bool forceReadOnly;
 
-      bool loadAllStoredStyles;
+        bool loadAllStoredStyles;
     };
 
     struct DeleteContext
     {
-
-      explicit DeleteContext( bool cascade = false, QgsProject *project = 0 );
+        explicit DeleteContext( bool cascade = false, QgsProject *project = 0 );
 %Docstring
 Constructor for DeleteContext.
 %End
 
-      QList<QgsVectorLayer *> handledLayers( bool includeAuxiliaryLayers = true ) const;
+        QList<QgsVectorLayer *> handledLayers( bool includeAuxiliaryLayers = true ) const;
 %Docstring
 Returns a list of all layers affected by the delete operation.
 
@@ -417,18 +417,19 @@ If ``includeAuxiliaryLayers`` is ``False`` then auxiliary layers will
 not be included in the returned list.
 %End
 
-      QgsFeatureIds handledFeatures( QgsVectorLayer *layer ) const;
+        QgsFeatureIds handledFeatures( QgsVectorLayer *layer ) const;
 %Docstring
 Returns a list of feature IDs from the specified ``layer`` affected by
 the delete operation.
 %End
 
-      bool cascade;
-      QgsProject *project;
+        bool cascade;
+        QgsProject *project;
     };
 
-    explicit QgsVectorLayer( const QString &path = QString(), const QString &baseName = QString(),
-                             const QString &providerLib = "ogr", const QgsVectorLayer::LayerOptions &options = QgsVectorLayer::LayerOptions() );
+    explicit QgsVectorLayer(
+      const QString &path = QString(), const QString &baseName = QString(), const QString &providerLib = "ogr", const QgsVectorLayer::LayerOptions &options = QgsVectorLayer::LayerOptions()
+    );
 %Docstring
 Constructor - creates a vector layer
 
@@ -453,7 +454,7 @@ connect to and access the data.
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
 %End
 
-    virtual QgsVectorLayer *clone() const /Factory/;
+      virtual QgsVectorLayer *clone() const /Factory/;
 
 %Docstring
 Returns a new instance equivalent to this one. A new provider is created
@@ -534,11 +535,9 @@ string. Uses :py:class:`QgsExpression`
          layer
 %End
 
-    virtual bool hasMapTips() const ${SIP_FINAL};
+    bool hasMapTips() const final;
 
-
-    virtual QgsVectorDataProvider *dataProvider() ${SIP_FINAL};
-
+    QgsVectorDataProvider *dataProvider() final;
     virtual QgsMapLayerSelectionProperties *selectionProperties();
 
     virtual QgsMapLayerTemporalProperties *temporalProperties();
@@ -546,6 +545,8 @@ string. Uses :py:class:`QgsExpression`
     virtual QgsMapLayerElevationProperties *elevationProperties();
 
     virtual QgsAbstractProfileSource *profileSource();
+    virtual QString profileSourceId() const;
+    virtual QString profileSourceName() const;
     virtual QgsAbstractProfileGenerator *createProfileGenerator( const QgsProfileRequest &request ) /Factory/;
 
 
@@ -594,8 +595,7 @@ Returns the join buffer object.
 
     const QList<QgsVectorLayerJoinInfo> vectorJoins() const;
 
-    virtual bool setDependencies( const QSet<QgsMapLayerDependency> &layers ) ${SIP_FINAL};
-
+    bool setDependencies( const QSet<QgsMapLayerDependency> &layers ) final;
 %Docstring
 Sets the list of dependencies.
 
@@ -607,8 +607,7 @@ Sets the list of dependencies.
 :return: ``False`` if a dependency cycle has been detected
 %End
 
-    virtual QSet<QgsMapLayerDependency> dependencies() const ${SIP_FINAL};
-
+    QSet<QgsMapLayerDependency> dependencies() const final;
 %Docstring
 Gets the list of dependencies. This includes data dependencies set by
 the user (:py:func:`setDataDependencies`) as well as dependencies given
@@ -669,7 +668,7 @@ Returns the number of features that are selected in this layer.
 .. seealso:: :py:func:`selectedFeatureIds`
 %End
 
-    void selectByRect( QgsRectangle &rect, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection );
+    void selectByRect( const QgsRectangle &rect, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection );
 %Docstring
 Selects features found within the search rectangle (in layer's
 coordinates)
@@ -701,7 +700,7 @@ Selects matching features using an expression.
 .. seealso:: :py:func:`selectByIds`
 %End
 
-    void selectByIds( const QgsFeatureIds &ids, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection );
+    void selectByIds( const QgsFeatureIds &ids, Qgis::SelectBehavior behavior = Qgis::SelectBehavior::SetSelection, bool validateIds = false );
 %Docstring
 Selects matching features using a list of feature IDs. Will emit the
 :py:func:`~QgsVectorLayer.selectionChanged` signal with the
@@ -710,6 +709,11 @@ clearAndSelect flag set.
 :param ids: feature IDs to select
 :param behavior: selection type, allows adding to current selection,
                  removing from selection, etc.
+:param validateIds: (since QGIS 4.0) if ``True``, filters out invalid
+                    feature IDs before selection. Set to ``False``
+                    (default) for best performance. Enable validation
+                    when calling from Python or when ID validity is
+                    uncertain to avoid incorrect selection counts.
 
 .. seealso:: :py:func:`selectByRect`
 
@@ -742,7 +746,7 @@ Selects not selected features and deselects selected ones
 Select all the features
 %End
 
-    void invertSelectionInRectangle( QgsRectangle &rect );
+    void invertSelectionInRectangle( const QgsRectangle &rect );
 %Docstring
 Inverts selection of features found within the search rectangle (in
 layer's coordinates)
@@ -908,19 +912,15 @@ Returns a list of the feature renderer generators owned by the layer.
 Returns point, line or polygon
 %End
 
-    virtual Qgis::WkbType wkbType() const ${SIP_FINAL};
-
+    Qgis::WkbType wkbType() const final;
 %Docstring
 Returns the WKBType or WKBUnknown in case of error
 %End
 
-    virtual QgsCoordinateReferenceSystem sourceCrs() const ${SIP_FINAL};
+    QgsCoordinateReferenceSystem sourceCrs() const final;
+    QString sourceName() const final;
 
-    virtual QString sourceName() const ${SIP_FINAL};
-
-
-    virtual bool readXml( const QDomNode &layer_node, QgsReadWriteContext &context ) ${SIP_FINAL};
-
+    bool readXml( const QDomNode &layer_node, QgsReadWriteContext &context ) final;
 %Docstring
 Reads vector layer specific state from project file Dom node.
 
@@ -929,8 +929,7 @@ Reads vector layer specific state from project file Dom node.
    Called by :py:func:`QgsMapLayer.readXml()`.
 %End
 
-    virtual bool writeXml( QDomNode &layer_node, QDomDocument &doc, const QgsReadWriteContext &context ) const ${SIP_FINAL};
-
+    bool writeXml( QDomNode &layer_node, QDomDocument &doc, const QgsReadWriteContext &context ) const final;
 %Docstring
 Writes vector layer specific state to project file Dom node.
 
@@ -939,13 +938,10 @@ Writes vector layer specific state to project file Dom node.
    Called by :py:func:`QgsMapLayer.writeXml()`.
 %End
 
-    virtual QString encodedSource( const QString &source, const QgsReadWriteContext &context ) const ${SIP_FINAL};
+    QString encodedSource( const QString &source, const QgsReadWriteContext &context ) const final;
+    QString decodedSource( const QString &source, const QString &provider, const QgsReadWriteContext &context ) const final;
 
-    virtual QString decodedSource( const QString &source, const QString &provider, const QgsReadWriteContext &context ) const ${SIP_FINAL};
-
-
-    virtual void resolveReferences( QgsProject *project ) ${SIP_FINAL};
-
+    void resolveReferences( QgsProject *project ) final;
 %Docstring
 Resolves references to other layers (kept as layer IDs after reading
 XML) into layer objects.
@@ -980,14 +976,10 @@ Returns the current auxiliary layer.
 %End
 
 
-     virtual bool readSymbology( const QDomNode &layerNode, QString &errorMessage,
-                        QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) ${SIP_FINAL};
-     virtual bool readStyle( const QDomNode &node, QString &errorMessage,
-                    QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) ${SIP_FINAL};
-     virtual bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage,
-                         const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const ${SIP_FINAL};
-     virtual bool writeStyle( QDomNode &node, QDomDocument &doc, QString &errorMessage,
-                     const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const ${SIP_FINAL};
+    bool readSymbology( const QDomNode &layerNode, QString &errorMessage, QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) final;
+    bool readStyle( const QDomNode &node, QString &errorMessage, QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) final;
+    bool writeSymbology( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const final;
+    bool writeStyle( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QgsReadWriteContext &context, QgsMapLayer::StyleCategories categories = QgsMapLayer::AllStyleCategories ) const final;
 
  bool writeSld( QDomNode &node, QDomDocument &doc, QString &errorMessage, const QVariantMap &props = QVariantMap() ) const /Deprecated="Since 3.44. Use the version with QgsSldExportContext instead."/;
 %Docstring
@@ -1023,8 +1015,7 @@ format
 .. versionadded:: 3.44
 %End
 
-    virtual bool readSld( const QDomNode &node, QString &errorMessage ) ${SIP_FINAL};
-
+    bool readSld( const QDomNode &node, QString &errorMessage ) final;
 
     long long featureCount( const QString &legendKey ) const;
 %Docstring
@@ -1046,8 +1037,7 @@ first calculated by :py:func:`~QgsVectorLayer.countSymbolFeatures`
 .. versionadded:: 3.10
 %End
 
-    virtual Qgis::FeatureAvailability hasFeatures() const ${SIP_FINAL};
-
+    Qgis::FeatureAvailability hasFeatures() const final;
 %Docstring
 Determines if this vector layer has features.
 
@@ -1061,8 +1051,7 @@ Determines if this vector layer has features.
 .. versionadded:: 3.4
 %End
 
-    virtual QString loadDefaultStyle( bool &resultFlag /Out/ ) ${SIP_FINAL};
-
+    QString loadDefaultStyle( bool &resultFlag /Out/ ) final;
 
     QgsVectorLayerFeatureCounter *countSymbolFeatures( bool storeSymbolFids = false );
 %Docstring
@@ -1102,8 +1091,7 @@ Returns the string (typically sql) used to define a subset of the layer.
          provider
 %End
 
-    virtual QgsFeatureIterator getFeatures( const QgsFeatureRequest &request = QgsFeatureRequest() ) const ${SIP_FINAL};
-
+    QgsFeatureIterator getFeatures( const QgsFeatureRequest &request = QgsFeatureRequest() ) const final;
 %Docstring
 Queries the layer for features specified in request.
 
@@ -1141,8 +1129,7 @@ Queries the layer for the features which intersect the specified
 rectangle.
 %End
 
-    virtual bool addFeature( QgsFeature &feature, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) ${SIP_FINAL};
-
+    bool addFeature( QgsFeature &feature, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) final;
 
     bool updateFeature( QgsFeature &feature, bool skipDefaultValues = false );
 %Docstring
@@ -1253,18 +1240,35 @@ Deletes a vertex from a feature.
    changes can be discarded by calling :py:func:`~QgsVectorLayer.rollBack`.
 %End
 
-    bool deleteSelectedFeatures( int *deletedCount = 0, QgsVectorLayer::DeleteContext *context = 0 );
+    Qgis::VectorEditResult deleteVertices( QgsFeatureId featureId, const QSet<int> &vertices );
+%Docstring
+Deletes a set of vertices from a feature.
+
+:param featureId: ID of feature to remove vertices from
+:param vertices: set of vertex indices to delete
+
+.. note::
+
+   Calls to :py:func:`~QgsVectorLayer.deleteVertices` are only valid for layers in which edits have been enabled
+   by a call to :py:func:`~QgsVectorLayer.startEditing`. Changes made to features using this method are not committed
+   to the underlying data provider until a :py:func:`~QgsVectorLayer.commitChanges` call is made. Any uncommitted
+   changes can be discarded by calling :py:func:`~QgsVectorLayer.rollBack`.
+
+.. versionadded:: 4.2
+%End
+
+    bool deleteSelectedFeatures( int *deletedCount /Out/ = 0, QgsVectorLayer::DeleteContext *context = 0 );
 %Docstring
 Deletes the selected features
 
-:param deletedCount: The number of successfully deleted features
 :param context: The chain of features who will be deleted for feedback
                 and to avoid endless recursions
 
-:return: ``True`` in case of success and ``False`` otherwise
+:return: - ``True`` in case of success and ``False`` otherwise
+         - deletedCount: The number of successfully deleted features
 %End
 
- Qgis::GeometryOperationResult addRing( const QVector<QgsPointXY> &ring, QgsFeatureId *featureId = 0 ) /Deprecated="Since 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
+ Qgis::GeometryOperationResult addRing( const QVector<QgsPointXY> &ring, QgsFeatureId *featureId = 0 ) /Deprecated="Since 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
 %Docstring
 Adds a ring to polygon/multipolygon features
 
@@ -1291,7 +1295,7 @@ Adds a ring to polygon/multipolygon features
 
 .. deprecated:: 3.12
 
-   Will be removed in QGIS 4.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
+   Will be removed in QGIS 5.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
 %End
 
 
@@ -1349,7 +1353,7 @@ Adds a ring to polygon/multipolygon features (takes ownership)
    changes can be discarded by calling :py:func:`~QgsVectorLayer.rollBack`.
 %End
 
- Qgis::GeometryOperationResult addPart( const QList<QgsPointXY> &ring ) /Deprecated="Since 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
+ Qgis::GeometryOperationResult addPart( const QList<QgsPointXY> &ring ) /Deprecated="Since 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
 %Docstring
 Adds a new part polygon to a multipart feature
 
@@ -1373,39 +1377,7 @@ Adds a new part polygon to a multipart feature
 
 .. deprecated:: 3.12
 
-   Will be removed in QGIS 4.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
-%End
-
-
- Qgis::GeometryOperationResult addPart( const QVector<QgsPointXY> &ring ) /PyName=addPartV2,Deprecated="Since 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
-%Docstring
-Adds a new part polygon to a multipart feature
-
-:return: :py:class:`Qgis`.GeometryOperationResult
-
-         - Success
-         - LayerNotEditable
-         - SelectionIsEmpty
-         - SelectionIsGreaterThanOne
-         - AddPartSelectedGeometryNotFound
-         - AddPartNotMultiGeometry
-         - InvalidBaseGeometry
-         - InvalidInputGeometryType
-
-.. note::
-
-   available in Python bindings as addPartV2
-
-.. note::
-
-   Calls to :py:func:`~QgsVectorLayer.addPart` are only valid for layers in which edits have been enabled
-   by a call to :py:func:`~QgsVectorLayer.startEditing`. Changes made to features using this method are not committed
-   to the underlying data provider until a :py:func:`~QgsVectorLayer.commitChanges` call is made. Any uncommitted
-   changes can be discarded by calling :py:func:`~QgsVectorLayer.rollBack`.
-
-.. deprecated:: 3.12
-
-   Will be removed in QGIS 4.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
+   Will be removed in QGIS 5.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
 %End
 
     Qgis::GeometryOperationResult addPart( const QgsPointSequence &ring ) /PyName=addPartV2/;
@@ -1465,7 +1437,7 @@ Translates feature by dx, dy
    changes can be discarded by calling :py:func:`~QgsVectorLayer.rollBack`.
 %End
 
- Qgis::GeometryOperationResult splitParts( const QVector<QgsPointXY> &splitLine, bool topologicalEditing = false ) /Deprecated="Since 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
+ Qgis::GeometryOperationResult splitParts( const QVector<QgsPointXY> &splitLine, bool topologicalEditing = false ) /Deprecated="Since 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
 %Docstring
 Splits parts cut by the given line
 
@@ -1491,7 +1463,7 @@ Splits parts cut by the given line
 
 .. deprecated:: 3.12
 
-   Will be removed in QGIS 4.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
+   Will be removed in QGIS 5.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
 %End
 
     Qgis::GeometryOperationResult splitParts( const QgsPointSequence &splitLine, bool topologicalEditing = false );
@@ -1519,7 +1491,7 @@ Splits parts cut by the given line
    changes can be discarded by calling :py:func:`~QgsVectorLayer.rollBack`.
 %End
 
- Qgis::GeometryOperationResult splitFeatures( const QVector<QgsPointXY> &splitLine, bool topologicalEditing = false ) /Deprecated="Since 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
+ Qgis::GeometryOperationResult splitFeatures( const QVector<QgsPointXY> &splitLine, bool topologicalEditing = false ) /Deprecated="Since 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
 %Docstring
 Splits features cut by the given line
 
@@ -1545,7 +1517,7 @@ Splits features cut by the given line
 
 .. deprecated:: 3.12
 
-   Will be removed in QGIS 4.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
+   Will be removed in QGIS 5.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
 %End
 
     Qgis::GeometryOperationResult splitFeatures( const QgsPointSequence &splitLine, bool topologicalEditing = false );
@@ -1631,7 +1603,7 @@ Adds topological points for every vertex of the geometry.
    changes can be discarded by calling :py:func:`~QgsVectorLayer.rollBack`.
 %End
 
- int addTopologicalPoints( const QgsPointXY &p )  /Deprecated="Since 3.12. Will be removed in QGIS 4.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
+ int addTopologicalPoints( const QgsPointXY &p ) /Deprecated="Since 3.12. Will be removed in QGIS 5.0. Use the variant which accepts QgsPoint objects instead of QgsPointXY."/;
 %Docstring
 Adds a vertex to segments which intersect point ``p`` but don't already
 have a vertex there. If a feature already has a vertex at position
@@ -1657,7 +1629,7 @@ topological editing.
 
 .. deprecated:: 3.12
 
-   Will be removed in QGIS 4.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
+   Will be removed in QGIS 5.0. Use the variant which accepts :py:class:`QgsPoint` objects instead of :py:class:`QgsPointXY`.
 %End
 
     int addTopologicalPoints( const QgsPoint &p );
@@ -1732,14 +1704,12 @@ used.
 Sets labeling configuration. Takes ownership of the object.
 %End
 
-    virtual bool isEditable() const ${SIP_FINAL};
-
+    bool isEditable() const final;
 %Docstring
 Returns ``True`` if the provider is in editing mode
 %End
 
-    virtual bool isSpatial() const ${SIP_FINAL};
-
+    bool isSpatial() const final;
 %Docstring
 Returns ``True`` if this is a geometry layer and ``False`` in case of
 NoGeometry (table only) or UnknownGeometry
@@ -1757,31 +1727,24 @@ Returns ``True`` if the field comes from the auxiliary layer, ``False``
 otherwise.
 %End
 
-    virtual void reload() ${SIP_FINAL};
-
+    void reload() final;
 %Docstring
 Synchronises with changes in the datasource
 %End
 
-    virtual QgsMapLayerRenderer *createMapRenderer( QgsRenderContext &rendererContext ) ${SIP_FINAL} /Factory/;
-
+    QgsMapLayerRenderer *createMapRenderer( QgsRenderContext &rendererContext ) final /Factory/;
 %Docstring
 Returns new instance of :py:class:`QgsMapLayerRenderer` that will be
 used for rendering of given context
 %End
 
-    virtual QgsRectangle extent() const ${SIP_FINAL};
+    QgsRectangle extent() const final;
+    QgsRectangle sourceExtent() const final;
 
-    virtual QgsRectangle sourceExtent() const ${SIP_FINAL};
+    QgsBox3D extent3D() const final;
+    QgsBox3D sourceExtent3D() const final;
 
-
-    virtual QgsBox3D extent3D() const ${SIP_FINAL};
-
-    virtual QgsBox3D sourceExtent3D() const ${SIP_FINAL};
-
-
-    virtual QgsFields fields() const ${SIP_FINAL};
-
+    QgsFields fields() const final;
 %Docstring
 Returns the list of fields of this layer. This also includes fields
 which have not yet been saved to the provider.
@@ -1800,8 +1763,7 @@ Returns list of attribute indexes. i.e. a list from 0 ...
 Returns the list of attributes which make up the layer's primary keys.
 %End
 
-    virtual long long featureCount() const ${SIP_FINAL};
-
+    long long featureCount() const final;
 %Docstring
 Returns feature count including changes which have not yet been
 committed If you need only the count of committed features call this
@@ -1859,7 +1821,9 @@ expressions.
 .. seealso:: :py:func:`updateFeature`
 %End
 
-    bool changeAttributeValue( QgsFeatureId fid, int field, const QVariant &newValue, const QVariant &oldValue = QVariant(), bool skipDefaultValues = false,  QgsVectorLayerToolsContext *context = 0 );
+    bool changeAttributeValue(
+      QgsFeatureId fid, int field, const QVariant &newValue, const QVariant &oldValue = QVariant(), bool skipDefaultValues = false, QgsVectorLayerToolsContext *context = 0
+    );
 %Docstring
 Changes an attribute value for a feature (but does not immediately
 commit the changes). The ``fid`` argument specifies the ID of the
@@ -1903,7 +1867,9 @@ If ``context`` is provided, it will be used when updating default values
 .. seealso:: :py:func:`updateFeature`
 %End
 
-    bool changeAttributeValues( QgsFeatureId fid, const QgsAttributeMap &newValues, const QgsAttributeMap &oldValues = QgsAttributeMap(), bool skipDefaultValues = false, QgsVectorLayerToolsContext *context = 0 );
+    bool changeAttributeValues(
+      QgsFeatureId fid, const QgsAttributeMap &newValues, const QgsAttributeMap &oldValues = QgsAttributeMap(), bool skipDefaultValues = false, QgsVectorLayerToolsContext *context = 0
+    );
 %Docstring
 Changes attributes' values for a feature (but does not immediately
 commit the changes). The ``fid`` argument specifies the ID of the
@@ -1968,6 +1934,42 @@ Sets an alias (a display name) for attributes to display in dialogs
     void removeFieldAlias( int index );
 %Docstring
 Removes an alias (a display name) for attributes to display in dialogs
+%End
+
+    void setFieldCustomComment( int index, const QString &customCommentString );
+%Docstring
+Sets the custom comment for the field.
+
+:param index: attribute index
+:param customCommentString: custom comment (can be empty as well)
+
+.. versionadded:: 4.2
+%End
+
+    void removeFieldCustomComment( int index );
+%Docstring
+Removes the custom comment for the field.
+
+:param index: attribute index
+
+.. versionadded:: 4.2
+%End
+
+    QString attributeCustomComment( int index ) const;
+%Docstring
+Returns the custom comment for the field.
+
+:param index: attribute index
+
+.. versionadded:: 4.2
+%End
+
+    QgsStringMap attributeCustomComments() const;
+%Docstring
+Returns a map of all the custom comments. Key is the attribute name and
+value the custom comment for that attribute
+
+.. versionadded:: 4.2
 %End
 
     bool renameAttribute( int index, const QString &newName );
@@ -2130,8 +2132,7 @@ Deletes a list of attribute fields (but does not commit it)
 :return: ``True`` if at least one attribute has been deleted
 %End
 
-    virtual bool addFeatures( QgsFeatureList &features, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) ${SIP_FINAL};
-
+    bool addFeatures( QgsFeatureList &features, QgsFeatureSink::Flags flags = QgsFeatureSink::Flags() ) final;
 
     bool deleteFeature( QgsFeatureId fid, QgsVectorLayer::DeleteContext *context = 0 );
 %Docstring
@@ -2275,8 +2276,7 @@ also take any changes made to default values into consideration.
    no reason to call this method.
 %End
 
-    QVariant defaultValue( int index, const QgsFeature &feature = QgsFeature(),
-                           QgsExpressionContext *context = 0 ) const;
+    QVariant defaultValue( int index, const QgsFeature &feature = QgsFeature(), QgsExpressionContext *context = 0 ) const;
 %Docstring
 Returns the calculated default value for the specified field index. The
 default value may be taken from a client side default value expression
@@ -2453,8 +2453,7 @@ editor widget will be used for the field.
 .. seealso:: :py:func:`setEditorWidgetSetup`
 %End
 
-    virtual QSet<QVariant> uniqueValues( int fieldIndex, int limit = -1 ) const ${SIP_FINAL};
-
+    QSet<QVariant> uniqueValues( int fieldIndex, int limit = -1 ) const final;
 %Docstring
 Calculates a list of unique values contained within an attribute in the
 layer. Note that in some circumstances when unsaved changes are present
@@ -2471,8 +2470,7 @@ the returned list).
 .. seealso:: :py:func:`maximumValue`
 %End
 
-    QStringList uniqueStringsMatching( int index, const QString &substring, int limit = -1,
-                                       QgsFeedback *feedback = 0 ) const;
+    QStringList uniqueStringsMatching( int index, const QString &substring, int limit = -1, QgsFeedback *feedback = 0 ) const;
 %Docstring
 Returns unique string values of an attribute which contain a specified
 subset string. Subset matching is done in a case-insensitive manner.
@@ -2491,8 +2489,7 @@ returned list).
 :return: list of unique strings containing substring
 %End
 
-    virtual QVariant minimumValue( int index ) const ${SIP_FINAL};
-
+    QVariant minimumValue( int index ) const final;
 %Docstring
 Returns the minimum value for an attribute column or an invalid variant
 in case of error.
@@ -2515,8 +2512,7 @@ in case of error.
 .. seealso:: :py:func:`uniqueValues`
 %End
 
-    virtual QVariant maximumValue( int index ) const ${SIP_FINAL};
-
+    QVariant maximumValue( int index ) const final;
 %Docstring
 Returns the maximum value for an attribute column or an invalid variant
 in case of error.
@@ -2569,13 +2565,15 @@ maximum values are required.
 .. versionadded:: 3.20
 %End
 
-    QVariant aggregate( Qgis::Aggregate aggregate,
-                        const QString &fieldOrExpression,
-                        const QgsAggregateCalculator::AggregateParameters &parameters = QgsAggregateCalculator::AggregateParameters(),
-                        QgsExpressionContext *context = 0,
-                        bool *ok = 0,
-                        QgsFeatureIds *fids = 0,
-                        QgsFeedback *feedback = 0 ) const;
+    QVariant aggregate(
+      Qgis::Aggregate aggregate,
+      const QString &fieldOrExpression,
+      const QgsAggregateCalculator::AggregateParameters &parameters = QgsAggregateCalculator::AggregateParameters(),
+      QgsExpressionContext *context = 0,
+      bool *ok = 0,
+      QgsFeatureIds *fids = 0,
+      QgsFeedback *feedback = 0
+    ) const;
 %Docstring
 Calculates an aggregated value from the layer's features. Currently any
 filtering expression provided will override filters in the
@@ -2604,8 +2602,7 @@ Sets the blending mode used for rendering each feature
 Returns the current blending mode for features
 %End
 
-    virtual QString htmlMetadata() const ${SIP_FINAL};
-
+    QString htmlMetadata() const final;
 
     void setSimplifyMethod( const QgsVectorSimplifyMethod &simplifyMethod );
 %Docstring
@@ -2650,11 +2647,9 @@ Sets the attribute table configuration object. This defines the
 appearance of the attribute table.
 %End
 
-    virtual QgsExpressionContext createExpressionContext() const ${SIP_FINAL};
+    QgsExpressionContext createExpressionContext() const final;
 
-
-    virtual QgsExpressionContextScope *createExpressionContextScope() const ${SIP_FINAL} /Factory/;
-
+    QgsExpressionContextScope *createExpressionContextScope() const final /Factory/;
 
     QgsEditFormConfig editFormConfig() const;
 %Docstring
@@ -2799,6 +2794,7 @@ by calling :py:func:`~QgsVectorLayer.rollBack`.
 %End
 
     virtual void setTransformContext( const QgsCoordinateTransformContext &transformContext );
+
 %Docstring
 Sets the coordinate transform context to ``transformContext``
 
@@ -2809,6 +2805,9 @@ Sets the coordinate transform context to ``transformContext``
 
 
     virtual bool accept( QgsStyleEntityVisitorInterface *visitor ) const;
+
+
+    virtual bool accept( QgsObjectEntityVisitorInterface *visitor, const QgsObjectVisitorContext &context ) const;
 
 
   signals:
@@ -3107,13 +3106,11 @@ recalculated.
 %End
 
   protected:
-    virtual void setExtent( const QgsRectangle &rect ) ${SIP_FINAL};
-
+    void setExtent( const QgsRectangle &rect ) final;
 %Docstring
 Sets the extent
 %End
-    virtual void setExtent3D( const QgsBox3D &rect ) ${SIP_FINAL};
-
+    void setExtent3D( const QgsBox3D &rect ) final;
 %Docstring
 Sets the extent
 %End
@@ -3121,7 +3118,6 @@ Sets the extent
   private:
     QgsVectorLayer( const QgsVectorLayer &rhs );
 };
-
 
 
 

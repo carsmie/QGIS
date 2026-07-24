@@ -21,23 +21,23 @@ __copyright__ = "(C) 2012, Victor Olaya"
 
 import os
 
-from qgis.PyQt.QtGui import QIcon
-
 from qgis.core import (
     QgsApplication,
-    QgsWkbTypes,
     QgsProcessing,
-    QgsProcessingException,
     QgsProcessingAlgorithm,
-    QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterField,
-    QgsProcessingParameterNumber,
+    QgsProcessingException,
     QgsProcessingParameterBoolean,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterField,
+    QgsProcessingParameterNumber,
+    QgsWkbTypes,
 )
+from qgis.PyQt.QtGui import QIcon
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
+
 from . import Buffer as buff
 
 pluginPath = os.path.split(os.path.split(os.path.dirname(__file__))[0])[0]
@@ -142,6 +142,16 @@ class VariableDistanceBuffer(QgisAlgorithm):
 
     def displayName(self):
         return self.tr("Variable distance buffer")
+
+    def shortDescription(self):
+        return self.tr("Computes a buffer area whose size is defined by an attribute.")
+
+    def shortHelpString(self):
+        return self.tr(
+            "This algorithm computes a buffer area for all the features in an input layer. "
+            "The size of the buffer for a given feature is defined by an attribute, "
+            "so it allows different features to have different buffer sizes."
+        )
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)

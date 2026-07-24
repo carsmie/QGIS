@@ -14,13 +14,16 @@
  ***************************************************************************/
 
 #include "qgsdecoratedscrollbar.h"
-#include "moc_qgsdecoratedscrollbar.cpp"
-#include <QAbstractScrollArea>
-#include <QScrollBar>
-#include <QPainter>
-#include <QEvent>
-#include <QStyleOptionSlider>
+
 #include <cmath>
+
+#include <QAbstractScrollArea>
+#include <QEvent>
+#include <QPainter>
+#include <QScrollBar>
+#include <QStyleOptionSlider>
+
+#include "moc_qgsdecoratedscrollbar.cpp"
 
 ///@cond PRIVATE
 
@@ -90,9 +93,7 @@ void QgsScrollBarHighlightOverlay::paintEvent( QPaintEvent *paintEvent )
 
   const int scrollBarBackgroundHeight = aboveHandleRect.height() + belowHandleRect.height();
   const int sizeDocInvisible = sizeDocAbove + sizeDocBelow;
-  const double backgroundRatio = sizeDocInvisible
-                                   ? ( ( double ) scrollBarBackgroundHeight / sizeDocInvisible )
-                                   : 0;
+  const double backgroundRatio = sizeDocInvisible ? ( ( double ) scrollBarBackgroundHeight / sizeDocInvisible ) : 0;
 
 
   if ( aboveValue )
@@ -111,9 +112,7 @@ void QgsScrollBarHighlightOverlay::paintEvent( QPaintEvent *paintEvent )
     drawHighlights( &painter, sizeDocAbove + sizeDocVisible, sizeDocBelow, backgroundRatio, offset, belowHandleRect );
   }
 
-  const double handleRatio = sizeDocVisible
-                               ? ( ( double ) handleRect.height() / sizeDocVisible )
-                               : 0;
+  const double handleRatio = sizeDocVisible ? ( ( double ) handleRect.height() / sizeDocVisible ) : 0;
 
   // This is the hypothetical handle position if the background would
   // be stretched using the handle ratio.
@@ -288,8 +287,7 @@ QgsScrollBarHighlight::QgsScrollBarHighlight( int category, int position, const 
   , position( position )
   , color( color )
   , priority( priority )
-{
-}
+{}
 
 
 //

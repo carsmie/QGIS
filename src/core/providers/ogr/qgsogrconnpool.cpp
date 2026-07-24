@@ -14,7 +14,9 @@
  ***************************************************************************/
 
 #include "qgsogrconnpool.h"
+
 #include "moc_qgsogrconnpool.cpp"
+
 ///@cond PRIVATE
 
 #include "qgslogger.h"
@@ -24,7 +26,8 @@ QgsOgrConnPool *QgsOgrConnPool::sInstance = nullptr;
 // static public
 QgsOgrConnPool *QgsOgrConnPool::instance()
 {
-  if ( ! sInstance ) sInstance = new QgsOgrConnPool();
+  if ( !sInstance )
+    sInstance = new QgsOgrConnPool();
   return sInstance;
 }
 
@@ -35,7 +38,8 @@ void QgsOgrConnPool::cleanupInstance()
   sInstance = nullptr;
 }
 
-QgsOgrConnPool::QgsOgrConnPool() : QgsConnectionPool<QgsOgrConn *, QgsOgrConnPoolGroup>()
+QgsOgrConnPool::QgsOgrConnPool()
+  : QgsConnectionPool<QgsOgrConn *, QgsOgrConnPoolGroup>()
 {
   QgsDebugCall;
 }

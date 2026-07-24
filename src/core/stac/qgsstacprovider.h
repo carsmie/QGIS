@@ -17,6 +17,7 @@
 #define QGSSTACPROVIDER_H
 
 #include "qgis.h"
+
 #include <QString>
 #include <QStringList>
 
@@ -32,7 +33,6 @@
 class CORE_EXPORT QgsStacProvider
 {
   public:
-
     /**
      * QgsStacProvider constructor
      * \param name The name of the organization or the individual.

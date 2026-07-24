@@ -10,7 +10,8 @@
 
 
 
-class QgsHistogramDiagram: QgsDiagram /NoDefaultCtors/
+
+class QgsHistogramDiagram : QgsDiagram /NoDefaultCtors/
 {
 %Docstring(signature="appended")
 A histogram style diagram.

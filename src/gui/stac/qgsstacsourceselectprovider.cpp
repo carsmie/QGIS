@@ -14,17 +14,21 @@
  ***************************************************************************/
 
 #include "qgsstacsourceselectprovider.h"
-#include "qgsstacsourceselect.h"
+
 #include "qgsapplication.h"
+#include "qgsstacsourceselect.h"
+
+#include <QString>
+
+using namespace Qt::StringLiterals;
 
 QgsStacSourceSelectProvider::QgsStacSourceSelectProvider()
   : QgsSourceSelectProvider()
-{
-}
+{}
 
 QString QgsStacSourceSelectProvider::providerKey() const
 {
-  return QStringLiteral( "stac" );
+  return u"stac"_s;
 }
 
 QString QgsStacSourceSelectProvider::text() const
@@ -39,7 +43,7 @@ QString QgsStacSourceSelectProvider::toolTip() const
 
 QIcon QgsStacSourceSelectProvider::icon() const
 {
-  return QgsApplication::getThemeIcon( QStringLiteral( "mIconStac.svg" ) );
+  return QgsApplication::getThemeIcon( u"mIconStac.svg"_s );
 }
 
 QgsAbstractDataSourceWidget *QgsStacSourceSelectProvider::createDataSourceWidget( QWidget *parent, Qt::WindowFlags fl, QgsProviderRegistry::WidgetMode widgetMode ) const

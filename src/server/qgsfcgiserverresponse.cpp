@@ -17,14 +17,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgis.h"
 #include "qgsfcgiserverresponse.h"
+
+#include "qgis.h"
+#include "qgslogger.h"
 #include "qgsmessagelog.h"
-#include <fcgi_stdio.h>
+
 #include <QDebug>
+#include <QString>
 #include <QThread>
 
-#include "qgslogger.h"
+#include <fcgi_stdio.h>
+
+using namespace Qt::StringLiterals;
 
 #if defined( Q_OS_UNIX ) && !defined( Q_OS_ANDROID )
 #include <unistd.h>
@@ -63,7 +68,6 @@ using namespace std::chrono_literals;
 // QgsSocketMonitoringThread constructor
 QgsSocketMonitoringThread::QgsSocketMonitoringThread( std::shared_ptr<QgsFeedback> feedback )
   : mFeedback( std::move( feedback ) )
-  , mIpcFd( -1 )
 {
   Q_ASSERT( mFeedback );
 
@@ -79,16 +83,20 @@ QgsSocketMonitoringThread::QgsSocketMonitoringThread( std::shared_ptr<QgsFeedbac
     }
     else
     {
-      QgsMessageLog::logMessage( QStringLiteral( "FCGI_stdout stream data is null! Socket monitoring disabled." ), //
-                                 QStringLiteral( "FCGIServer" ),                                                   //
-                                 Qgis::MessageLevel::Warning );
+      QgsMessageLog::logMessage(
+        u"FCGI_stdout stream data is null! Socket monitoring disabled."_s, //
+        u"FCGIServer"_s,                                                   //
+        Qgis::MessageLevel::Warning
+      );
     }
   }
   else
   {
-    QgsMessageLog::logMessage( QStringLiteral( "FCGI_stdout is null! Socket monitoring disabled." ), //
-                               QStringLiteral( "FCGIServer" ),                                       //
-                               Qgis::MessageLevel::Warning );
+    QgsMessageLog::logMessage(
+      u"FCGI_stdout is null! Socket monitoring disabled."_s, //
+      u"FCGIServer"_s,                                       //
+      Qgis::MessageLevel::Warning
+    );
   }
 #endif
 }
@@ -109,7 +117,7 @@ void QgsSocketMonitoringThread::run()
 
   if ( mIpcFd < 0 )
   {
-    QgsMessageLog::logMessage( QStringLiteral( "Socket monitoring disabled: no socket fd!" ), QStringLiteral( "FCGIServer" ), Qgis::MessageLevel::Warning );
+    QgsMessageLog::logMessage( u"Socket monitoring disabled: no socket fd!"_s, u"FCGIServer"_s, Qgis::MessageLevel::Warning );
     return;
   }
 
@@ -130,14 +138,17 @@ void QgsSocketMonitoringThread::run()
   {
     // 'select' function will check if the socket is still valid after a 10ms timeout
     // see https://stackoverflow.com/a/30395738
-    int rv = select( mIpcFd + 1, &setOptions, NULL, NULL, &timeout );
+    int rv = select( mIpcFd + 1, &setOptions, nullptr, nullptr, &timeout );
     if ( rv == -1 )
     {
       // socket closed, nothing can be read
-      QgsMessageLog::logMessage( QStringLiteral( "FCGIServer %1: remote socket has been closed (select)! errno: %2" ) //
-                                   .arg( threadId )
-                                   .arg( errno ),
-                                 QStringLiteral( "FCGIServer" ), Qgis::MessageLevel::Warning );
+      QgsMessageLog::logMessage(
+        u"FCGIServer %1: remote socket has been closed (select)! errno: %2"_s //
+          .arg( threadId )
+          .arg( errno ),
+        u"FCGIServer"_s,
+        Qgis::MessageLevel::Warning
+      );
       mFeedback->cancel();
       break;
     }
@@ -149,20 +160,25 @@ void QgsSocketMonitoringThread::run()
       if ( x != 0 )
       {
         // Ie. we are still connected but we have an 'error' as there is nothing to read
-        QgsDebugMsgLevel( QStringLiteral( "FCGIServer %1: remote socket still connected. errno: %2, x: %3" ) //
-                            .arg( threadId )
-                            .arg( errno )
-                            .arg( x ),
-                          5 );
+        QgsDebugMsgLevel(
+          u"FCGIServer %1: remote socket still connected. errno: %2, x: %3"_s //
+            .arg( threadId )
+            .arg( errno )
+            .arg( x ),
+          5
+        );
       }
       else
       {
         // socket closed, nothing can be read
-        QgsMessageLog::logMessage( QStringLiteral( "FCGIServer %1: remote socket has been closed (recv)! errno: %2, x: %3" ) //
-                                     .arg( threadId )
-                                     .arg( errno )
-                                     .arg( x ),
-                                   QStringLiteral( "FCGIServer" ), Qgis::MessageLevel::Warning );
+        QgsMessageLog::logMessage(
+          u"FCGIServer %1: remote socket has been closed (recv)! errno: %2, x: %3"_s //
+            .arg( threadId )
+            .arg( errno )
+            .arg( x ),
+          u"FCGIServer"_s,
+          Qgis::MessageLevel::Warning
+        );
         mFeedback->cancel();
         break;
       }
@@ -176,13 +192,16 @@ void QgsSocketMonitoringThread::run()
 
   if ( mShouldStop.load() )
   {
-    QgsMessageLog::logMessage( QStringLiteral( "FCGIServer::run %1: socket monitoring quits normally." ).arg( threadId ), QStringLiteral( "FCGIServer" ), Qgis::MessageLevel::Info );
+    QgsMessageLog::logMessage( u"FCGIServer::run %1: socket monitoring quits normally."_s.arg( threadId ), u"FCGIServer"_s, Qgis::MessageLevel::Info );
   }
   else
   {
-    QgsMessageLog::logMessage( QStringLiteral( "FCGIServer::run %1: socket monitoring quits: no more socket." ) //
-                                 .arg( threadId ),                                                              //
-                               QStringLiteral( "FCGIServer" ), Qgis::MessageLevel::Warning );
+    QgsMessageLog::logMessage(
+      u"FCGIServer::run %1: socket monitoring quits: no more socket."_s //
+        .arg( threadId ),                                               //
+      u"FCGIServer"_s,
+      Qgis::MessageLevel::Warning
+    );
   }
 #endif
 }
@@ -220,12 +239,41 @@ void QgsFcgiServerResponse::removeHeader( const QString &key )
   mHeaders.remove( key );
 }
 
+void QgsFcgiServerResponse::addHeader( const QString &key, const QString &value )
+{
+  if ( !mHeadersSent )
+  {
+    if ( !mHeaders.contains( key ) )
+    {
+      mHeaders[key] = QList<QString>();
+    }
+    mHeaders[key].append( value );
+  }
+}
+
+
 void QgsFcgiServerResponse::setHeader( const QString &key, const QString &value )
 {
-  mHeaders.insert( key, value );
+  mHeaders[key] = QList<QString>() << value;
 }
 
 QString QgsFcgiServerResponse::header( const QString &key ) const
+{
+  const QList<QString> values = mHeaders.value( key );
+  return values.isEmpty() ? QString() : values.last();
+}
+
+QMap<QString, QString> QgsFcgiServerResponse::headers() const
+{
+  QMap<QString, QString> singleHeaders;
+  for ( auto it = mHeaders.keyBegin(); it != mHeaders.keyEnd(); ++it )
+  {
+    singleHeaders.insert( *it, header( *it ) );
+  }
+  return singleHeaders;
+}
+
+QList<QString> QgsFcgiServerResponse::fullHeader( const QString &key ) const
 {
   return mHeaders.value( key );
 }
@@ -238,7 +286,8 @@ bool QgsFcgiServerResponse::headersSent() const
 void QgsFcgiServerResponse::setStatusCode( int code )
 {
   // fcgi applications must return HTTP status in header
-  mHeaders.insert( QStringLiteral( "Status" ), QStringLiteral( " %1" ).arg( code ) );
+  removeHeader( u"Status"_s );
+  setHeader( u"Status"_s, u" %1"_s.arg( code ) );
   // Store the code to make it available for plugins
   mStatusCode = code;
 }
@@ -247,14 +296,14 @@ void QgsFcgiServerResponse::sendError( int code, const QString &message )
 {
   if ( mHeadersSent )
   {
-    QgsMessageLog::logMessage( "Cannot send error after headers written", QStringLiteral( "FCGIServer" ), Qgis::MessageLevel::Warning );
+    QgsMessageLog::logMessage( "Cannot send error after headers written", u"FCGIServer"_s, Qgis::MessageLevel::Warning );
     return;
   }
 
   clear();
   setStatusCode( code );
-  setHeader( QStringLiteral( "Content-Type" ), QStringLiteral( "text/html;charset=utf-8" ) );
-  write( QStringLiteral( "<html><body>%1</body></html>" ).arg( message ) );
+  setHeader( u"Content-Type"_s, u"text/html;charset=utf-8"_s );
+  write( u"<html><body>%1</body></html>"_s.arg( message ) );
   finish();
 }
 
@@ -267,7 +316,7 @@ void QgsFcgiServerResponse::finish()
 {
   if ( mFinished )
   {
-    QgsMessageLog::logMessage( "finish() called twice", QStringLiteral( "FCGIServer" ), Qgis::MessageLevel::Warning );
+    QgsMessageLog::logMessage( "finish() called twice", u"FCGIServer"_s, Qgis::MessageLevel::Warning );
     return;
   }
 
@@ -283,7 +332,7 @@ void QgsFcgiServerResponse::finish()
   {
     if ( !mHeaders.contains( "Content-Length" ) )
     {
-      mHeaders.insert( QStringLiteral( "Content-Length" ), QString::number( mBuffer.pos() ) );
+      setHeader( u"Content-Length"_s, QString::number( mBuffer.pos() ) );
     }
   }
   flush();
@@ -295,13 +344,16 @@ void QgsFcgiServerResponse::flush()
   if ( !mHeadersSent )
   {
     // Send all headers
-    QMap<QString, QString>::const_iterator it;
+    QMap<QString, QList<QString>>::const_iterator it;
     for ( it = mHeaders.constBegin(); it != mHeaders.constEnd(); ++it )
     {
-      fputs( it.key().toUtf8(), FCGI_stdout );
-      fputs( ": ", FCGI_stdout );
-      fputs( it.value().toUtf8(), FCGI_stdout );
-      fputs( "\n", FCGI_stdout );
+      for ( const QString &headerValue : std::as_const( it.value() ) )
+      {
+        fputs( it.key().toUtf8(), FCGI_stdout );
+        fputs( ": ", FCGI_stdout );
+        fputs( headerValue.toUtf8(), FCGI_stdout );
+        fputs( "\n", FCGI_stdout );
+      }
     }
     fputs( "\n", FCGI_stdout );
     mHeadersSent = true;
@@ -319,7 +371,7 @@ void QgsFcgiServerResponse::flush()
     QByteArray &ba = mBuffer.buffer();
     const size_t count = fwrite( ( void * ) ba.data(), ba.size(), 1, FCGI_stdout );
 #ifdef QGISDEBUG
-    qDebug() << QStringLiteral( "Sent %1 blocks of %2 bytes" ).arg( count ).arg( ba.size() );
+    qDebug() << u"Sent %1 blocks of %2 bytes"_s.arg( count ).arg( ba.size() );
 #else
     Q_UNUSED( count )
 #endif
@@ -334,9 +386,6 @@ void QgsFcgiServerResponse::clear()
   mHeaders.clear();
   mBuffer.seek( 0 );
   mBuffer.buffer().clear();
-
-  // Restore default headers
-  setDefaultHeaders();
 }
 
 
@@ -355,5 +404,5 @@ void QgsFcgiServerResponse::truncate()
 
 void QgsFcgiServerResponse::setDefaultHeaders()
 {
-  mHeaders.insert( QStringLiteral( "Server" ), QStringLiteral( " QGIS FCGI server - QGIS version %1" ).arg( Qgis::version() ) );
+  QgsFcgiServerResponse::setHeader( u"Server"_s, u" QGIS FCGI server - QGIS version %1"_s.arg( Qgis::version() ) );
 }

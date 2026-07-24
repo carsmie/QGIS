@@ -9,6 +9,7 @@
 
 
 
+
 class QgsRendererCategory
 {
 %Docstring(signature="appended")
@@ -20,7 +21,6 @@ Represents an individual category (class) from a
 #include "qgscategorizedsymbolrenderer.h"
 %End
   public:
-
     QgsRendererCategory();
 
     QgsRendererCategory( const QVariant &value, QgsSymbol *symbol /Transfer/, const QString &label, bool render = true, const QString &uuid = QString() );
@@ -155,7 +155,7 @@ document and ``element``.
     sipRes = PyUnicode_FromString( str.toUtf8().constData() );
 %End
 
-  protected:
+    protected:
 
 };
 
@@ -172,6 +172,8 @@ categories.
 #include "qgscategorizedsymbolrenderer.h"
 %End
   public:
+    typedef QgsRendererCategory Category;
+    typedef QgsCategoryList Categories;
 
     QgsCategorizedSymbolRenderer( const QString &attrName = QString(), const QgsCategoryList &categories = QgsCategoryList() );
 %Docstring
@@ -430,6 +432,8 @@ Update the color ramp used and all symbols colors.
 
     virtual void setLegendSymbolItem( const QString &key, QgsSymbol *symbol /Transfer/ );
 
+    virtual void setLegendSymbolItemLabel( const QString &key, const QString &label );
+
     virtual void checkLegendSymbolItem( const QString &key, bool state = true );
 
     virtual QString legendClassificationAttribute() const;
@@ -467,8 +471,7 @@ size for marker symbols. Will return ``None`` if the functionality is
 disabled.
 %End
 
-    int matchToSymbols( QgsStyle *style, Qgis::SymbolType type,
-                        QVariantList &unmatchedCategories /Out/, QStringList &unmatchedSymbols /Out/, bool caseSensitive = true, bool useTolerantMatch = false );
+    int matchToSymbols( QgsStyle *style, Qgis::SymbolType type, QVariantList &unmatchedCategories /Out/, QStringList &unmatchedSymbols /Out/, bool caseSensitive = true, bool useTolerantMatch = false );
 %Docstring
 Replaces category symbols with the symbols from a ``style`` that have a
 matching name and symbol ``type``.
@@ -501,7 +504,7 @@ respective field configuration.
 .. versionadded:: 3.6
 %End
 
-    static QString displayString( const QVariant &value, int precision = -1 );
+ static QString displayString( const QVariant &value, int precision = -1 ) /Deprecated="Since 4.0. Use QgsVariantUtils.displayString() instead."/;
 %Docstring
 Returns a localized representation of ``value`` with the given
 ``precision``, if precision is -1 then precision is guessed from the
@@ -512,10 +515,15 @@ default QVariant.toString output.
    Precision is ignored for integers.
 
 .. versionadded:: 3.22.1
+
+.. deprecated:: 4.0
+
+   Use :py:func:`QgsVariantUtils.displayString()` instead.
 %End
 
 
   protected:
+
 
 
 
@@ -525,11 +533,11 @@ default QVariant.toString output.
 hashtable for faster access to symbols
 %End
 
- QgsSymbol *skipRender() /Deprecated="Since 3.40. No longer used, will be removed in QGIS 4.0."/;
+ QgsSymbol *skipRender() /Deprecated="Since 3.40. No longer used, will be removed in QGIS 5.0."/;
 %Docstring
 .. deprecated:: 3.40
 
-   No longer used, will be removed in QGIS 4.0.
+   No longer used, will be removed in QGIS 5.0.
 %End
 
  QgsSymbol *symbolForValue( const QVariant &value ) const /Deprecated="Since 3.40. Use variant which takes a second bool argument instead."/;

@@ -20,29 +20,29 @@
 #include "qgsabstractdatabaseproviderconnection.h"
 #include "qgsogrutils.h"
 
-///@cond PRIVATE
 #define SIP_NO_FILE
 
+///@cond PRIVATE
 
 
-struct QgsOgrProviderResultIterator: public QgsAbstractDatabaseProviderConnection::QueryResult::QueryResultIterator
+struct QgsOgrProviderResultIterator : public QgsAbstractDatabaseProviderConnection::QueryResult::QueryResultIterator
 {
-
     QgsOgrProviderResultIterator( gdal::dataset_unique_ptr hDS, OGRLayerH ogrLayer );
 
-    ~QgsOgrProviderResultIterator();
+    ~QgsOgrProviderResultIterator() override;
 
     void setFields( const QgsFields &fields );
-    void setGeometryColumnName( const QString &geometryColumnName );
+    void addGeometryColumn( const QString &geometryColumnName, int index );
     void setPrimaryKeyColumnName( const QString &primaryKeyColumnName );
+    void setPrimaryKeyColumnIndex( int primaryKeyColumnIndex );
 
   private:
-
     gdal::dataset_unique_ptr mHDS;
     OGRLayerH mOgrLayer;
     QgsFields mFields;
     QVariantList mNextRow;
-    QString mGeometryColumnName;
+    int mPrimaryKeyColumnIndex = -1;
+    std::map<int, QString> mGeometryColumns;
     QString mPrimaryKeyColumnName;
     long long mRowCount = -1;
 
@@ -50,7 +50,6 @@ struct QgsOgrProviderResultIterator: public QgsAbstractDatabaseProviderConnectio
     bool hasNextRowPrivate() const override;
     long long rowCountPrivate() const override;
     QVariantList nextRowInternal();
-
 };
 
 
@@ -65,7 +64,6 @@ struct QgsOgrProviderResultIterator: public QgsAbstractDatabaseProviderConnectio
 class QgsOgrProviderConnection : public QgsAbstractDatabaseProviderConnection
 {
   public:
-
     QgsOgrProviderConnection( const QString &name );
     QgsOgrProviderConnection( const QString &uri, const QVariantMap &configuration );
 
@@ -74,12 +72,13 @@ class QgsOgrProviderConnection : public QgsAbstractDatabaseProviderConnection
     void store( const QString &name ) const override;
     void remove( const QString &name ) const override;
     QString tableUri( const QString &schema, const QString &name ) const override;
-    QList<QgsAbstractDatabaseProviderConnection::TableProperty> tables( const QString &schema = QString(),
-        const TableFlags &flags = TableFlags(), QgsFeedback *feedback = nullptr ) const override;
+    QList<QgsAbstractDatabaseProviderConnection::TableProperty> tables( const QString &schema = QString(), const TableFlags &flags = TableFlags(), QgsFeedback *feedback = nullptr ) const override;
     QgsAbstractDatabaseProviderConnection::TableProperty table( const QString &schema, const QString &table, QgsFeedback *feedback = nullptr ) const override;
     QueryResult execSql( const QString &sql, QgsFeedback *feedback = nullptr ) const override;
     QgsVectorLayer *createSqlVectorLayer( const SqlVectorLayerOptions &options ) const override;
-    void createVectorTable( const QString &schema, const QString &name, const QgsFields &fields, Qgis::WkbType wkbType, const QgsCoordinateReferenceSystem &srs, bool overwrite, const QMap<QString, QVariant> *options ) const override;
+    void createVectorTable(
+      const QString &schema, const QString &name, const QgsFields &fields, Qgis::WkbType wkbType, const QgsCoordinateReferenceSystem &srs, bool overwrite, const QMap<QString, QVariant> *options
+    ) const override;
     QString createVectorLayerExporterDestinationUri( const QgsAbstractDatabaseProviderConnection::VectorLayerExporterOptions &options, QVariantMap &providerOptions ) const override;
     void dropVectorTable( const QString &schema, const QString &name ) const override;
     void vacuum( const QString &schema, const QString &name ) const override;
@@ -89,6 +88,8 @@ class QgsOgrProviderConnection : public QgsAbstractDatabaseProviderConnection
     QgsFieldDomain *fieldDomain( const QString &name ) const override;
     void setFieldDomainName( const QString &fieldName, const QString &schema, const QString &tableName, const QString &domainName ) const override;
     void addFieldDomain( const QgsFieldDomain &domain, const QString &schema ) const override;
+    void updateFieldDomain( QgsFieldDomain *domain, const QString &schema ) const override;
+    void deleteFieldDomain( const QString &name, const QString &schema ) const override;
     void renameField( const QString &schema, const QString &tableName, const QString &name, const QString &newName ) const override;
     void setFieldAlias( const QString &fieldName, const QString &schema, const QString &tableName, const QString &alias ) const override;
     void setFieldComment( const QString &fieldName, const QString &schema, const QString &tableName, const QString &comment ) const override;
@@ -104,7 +105,6 @@ class QgsOgrProviderConnection : public QgsAbstractDatabaseProviderConnection
     Qgis::DatabaseProviderTableImportCapabilities tableImportCapabilities() const override;
 
   protected:
-
     virtual QString databaseQueryLogIdentifier() const;
 
     virtual QString primaryKeyColumnName( const QString &table ) const;
@@ -113,7 +113,6 @@ class QgsOgrProviderConnection : public QgsAbstractDatabaseProviderConnection
     QueryResult executeGdalSqlPrivate( const QString &sql, QgsFeedback *feedback = nullptr ) const;
 
   private:
-
     void setDefaultCapabilities();
 
     QString mDriverName;
@@ -123,7 +122,6 @@ class QgsOgrProviderConnection : public QgsAbstractDatabaseProviderConnection
     Qgis::RelationshipCapabilities mRelationshipCapabilities;
     QStringList mRelatedTableTypes;
 };
-
 
 
 ///@endcond

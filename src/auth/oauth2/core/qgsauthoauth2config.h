@@ -17,10 +17,13 @@
 
 // TODO: add SimpleCrypt or QgsAuthCrypto for (en|de)crypting client secret key
 
+#include "qgis.h"
+
 #include <QObject>
+#include <QString>
 #include <QVariantMap>
 
-#include "qgis.h"
+using namespace Qt::StringLiterals;
 
 /**
  * The QgsAuthOAuth2Config class stores the configuration for OAuth2 authentication plugin
@@ -169,10 +172,10 @@ class QgsAuthOAuth2Config : public QObject
 
     /**
      * Returns the extra tokens that will be added into the header for header access methods.
-     * 
+     *
      * The map key represents the response field to take the token from, and the associated value the header
      * name to be used for subsequent requests.
-     * 
+     *
      * \since QGIS 3.44
      */
     QVariantMap extraTokens() const { return mExtraTokens; }
@@ -227,20 +230,10 @@ class QgsAuthOAuth2Config : public QObject
     static bool writeOAuth2Config( const QString &filepath, QgsAuthOAuth2Config *config, ConfigFormat format = ConfigFormat::JSON, bool pretty = false );
 
     //! Load and parse a directory of configs (e.g. JSON) to objects
-    static QList<QgsAuthOAuth2Config *> loadOAuth2Configs(
-      const QString &configdirectory,
-      QObject *parent = nullptr,
-      ConfigFormat format = ConfigFormat::JSON,
-      bool *ok = nullptr
-    );
+    static QList<QgsAuthOAuth2Config *> loadOAuth2Configs( const QString &configdirectory, QObject *parent = nullptr, ConfigFormat format = ConfigFormat::JSON, bool *ok = nullptr );
 
     //! Load and parse a directory of configs (e.g. JSON) to a map
-    static QgsStringMap mapOAuth2Configs(
-      const QString &configdirectory,
-      QObject *parent = nullptr,
-      ConfigFormat format = ConfigFormat::JSON,
-      bool *ok = nullptr
-    );
+    static QgsStringMap mapOAuth2Configs( const QString &configdirectory, QObject *parent = nullptr, ConfigFormat format = ConfigFormat::JSON, bool *ok = nullptr );
 
     /**
      * Returns an ordered list of locations from which stored configuration files
@@ -330,10 +323,10 @@ class QgsAuthOAuth2Config : public QObject
 
     /**
      * Sets the extra \a tokens that will be added into the header for header access methods.
-     * 
+     *
      * The map key represents the response field to take the token from, and the associated value the header
      * name to be used for subsequent requests.
-     * 
+     *
      * \since QGIS 3.44
      */
     void setExtraTokens( const QVariantMap &tokens );
@@ -423,7 +416,7 @@ class QgsAuthOAuth2Config : public QObject
     QString mRequestUrl;
     QString mTokenUrl;
     QString mRefreshTokenUrl;
-    QString mRedirectHost = QStringLiteral( "127.0.0.1" );
+    QString mRedirectHost = u"127.0.0.1"_s;
     QString mRedirectURL;
     int mRedirectPort = 7070;
     QString mClientId;

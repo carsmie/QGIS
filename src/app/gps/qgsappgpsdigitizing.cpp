@@ -14,35 +14,46 @@
  ***************************************************************************/
 
 #include "qgsappgpsdigitizing.h"
-#include "moc_qgsappgpsdigitizing.cpp"
-#include "qgsrubberband.h"
-#include "qgslinesymbol.h"
-#include "qgssymbollayerutils.h"
-#include "qgsgui.h"
+
 #include "qgisapp.h"
-#include "qgsmessagebar.h"
-#include "qgsmapcanvas.h"
+#include "qgsappgpsconnection.h"
+#include "qgsapplication.h"
+#include "qgsattributedialog.h"
+#include "qgsattributeform.h"
 #include "qgsfeatureaction.h"
 #include "qgsgpsconnection.h"
-#include "qgsappgpsconnection.h"
-#include "qgsprojectgpssettings.h"
-#include "qgsapplication.h"
-#include "qgsattributeform.h"
-#include "qgsattributedialog.h"
+#include "qgsgui.h"
 #include "qgshighlight.h"
+#include "qgslinesymbol.h"
+#include "qgsmapcanvas.h"
+#include "qgsmessagebar.h"
+#include "qgsprojectgpssettings.h"
+#include "qgsrubberband.h"
 #include "qgssettingsentryimpl.h"
 #include "qgssettingstree.h"
+#include "qgssymbollayerutils.h"
 
+#include <QString>
 #include <QTimeZone>
 
-const QgsSettingsEntryString *QgsAppGpsDigitizing::settingTrackLineSymbol = new QgsSettingsEntryString( QStringLiteral( "track-line-symbol" ), QgsSettingsTree::sTreeGps, QStringLiteral( "<symbol alpha=\"1\" name=\"gps-track-symbol\" force_rhr=\"0\" clip_to_extent=\"1\" type=\"line\"><layer enabled=\"1\" pass=\"0\" locked=\"0\" class=\"SimpleLine\"><Option type=\"Map\"><Option name=\"line_color\" type=\"QString\" value=\"219,30,42,255\"/><Option name=\"line_style\" type=\"QString\" value=\"solid\"/><Option name=\"line_width\" type=\"QString\" value=\"0.4\"/></Option></layer></symbol>" ), QStringLiteral( "Line symbol to use for GPS track line" ), Qgis::SettingsOptions(), 0 );
+#include "moc_qgsappgpsdigitizing.cpp"
+
+using namespace Qt::StringLiterals;
+
+const QgsSettingsEntryString *QgsAppGpsDigitizing::settingTrackLineSymbol = new QgsSettingsEntryString(
+  u"track-line-symbol"_s,
+  QgsSettingsTree::sTreeGps,
+  u"<symbol alpha=\"1\" name=\"gps-track-symbol\" force_rhr=\"0\" clip_to_extent=\"1\" type=\"line\"><layer enabled=\"1\" pass=\"0\" locked=\"0\" class=\"SimpleLine\"><Option type=\"Map\"><Option name=\"line_color\" type=\"QString\" value=\"219,30,42,255\"/><Option name=\"line_style\" type=\"QString\" value=\"solid\"/><Option name=\"line_width\" type=\"QString\" value=\"0.4\"/></Option></layer></symbol>"_s,
+  u"Line symbol to use for GPS track line"_s,
+  Qgis::SettingsOptions(),
+  0
+);
 
 QgsUpdateGpsDetailsAction::QgsUpdateGpsDetailsAction( QgsAppGpsConnection *connection, QgsAppGpsDigitizing *digitizing, QObject *parent )
-  : QgsMapLayerAction( tr( "Update GPS Information" ), parent, Qgis::MapLayerActionTarget::SingleFeature, QgsApplication::getThemeIcon( QStringLiteral( "/gpsicons/mActionRecenter.svg" ) ) )
+  : QgsMapLayerAction( tr( "Update GPS Information" ), parent, Qgis::MapLayerActionTarget::SingleFeature, QgsApplication::getThemeIcon( u"/gpsicons/mActionRecenter.svg"_s ) )
   , mConnection( connection )
   , mDigitizing( digitizing )
-{
-}
+{}
 
 bool QgsUpdateGpsDetailsAction::canRunUsingLayer( QgsMapLayer * ) const
 {
@@ -51,15 +62,17 @@ bool QgsUpdateGpsDetailsAction::canRunUsingLayer( QgsMapLayer * ) const
 
 bool QgsUpdateGpsDetailsAction::canRunUsingLayer( QgsMapLayer *layer, const QgsMapLayerActionContext &context ) const
 {
-  return mConnection && mConnection->isConnected() && context.attributeDialog() && context.attributeDialog()->attributeForm()->mode() == QgsAttributeEditorContext::Mode::AddFeatureMode
+  return mConnection
+         && mConnection->isConnected()
+         && context.attributeDialog()
+         && context.attributeDialog()->attributeForm()->mode() == QgsAttributeEditorContext::Mode::AddFeatureMode
          && layer == QgsProject::instance()->gpsSettings()->destinationLayer();
 }
 
 void QgsUpdateGpsDetailsAction::triggerForFeature( QgsMapLayer *layer, const QgsFeature &, const QgsMapLayerActionContext &context )
 {
   QgsVectorLayer *vlayer = QgsProject::instance()->gpsSettings()->destinationLayer();
-  if ( !vlayer || !mConnection || !mConnection->isConnected()
-       || layer != vlayer )
+  if ( !vlayer || !mConnection || !mConnection->isConnected() || layer != vlayer )
     return;
 
   QgsAttributeDialog *dialog = context.attributeDialog();
@@ -126,19 +139,30 @@ QgsAppGpsDigitizing::QgsAppGpsDigitizing( QgsAppGpsConnection *connection, QgsMa
 
   mCanvasToWgs84Transform = QgsCoordinateTransform( mCanvas->mapSettings().destinationCrs(), mWgs84CRS, QgsProject::instance() );
   connect( mCanvas, &QgsMapCanvas::destinationCrsChanged, this, [this] {
-    mCanvasToWgs84Transform = QgsCoordinateTransform( mCanvas->mapSettings().destinationCrs(), mWgs84CRS, QgsProject::instance() );
+    if ( mCanvas->mapSettings().destinationCrs().isEarthCrs() )
+    {
+      mCanvasToWgs84Transform = QgsCoordinateTransform( mCanvas->mapSettings().destinationCrs(), mWgs84CRS, QgsProject::instance() );
+    }
+    else
+    {
+      if ( mConnection->isConnected() )
+      {
+        mConnection->disconnectGps();
+      }
+    }
   } );
   connect( QgsProject::instance(), &QgsProject::transformContextChanged, this, [this] {
     setTransformContext( QgsProject::instance()->transformContext() );
-    mCanvasToWgs84Transform = QgsCoordinateTransform( mCanvas->mapSettings().destinationCrs(), mWgs84CRS, transformContext() );
+    if ( mCanvas->mapSettings().destinationCrs().isEarthCrs() )
+    {
+      mCanvasToWgs84Transform = QgsCoordinateTransform( mCanvas->mapSettings().destinationCrs(), mWgs84CRS, transformContext() );
+    }
   } );
   setTransformContext( QgsProject::instance()->transformContext() );
 
   setEllipsoid( QgsProject::instance()->ellipsoid() );
 
-  connect( QgsProject::instance(), &QgsProject::ellipsoidChanged, this, [this] {
-    setEllipsoid( QgsProject::instance()->ellipsoid() );
-  } );
+  connect( QgsProject::instance(), &QgsProject::ellipsoidChanged, this, [this] { setEllipsoid( QgsProject::instance()->ellipsoid() ); } );
 
   connect( mConnection, &QgsAppGpsConnection::connected, this, &QgsAppGpsDigitizing::gpsConnected );
   connect( mConnection, &QgsAppGpsConnection::disconnected, this, &QgsAppGpsDigitizing::gpsDisconnected );
@@ -164,9 +188,7 @@ QgsAppGpsDigitizing::QgsAppGpsDigitizing( QgsAppGpsConnection *connection, QgsMa
   }
 
   setAutomaticallyAddTrackVertices( QgsProject::instance()->gpsSettings()->automaticallyAddTrackVertices() );
-  connect( QgsProject::instance()->gpsSettings(), &QgsProjectGpsSettings::automaticallyAddTrackVerticesChanged, this, [this]( bool enabled ) {
-    setAutomaticallyAddTrackVertices( enabled );
-  } );
+  connect( QgsProject::instance()->gpsSettings(), &QgsProjectGpsSettings::automaticallyAddTrackVerticesChanged, this, [this]( bool enabled ) { setAutomaticallyAddTrackVertices( enabled ); } );
 
   connect( this, &QgsGpsLogger::trackVertexAdded, this, &QgsAppGpsDigitizing::addVertex );
   connect( this, &QgsGpsLogger::trackReset, this, &QgsAppGpsDigitizing::onTrackReset );
@@ -207,7 +229,7 @@ QgsAttributeMap QgsAppGpsDigitizing::derivedAttributes() const
 void QgsAppGpsDigitizing::setGpsTrackLineSymbol( QgsLineSymbol *symbol )
 {
   QDomDocument doc;
-  const QDomElement elem = QgsSymbolLayerUtils::saveSymbol( QStringLiteral( "gps-track-symbol" ), symbol, doc, QgsReadWriteContext() );
+  const QDomElement elem = QgsSymbolLayerUtils::saveSymbol( u"gps-track-symbol"_s, symbol, doc, QgsReadWriteContext() );
   doc.appendChild( elem );
   QgsAppGpsDigitizing::settingTrackLineSymbol->setValue( doc.toString( 0 ) );
 }
@@ -232,7 +254,7 @@ void QgsAppGpsDigitizing::addVertex( const QgsPoint &wgs84Point )
     }
     catch ( QgsCsException & )
     {
-      QgsDebugError( QStringLiteral( "Could not transform GPS location (%1, %2) to map CRS" ).arg( wgs84Point.x() ).arg( wgs84Point.y() ) );
+      QgsDebugError( u"Could not transform GPS location (%1, %2) to map CRS"_s.arg( wgs84Point.x() ).arg( wgs84Point.y() ) );
       return;
     }
   }
@@ -336,11 +358,9 @@ void QgsAppGpsDigitizing::createFeature()
             // should canvas->isDrawing() be checked?
             if ( !vlayer->commitChanges() ) //assumed to be vector layer and is editable and is in editing mode (preconditions have been tested)
             {
-              QgisApp::instance()->messageBar()->pushCritical(
-                tr( "Save Layer Edits" ),
-                tr( "Could not commit changes to layer %1\n\nErrors: %2\n" )
-                  .arg( vlayer->name(), vlayer->commitErrors().join( QLatin1String( "\n  " ) ) )
-              );
+              QgisApp::instance()
+                ->messageBar()
+                ->pushCritical( tr( "Save Layer Edits" ), tr( "Could not commit changes to layer %1\n\nErrors: %2\n" ).arg( vlayer->name(), vlayer->commitErrors().join( "\n  "_L1 ) ) );
             }
 
             vlayer->startEditing();
@@ -376,7 +396,9 @@ void QgsAppGpsDigitizing::createFeature()
           {
             if ( !vlayer->commitChanges() )
             {
-              QgisApp::instance()->messageBar()->pushCritical( tr( "Save Layer Edits" ), tr( "Could not commit changes to layer %1\n\nErrors: %2\n" ).arg( vlayer->name(), vlayer->commitErrors().join( QLatin1String( "\n  " ) ) ) );
+              QgisApp::instance()
+                ->messageBar()
+                ->pushCritical( tr( "Save Layer Edits" ), tr( "Could not commit changes to layer %1\n\nErrors: %2\n" ).arg( vlayer->name(), vlayer->commitErrors().join( "\n  "_L1 ) ) );
             }
 
             vlayer->startEditing();

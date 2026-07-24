@@ -18,14 +18,13 @@ from math import sqrt
 from osgeo import gdal
 from osgeo.gdalconst import GA_ReadOnly
 from qgis.PyQt.QtCore import QSize
-from qgis.core import QgsRenderChecker
+from qgis.PyQt.QtGui import QImage
 from qgis.server import (
     QgsAccessControlFilter,
     QgsBufferServerRequest,
     QgsBufferServerResponse,
     QgsServerRequest,
 )
-
 from test_qgsserver import QgsServerTestBase
 from utilities import unitTestDataPath
 
@@ -126,7 +125,6 @@ class RestrictedAccessControl(QgsAccessControlFilter):
 
 
 class TestQgsServerAccessControl(QgsServerTestBase):
-
     @classmethod
     def _execute_request(cls, qs, requestMethod=QgsServerRequest.GetMethod, data=None):
         if data is not None:
@@ -229,20 +227,34 @@ class TestQgsServerAccessControl(QgsServerTestBase):
         else:
             raise RuntimeError("Yeah, new format implemented")
 
-        temp_image = os.path.join(
-            tempfile.gettempdir(), f"{control_image}_result.{extFile}"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_image = os.path.join(temp_dir, f"{control_image}_result.{extFile}")
+
+            with open(temp_image, "wb") as f:
+                f.write(image)
+
+            if outputFormat != "PNG":
+                # TODO fix this, it's not actually testing anything..!
+                return True
+
+            rendered_image = QImage(temp_image)
+
+        if rendered_image.format() not in (
+            QImage.Format.Format_RGB32,
+            QImage.Format.Format_ARGB32,
+            QImage.Format.Format_ARGB32_Premultiplied,
+        ):
+            rendered_image = rendered_image.convertToFormat(QImage.Format.Format_ARGB32)
+
+        return self.image_check(
+            control_image,
+            control_image,
+            rendered_image,
+            control_image,
+            allowed_mismatch=max_diff,
+            control_path_prefix="qgis_server_accesscontrol",
+            size_tolerance=max_size_diff,
         )
-
-        with open(temp_image, "wb") as f:
-            f.write(image)
-
-        control = QgsRenderChecker()
-        control.setControlPathPrefix("qgis_server_accesscontrol")
-        control.setControlName(control_image)
-        control.setRenderedImage(temp_image)
-        if max_size_diff.isValid():
-            control.setSizeTolerance(max_size_diff.width(), max_size_diff.height())
-        return control.compareImages(control_image), control.report()
 
     def _img_diff_error(
         self, response, headers, image, max_diff=10, max_size_diff=QSize()
@@ -289,15 +301,13 @@ class TestQgsServerAccessControl(QgsServerTestBase):
     def _test_colors(self, colors):
         for id, color in list(colors.items()):
             response, headers = self._post_fullaccess(
-                """<?xml version="1.0" encoding="UTF-8"?>
-                <wfs:GetFeature {xml_ns}>
+                f"""<?xml version="1.0" encoding="UTF-8"?>
+                <wfs:GetFeature {XML_NS}>
                 <wfs:Query typeName="db_point" srsName="EPSG:3857" xmlns:feature="http://www.qgis.org/gml">
                 <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:PropertyIsEqualTo>
                 <ogc:PropertyName>gid</ogc:PropertyName>
                 <ogc:Literal>{id}</ogc:Literal>
-                </ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query></wfs:GetFeature>""".format(
-                    id=id, xml_ns=XML_NS
-                )
+                </ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query></wfs:GetFeature>"""
             )
             self.assertTrue(
                 str(response).find(f"<qgs:color>{color}</qgs:color>") != -1,

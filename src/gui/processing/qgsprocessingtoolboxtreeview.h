@@ -18,8 +18,9 @@
 
 #include "qgis.h"
 #include "qgis_gui.h"
-#include <QTreeView>
 #include "qgsprocessingtoolboxmodel.h"
+
+#include <QTreeView>
 
 class QgsProcessingRegistry;
 class QgsProcessingRecentAlgorithmLog;
@@ -52,7 +53,12 @@ class GUI_EXPORT QgsProcessingToolboxTreeView : public QTreeView
      * If \a favoriteManager is specified then it will be used to create a "Favorites" top
      * level group containing favorite algorithms. Since QGIS 3.40
      */
-    QgsProcessingToolboxTreeView( QWidget *parent SIP_TRANSFERTHIS = nullptr, QgsProcessingRegistry *registry = nullptr, QgsProcessingRecentAlgorithmLog *recentLog = nullptr, QgsProcessingFavoriteAlgorithmManager *favoriteManager = nullptr );
+    QgsProcessingToolboxTreeView(
+      QWidget *parent SIP_TRANSFERTHIS = nullptr,
+      QgsProcessingRegistry *registry = nullptr,
+      QgsProcessingRecentAlgorithmLog *recentLog = nullptr,
+      QgsProcessingFavoriteAlgorithmManager *favoriteManager = nullptr
+    );
 
     /**
      * Sets the processing \a registry associated with the view.
@@ -63,11 +69,7 @@ class GUI_EXPORT QgsProcessingToolboxTreeView : public QTreeView
      * If \a favoriteManager is specified then it will be used to create a "Favorites" top
      * level group containing favorite algorithms. Since QGIS 3.40
      */
-    void setRegistry(
-      QgsProcessingRegistry *registry,
-      QgsProcessingRecentAlgorithmLog *recentLog = nullptr,
-      QgsProcessingFavoriteAlgorithmManager *favoriteManager = nullptr
-    );
+    void setRegistry( QgsProcessingRegistry *registry, QgsProcessingRecentAlgorithmLog *recentLog = nullptr, QgsProcessingFavoriteAlgorithmManager *favoriteManager = nullptr );
 
     /**
      * Sets the toolbox proxy model used to drive the view.
@@ -89,16 +91,16 @@ class GUI_EXPORT QgsProcessingToolboxTreeView : public QTreeView
     /**
      * Returns the model parameter at the specified tree view \a index, or NULLPTR
      * if the index does not correspond to a model parameter.
-     * 
-     * \since 3.44
+     *
+     * \since QGIS 3.44
      */
     const QgsProcessingParameterType *parameterTypeForIndex( const QModelIndex &index );
 
     /**
      * Returns the currently selected model parameter in the tree view, or NULLPTR
      * if no model parameter is currently selected.
-     * 
-     * \since 3.44
+     *
+     * \since QGIS 3.44
      */
     const QgsProcessingParameterType *selectedParameterType();
 
