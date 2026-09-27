@@ -17,7 +17,9 @@
 
 #include "qgshillshaderenderer.h"
 
+#include <cmath>
 #include <memory>
+#include <vector>
 
 #include "qgsmessagelog.h"
 #include "qgsrasterblock.h"
@@ -360,6 +362,81 @@ QgsRasterBlock *QgsHillshadeRenderer::block( int bandNo, const QgsRectangle &ext
     double pixelValues[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     bool isNoData[9] { false, false, false, false, false, false, false, false, false };
 
+    // Read every input value once instead of three times through the generic
+    // per pixel accessor (which switches on the data type and checks bounds)
+    const int inputWidth = inputBlock->width();
+    const qgssize inputSize = static_cast<qgssize>( inputWidth ) * inputBlock->height();
+    std::vector<double> inputValues( inputSize );
+    std::vector<unsigned char> inputNoData( inputSize );
+
+    // same result as valueAndNoData() (and QgsRasterBlock::isNoDataValue()), which only consults the
+    // no data bitmap when there is no no data value
+    auto convertTyped = [&]( const auto *data ) {
+      const bool hasNoDataValue = inputBlock->hasNoDataValue();
+      const double noDataValue = inputBlock->noDataValue();
+      for ( qgssize i = 0; i < inputSize; ++i )
+      {
+        const double value = static_cast<double>( data[i] );
+        inputValues[i] = value;
+        inputNoData[i] = hasNoDataValue && ( std::isnan( value ) || qgsDoubleNear( value, noDataValue ) );
+      }
+    };
+    const char *inputData = inputBlock->constBits();
+    const bool usesNoDataBitmap = !inputBlock->hasNoDataValue() && inputBlock->hasNoData();
+    bool converted = inputData && !usesNoDataBitmap;
+    if ( converted )
+    {
+      switch ( inputBlock->dataType() )
+      {
+        case Qgis::DataType::Byte:
+          convertTyped( reinterpret_cast<const quint8 *>( inputData ) );
+          break;
+        case Qgis::DataType::Int8:
+          convertTyped( reinterpret_cast<const qint8 *>( inputData ) );
+          break;
+        case Qgis::DataType::UInt16:
+          convertTyped( reinterpret_cast<const quint16 *>( inputData ) );
+          break;
+        case Qgis::DataType::Int16:
+          convertTyped( reinterpret_cast<const qint16 *>( inputData ) );
+          break;
+        case Qgis::DataType::UInt32:
+          convertTyped( reinterpret_cast<const quint32 *>( inputData ) );
+          break;
+        case Qgis::DataType::Int32:
+          convertTyped( reinterpret_cast<const qint32 *>( inputData ) );
+          break;
+        case Qgis::DataType::Float32:
+          convertTyped( reinterpret_cast<const float *>( inputData ) );
+          break;
+        case Qgis::DataType::Float64:
+          convertTyped( reinterpret_cast<const double *>( inputData ) );
+          break;
+        default:
+          converted = false;
+          break;
+      }
+    }
+    if ( !converted )
+    {
+      for ( qgssize i = 0; i < inputSize; ++i )
+      {
+        bool noData = false;
+        inputValues[i] = inputBlock->valueAndNoData( i, noData );
+        inputNoData[i] = noData;
+      }
+    }
+    auto inputValue = [&inputValues, &inputNoData, inputWidth]( int row, int col, bool &noData ) -> double {
+      const qgssize index = static_cast<qgssize>( row ) * inputWidth + col;
+      noData = inputNoData[index];
+      return inputValues[index];
+    };
+
+    // write the output image directly, setColor() re-fetches and detaches the image for every pixel
+    QRgb *outputColors = outputBlock->colorData();
+    if ( !outputColors )
+      return outputBlock.release();
+
     for ( int row = 0; row < height; row++ )
     {
       for ( int col = 0; col < width; col++ )
@@ -378,19 +455,19 @@ QgsRasterBlock *QgsHillshadeRenderer::block( int bandNo, const QgsRectangle &ext
         if ( col == 0 )
         {
           // seed the matrix with the values from the first column
-          pixelValues[0] = inputBlock->valueAndNoData( iUp, 0, isNoData[0] );
+          pixelValues[0] = inputValue( iUp, 0, isNoData[0] );
           pixelValues[1] = pixelValues[0];
           isNoData[1] = isNoData[0];
           pixelValues[2] = pixelValues[0];
           isNoData[2] = isNoData[0];
 
-          pixelValues[3] = inputBlock->valueAndNoData( row, 0, isNoData[3] );
+          pixelValues[3] = inputValue( row, 0, isNoData[3] );
           pixelValues[4] = pixelValues[3];
           isNoData[4] = isNoData[3];
           pixelValues[5] = pixelValues[3];
           isNoData[5] = isNoData[3];
 
-          pixelValues[6] = inputBlock->valueAndNoData( iDown, 0, isNoData[6] );
+          pixelValues[6] = inputValue( iDown, 0, isNoData[6] );
           pixelValues[7] = pixelValues[6];
           isNoData[7] = isNoData[6];
           pixelValues[8] = pixelValues[6];
@@ -416,14 +493,14 @@ QgsRasterBlock *QgsHillshadeRenderer::block( int bandNo, const QgsRectangle &ext
         // calculate new values
         if ( col < width - 1 )
         {
-          pixelValues[2] = inputBlock->valueAndNoData( iUp, col + 1, isNoData[2] );
-          pixelValues[5] = inputBlock->valueAndNoData( row, col + 1, isNoData[5] );
-          pixelValues[8] = inputBlock->valueAndNoData( iDown, col + 1, isNoData[8] );
+          pixelValues[2] = inputValue( iUp, col + 1, isNoData[2] );
+          pixelValues[5] = inputValue( row, col + 1, isNoData[5] );
+          pixelValues[8] = inputValue( iDown, col + 1, isNoData[8] );
         }
 
         if ( isNoData[4] )
         {
-          outputBlock->setColor( row, col, defaultNodataColor );
+          outputColors[static_cast<qgssize>( row ) * width + col] = defaultNodataColor;
           continue;
         }
 
@@ -501,11 +578,11 @@ QgsRasterBlock *QgsHillshadeRenderer::block( int bandNo, const QgsRectangle &ext
 
         if ( qgsDoubleNear( currentAlpha, 1.0 ) )
         {
-          outputBlock->setColor( row, col, qRgba( grayValue, grayValue, grayValue, 255 ) );
+          outputColors[static_cast<qgssize>( row ) * width + col] = qRgba( grayValue, grayValue, grayValue, 255 );
         }
         else
         {
-          outputBlock->setColor( row, col, qRgba( currentAlpha * grayValue, currentAlpha * grayValue, currentAlpha * grayValue, currentAlpha * 255 ) );
+          outputColors[static_cast<qgssize>( row ) * width + col] = qRgba( currentAlpha * grayValue, currentAlpha * grayValue, currentAlpha * grayValue, currentAlpha * 255 );
         }
       }
     }
