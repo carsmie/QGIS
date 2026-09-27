@@ -897,6 +897,34 @@ static GDALRIOResampleAlg getGDALResamplingAlg( Qgis::RasterResamplingMethod met
   return eResampleAlg;
 }
 
+/**
+ * Copies one row of \a tgtWidth pixels from \a src (\a tmpWidth pixels) to \a dst, picking the nearest
+ * source pixel for each target pixel. \a x is the source column of the first target pixel center and
+ * \a increment the source columns per target pixel. The pixel size is \a DataSize bytes, or
+ * \a runtimeDataSize if \a DataSize is 0: with a compile time size the per pixel copy is a single
+ * load/store instead of a memcpy() call.
+ */
+template<size_t DataSize> static void copyNearestNeighborRow( char *dst, const char *src, int tgtWidth, int tmpWidth, double x, double increment, size_t runtimeDataSize = DataSize )
+{
+  const size_t dataSize = DataSize > 0 ? DataSize : runtimeDataSize;
+  int tmpCol = 0;
+  int lastCol = 0;
+  for ( int col = 0; col < tgtWidth; ++col )
+  {
+    // std::floor() is quite slow! Use just cast to int.
+    tmpCol = static_cast<int>( x );
+    tmpCol = std::min( tmpCol, tmpWidth - 1 );
+    if ( tmpCol > lastCol )
+    {
+      src += ( tmpCol - lastCol ) * dataSize;
+      lastCol = tmpCol;
+    }
+    memcpy( dst, src, dataSize );
+    dst += dataSize;
+    x += increment;
+  }
+}
+
 bool QgsGdalProvider::readBlock( int bandNo, QgsRectangle const &reqExtent, int bufferWidthPix, int bufferHeightPix, void *data, QgsRasterBlockFeedback *feedback )
 {
   if ( mInClosing )
@@ -1244,26 +1272,27 @@ bool QgsGdalProvider::readBlock( int bandNo, QgsRectangle const &reqExtent, int 
     char *srcRowBlock = tmpBlock + dataSize * tmpRow * tmpWidth;
     char *dstRowBlock = ( char * ) data + dataSize * ( tgtTop + row ) * bufferWidthPix;
 
-    double x = ( intersectExtent.xMinimum() + 0.5 * reqXRes - tmpXMin ) / tmpXRes; // cell center
-    double increment = reqXRes / tmpXRes;
+    const double x = ( intersectExtent.xMinimum() + 0.5 * reqXRes - tmpXMin ) / tmpXRes; // cell center
+    const double increment = reqXRes / tmpXRes;
 
     char *dst = dstRowBlock + dataSize * tgtLeft;
-    char *src = srcRowBlock;
-    int tmpCol = 0;
-    int lastCol = 0;
-    for ( int col = 0; col < tgtWidth; ++col )
+    switch ( dataSize )
     {
-      // std::floor() is quite slow! Use just cast to int.
-      tmpCol = static_cast<int>( x );
-      tmpCol = std::min( tmpCol, tmpWidth - 1 );
-      if ( tmpCol > lastCol )
-      {
-        src += ( tmpCol - lastCol ) * dataSize;
-        lastCol = tmpCol;
-      }
-      memcpy( dst, src, dataSize );
-      dst += dataSize;
-      x += increment;
+      case 1:
+        copyNearestNeighborRow<1>( dst, srcRowBlock, tgtWidth, tmpWidth, x, increment );
+        break;
+      case 2:
+        copyNearestNeighborRow<2>( dst, srcRowBlock, tgtWidth, tmpWidth, x, increment );
+        break;
+      case 4:
+        copyNearestNeighborRow<4>( dst, srcRowBlock, tgtWidth, tmpWidth, x, increment );
+        break;
+      case 8:
+        copyNearestNeighborRow<8>( dst, srcRowBlock, tgtWidth, tmpWidth, x, increment );
+        break;
+      default:
+        copyNearestNeighborRow<0>( dst, srcRowBlock, tgtWidth, tmpWidth, x, increment, dataSize );
+        break;
     }
     y -= reqYRes;
   }
