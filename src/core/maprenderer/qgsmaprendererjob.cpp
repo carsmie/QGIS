@@ -15,6 +15,7 @@
 
 #include "qgsmaprendererjob.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "qgselevationmap.h"
@@ -556,6 +557,20 @@ std::vector<LayerRenderJob> QgsMapRendererJob::prepareJobs( QPainter *painter, Q
 
   bool requiresLabelRedraw = !( mCache && mCache->hasCacheImage( LABEL_CACHE_ID ) );
 
+  // The visible extent in layer CRS only depends on the layer transform, the layer type and
+  // whether the layer CRS is geographic, so compute it once per distinct combination instead
+  // of once per layer (each computation densifies and reprojects the extent, sometimes twice).
+  struct LayerExtentCacheEntry
+  {
+      QgsCoordinateTransform transform;
+      bool isVector = false;
+      bool isGeographic = false;
+      QgsRectangle extent;
+      QgsRectangle r2;
+      bool haveExtentInLayerCrs = true;
+  };
+  std::vector<LayerExtentCacheEntry> layerExtentCache;
+
   while ( li.hasPrevious() )
   {
     QgsMapLayer *ml = li.previous();
@@ -603,7 +618,31 @@ std::vector<LayerRenderJob> QgsMapRendererJob::prepareJobs( QPainter *painter, Q
     bool haveExtentInLayerCrs = true;
     if ( ct.isValid() )
     {
-      haveExtentInLayerCrs = reprojectToLayerExtent( ml, ct, r1, r2 );
+      const bool isVector = ml->type() == Qgis::LayerType::Vector;
+      const bool isGeographic = ml->crs().isGeographic();
+      auto cached = std::find_if( layerExtentCache.begin(), layerExtentCache.end(), [&]( const LayerExtentCacheEntry &entry ) {
+        // compare the transform inputs only: QgsCoordinateTransform::operator==() also compares the
+        // instantiated proj operations, which is expensive, and all layer transforms of a job come
+        // from the same transform context
+        return entry.isVector == isVector
+               && entry.isGeographic == isGeographic
+               && entry.transform.sourceCrs() == ct.sourceCrs()
+               && entry.transform.destinationCrs() == ct.destinationCrs()
+               && entry.transform.coordinateOperation() == ct.coordinateOperation()
+               && entry.transform.allowFallbackTransforms() == ct.allowFallbackTransforms()
+               && entry.transform.isShortCircuited() == ct.isShortCircuited();
+      } );
+      if ( cached != layerExtentCache.end() )
+      {
+        r1 = cached->extent;
+        r2 = cached->r2;
+        haveExtentInLayerCrs = cached->haveExtentInLayerCrs;
+      }
+      else
+      {
+        haveExtentInLayerCrs = reprojectToLayerExtent( ml, ct, r1, r2 );
+        layerExtentCache.push_back( { ct, isVector, isGeographic, r1, r2, haveExtentInLayerCrs } );
+      }
     }
     QgsDebugMsgLevel( "extent: " + r1.toString(), 3 );
     if ( !r1.isFinite() || !r2.isFinite() )
