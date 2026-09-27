@@ -102,6 +102,12 @@ endif()
 
 target_link_libraries(qgis_native ${QT_VERSION_BASE}::Core ${QT_VERSION_BASE}::Gui)
 
+if(APPLE)
+  find_library(FOUNDATION_LIBRARY Foundation)
+  find_library(APPKIT_LIBRARY AppKit)
+  target_link_libraries(qgis_native ${FOUNDATION_LIBRARY} ${APPKIT_LIBRARY})
+endif()
+
 if (UNIX AND NOT APPLE AND NOT ANDROID)
   target_link_libraries(qgis_native ${QT_VERSION_BASE}::DBus)
 endif()

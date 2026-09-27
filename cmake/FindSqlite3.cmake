@@ -33,7 +33,10 @@ IF (APPLE AND NOT QGIS_MAC_DEPS_DIR)
     FIND_LIBRARY(SQLITE3_LIBRARY SQLite3)
     IF (SQLITE3_LIBRARY)
       # FIND_PATH doesn't add "Headers" for a framework
-      SET (SQLITE3_INCLUDE_DIR ${SQLITE3_LIBRARY}/Headers CACHE PATH "Path to a file.")
+      # a .tbd stub has no Headers dir
+      IF (SQLITE3_LIBRARY MATCHES "\\.framework$")
+        SET (SQLITE3_INCLUDE_DIR ${SQLITE3_LIBRARY}/Headers CACHE PATH "Path to a file.")
+      ENDIF ()
     ENDIF (SQLITE3_LIBRARY)
     SET (CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK_save} CACHE STRING "" FORCE)
   ENDIF ()
