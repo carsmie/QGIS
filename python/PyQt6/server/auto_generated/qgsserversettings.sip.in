@@ -68,6 +68,7 @@ configuration.
       QGIS_SERVER_ALLOWED_EXTRA_SQL_TOKENS,
       QGIS_SERVER_APPLICATION_NAME,
       QGIS_SERVER_CAPABILITIES_CACHE_SIZE,
+      QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL,
     };
 };
 
@@ -420,6 +421,19 @@ value is 40 and the value can be changed by setting the environment
 variable QGIS_SERVER_CAPABILITIES_CACHE_SIZE.
 
 .. versionadded:: 3.31
+%End
+
+    int wmsPngCompressionLevel() const;
+%Docstring
+Returns the zlib compression level (0-9) used to encode PNG images, or
+-1 when the default Qt PNG writer is used.
+
+The default value is -1 and the value can be changed by setting the
+environment variable QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL. Low levels
+encode much faster at the cost of slightly larger images, which helps
+when tiles are seeded or cached downstream.
+
+.. versionadded:: 4.4
 %End
 
 };

@@ -51,11 +51,13 @@ foreach(_library_type MODULE STATIC)
     ${CMAKE_BINARY_DIR}/src/analysis
     ${CMAKE_BINARY_DIR}/src/server
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${ZLIB_INCLUDE_DIRS}
   )
 
   target_link_libraries(${_library_name}
     qgis_core
     qgis_server
+    ${ZLIB_LIBRARIES}
   )
 endforeach()
 

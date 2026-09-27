@@ -86,6 +86,7 @@ class SERVER_EXPORT QgsServerSettingsEnv : public QObject
       QGIS_SERVER_ALLOWED_EXTRA_SQL_TOKENS,     //!< Adds these tokens to the list of allowed tokens that the services accept when filtering features \since QGIS 3.28
       QGIS_SERVER_APPLICATION_NAME,             //!< Define the QGIS Server application name \since QGIS 3.30
       QGIS_SERVER_CAPABILITIES_CACHE_SIZE,      //!< Define the QGIS Server capabilities cache size \since QGIS 3.31
+      QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL,    //!< zlib compression level (0-9) for PNG output. Default -1 keeps the Qt PNG writer \since QGIS 4.4
     };
     Q_ENUM( EnvVar )
 };
@@ -397,6 +398,19 @@ class SERVER_EXPORT QgsServerSettings
      * \since QGIS 3.31
      */
     int capabilitiesCacheSize() const;
+
+    /**
+     * Returns the zlib compression level (0-9) used to encode PNG images, or -1
+     * when the default Qt PNG writer is used.
+     *
+     * The default value is -1 and the value can be changed by setting the
+     * environment variable QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL. Low levels
+     * encode much faster at the cost of slightly larger images, which helps
+     * when tiles are seeded or cached downstream.
+     *
+     * \since QGIS 4.4
+     */
+    int wmsPngCompressionLevel() const;
 
   private:
     void initSettings();

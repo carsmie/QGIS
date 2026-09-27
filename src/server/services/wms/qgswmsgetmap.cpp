@@ -64,7 +64,7 @@ namespace QgsWms
     if ( result )
     {
       const QString format = request.parameters().value( u"FORMAT"_s, u"PNG"_s );
-      writeImage( response, *result, format, context.imageQuality() );
+      writeImage( response, *result, format, context.imageQuality(), context.settings().wmsPngCompressionLevel() );
     }
     else
     {

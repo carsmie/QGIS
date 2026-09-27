@@ -112,6 +112,24 @@ class TestQgsServerSettings(unittest.TestCase):
         self.assertEqual(self.settings.cacheSize(), 1024)
         os.environ.pop(env)
 
+    def test_env_wms_png_compression_level(self):
+        env = "QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL"
+
+        # default keeps the Qt PNG writer
+        self.assertEqual(self.settings.wmsPngCompressionLevel(), -1)
+
+        os.environ[env] = "1"
+        self.settings.load()
+        self.assertEqual(self.settings.wmsPngCompressionLevel(), 1)
+        os.environ.pop(env)
+
+        # out of range and invalid values fall back to the default
+        for value in ("10", "-2", "fast"):
+            os.environ[env] = value
+            self.settings.load()
+            self.assertEqual(self.settings.wmsPngCompressionLevel(), -1)
+            os.environ.pop(env)
+
     def test_env_cache_directory(self):
         env = "QGIS_SERVER_CACHE_DIRECTORY"
 

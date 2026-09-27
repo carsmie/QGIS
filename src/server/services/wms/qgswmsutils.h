@@ -68,8 +68,10 @@ namespace QgsWms
 
   /**
    * Write image response
+   *
+   * \param pngCompressionLevel zlib level (0-9) for full colour PNG output, -1 uses the Qt PNG writer
    */
-  void writeImage( QgsServerResponse &response, QImage &img, const QString &formatStr, int imageQuality = -1 );
+  void writeImage( QgsServerResponse &response, QImage &img, const QString &formatStr, int imageQuality = -1, int pngCompressionLevel = -1 );
 
   /**
    * Collects the \a acceptableLayersAndRequestNames, a hash of all the layers that can be rendered and for each a list of the layer names requesting it.

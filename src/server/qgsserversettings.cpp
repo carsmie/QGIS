@@ -367,6 +367,19 @@ void QgsServerSettings::initSettings()
       = { QgsServerSettingsEnv::QGIS_SERVER_CAPABILITIES_CACHE_SIZE, QgsServerSettingsEnv::DEFAULT_VALUE, u"The QGIS Server capabilities cache size"_s, u"/qgis/capabilities_cache_size"_s, QMetaType::Type::Int, QVariant( 40 ), QVariant() };
     mSettings[sCapabilitiesCacheSize.envVar] = sCapabilitiesCacheSize;
   }
+
+  {
+    const Setting sWmsPngCompressionLevel = {
+      QgsServerSettingsEnv::QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL,
+      QgsServerSettingsEnv::DEFAULT_VALUE,
+      u"zlib compression level (0-9) for PNG output, -1 uses the Qt PNG writer"_s,
+      u"/qgis/wms_png_compression_level"_s,
+      QMetaType::Type::Int,
+      QVariant( -1 ),
+      QVariant()
+    };
+    mSettings[sWmsPngCompressionLevel.envVar] = sWmsPngCompressionLevel;
+  }
 }
 
 void QgsServerSettings::load()
@@ -729,4 +742,13 @@ int QgsServerSettings::capabilitiesCacheSize() const
 
   QgsMessageLog::logMessage( u"Invalid capabilities cache size, expecting integer - defaulting to 40"_s, "Server", Qgis::MessageLevel::Warning );
   return 40;
+}
+
+int QgsServerSettings::wmsPngCompressionLevel() const
+{
+  bool ok;
+  const int level = value( QgsServerSettingsEnv::QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL ).toInt( &ok );
+  if ( ok && level >= 0 && level <= 9 )
+    return level;
+  return -1;
 }

@@ -175,7 +175,7 @@ namespace QgsWms
       tree->clear();
       if ( result )
       {
-        writeImage( response, *result, parameters.formatAsString(), context.imageQuality() );
+        writeImage( response, *result, parameters.formatAsString(), context.imageQuality(), context.settings().wmsPngCompressionLevel() );
 #ifdef HAVE_SERVER_PYTHON_PLUGINS
         if ( cacheManager )
         {

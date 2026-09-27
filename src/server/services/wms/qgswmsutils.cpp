@@ -21,6 +21,7 @@
 
 #include "qgswmsutils.h"
 
+#include "qgsexception.h"
 #include "qgslayertree.h"
 #include "qgsmediancut.h"
 #include "qgsmodule.h"
@@ -30,8 +31,181 @@
 
 #include <QRegularExpression>
 #include <QString>
+#include <QtEndian>
+
+#include <cstdlib>
+#include <cstring>
+#include <limits>
+#include <vector>
+#include <zlib.h>
 
 using namespace Qt::StringLiterals;
+
+namespace
+{
+  void writePngChunk( QIODevice *device, const char *type, const unsigned char *data, quint32 length )
+  {
+    unsigned char header[8];
+    qToBigEndian<quint32>( length, header );
+    std::memcpy( header + 4, type, 4 );
+    uLong crc = crc32( 0L, header + 4, 4 );
+    if ( length > 0 )
+      crc = crc32( crc, data, length );
+    unsigned char trailer[4];
+    qToBigEndian<quint32>( static_cast<quint32>( crc ), trailer );
+
+    device->write( reinterpret_cast<const char *>( header ), 8 );
+    if ( length > 0 )
+      device->write( reinterpret_cast<const char *>( data ), length );
+    device->write( reinterpret_cast<const char *>( trailer ), 4 );
+  }
+
+  /**
+   * Writes \a image as 8-bit RGBA PNG using zlib directly.
+   *
+   * Qt's PNG writer uses zlib's default level and libpng's adaptive row filtering,
+   * and the filtering cannot be changed through the Qt API. Together they dominate
+   * GetMap time for large or continuous-tone images (hillshades, rasters).
+   * Here low compression levels use the cheap "up" filter, higher levels use the
+   * same adaptive heuristic as libpng.
+   */
+  bool writePngFast( QIODevice *device, const QImage &image, int compressionLevel )
+  {
+    // un-premultiplied RGBA in byte order is exactly the PNG pixel layout
+    const QImage rgba = image.convertToFormat( QImage::Format_RGBA8888 );
+    if ( rgba.isNull() )
+      return false;
+
+    const int width = rgba.width();
+    const int height = rgba.height();
+    constexpr int bytesPerPixel = 4;
+    const size_t stride = static_cast<size_t>( width ) * bytesPerPixel;
+
+    z_stream zs {};
+    if ( deflateInit2( &zs, compressionLevel, Z_DEFLATED, 15, 8, Z_DEFAULT_STRATEGY ) != Z_OK )
+      return false;
+
+    device->write( "\x89PNG\r\n\x1a\n", 8 );
+
+    unsigned char ihdr[13];
+    qToBigEndian<quint32>( width, ihdr );
+    qToBigEndian<quint32>( height, ihdr + 4 );
+    ihdr[8] = 8;  // bit depth
+    ihdr[9] = 6;  // color type RGBA
+    ihdr[10] = 0; // compression
+    ihdr[11] = 0; // filter method
+    ihdr[12] = 0; // no interlacing
+    writePngChunk( device, "IHDR", ihdr, sizeof( ihdr ) );
+
+    if ( image.dotsPerMeterX() > 0 && image.dotsPerMeterY() > 0 )
+    {
+      unsigned char phys[9];
+      qToBigEndian<quint32>( image.dotsPerMeterX(), phys );
+      qToBigEndian<quint32>( image.dotsPerMeterY(), phys + 4 );
+      phys[8] = 1; // unit is meter
+      writePngChunk( device, "pHYs", phys, sizeof( phys ) );
+    }
+
+    std::vector<unsigned char> compressed( 1 << 17 );
+    const std::vector<unsigned char> zeroRow( stride, 0 );
+    std::vector<unsigned char> filtered[5];
+    for ( std::vector<unsigned char> &row : filtered )
+      row.resize( stride + 1 );
+
+    auto deflateRow = [&]( const unsigned char *data, size_t length, int flush ) -> bool {
+      zs.next_in = const_cast<Bytef *>( data );
+      zs.avail_in = static_cast<uInt>( length );
+      do
+      {
+        zs.next_out = compressed.data();
+        zs.avail_out = static_cast<uInt>( compressed.size() );
+        if ( deflate( &zs, flush ) == Z_STREAM_ERROR )
+          return false;
+        const size_t produced = compressed.size() - zs.avail_out;
+        if ( produced > 0 )
+          writePngChunk( device, "IDAT", compressed.data(), static_cast<quint32>( produced ) );
+      } while ( zs.avail_out == 0 );
+      return true;
+    };
+
+    auto filterRow = [&]( int filter, const unsigned char *row, const unsigned char *prev ) {
+      unsigned char *out = filtered[filter].data();
+      out[0] = static_cast<unsigned char>( filter );
+      out++;
+      switch ( filter )
+      {
+        case 0: // none
+          std::memcpy( out, row, stride );
+          break;
+        case 1: // sub
+          std::memcpy( out, row, bytesPerPixel );
+          for ( size_t i = bytesPerPixel; i < stride; ++i )
+            out[i] = row[i] - row[i - bytesPerPixel];
+          break;
+        case 2: // up
+          for ( size_t i = 0; i < stride; ++i )
+            out[i] = row[i] - prev[i];
+          break;
+        case 3: // average
+          for ( size_t i = 0; i < stride; ++i )
+            out[i] = row[i] - ( ( ( i >= bytesPerPixel ? row[i - bytesPerPixel] : 0 ) + prev[i] ) >> 1 );
+          break;
+        case 4: // paeth
+          for ( size_t i = 0; i < stride; ++i )
+          {
+            const int a = i >= bytesPerPixel ? row[i - bytesPerPixel] : 0;
+            const int b = prev[i];
+            const int c = i >= bytesPerPixel ? prev[i - bytesPerPixel] : 0;
+            const int p = a + b - c;
+            const int pa = std::abs( p - a );
+            const int pb = std::abs( p - b );
+            const int pc = std::abs( p - c );
+            out[i] = row[i] - ( ( pa <= pb && pa <= pc ) ? a : ( pb <= pc ? b : c ) );
+          }
+          break;
+      }
+    };
+
+    bool ok = true;
+    for ( int y = 0; y < height && ok; ++y )
+    {
+      const unsigned char *row = rgba.constScanLine( y );
+      const unsigned char *prev = y > 0 ? rgba.constScanLine( y - 1 ) : zeroRow.data();
+
+      int filter = compressionLevel == 0 ? 0 : 2;
+      if ( compressionLevel >= 4 )
+      {
+        // libpng heuristic: pick the filter with the smallest sum of absolute (signed) values
+        unsigned long bestSum = std::numeric_limits<unsigned long>::max();
+        for ( int candidate = 0; candidate < 5; ++candidate )
+        {
+          filterRow( candidate, row, prev );
+          const unsigned char *out = filtered[candidate].data() + 1;
+          unsigned long sum = 0;
+          for ( size_t i = 0; i < stride; ++i )
+            sum += out[i] < 128 ? out[i] : 256 - out[i];
+          if ( sum < bestSum )
+          {
+            bestSum = sum;
+            filter = candidate;
+          }
+        }
+      }
+      else
+      {
+        filterRow( filter, row, prev );
+      }
+      ok = deflateRow( filtered[filter].data(), stride + 1, Z_NO_FLUSH );
+    }
+    ok = ok && deflateRow( nullptr, 0, Z_FINISH );
+    deflateEnd( &zs );
+    if ( !ok )
+      return false;
+
+    writePngChunk( device, "IEND", nullptr, 0 );
+    return true;
+  }
+} // namespace
 
 namespace QgsWms
 {
@@ -100,7 +274,7 @@ namespace QgsWms
   }
 
   // Write image response
-  void writeImage( QgsServerResponse &response, QImage &img, const QString &formatStr, int imageQuality )
+  void writeImage( QgsServerResponse &response, QImage &img, const QString &formatStr, int imageQuality, int pngCompressionLevel )
   {
     const ImageOutputFormat outputFormat = parseImageFormat( formatStr );
     QImage result;
@@ -163,6 +337,13 @@ namespace QgsWms
       if ( saveFormat == "JPEG"_L1 || saveFormat == "WEBP"_L1 )
       {
         result.save( response.io(), qPrintable( saveFormat ), imageQuality );
+      }
+      else if ( outputFormat == ImageOutputFormat::PNG && pngCompressionLevel >= 0 && pngCompressionLevel <= 9 )
+      {
+        if ( !writePngFast( response.io(), result, pngCompressionLevel ) )
+        {
+          throw QgsException( u"Failed to encode PNG image"_s );
+        }
       }
       else
       {
