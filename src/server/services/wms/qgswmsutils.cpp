@@ -36,8 +36,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <memory>
 #include <vector>
 #include <zlib.h>
+
+#ifdef HAVE_LIBDEFLATE
+#include <libdeflate.h>
+#endif
 
 using namespace Qt::StringLiterals;
 
@@ -61,13 +66,17 @@ namespace
   }
 
   /**
-   * Writes \a image as 8-bit RGBA PNG using zlib directly.
+   * Writes \a image as 8-bit RGBA PNG using libdeflate if available, or zlib directly.
    *
    * Qt's PNG writer uses zlib's default level and libpng's adaptive row filtering,
    * and the filtering cannot be changed through the Qt API. Together they dominate
    * GetMap time for large or continuous-tone images (hillshades, rasters).
    * Here low compression levels use the cheap "up" filter, higher levels use the
    * same adaptive heuristic as libpng.
+   *
+   * libdeflate compresses 1.5-2x faster than zlib and usually produces smaller output,
+   * but only works on a complete buffer, so the filtered image is kept in memory.
+   * Very large images and levels libdeflate does not support use the zlib stream.
    */
   bool writePngFast( QIODevice *device, const QImage &image, int compressionLevel )
   {
@@ -81,8 +90,21 @@ namespace
     constexpr int bytesPerPixel = 4;
     const size_t stride = static_cast<size_t>( width ) * bytesPerPixel;
 
+    std::vector<unsigned char> filteredImage;
+#ifdef HAVE_LIBDEFLATE
+    const size_t filteredImageSize = static_cast<size_t>( height ) * ( stride + 1 );
+    std::unique_ptr<libdeflate_compressor, decltype( &libdeflate_free_compressor )> libdeflateCompressor( nullptr, &libdeflate_free_compressor );
+    if ( filteredImageSize <= 256 * 1024 * 1024 )
+      libdeflateCompressor.reset( libdeflate_alloc_compressor( compressionLevel ) );
+    const bool useLibdeflate = static_cast<bool>( libdeflateCompressor );
+    if ( useLibdeflate )
+      filteredImage.reserve( filteredImageSize );
+#else
+    const bool useLibdeflate = false;
+#endif
+
     z_stream zs {};
-    if ( deflateInit2( &zs, compressionLevel, Z_DEFLATED, 15, 8, Z_DEFAULT_STRATEGY ) != Z_OK )
+    if ( !useLibdeflate && deflateInit2( &zs, compressionLevel, Z_DEFLATED, 15, 8, Z_DEFAULT_STRATEGY ) != Z_OK )
       return false;
 
     device->write( "\x89PNG\r\n\x1a\n", 8 );
@@ -195,10 +217,29 @@ namespace
       {
         filterRow( filter, row, prev );
       }
-      ok = deflateRow( filtered[filter].data(), stride + 1, Z_NO_FLUSH );
+      if ( useLibdeflate )
+        filteredImage.insert( filteredImage.end(), filtered[filter].begin(), filtered[filter].end() );
+      else
+        ok = deflateRow( filtered[filter].data(), stride + 1, Z_NO_FLUSH );
     }
-    ok = ok && deflateRow( nullptr, 0, Z_FINISH );
-    deflateEnd( &zs );
+
+#ifdef HAVE_LIBDEFLATE
+    if ( useLibdeflate )
+    {
+      std::vector<unsigned char> zlibData( libdeflate_zlib_compress_bound( libdeflateCompressor.get(), filteredImage.size() ) );
+      const size_t zlibSize = libdeflate_zlib_compress( libdeflateCompressor.get(), filteredImage.data(), filteredImage.size(), zlibData.data(), zlibData.size() );
+      if ( zlibSize == 0 )
+        return false;
+      // same IDAT chunk size as the zlib stream
+      for ( size_t offset = 0; offset < zlibSize; offset += compressed.size() )
+        writePngChunk( device, "IDAT", zlibData.data() + offset, static_cast<quint32>( std::min( compressed.size(), zlibSize - offset ) ) );
+    }
+    else
+#endif
+    {
+      ok = ok && deflateRow( nullptr, 0, Z_FINISH );
+      deflateEnd( &zs );
+    }
     if ( !ok )
       return false;
 

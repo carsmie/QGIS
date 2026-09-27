@@ -37,6 +37,20 @@ set (WMS_HDRS
 set(_library_suffix_MODULE "")
 set(_library_suffix_STATIC "_static")
 
+# optional, only used for faster PNG encoding (QGIS_SERVER_WMS_PNG_COMPRESSION_LEVEL)
+option(WITH_LIBDEFLATE "Use libdeflate for faster PNG encoding in the WMS service" ON)
+if(WITH_LIBDEFLATE)
+  find_package(libdeflate CONFIG QUIET)
+  if(TARGET libdeflate::libdeflate_shared)
+    set(LIBDEFLATE_TARGET libdeflate::libdeflate_shared)
+  elseif(TARGET libdeflate::libdeflate_static)
+    set(LIBDEFLATE_TARGET libdeflate::libdeflate_static)
+  endif()
+  if(LIBDEFLATE_TARGET)
+    message(STATUS "Found libdeflate for WMS PNG encoding: ${libdeflate_VERSION}")
+  endif()
+endif()
+
 foreach(_library_type MODULE STATIC)
   set(_library_name "wms${_library_suffix_${_library_type}}")
 
@@ -59,6 +73,10 @@ foreach(_library_type MODULE STATIC)
     qgis_server
     ${ZLIB_LIBRARIES}
   )
+  if(LIBDEFLATE_TARGET)
+    target_link_libraries(${_library_name} ${LIBDEFLATE_TARGET})
+    target_compile_definitions(${_library_name} PRIVATE HAVE_LIBDEFLATE)
+  endif()
 endforeach()
 
 # only install module, static library is for testing only
