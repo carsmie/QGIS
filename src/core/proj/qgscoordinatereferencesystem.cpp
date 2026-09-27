@@ -3249,25 +3249,21 @@ QString QgsCoordinateReferenceSystem::geographicCrsAuthId() const
   }
 }
 
-bool QgsCoordinateReferenceSystem::topocentricOrigin( double &latDeg, double &lonDeg ) const
+//! Looks up the topocentric origin parameters of \a pj, see QgsCoordinateReferenceSystem::topocentricOrigin()
+static void calculateTopocentricOrigin( const PJ *pj, double &latDeg, double &lonDeg, bool &hasLat, bool &hasLon )
 {
-  if ( !isValid() )
-    return false;
-
   PJ_CONTEXT *ctx = QgsProjContext::get();
-  const PJ *pj = projObject();
   if ( !pj )
-    return false;
+    return;
 
   if ( !proj_crs_is_derived( ctx, pj ) )
-    return false;
+    return;
 
   QgsProjUtils::proj_pj_unique_ptr conversion( proj_crs_get_coordoperation( ctx, pj ) );
   if ( !conversion )
-    return false;
+    return;
 
   const int paramCount = proj_coordoperation_get_param_count( ctx, conversion.get() );
-  bool hasLat = false, hasLon = false;
 
   for ( int i = 0; i < paramCount; i++ )
   {
@@ -3290,8 +3286,28 @@ bool QgsCoordinateReferenceSystem::topocentricOrigin( double &latDeg, double &lo
       hasLon = true;
     }
   }
+}
 
-  return hasLat && hasLon;
+bool QgsCoordinateReferenceSystem::topocentricOrigin( double &latDeg, double &lonDeg ) const
+{
+  if ( !isValid() )
+    return false;
+
+  // this is queried for every rendered layer, so cache the result of the proj lookup
+  const QMutexLocker locker( &d->mTopocentricOriginMutex );
+  if ( d->mTopocentricOriginDirty )
+  {
+    d->mTopocentricOriginHasLatitude = false;
+    d->mTopocentricOriginHasLongitude = false;
+    calculateTopocentricOrigin( projObject(), d->mTopocentricOriginLatitude, d->mTopocentricOriginLongitude, d->mTopocentricOriginHasLatitude, d->mTopocentricOriginHasLongitude );
+    d->mTopocentricOriginDirty = false;
+  }
+
+  if ( d->mTopocentricOriginHasLatitude )
+    latDeg = d->mTopocentricOriginLatitude;
+  if ( d->mTopocentricOriginHasLongitude )
+    lonDeg = d->mTopocentricOriginLongitude;
+  return d->mTopocentricOriginHasLatitude && d->mTopocentricOriginHasLongitude;
 }
 
 

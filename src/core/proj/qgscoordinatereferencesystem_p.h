@@ -31,6 +31,8 @@
 
 #include <proj.h>
 
+#include <QMutex>
+
 #include "qgscoordinatereferencesystem.h"
 #include "qgsprojutils.h"
 #include "qgsreadwritelocker.h"
@@ -60,6 +62,7 @@ class QgsCoordinateReferenceSystemPrivate : public QSharedData
       , mWktPreferred( other.mWktPreferred )
       , mAxisInvertedDirty( other.mAxisInvertedDirty )
       , mAxisInverted( other.mAxisInverted )
+      , mTopocentricOriginDirty( true )
       , mProjLock {}
       , mProjObjects()
     {}
@@ -141,6 +144,12 @@ class QgsCoordinateReferenceSystemPrivate : public QSharedData
   public:
     void setPj( QgsProjUtils::proj_pj_unique_ptr obj )
     {
+      {
+        // not nested with mProjLock: topocentricOrigin() takes mProjLock while holding this mutex
+        const QMutexLocker topocentricLocker( &mTopocentricOriginMutex );
+        mTopocentricOriginDirty = true;
+      }
+
       const QgsReadWriteLocker locker( mProjLock, QgsReadWriteLocker::Write );
       cleanPjObjects();
 
@@ -172,6 +181,16 @@ class QgsCoordinateReferenceSystemPrivate : public QSharedData
 
     //! Whether this is a coordinate system has inverted axis
     mutable bool mAxisInverted = false;
+
+    //! Guards the cached topocentric origin, which may be queried from several rendering threads
+    mutable QMutex mTopocentricOriginMutex;
+
+    //! True if the cached topocentric origin needs to be recalculated
+    mutable bool mTopocentricOriginDirty = true;
+    mutable bool mTopocentricOriginHasLatitude = false;
+    mutable bool mTopocentricOriginHasLongitude = false;
+    mutable double mTopocentricOriginLatitude = 0;
+    mutable double mTopocentricOriginLongitude = 0;
 
   private:
     mutable QReadWriteLock mProjLock {};
