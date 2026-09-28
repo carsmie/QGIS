@@ -1043,6 +1043,24 @@ bool QgsVectorLayerUtils::fieldIsEditable( const QgsVectorLayer *layer, int fiel
 }
 
 
+/**
+ * Returns TRUE if any of the selective masking source sets has a mask source of the
+ * given \a type coming from the layer with id \a layerId.
+ */
+static bool hasSelectiveMaskSourceFromLayer( const QHash< QString, QgsSelectiveMaskingSourceSet > &selectiveMaskingSourceSets, Qgis::SelectiveMaskSourceType type, const QString &layerId )
+{
+  for ( auto it = selectiveMaskingSourceSets.constBegin(); it != selectiveMaskingSourceSets.constEnd(); ++it )
+  {
+    const QVector<QgsSelectiveMaskSource> maskingSources = it.value().sources();
+    for ( const QgsSelectiveMaskSource &maskSource : maskingSources )
+    {
+      if ( maskSource.sourceType() == type && maskSource.layerId() == layerId )
+        return true;
+    }
+  }
+  return false;
+}
+
 QHash<QString, QgsMaskedLayers> QgsVectorLayerUtils::collectObjectsMaskedByLabelsFromLayer(
   const QgsVectorLayer *layer, const QHash< QString, QgsSelectiveMaskingSourceSet > &selectiveMaskingSourceSets, const QVector<QgsVectorLayer *> &allRenderedVectorLayers
 )
@@ -1092,6 +1110,12 @@ QHash<QString, QgsMaskedLayers> QgsVectorLayerUtils::collectObjectsMaskedByLabel
   {
     layer->labeling()->accept( &visitor );
   }
+
+  // The visitor below walks the renderer of every rendered layer, for every layer
+  // (i.e. quadratic in the number of layers), and only finds something when a
+  // selective masking source set uses the labels of this layer as mask source.
+  if ( !hasSelectiveMaskSourceFromLayer( selectiveMaskingSourceSets, Qgis::SelectiveMaskSourceType::Label, layer->id() ) )
+    return std::move( visitor.maskedLayers );
 
   class LabelSelectiveMaskingSetVisitor : public QgsStyleEntityVisitorInterface
   {
@@ -1220,6 +1244,12 @@ QgsMaskedLayers QgsVectorLayerUtils::collectObjectsMaskedBySymbolLayersFromLayer
 
   SymbolLayerVisitor visitor;
   layer->renderer()->accept( &visitor );
+
+  // The visitor below walks the renderer of every rendered layer, for every layer
+  // (i.e. quadratic in the number of layers), and only finds something when a
+  // selective masking source set uses symbol layers of this layer as mask source.
+  if ( !hasSelectiveMaskSourceFromLayer( selectiveMaskingSourceSets, Qgis::SelectiveMaskSourceType::SymbolLayer, layer->id() ) )
+    return visitor.maskedLayers;
 
 
   class SymbolLayerSelectiveMaskingSetVisitor : public QgsStyleEntityVisitorInterface
