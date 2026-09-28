@@ -1,0 +1,26 @@
+diff --git a/cmake/FindSqlite3.cmake b/cmake/FindSqlite3.cmake
+index f1b40ad1f13..ea1df04d9a4 100644
+--- a/cmake/FindSqlite3.cmake
++++ b/cmake/FindSqlite3.cmake
+@@ -31,13 +31,15 @@ IF (APPLE AND NOT QGIS_MAC_DEPS_DIR)
+     SET (CMAKE_FIND_FRAMEWORK "ONLY" CACHE STRING "" FORCE)
+     #FIND_PATH(SQLITE3_INCLUDE_DIR SQLite3/sqlite3.h)
+     FIND_LIBRARY(SQLITE3_LIBRARY SQLite3)
+-    IF (SQLITE3_LIBRARY)
++    IF (SQLITE3_LIBRARY MATCHES "\\.framework$")
+       # FIND_PATH doesn't add "Headers" for a framework
+-      # a .tbd stub has no Headers dir
+-      IF (SQLITE3_LIBRARY MATCHES "\\.framework$")
+-        SET (SQLITE3_INCLUDE_DIR ${SQLITE3_LIBRARY}/Headers CACHE PATH "Path to a file.")
+-      ENDIF ()
+-    ENDIF (SQLITE3_LIBRARY)
++      SET (SQLITE3_INCLUDE_DIR ${SQLITE3_LIBRARY}/Headers CACHE PATH "Path to a file.")
++    ELSEIF (SQLITE3_LIBRARY)
++      # not a framework, e.g. the SDK's libsqlite3.tbd stub: let the regular search
++      # below pick the library, so it can match the sqlite used by GDAL/PROJ/SpatiaLite
++      # (found through CMAKE_PREFIX_PATH) instead of loading two different sqlite libraries
++      UNSET (SQLITE3_LIBRARY CACHE)
++    ENDIF ()
+     SET (CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK_save} CACHE STRING "" FORCE)
+   ENDIF ()
+ ENDIF (APPLE AND NOT QGIS_MAC_DEPS_DIR)

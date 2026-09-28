@@ -1,0 +1,10 @@
+*.zip
+*.fgb
+*.gpkg
+*.tif
+*.aux.xml
+*.log
+__pycache__/
+data/*.qgs
+!data/earth_local.qgs
+xmlbench/*.qgs
