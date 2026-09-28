@@ -63,6 +63,7 @@ QgsGraduatedSymbolRenderer::QgsGraduatedSymbolRenderer( const QString &attrName,
   //QgsRendererRange::symbol() is marked const, and so retrieving the symbol via this method does not
   //trigger a detachment and copy of mRanges BUT that same method CAN be used to modify a symbol in place
   const auto constRanges = ranges;
+  mRanges.reserve( constRanges.size() );
   for ( const QgsRendererRange &range : constRanges )
   {
     mRanges << range;

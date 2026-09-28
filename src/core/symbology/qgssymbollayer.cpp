@@ -35,10 +35,32 @@
 #include <QPointF>
 #include <QPolygonF>
 #include <QSize>
+#include <QRandomGenerator>
 #include <QString>
 #include <QUuid>
 
 using namespace Qt::StringLiterals;
+
+namespace
+{
+  /**
+   * Returns a new random (version 4) UUID string for a symbol layer id.
+   *
+   * QUuid::createUuid() reads the system random source on every call, which is
+   * a system call. Symbol layers are created in large numbers, e.g. every time
+   * a categorized renderer is cloned for rendering, so use the global
+   * generator, which is securely seeded once.
+   */
+  QString createSymbolLayerId()
+  {
+    quint32 data[4];
+    QRandomGenerator::global()->fillRange( data );
+    QByteArray bytes( reinterpret_cast<const char *>( data ), sizeof( data ) );
+    bytes[6] = static_cast<char>( ( bytes[6] & 0x0F ) | 0x40 ); // version 4
+    bytes[8] = static_cast<char>( ( bytes[8] & 0x3F ) | 0x80 ); // RFC 4122 variant
+    return QUuid::fromRfc4122( bytes ).toString();
+  }
+} // namespace
 
 QgsPropertiesDefinition QgsSymbolLayer::sPropertyDefinitions;
 
@@ -301,7 +323,7 @@ QgsSymbolLayer::QgsSymbolLayer( const QgsSymbolLayer &other )
 QgsSymbolLayer::QgsSymbolLayer( Qgis::SymbolType type, bool locked )
   : mType( type )
   , mLocked( locked )
-  , mId( QUuid::createUuid().toString() )
+  , mId( createSymbolLayerId() )
 {}
 
 bool QgsSymbolLayer::rendersIdenticallyTo( const QgsSymbolLayer *other ) const

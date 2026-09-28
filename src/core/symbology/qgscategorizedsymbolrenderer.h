@@ -56,6 +56,7 @@ class CORE_EXPORT QgsRendererCategory
     QgsRendererCategory( const QVariant &value, QgsSymbol *symbol SIP_TRANSFER, const QString &label, bool render = true, const QString &uuid = QString() );
 
     QgsRendererCategory( const QgsRendererCategory &cat );
+    QgsRendererCategory( QgsRendererCategory &&cat ) noexcept SIP_SKIP;
     QgsRendererCategory &operator=( QgsRendererCategory cat );
     ~QgsRendererCategory();
 

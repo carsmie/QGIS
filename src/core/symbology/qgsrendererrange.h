@@ -63,6 +63,7 @@ class CORE_EXPORT QgsRendererRange
      */
     QgsRendererRange( double lowerValue, double upperValue, QgsSymbol *symbol SIP_TRANSFER, const QString &label, bool render = true, const QString &uuid = QString() );
     QgsRendererRange( const QgsRendererRange &range );
+    QgsRendererRange( QgsRendererRange &&range ) noexcept SIP_SKIP;
 
     // default dtor is OK
     QgsRendererRange &operator=( QgsRendererRange range );

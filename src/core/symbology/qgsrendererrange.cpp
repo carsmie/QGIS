@@ -54,19 +54,26 @@ QgsRendererRange::QgsRendererRange( const QgsRendererRange &range )
   , mUuid( range.mUuid )
 {}
 
+QgsRendererRange::QgsRendererRange( QgsRendererRange &&range ) noexcept
+  : mLowerValue( range.mLowerValue )
+  , mUpperValue( range.mUpperValue )
+  , mSymbol( std::move( range.mSymbol ) )
+  , mLabel( std::move( range.mLabel ) )
+  , mRender( range.mRender )
+  , mUuid( std::move( range.mUuid ) )
+{}
+
 QgsRendererRange::~QgsRendererRange() = default;
 
 QgsRendererRange &QgsRendererRange::operator=( QgsRendererRange range )
 {
-  if ( &range == this )
-    return *this;
-
+  // range is already a deep copy (or a moved-from temporary), take over its members
   mLowerValue = range.mLowerValue;
   mUpperValue = range.mUpperValue;
-  mSymbol.reset( range.mSymbol ? range.mSymbol->clone() : nullptr );
-  mLabel = range.mLabel;
+  mSymbol = std::move( range.mSymbol );
+  mLabel = std::move( range.mLabel );
   mRender = range.mRender;
-  mUuid = range.mUuid;
+  mUuid = std::move( range.mUuid );
   return *this;
 }
 

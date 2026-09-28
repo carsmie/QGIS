@@ -71,16 +71,22 @@ QgsRendererCategory::QgsRendererCategory( const QgsRendererCategory &cat )
   , mUuid( cat.mUuid )
 {}
 
+QgsRendererCategory::QgsRendererCategory( QgsRendererCategory &&cat ) noexcept
+  : mValue( std::move( cat.mValue ) )
+  , mSymbol( std::move( cat.mSymbol ) )
+  , mLabel( std::move( cat.mLabel ) )
+  , mRender( cat.mRender )
+  , mUuid( std::move( cat.mUuid ) )
+{}
+
 QgsRendererCategory &QgsRendererCategory::operator=( QgsRendererCategory cat )
 {
-  if ( &cat == this )
-    return *this;
-
-  mValue = cat.mValue;
-  mSymbol.reset( cat.mSymbol ? cat.mSymbol->clone() : nullptr );
-  mLabel = cat.mLabel;
+  // cat is already a deep copy (or a moved-from temporary), take over its members
+  mValue = std::move( cat.mValue );
+  mSymbol = std::move( cat.mSymbol );
+  mLabel = std::move( cat.mLabel );
   mRender = cat.mRender;
-  mUuid = cat.mUuid;
+  mUuid = std::move( cat.mUuid );
   return *this;
 }
 
@@ -241,6 +247,7 @@ QgsCategorizedSymbolRenderer::QgsCategorizedSymbolRenderer( const QString &attrN
   //important - we need a deep copy of the categories list, not a shared copy. This is required because
   //QgsRendererCategory::symbol() is marked const, and so retrieving the symbol via this method does not
   //trigger a detachment and copy of mCategories BUT that same method CAN be used to modify a symbol in place
+  mCategories.reserve( categories.size() );
   for ( const QgsRendererCategory &cat : categories )
   {
     if ( !cat.symbol() )
