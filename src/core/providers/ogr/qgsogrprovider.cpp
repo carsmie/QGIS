@@ -758,6 +758,13 @@ void QgsOgrProvider::setEncoding( const QString &e )
   {
     QgsVectorDataProvider::setEncoding( u"UTF-8"_s );
   }
+
+  // Loading fields is expensive, and is not needed when they were already
+  // loaded with the same encoding since the layer was opened (e.g. when the
+  // layer sets the encoding it read from the project).
+  if ( mFieldsLoadedEncoding && mFieldsLoadedEncoding == textEncoding() && !mFieldsRequireReload )
+    return;
+
   loadFields();
 }
 
@@ -809,6 +816,7 @@ void QgsOgrProvider::loadFields()
   mAttributeFields.clear();
   mDefaultValues.clear();
   mPrimaryKeyAttrs.clear();
+  mFieldsLoadedEncoding = nullptr;
   if ( !mOgrLayer )
     return;
 
@@ -1179,6 +1187,7 @@ void QgsOgrProvider::loadFields()
     createdFields++;
   }
   mFieldsRequireReload = false;
+  mFieldsLoadedEncoding = textEncoding();
 }
 
 void QgsOgrProvider::loadMetadata()
@@ -4417,6 +4426,9 @@ void QgsOgrProvider::open( OpenMode mode )
   bool openReadOnly = false;
   Q_ASSERT( !mOgrSqlLayer );
   Q_ASSERT( !mOgrOrigLayer );
+
+  // fields must be reloaded from the newly opened layer
+  mFieldsLoadedEncoding = nullptr;
 
   // Try to open using VSIFileHandler
   //   see http://trac.osgeo.org/gdal/wiki/UserDocs/ReadInZip

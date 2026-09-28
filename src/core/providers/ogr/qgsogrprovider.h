@@ -226,6 +226,9 @@ class QgsOgrProvider final : public QgsVectorDataProvider
     //! Flag set after a rollback to indicate that fields require reloading
     bool mFieldsRequireReload = false;
 
+    //! Encoding the fields were loaded with since the layer was last opened, or NULLPTR
+    const QTextCodec *mFieldsLoadedEncoding = nullptr;
+
     //! Called after a transaction rollback
     void afterRollback();
     void afterRollbackToSavepoint( const QString &savePointName );
