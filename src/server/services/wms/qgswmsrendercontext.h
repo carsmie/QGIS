@@ -312,6 +312,8 @@ namespace QgsWms
 
       const QgsProject *mProject = nullptr;
       QgsServerInterface *mInterface = nullptr;
+      // project setting read once, as layerNickname() is called for every layer
+      bool mUseLayerIds = false;
       QgsWmsParameters mParameters;
       Flags mFlags = Flags();
       double mScaleDenominator = -1.0;

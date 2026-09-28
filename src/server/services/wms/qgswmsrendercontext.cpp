@@ -33,6 +33,7 @@ const double OGC_PX_M = 0.00028; // OGC reference pixel size in meter
 QgsWmsRenderContext::QgsWmsRenderContext( const QgsProject *project, QgsServerInterface *interface )
   : mProject( project )
   , mInterface( interface )
+  , mUseLayerIds( project && QgsServerProjectUtils::wmsUseLayerIds( *project ) )
   , mFlags()
 {}
 
@@ -290,7 +291,7 @@ QString QgsWmsRenderContext::layerNickname( const QgsMapLayer &layer ) const
 {
   QString name = layer.serverProperties()->shortName();
   // For external layers we cannot use the layer id because it's not known to the client, use layer name instead.
-  if ( QgsServerProjectUtils::wmsUseLayerIds( *mProject )
+  if ( mUseLayerIds
        && std::find_if( mExternalLayers.cbegin(), mExternalLayers.cend(), [&layer]( const QgsMapLayer *l ) { return l->id() == layer.id(); } ) == mExternalLayers.cend() )
   {
     name = layer.id();

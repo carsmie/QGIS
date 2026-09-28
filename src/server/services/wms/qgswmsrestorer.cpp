@@ -94,7 +94,11 @@ QgsLayerRestorer::~QgsLayerRestorer()
     // Then restore the previous style
     QgsLayerSettings &settings = it->second;
     layer->styleManager()->setCurrentStyle( settings.mNamedStyle );
-    layer->setName( settings.name );
+
+    // Most layers are left untouched by a request: only restore what changed,
+    // as the setters are not free and emit signals
+    if ( layer->name() != settings.name )
+      layer->setName( settings.name );
 
     switch ( layer->type() )
     {
@@ -104,9 +108,12 @@ QgsLayerRestorer::~QgsLayerRestorer()
 
         if ( vLayer )
         {
-          vLayer->setOpacity( settings.mOpacity );
-          vLayer->selectByIds( settings.mSelectedFeatureIds );
-          vLayer->setSubsetString( settings.mFilter );
+          if ( vLayer->opacity() != settings.mOpacity )
+            vLayer->setOpacity( settings.mOpacity );
+          if ( vLayer->selectedFeatureIds() != settings.mSelectedFeatureIds )
+            vLayer->selectByIds( settings.mSelectedFeatureIds );
+          if ( vLayer->subsetString() != settings.mFilter )
+            vLayer->setSubsetString( settings.mFilter );
           if ( settings.mLabeling )
           {
             vLayer->setLabeling( settings.mLabeling.release() );
@@ -118,7 +125,7 @@ QgsLayerRestorer::~QgsLayerRestorer()
       {
         QgsRasterLayer *rLayer = qobject_cast<QgsRasterLayer *>( layer );
 
-        if ( rLayer && rLayer->renderer() )
+        if ( rLayer && rLayer->renderer() && rLayer->renderer()->opacity() != settings.mOpacity )
         {
           rLayer->renderer()->setOpacity( settings.mOpacity );
         }
