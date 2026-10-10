@@ -229,7 +229,8 @@ bool FeaturePart::hasSameLabelFeatureAs( FeaturePart *part ) const
   if ( !part )
     return false;
 
-  if ( mLF->layer()->name() != part->layer()->name() )
+  // pointer check first: obstacle hits are mostly the candidate's own layer, where comparing names is the slow case
+  if ( mLF->layer() != part->layer() && mLF->layer()->name() != part->layer()->name() )
     return false;
 
   if ( mLF->id() == part->featureId() && mLF->subPartId() == part->subPartId() )
