@@ -23,6 +23,9 @@
 #include "qgstextfragment.h"
 #include "qgstextrenderer.h"
 
+#include <optional>
+
+#include <QHash>
 #include <QString>
 
 using namespace Qt::StringLiterals;
@@ -52,6 +55,16 @@ bool QgsTextLabelFeature::hasCharacterFormat( int partId ) const
 {
   return mTextMetrics.has_value() && partId < mTextMetrics->graphemeFormatCount();
 }
+
+namespace
+{
+  struct GraphemeAdvances
+  {
+    double firstCharString; // horizontalAdvance( QString( first char ) )
+    double firstChar;       // horizontalAdvance( QChar ), letter spacing added by caller
+    double grapheme;        // horizontalAdvance( whole grapheme )
+  };
+} //namespace
 
 QgsPrecalculatedTextMetrics QgsTextLabelFeature::calculateTextMetrics(
   const QgsMapToPixel *xform,
@@ -85,7 +98,10 @@ QgsPrecalculatedTextMetrics QgsTextLabelFeature::calculateTextMetrics(
   const double mapScale = xform->mapUnitsPerPixel();
   QStringList graphemes;
   QVector< QgsTextCharacterFormat > graphemeFormats;
+  // graphemes of one fragment share its character format, so its font metrics are built once per fragment
+  QVector< int > graphemeFragments;
 
+  int fragmentIndex = 0;
   for ( const QgsTextBlock &block : std::as_const( document ) )
   {
     for ( const QgsTextFragment &fragment : block )
@@ -95,7 +111,9 @@ QgsPrecalculatedTextMetrics QgsTextLabelFeature::calculateTextMetrics(
       {
         graphemes.append( grapheme );
         graphemeFormats.append( fragment.characterFormat() );
+        graphemeFragments.append( fragmentIndex );
       }
+      fragmentIndex++;
     }
   }
 
@@ -103,7 +121,9 @@ QgsPrecalculatedTextMetrics QgsTextLabelFeature::calculateTextMetrics(
   QVector< double > characterHeights( graphemes.count() );
   QVector< double > characterDescents( graphemes.count() );
 
-  QFont previousNonSuperSubScriptFont;
+  int metricsFragment = -1;
+  std::optional< QFontMetricsF > fragmentFontMetrics;
+  QString fragmentFontKey;
 
   double currentWidth = 0;
   for ( int i = 0; i < graphemes.count(); i++ )
@@ -147,45 +167,58 @@ QgsPrecalculatedTextMetrics QgsTextLabelFeature::calculateTextMetrics(
     }
     else if ( const QgsTextCharacterFormat *graphemeFormat = !graphemeFormats.empty() ? &graphemeFormats[i] : nullptr )
     {
-      QFont graphemeFont = baseFont;
-      graphemeFormat->updateFontForFormat( graphemeFont, context, 1 );
-
-      if ( i == 0 )
-        previousNonSuperSubScriptFont = graphemeFont;
-
-      if ( graphemeFormat->hasVerticalAlignmentSet() )
+      if ( graphemeFragments[i] != metricsFragment )
       {
-        switch ( graphemeFormat->verticalAlignment() )
-        {
-          case Qgis::TextCharacterVerticalAlignment::Normal:
-            previousNonSuperSubScriptFont = graphemeFont;
-            break;
+        QFont graphemeFont = baseFont;
+        graphemeFormat->updateFontForFormat( graphemeFont, context, 1 );
 
-          case Qgis::TextCharacterVerticalAlignment::SuperScript:
-          case Qgis::TextCharacterVerticalAlignment::SubScript:
+        if ( graphemeFormat->hasVerticalAlignmentSet() )
+        {
+          switch ( graphemeFormat->verticalAlignment() )
           {
-            if ( graphemeFormat->fontPointSize() < 0 )
+            case Qgis::TextCharacterVerticalAlignment::Normal:
+              break;
+
+            case Qgis::TextCharacterVerticalAlignment::SuperScript:
+            case Qgis::TextCharacterVerticalAlignment::SubScript:
             {
-              // if fragment has no explicit font size set, then we scale the inherited font size to 60% of base font size
-              // this allows for easier use of super/subscript in labels as "my text<sup>2</sup>" will automatically render
-              // the superscript in a smaller font size. BUT if the fragment format HAS a non -1 font size then it indicates
-              // that the document has an explicit font size for the super/subscript element, eg "my text<sup style="font-size: 6pt">2</sup>"
-              // which we should respect
-              graphemeFont.setPixelSize( static_cast< int >( std::round( graphemeFont.pixelSize() * QgsTextRenderer::SUPERSCRIPT_SUBSCRIPT_FONT_SIZE_SCALING_FACTOR ) ) );
+              if ( graphemeFormat->fontPointSize() < 0 )
+              {
+                // if fragment has no explicit font size set, then we scale the inherited font size to 60% of base font size
+                // this allows for easier use of super/subscript in labels as "my text<sup>2</sup>" will automatically render
+                // the superscript in a smaller font size. BUT if the fragment format HAS a non -1 font size then it indicates
+                // that the document has an explicit font size for the super/subscript element, eg "my text<sup style="font-size: 6pt">2</sup>"
+                // which we should respect
+                graphemeFont.setPixelSize( static_cast< int >( std::round( graphemeFont.pixelSize() * QgsTextRenderer::SUPERSCRIPT_SUBSCRIPT_FONT_SIZE_SCALING_FACTOR ) ) );
+              }
+              break;
             }
-            break;
           }
         }
-      }
-      else
-      {
-        previousNonSuperSubScriptFont = graphemeFont;
+
+        fragmentFontMetrics.emplace( graphemeFont );
+        fragmentFontKey = graphemeFont.toString();
+        metricsFragment = graphemeFragments[i];
       }
 
-      const QFontMetricsF graphemeFontMetrics( graphemeFont );
-      graphemeFirstCharHorizontalAdvance = graphemeFontMetrics.horizontalAdvance( QString( graphemes[i].at( 0 ) ) );
-      graphemeFirstCharHorizontalAdvanceWithLetterSpacing = graphemeFontMetrics.horizontalAdvance( graphemes[i].at( 0 ) ) + letterSpacing;
-      graphemeHorizontalAdvance = graphemeFontMetrics.horizontalAdvance( QString( graphemes[i] ) );
+      const QFontMetricsF &graphemeFontMetrics = *fragmentFontMetrics;
+      // Shaping dominates curved-label registration and the same graphemes recur across features
+      // (e.g. every segment of a street), so advances are cached per thread by font and grapheme
+      thread_local QHash< QString, GraphemeAdvances > sAdvanceCache;
+      const QString cacheKey = fragmentFontKey + QChar( 0x1f ) + graphemes[i];
+      auto cached = sAdvanceCache.constFind( cacheKey );
+      if ( cached == sAdvanceCache.constEnd() )
+      {
+        if ( sAdvanceCache.size() >= 50000 )
+          sAdvanceCache.clear();
+        cached = sAdvanceCache.insert(
+          cacheKey,
+          { graphemeFontMetrics.horizontalAdvance( QString( graphemes[i].at( 0 ) ) ), graphemeFontMetrics.horizontalAdvance( graphemes[i].at( 0 ) ), graphemeFontMetrics.horizontalAdvance( QString( graphemes[i] ) ) }
+        );
+      }
+      graphemeFirstCharHorizontalAdvance = cached->firstCharString;
+      graphemeFirstCharHorizontalAdvanceWithLetterSpacing = cached->firstChar + letterSpacing;
+      graphemeHorizontalAdvance = cached->grapheme;
       characterDescent = graphemeFontMetrics.descent();
       characterHeight = graphemeFontMetrics.height();
     }
