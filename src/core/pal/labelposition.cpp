@@ -762,6 +762,15 @@ double LabelPosition::getDistanceToPoint( double xp, double yp, bool useOuterBou
 
 bool LabelPosition::crossesLine( PointSet *line ) const
 {
+  // Disjoint envelopes can't intersect: skip GEOS (and the lazy GEOS geometry of this part).
+  // Curved labels test one part per character, and most characters are far from a given obstacle
+  const bool outer = static_cast< bool >( mOuterBoundsGeos );
+  if ( ( outer ? mOuterBoundsXMax : xmax ) < line->xmin || ( outer ? mOuterBoundsXMin : xmin ) > line->xmax
+       || ( outer ? mOuterBoundsYMax : ymax ) < line->ymin || ( outer ? mOuterBoundsYMin : ymin ) > line->ymax )
+  {
+    return mNextPart ? mNextPart->crossesLine( line ) : false;
+  }
+
   // this method considers the label's outer bounds
   if ( !mOuterBoundsGeos && !mGeos )
     createGeosGeom();
